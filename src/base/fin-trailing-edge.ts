@@ -615,13 +615,14 @@ interface Keyed {
 
 /**
  * Below Mach 1.5, what the sets reach (0019 section 3.4.1 item 7): the
- * layer parameter, in each of the two nodes either side of the Mach number,
- * and h / c over every set. Every reason that applies, none if covered.
+ * layer parameter, in each of the two nodes either side of the Mach number
+ * and in the series whose own points' Mach intervals contain it (narrowed
+ * 2026-10-28), and h / c over every set. Every reason that applies, none if
+ * covered.
  */
 export function transonicCoverageReasons(mach: number, layer: number, hOverC: number): Keyed[] {
   const t = transonicTrailingEdge();
-  const [a, b] = t.bracket(mach);
-  const reach = Math.min(a.layerReached, b.layerReached, THICK_LAYER_LIMIT);
+  const reach = Math.min(t.layerReach(mach), THICK_LAYER_LIMIT);
   const out: Keyed[] = [];
   if (layer > reach * (1 + 1e-12)) {
     out.push({

@@ -3,7 +3,7 @@
 - **Status:** Draft. A library with tests (`src/fins/`); on the drag page
   only as part of the total drag ([0011](0011-total-drag-on-the-page.md)).
   (0008 is reserved for the total-drag record.)
-- **Date:** 2026-10-19
+- **Date:** 2026-10-19 (section 8 added 2026-10-26)
 - **Inputs:** section 4 and step B4 of the total-drag research draft, its fin
   computations and scripts (`docs/research/total-drag/`: `draft.md`,
   `data/fin_computations.md`, `scripts/finwave.py`, `section2d.py`,
@@ -62,7 +62,8 @@ a script is a test now. Differences are relative unless stated.
 
 On a convex polygon the theory gives the pressure on each straight face
 exactly until a wave reflected from the leading-edge shock reaches the
-surface. Such waves arise where a corner's expansion fan overtakes the
+surface (and the drag exactly until one reaches a face with slope,
+section 8). Such waves arise where a corner's expansion fan overtakes the
 shock. The research and the audit call the theory exact without this
 condition; it matters for hexagonal sections with short bevels. The library
 bounds where the first reflected wave can land: the head of the first
@@ -81,9 +82,11 @@ change the reflected waves themselves make to the states they cross.
 - a compression corner after the leading edge (its shock would overtake the
   fans ahead of it near the surface; not modelled);
 - expansion beyond the Prandtl-Meyer limit, and subsonic free streams;
-- a reflected wave that can land ahead of the trailing edge, unless the
-  caller asks for the value with the reflections neglected, which is then
-  labelled `exact: false`.
+- a reflected wave that can land ahead of the trailing edge (since
+  2026-10-26, ahead of the end of the last face with slope: a wave that
+  lands only on faces parallel to the chord changes no drag, section 8),
+  unless the caller asks for the value with the reflections neglected,
+  which is then labelled `exact: false`.
 
 Exact drag over Ackeret's, or the refusal (det: detached; sub: subsonic
 behind the shock; R x: a reflected wave can land at x/c = x, value with the
@@ -384,3 +387,134 @@ bound.
   characteristics solution, before any of them is served.
 - TN D-4014 fig. 4 (the ARCAS chamber force), to be digitised, as the audit
   asked, before the ARCAS increments are used to set a fin band.
+
+## 8. Reflected waves that reach no inclined face (2026-10-26)
+
+Written before the code (A2 of the refusal plan, noted under 0014
+section 10.7 (z); no data enter and no band moves, so no letter of its
+own). Section 2.1 refuses a section whenever a wave reflected
+from the leading-edge shock can land on the surface ahead of the trailing
+edge. That is stricter than exactness needs. The drag is the sum over
+faces of Cp times the face's rise (section 2.2's definition): a face
+parallel to the chord contributes nothing whatever its pressure. So the
+shock-expansion value is exact for the inviscid flow as long as no
+reflected wave reaches a face with slope; waves that land only on flat
+faces, and whatever they do after, change pressures that carry no drag.
+
+**The argument.** In steady supersonic flow nothing travels upstream
+along the surface: a face's pressure is fixed by the states ahead of it
+(the shock, the corners before it) and by the waves that land on it, and
+a wave that lands on the surface at x can change only what lies at and
+behind x. Section 2.1's bound gives the earliest point x_1 at which any
+wave reflected from the leading-edge shock can land, the head of the
+first corner's fan meeting the straight shock at P and descending at the
+steepest angle the surface's states allow; everything the fan reflects
+lands at x_1 or behind it, and every later reflection (off the surface,
+off the shock again) lands further behind. If every face from x_1 to the
+trailing edge is flat (its rise zero), the faces with slope all lie
+ahead of x_1, their pressures are shock-expansion's exactly, and the
+drag is exact. The bound's own caveat stands as in section 2.1: it
+neglects the change the reflected waves make to the states they cross;
+so does the exactness it already claimed for the double wedges. For the
+wedge followed by a flat (below) the verdict does not use the bound at
+all: its one face with slope ends at its one corner, and every reflected
+wave starts in that corner's fan, so it lands behind the corner wherever
+the bound puts x_1; the bound, and its caveat, decide only sections with
+a face with slope behind the first corner, hexagons and double wedges.
+
+**What this reaches.** A wedge followed by a flat to a square trailing
+edge (the plate bevelled at the leading edge only, `bevel-le-square-te`
+in 0014's population): its one corner's fan reflects onto the flat, and
+nothing with slope lies behind. Its faces' drag is the front wedge's
+alone, exact. Its base is a separate term at the free-stream Mach number
+(0010 section 5.1), which does not use the state on the flat ahead of
+the edge. That state is not the stream's: behind the bevel's shock and
+the shoulder's expansion the flat carries a Mach number a little lower
+and a pressure up to 1.3% higher, which on the term's own
+two-dimensional base-pressure curve gives a base term 0.2% to 2.1%
+smaller (less base drag), and the reflected waves change it by at most
+0.7% of its value (back toward the free stream's value at M 1.5 to 2.0,
+further below it at 3.0), so the term at the free-stream Mach number is
+at most 2.1% above the local one, inside its band of 0.93 to 1.21
+(bevels of 8 to 15 deg, M 1.5 to 3.0; A2's review of 2026-10-27,
+`docs/research/refusals/scripts/flat_state.py`, by shock-expansion
+theory with the reflected waves' turning integrated along the shock, on
+RM A51J25 fig. 7's curve as `src/base/blunt-te-2d.ts` holds it; the
+largest change from the reflected waves, 0.67%, is at M 1.8 with a 15
+deg bevel, 0.9831 to 0.9898). A hexagon is not reached by this section:
+its rear bevel has slope and lies behind x_1, and whether the fan's
+later waves, or the second landing after a reflection off the flat,
+reach it is not bounded here (section 7 keeps it open; the earlier Euler
+check of section 2.4 is not a band). A double wedge is reached only
+where the bound already clears the chord. Sections with a compression
+corner stay refused as before.
+
+**In the code.** `solveSurface` records the end of the last face with
+slope (`lastSlopedFaceEnd`); `exactSectionDrag` takes a surface as exact
+when `firstReflection` is at or beyond that end, and refuses, as before,
+when a reflected wave can land ahead of it (the message now says the
+wave reaches a face with slope). `exact` keeps its meaning: cd is exact
+for the inviscid flow. The `neglectReflectedWaves` option is unchanged.
+`fin-wave-drag.ts` and `src/total` are untouched: the label "exact
+section drag times the linear 3D ratio" stays true. Tests
+(`tests/fins/section-drag.test.ts`): a wedge-flat section with a square
+trailing edge whose first reflection lands on the flat at x/c about 0.6
+is served, `exact` true, its cd equal to the value with reflections
+neglected and to the front wedge's oblique-shock face drag by hand; the
+same front wedge with a rear bevel added (a hexagon) is refused with the
+reason; the reflection bound's by-hand case is unchanged; a wedge-flat
+section whose bound lands on the front wedge itself cannot occur (the
+landing lies behind the first corner), asserted. Since the check of
+2026-10-26 (A2's, before its review), each surface is held to its own
+verdict: a section flat to the edge above and closing over its last 20%
+below is refused for the lower surface, and its mirror for the upper (a
+check of the upper surface alone, planted, passed every other test of
+`tests/fins` and `tests/total`).
+
+**Coverage** (0014's population at 400 rockets, 1,600 cases, the run of
+0015 section 12 as the "before",
+`docs/research/refusals/out/2026-10-26-a1-plates-any-sweep/after/`, and
+`out/2026-10-26-a2-reflected-flat/after/` after this section, both made
+with `N_ROCKETS=400 CROSS_CHECK=100`, so the cross-check against
+`src/total` covers the first 100 rockets' 400 cases, and agrees on all
+400 in each). The reflected-wave refusal falls from 13.9% of cases to
+8.7%, 223 to 139 (Mach 1.5 to 1.8: 24.8% to 15.5%; 1.8 to 3.0: 27.3% to
+17.5%): every plate bevelled at the leading edge only is now served by
+the library (84 cases), the hexagons stay refused. Totals served on the
+page do not move (2.9% of all bands; 144 of 1,600 with the nose assumed
+served), because the page does not offer the wedge-flat section with a
+square trailing edge (0014 W12, `pageSection` in the audit); with that
+one input added, and the nose assumed served, they would go from 145 to
+193 of the 1,600 (each run's table "Totals with the nose assumed
+served", printed since A1's review of 2026-10-26). What still refuses
+(`out/2026-10-26-a2-reflected-flat/after/reflected-split.out`, from
+`reflected-split.test.ts`, which re-solves the audit's own cases and
+agrees with its verdict on all 648 sharp sections; that agreement checks
+the audit's bookkeeping, not A2, since `evaluate.ts` calls the same
+`exactSectionDrag`): of the 139, 133 are hexagons whose first reflection
+lands on the flat ahead of the rear bevel, 5 hexagons whose first
+reflection lands on the rear bevel itself, and one double wedge below
+Mach 1.2. (This record said "127 of the 206 reflected-wave cases of the
+plan's count" before the check of 2026-10-26; neither number is on these
+cases.) The hexagons wait on a bound for the fan's later waves and the
+second landing, or on the planar Euler or characteristics measurement of
+section 7. At the audit's default size (2,000 rockets, 8,000 cases,
+`out/impact.out` and `out/reflected-split.out`): the reflected-wave
+refusal 14.6% to 10.2% of cases (Mach 1.5 to 1.8: 25.9% to 18.0%; 1.8 to
+3.0: 29.0% to 20.1%), 1,172 to 815 (357 wedge-flat plates served; 802
+hexagons landing on the flat, 9 on the rear bevel, 4 double wedges below
+Mach 1.2 still refused); totals unchanged by this section. As re-made on
+2026-10-28, after main's A5 (f88ecbe) and A1's narrowing below Mach 1.62
+(0014 10.7 (z)'s note), the default run serves 179 totals of 8,000
+(2.2%), 614 with the nose assumed served, and with the page's section
+offered too 619 without this section and 797 with it (on 2026-10-26,
+before A5 and the narrowing, these read 190, 743, and 748 to 966); the
+reflected-wave figures above hold; the cross-check agreeing on all 1,200
+cases checked. Later on 2026-10-28, after main's A3 and A4 (3e026a8, the
+leading edges), the run on this branch serves 184 totals of 8,000, 628
+with the nose assumed served, and with the page's section offered too
+633 without this section and 811 with it; the reflected-wave figures
+above still hold. After main's B1 and the body base band (cdd26e6 and
+0b2def5, also 2026-10-28) the counts are unchanged: 184, 628, 633 and
+811; the reflected-wave figures still hold, and the cross-check agrees
+on all 1,200 cases checked.

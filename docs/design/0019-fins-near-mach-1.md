@@ -1000,8 +1000,13 @@ formed on two of them, and the shape widening's size on two of them.
    1.11. Johnston's 5.7 deg wedge lies 18% to 22% above the nominal of
    item 3 at M_0 1.01 to 1.23, R&M 3348's 6% to 11%. _The size:_ S(delta)
    = S_NPL |delta| / 4.0 deg, S_NPL the largest of the NPL ratios less one
-   (0.090, at M_0 1.00); linear in the face angle, an argument from one
-   measured pair.
+   (0.090, at M_0 1.00; _first registered as 0.094, changed 2026-10-26 in
+   e6bb7f5 and dated here 2026-10-28 after the review's M2: computed from
+   R&M 3348 and R&M 3427 as already read and paired, each reading at the
+   same Mach number, where the first figure mixed Mach numbers; made
+   before any value of RM A51J11 or RM A52E01 was read, round 15's
+   readings of them landing later that day_); linear in the face angle,
+   an argument from one measured pair.
    _How it applies:_ each inclined set's point enters the envelope
    unshifted, and its range is extended by S on the side the ordering
    does not bound: downward for a diverging face, [r (1 - S), r], upward
@@ -1175,6 +1180,20 @@ formed on two of them, and the shape widening's size on two of them.
    swept edge. (The h/c rule amended 2026-10-26 before any value of RM
    A51J11 or RM A52E01 was read: first written window by window, which
    above Mach 1.25 would have served TN 3548's h/c 0.06 alone.)
+   _(Narrowed 2026-10-28, after the review of B1 on main (M3); written
+   before the code.)_ The windows let a set's layer parameter reach the
+   next node beyond its last point: RM A51J11's thick layers (X to 4.49,
+   their points' Mach intervals ending at 1.10 to 1.12) reached the node
+   at 1.15, so an edge at Mach 1.12 to 1.15 with X above 0.666 was served
+   up to 0.03 in Mach beyond the data that measured its layer. Now a
+   set's X counts toward the reach only at the Mach numbers its own
+   points measured: at Mach M the reach is the lesser of the two
+   bracketing nodes' (as above) and the greatest X of the series (each
+   set's reading and series, at the least X of its test) whose points'
+   Mach intervals, from its lowest point's to its highest point's,
+   contain M. Nothing is served beyond the Mach range that measured that
+   X. The band is formed on the windows and the intervals as registered,
+   unchanged; only what is refused for the layer changes.
 
 8. **Labels.** Free edges: "estimated on component data", naming the
    flat-faced sets, the inclined sets with their widening, the thick-layer
@@ -1320,6 +1339,33 @@ formed on two of them, and the shape widening's size on two of them.
       served at 1.00 to 1.15, refused at 1.175 to 1.475, and served again
       from 1.50 (above 1.5 X is served to 4.5).
 
+      _The reach served, after the review's M3 (2026-10-28; item 7's
+      note, written before the code)._ The nodes' reaches above are
+      unchanged; between them the reach served is now also bounded by
+      each series' own Mach intervals: X 4.49 (RM A51J11 h/t 0.3 with
+      roughness) to Mach 1.100, 2.25 (h/t 0.6) to 1.103, 1.35 (h/t 1.0) to
+      1.121, then 0.666 (TN 3548), where 4.49 was served to 1.15 before.
+      Nothing else moves at Mach 1.0 to 1.5, and the band is unchanged.
+      An edge at Mach 1.13 with X 2.0 is refused for its layer; at 1.10 it
+      is served. The 3 mm plate above (X 1.64 to 1.78) is served at Mach
+      1.00 to 1.10 and refused from 1.103. A plant that restores the old
+      window (the nodes' reaches alone) fails three tests. In the
+      population (`docs/research/refusals/out/impact.out`) the coverage
+      refusal at Mach 1.0 to 1.2 rises from 10.8% to 21.9% of cases (13.8%
+      to 16.5% over all bands); the totals stay 155 of 8000, as no total is
+      served below Mach 1.5, and the cross-check agrees on 1200 of 1200.
+      On the head merged with main at 76899f1 (A1, flat fins at the base
+      at more sweeps) the totals are main's 184 of 8000 and the cross-check
+      agrees on 1200 of 1200; the run differs from main's only in the
+      coverage refusal's rows above. F4 changes 43 of the 184 totals (Mach
+      1.624 to 1.796), the term's low end falling by up to 0.0463 in C_D
+      and its high end rising by up to 0.0041 (`out/f4-probe.out`). On the
+      head merged with main at 9056ebb (A2, the reflected-wave refusal
+      only where a wave can reach a sloped face) the totals stay 184 of
+      8000, the cross-check 1200 of 1200, the reflected-wave row is main's
+      10.2%, and the run again differs from main's only in the coverage
+      refusal's rows; the F4 probe is unchanged.
+
     - _The band served (thin layer), measured over modelled, at the
       nodes:_
 
@@ -1344,7 +1390,7 @@ formed on two of them, and the shape widening's size on two of them.
       without the library's builder (equal to 1e-9). The review's three
       plants that passed before now fail: the window by each point's
       nominal Mach number, K dropped below 1.5, and K read at Mach 2.0.
-      Planted errors, `audit/te-below-1.5/planted-errors.out`: 34 of 34
+      Planted errors, `audit/te-below-1.5/planted-errors.out`: 35 of 35
       caught (the review's three, and plants for F1, F2, F4 with #10 and
       #7 as any wing, and F10; since the re-review, R1's three: the high
       end not widened, 8(a) #9 left out, #9 taken as wing 4; R2's three:
@@ -1352,7 +1398,8 @@ formed on two of them, and the shape widening's size on two of them.
       reason; R3's: the total's band text without the widening; and, after
       the quick look on ae4d478..1994584, the thick-layer reason dropped
       above 1.5, on a constant chord, which passed every test before, and
-      on a varying one). The
+      on a varying one; after the review of B1 on main, M3's: the layer
+      reach by the nodes' windows alone). The
       independent test recomputes the band above 1.5 at both ends from the
       four-way and three-way identity maps (each line's ratios, then the
       band at 81 Mach numbers from 1.5 to 1.9; R1).
@@ -1516,6 +1563,16 @@ formed on two of them, and the shape widening's size on two of them.
       served at 1.00 to 1.15 (to X 4.49) and again from 1.50, and refused
       between: the gap is where no set with a stated turbulent layer
       reaches them.
+    - _Reading errors (the review of B1 on main, M4; recorded
+      2026-10-28, nothing changed)._ Every reading of every point enters
+      the band, a bound as its range; the Cp_b reading error each reader
+      states for a row (2 sigma) is not carried, and the spread between
+      the readings stands in for it. Where one row sets an end, that
+      error lies outside the band: at the low end 0.505, set by RM A51J11
+      fig. 15's 2y/b 0.873 row (h/t 0.3, Mach 1.06; A -0.3704, B
+      -0.3707), the readers state 0.0029 and 0.0038, 0.8% and 1.0% of the
+      ratio, and 1.8% together (the pairing's tolerance); the review puts
+      a 2-sigma error there at about 1.5% of the ratio.
     - _The tip station (F7)._ The band's low end at Mach 1.00 to 1.10,
       0.505, is RM A51J11 fig. 15's outboard station, 2y/b 0.873, of the
       h/t 0.3 section at Mach 1.06, within 0.13 of the semispan from the

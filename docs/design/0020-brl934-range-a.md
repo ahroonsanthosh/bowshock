@@ -27,6 +27,17 @@ residuals +3.9% to +11.0% (mean +7.3%), tolerances -24.8% to -27.1% and
 rounds, for the Basic Finner's wedges, whose faces diverge to the trailing
 edge: it has no residual and does not pass.
 
+**After the run (2026-10-27, 0014 section 10.7 (ah)).** The compiled
+curve's band, 0.82 to 1.08 at this run, was widened to 0.77 to 1.17 by
+0008 section 3.3's rule applied to body-alone base pressures it had left
+out (0.77 to 1.18 until the third addendum to (ah) replaced faired
+readings of TR 1051 by blind readings of its symbols, then 0.77 to 1.13
+until round 20's blind readings of TN 2360 figs. 5 and 7, both
+2026-10-28): a band widened after this hold-out was used. No total or
+residual moves; the tolerances become -26.5% to -29.0% and +30.4% to
++31.0% (+30.7% to +31.4% with 1.18, +28.9% to +29.7% with 1.13), and the
+verdicts are unchanged. This record keeps the run's values.
+
 ## 1. What was run
 
 As 0014 section 10.7 (n) fixes it, before the run:

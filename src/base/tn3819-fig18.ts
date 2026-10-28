@@ -353,3 +353,221 @@ export const HERRIN_DUTTON = {
   pressureRatio: [0.553, 0.575] as const,
   readingError: 0.01,
 } as const;
+
+/** TR 1051 fig. 23(b) at one Mach number: its thinnest measured sting symbol, both blind readings. */
+export interface Tr1051Fig23bSymbol {
+  readonly mach: number;
+  /** Reynolds number on the body length and that length over the base diameter, from the figure's legend. */
+  readonly reynolds: number;
+  readonly lengthOverBase: number;
+  /** The symbol's d/h, readers A and B. */
+  readonly dOverH: readonly [number, number];
+  /** P_B, readers A and B, and each reader's stated error (one standard deviation). */
+  readonly readerA: number;
+  readonly readerB: number;
+  readonly errorA: number;
+  readonly errorB: number;
+}
+
+/**
+ * D. R. Chapman, NACA TR 1051 (1951), appendix B, fig. 23(b): turbulent base pressure against the sting's
+ * diameter over the base diameter, d/h, at each Mach number's thinnest measured sting symbol. Round 19
+ * (docs/research/total-drag/audit/round19/): two blind readers of every symbol of the figure, paired by a
+ * neutral party (15 of 15 symbols within the summed stated errors; the readers agree to within 0.0001 at
+ * the three symbols used, so the agreement mostly tests their calibrations); the symbol, not the faired curve,
+ * as the addendum to 0014 section 10.7 (ah) registers and its third addendum applies. The models (TR 1051, PDF pp. 12 and 21; its text and
+ * fig. 23(b)'s legend, which both readers quote): every body a cone-cylinder (10 deg semiangle) or an
+ * ogive-cylinder (10-calibre ogival radius), turbulent by a narrow transition strip, on a rear sting more
+ * than 4 base diameters long. Inside the compiled curve's domain, so band evidence (0008 section 3.3's rule,
+ * 0014 section 10.7 (ah)) as the plain envelope of the two readings; the thicker stings of the figure
+ * measure the sting effect itself (0008 section 3.3's last item) and are not used.
+ */
+export const TR1051_FIG23B_THINNEST: readonly Tr1051Fig23bSymbol[] = [
+  {
+    mach: 1.5,
+    reynolds: 4.0e6,
+    lengthOverBase: 7.0,
+    dOverH: [0.3467, 0.347],
+    readerA: -0.1722,
+    readerB: -0.1723,
+    errorA: 0.0003,
+    errorB: 0.0005,
+  },
+  {
+    mach: 2.0,
+    reynolds: 4.0e6,
+    lengthOverBase: 5.0,
+    dOverH: [0.2977, 0.298],
+    readerA: -0.138,
+    readerB: -0.1379,
+    errorA: 0.0005,
+    errorB: 0.0008,
+  },
+  {
+    mach: 2.9,
+    reynolds: 7.5e6,
+    lengthOverBase: 5.0,
+    dOverH: [0.2961, 0.296],
+    readerA: -0.1126,
+    readerB: -0.1127,
+    errorA: 0.0003,
+    errorB: 0.0005,
+  },
+];
+
+/**
+ * Superseded (the third addendum to 0014 section 10.7 (ah)), kept as the record: the values (ah) first used, read
+ * at d/h 0.35 on the faired curves (docs/research/total-drag/data/base_sources.md section 2: the first
+ * reading, revised, and the round-1 audit's, which had seen the draft's values). At Mach 2.0 and 2.9 the first
+ * measured symbols lie at d/h 0.30, so these are fairings, not data; at Mach 1.5 the symbol is at d/h 0.347,
+ * and round 19's blind pair reads it 0.002 to 0.004 less negative than these.
+ */
+export const TR1051_FIG23B_FAIRED_SUPERSEDED: readonly {
+  readonly mach: number;
+  readonly first: number;
+  readonly audit: number;
+}[] = [
+  { mach: 1.5, first: -0.174, audit: -0.176 },
+  { mach: 2.0, first: -0.141, audit: -0.147 },
+  { mach: 2.9, first: -0.115, audit: -0.118 },
+];
+
+/** TN 2360 fig. 5 or 7: one symbol of the body alone, every reading of both blind readers (round 20). */
+export interface Tn2360BodyAloneSymbol {
+  readonly figure: '5(a)' | '5(b)' | '7';
+  readonly mach: number;
+  /** Reynolds number on the body length, readers A and B (fig. 5's abscissa; fig. 7 gives none). */
+  readonly reynolds?: readonly [number, number];
+  /** P_B, every reading of each reader: the primary first, then the alternatives in the order written. */
+  readonly readingsA: readonly number[];
+  readonly readingsB: readonly number[];
+  /** Each reader's stated error (one standard deviation). */
+  readonly errorA: number;
+  readonly errorB: number;
+}
+
+/**
+ * NACA TN 2360 (Spahr and Dickey, 1951) figs. 5(a), 5(b) and 7: the body alone ("tail off", "without
+ * tail surface"), its nose tripped by a salt band "to insure local transition" (p. 5), at Mach 1.5 and
+ * 2.0. Round 20 (docs/research/total-drag/audit/round20/): two blind readers of every symbol of both
+ * figures, paired by a neutral party, 60 of 60 within the summed stated errors, these ten among them, no
+ * verdict changed by the alternatives. The pairer notes that both readers took nearly the same pixel
+ * positions on the same scan, so the agreement mostly tests their calibrations. Every tripped station is
+ * inside the compiled curve's domain (0014 section 10.7 (ah), the fourth addendum and its correction), so
+ * all ten enter as the plain envelope of their readings. Fig. 5(a)'s symbol at R 0.765e6 is partly hidden
+ * and carries alternatives in both readers; every reading is kept.
+ */
+export const TN2360_FIG5_FIG7_BODY_ALONE: readonly Tn2360BodyAloneSymbol[] = [
+  {
+    figure: '5(a)',
+    mach: 1.5,
+    reynolds: [0.765e6, 0.764e6],
+    readingsA: [-0.2021, -0.2023, -0.2018],
+    readingsB: [-0.2026, -0.2023],
+    errorA: 0.0007,
+    errorB: 0.001,
+  },
+  {
+    figure: '5(a)',
+    mach: 1.5,
+    reynolds: [1.954e6, 1.951e6],
+    readingsA: [-0.1962],
+    readingsB: [-0.1961],
+    errorA: 0.0006,
+    errorB: 0.0005,
+  },
+  {
+    figure: '5(a)',
+    mach: 1.5,
+    reynolds: [3.263e6, 3.262e6],
+    readingsA: [-0.1955],
+    readingsB: [-0.1953],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+  {
+    figure: '5(a)',
+    mach: 1.5,
+    reynolds: [4.414e6, 4.415e6],
+    readingsA: [-0.1966],
+    readingsB: [-0.1968],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+  {
+    figure: '5(b)',
+    mach: 2.0,
+    reynolds: [0.475e6, 0.475e6],
+    readingsA: [-0.1486],
+    readingsB: [-0.1487],
+    errorA: 0.0005,
+    errorB: 0.0005,
+  },
+  {
+    figure: '5(b)',
+    mach: 2.0,
+    reynolds: [1.832e6, 1.833e6],
+    readingsA: [-0.1475],
+    readingsB: [-0.1473],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+  {
+    figure: '5(b)',
+    mach: 2.0,
+    reynolds: [3.308e6, 3.308e6],
+    readingsA: [-0.1492],
+    readingsB: [-0.1493],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+  {
+    figure: '5(b)',
+    mach: 2.0,
+    reynolds: [4.431e6, 4.429e6],
+    readingsA: [-0.1512],
+    readingsB: [-0.1516],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+  {
+    figure: '7',
+    mach: 1.5,
+    readingsA: [-0.1951],
+    readingsB: [-0.1949],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+  {
+    figure: '7',
+    mach: 2.0,
+    readingsA: [-0.1508],
+    readingsB: [-0.1511],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+];
+
+/**
+ * Superseded by round 20 (0014 section 10.7 (ah), the fourth addendum and its correction), kept as the
+ * record: round 6's single readings of the same ten symbols (`audit/round6/readings/tn2360_fig5a.csv`,
+ * `tn2360_fig5b.csv`, `tn2360_fig7.csv`), which (ah) listed as checked and not used. Reynolds number in
+ * units of 1e6 as read (fig. 7 gives none).
+ */
+export const TN2360_FIG5_FIG7_ROUND6_SUPERSEDED: readonly {
+  readonly figure: '5(a)' | '5(b)' | '7';
+  readonly mach: number;
+  readonly reynolds?: number;
+  readonly pB: number;
+}[] = [
+  { figure: '5(a)', mach: 1.5, reynolds: 0.7613, pB: -0.2031 },
+  { figure: '5(a)', mach: 1.5, reynolds: 1.951, pB: -0.1964 },
+  { figure: '5(a)', mach: 1.5, reynolds: 3.262, pB: -0.1953 },
+  { figure: '5(a)', mach: 1.5, reynolds: 4.415, pB: -0.1964 },
+  { figure: '5(b)', mach: 2.0, reynolds: 0.4781, pB: -0.1506 },
+  { figure: '5(b)', mach: 2.0, reynolds: 1.853, pB: -0.1477 },
+  { figure: '5(b)', mach: 2.0, reynolds: 3.306, pB: -0.15 },
+  { figure: '5(b)', mach: 2.0, reynolds: 4.423, pB: -0.1511 },
+  { figure: '7', mach: 1.5, pB: -0.1947 },
+  { figure: '7', mach: 2.0, pB: -0.1506 },
+];

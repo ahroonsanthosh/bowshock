@@ -402,6 +402,11 @@ export interface TransonicTrailingEdge {
   envelope(mach: number): { readonly low: number; readonly high: number };
   /** The nodes either side of M. */
   bracket(mach: number): readonly [TransonicNode, TransonicNode];
+  /**
+   * The largest layer parameter served at M (item 7): the lesser of the two bracketing nodes'
+   * reaches and the greatest X of the series whose own points' Mach intervals contain M.
+   */
+  layerReach(mach: number): number;
 }
 
 /**
@@ -508,6 +513,29 @@ export function buildTransonicTrailingEdge(
     while (k + 2 < nodes.length && mach > nodes[k + 1]!.mach) k++;
     return [nodes[k]!, nodes[k + 1]!];
   };
+  // Each series with a stated layer (a set's reading and series, at the least X of its test) over
+  // its points' Mach intervals, from its lowest point's to its highest point's, every point of
+  // the series counted, those above 1.5 too (item 7, narrowed 2026-10-28): no X is served beyond
+  // the Mach range that measured it.
+  const spans = new Map<string, { x: number; lo: number; hi: number }>();
+  for (const p of evidence) {
+    const x = p.properties.layer?.[0];
+    if (x === undefined) continue;
+    const key = `${p.set}|${p.reading}|${p.series}`;
+    const s = spans.get(key);
+    spans.set(key, {
+      x,
+      lo: Math.min(s?.lo ?? Infinity, p.machLow),
+      hi: Math.max(s?.hi ?? -Infinity, p.machHigh),
+    });
+  }
+  const layerReach = (mach: number) => {
+    const [a, b] = bracket(mach);
+    const measured = [...spans.values()]
+      .filter((s) => mach >= s.lo - 1e-12 && mach <= s.hi + 1e-12)
+      .map((s) => s.x);
+    return Math.min(a.layerReached, b.layerReached, Math.max(0, ...measured));
+  };
   const envelope = (mach: number) => {
     const [a, b] = bracket(mach);
     const t = (mach - a.mach) / (b.mach - a.mach);
@@ -524,5 +552,6 @@ export function buildTransonicTrailingEdge(
     nominal,
     envelope,
     bracket,
+    layerReach,
   };
 }

@@ -507,6 +507,69 @@ export const L52J21A_FIG31_33D: readonly Fig31To33Point[] = [
 ];
 
 /**
+ * RM L52J21a figs. 31 to 33 panel (d), as L52J21A_FIG31_33D, at the Reynolds numbers outside its window
+ * (0.6e6 about fig. 8's R = 8.06e6, which is W1's rule for pairing the finned and unfinned bodies, not a
+ * limit of the compiled curve's domain): every symbol read twice at R 7.0e6 to 7.5e6 and 8.7e6 to 9.1e6,
+ * fourteen pairs, each within its combined reading error (w1_round7_pairing_output.txt). W1's zero member
+ * does not use them; the compiled curve's band does (0014 section 10.7 (ah), the review of 2026-10-27).
+ * Left out: round 7's second square outline at M 1.93, R 7.33e6 (32-SB), read once, and the first
+ * reading's "radome" at M 2.41, R 7.54e6, which round 7 shows to be the conical square 33-SD (paired in
+ * L52J21A_FIG31_33D). Round 7's symbols, in order: 31-S2, 31-T1, 31-C1, 31-C3, 32-SA, 32-S3, 32-T1, 32-T3,
+ * 32-C1, 32-C3, 33-SB, 33-TA, 33-TC, 33-C1.
+ */
+export const L52J21A_FIG31_33D_OTHER_R: readonly Fig31To33Point[] = [
+  { reading: 'w1 first', mach: 1.62, nose: 'conical', reynolds: 8.77e6, pB: -0.1477, error: 0.002 },
+  { reading: 'w1 first', mach: 1.62, nose: 'ogive', reynolds: 7.23e6, pB: -0.149, error: 0.002 },
+  { reading: 'w1 first', mach: 1.62, nose: 'radome', reynolds: 7.14e6, pB: -0.135, error: 0.002 },
+  { reading: 'w1 first', mach: 1.62, nose: 'radome', reynolds: 8.87e6, pB: -0.1345, error: 0.002 },
+  { reading: 'w1 first', mach: 1.93, nose: 'conical', reynolds: 7.29e6, pB: -0.1486, error: 0.002 },
+  { reading: 'w1 first', mach: 1.93, nose: 'conical', reynolds: 9.03e6, pB: -0.1513, error: 0.002 },
+  { reading: 'w1 first', mach: 1.93, nose: 'ogive', reynolds: 7.23e6, pB: -0.1525, error: 0.002 },
+  { reading: 'w1 first', mach: 1.93, nose: 'ogive', reynolds: 8.92e6, pB: -0.1479, error: 0.002 },
+  { reading: 'w1 first', mach: 1.93, nose: 'radome', reynolds: 7.34e6, pB: -0.1379, error: 0.002 },
+  { reading: 'w1 first', mach: 1.93, nose: 'radome', reynolds: 9.1e6, pB: -0.1401, error: 0.002 },
+  { reading: 'w1 first', mach: 2.41, nose: 'conical', reynolds: 7.13e6, pB: -0.1172, error: 0.002 },
+  { reading: 'w1 first', mach: 2.41, nose: 'ogive', reynolds: 7.09e6, pB: -0.1239, error: 0.002 },
+  { reading: 'w1 first', mach: 2.41, nose: 'ogive', reynolds: 7.45e6, pB: -0.1222, error: 0.002 },
+  { reading: 'w1 first', mach: 2.41, nose: 'radome', reynolds: 7.29e6, pB: -0.114, error: 0.002 },
+  {
+    reading: 'round 7',
+    mach: 1.62,
+    nose: 'conical',
+    reynolds: 8.799e6,
+    pB: -0.1481,
+    error: 0.0002,
+  },
+  { reading: 'round 7', mach: 1.62, nose: 'ogive', reynolds: 7.218e6, pB: -0.1488, error: 0.0008 },
+  { reading: 'round 7', mach: 1.62, nose: 'radome', reynolds: 7.089e6, pB: -0.135, error: 0.0002 },
+  { reading: 'round 7', mach: 1.62, nose: 'radome', reynolds: 8.897e6, pB: -0.1337, error: 0.0002 },
+  { reading: 'round 7', mach: 1.93, nose: 'conical', reynolds: 7.33e6, pB: -0.1508, error: 0.0005 },
+  {
+    reading: 'round 7',
+    mach: 1.93,
+    nose: 'conical',
+    reynolds: 9.034e6,
+    pB: -0.1508,
+    error: 0.0005,
+  },
+  { reading: 'round 7', mach: 1.93, nose: 'ogive', reynolds: 7.226e6, pB: -0.1519, error: 0.0008 },
+  { reading: 'round 7', mach: 1.93, nose: 'ogive', reynolds: 8.932e6, pB: -0.1481, error: 0.0008 },
+  { reading: 'round 7', mach: 1.93, nose: 'radome', reynolds: 7.373e6, pB: -0.1391, error: 0.0005 },
+  { reading: 'round 7', mach: 1.93, nose: 'radome', reynolds: 9.06e6, pB: -0.1406, error: 0.0005 },
+  {
+    reading: 'round 7',
+    mach: 2.41,
+    nose: 'conical',
+    reynolds: 7.039e6,
+    pB: -0.1194,
+    error: 0.0008,
+  },
+  { reading: 'round 7', mach: 2.41, nose: 'ogive', reynolds: 7.112e6, pB: -0.123, error: 0.0008 },
+  { reading: 'round 7', mach: 2.41, nose: 'ogive', reynolds: 7.46e6, pB: -0.1219, error: 0.0009 },
+  { reading: 'round 7', mach: 2.41, nose: 'radome', reynolds: 7.295e6, pB: -0.1143, error: 0.0002 },
+];
+
+/**
  * NACA RM L52E06 (Hart 1952) fig. 7: rim and centre P_B of the PARD body
  * without fins (A) and with four 0.091 in flat-plate fins with square
  * trailing edges at the base (C), in free flight, to M 1.10 (C's lines end

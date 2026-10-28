@@ -12,8 +12,9 @@
  * F = 1 without fins near the base. The band adds linearly, as 0008
  * section 6.3 requires:
  *
- * - the compiled curve's band, measured over curve 0.82 to 1.08, on the
- *   term with the nominal F;
+ * - the compiled curve's band, measured over curve 0.77 to 1.17 (0014
+ *   section 10.7 (ah) and its addenda, rounds 19 and 20; 0.82 to 1.08
+ *   before (ah)), on the term with the nominal F;
  * - the interpolation-error bound of the curve, times F and the area ratio;
  * - the fins-on-base band, (F_low - F) and (F_high - F) times -P_B and the
  *   area ratio. Above M 2.56, where TN 3819 fig. 35's free-flight curve
@@ -39,15 +40,16 @@
  * fins (plates), which the present factor is not measured on, when the fins'
  * section and sweeps are given (`nearBase`); otherwise the present refusal
  * stands. Below Mach 1.5 the rebuilt factor's members built on fig. 35's
- * free-flight line apply to the curve itself, not on top of W2's 1.065
+ * free-flight line apply to the curve itself, not on top of W2's midpoint
  * (0015 section 11.2). This routing holds until the owner decides otherwise
  * after BRL 934's run.
  *
  * The vacuum bound (./vacuum.ts): the term and its band's ends are each at
  * most 2 / (gamma M^2) times the area ratio, clamped there (`vacuumClamped`
  * lists what was; the parts are reported unclamped). Over M 1.5 to 3.0 no
- * value reaches it (the band's high end is at most 0.8840 of it, at M 3.0
- * with fins at the base; 0.656 without fins); the clamp is a guard.
+ * value reaches it (the band's high end is at most 0.9486 of it, at M 3.0
+ * with fins at the base; 0.711 without fins; 0.8840 and 0.656 before 0014
+ * section 10.7 (ah)); the clamp is a guard.
  *
  * Blunt fin trailing edges are a further base, ./fin-trailing-edge.ts.
  */
@@ -61,8 +63,10 @@ import { W2_BAND, W2_LABEL, W2_MACH_RANGE, w2CurveBasePressure } from './base-w2
 import { finsOnBaseFactor, type FinsAtBase, type FinsOnBaseFactor } from './fins-on-base';
 import {
   finsOnBaseFactorW1,
+  flatPlateSweepNarrowing,
   nearBasePositionReasons,
   nearBasePositionRefusal,
+  W1_SWEEP_REFUSED_TOO,
   trailingEdgeShape,
   type FinsNearBase,
   type FinsOnBaseFactorW1,
@@ -71,9 +75,10 @@ import { BaseRefusal } from './refusal';
 import { vacuumBaseDrag } from './vacuum';
 
 export const COMPILED_CURVE_LABEL =
-  'correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 ' +
-  'measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in ' +
-  'the total';
+  'correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band ' +
+  `${COMPILED_CURVE_BAND.low.toFixed(2)} to ${COMPILED_CURVE_BAND.high.toFixed(2)} measured over curve, ` +
+  'set on every body-alone base pressure read twice in its domain (0008 section 3.3, 0014 section ' +
+  '10.7 (ah)), tested only in the total';
 
 export interface BaseFins extends FinsAtBase {
   /** Distance of the fins' trailing edges ahead of the base, in root chords (0: at the base). */
@@ -267,9 +272,9 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
     if (!(x >= 0 && Number.isFinite(x))) {
       throw new BaseRefusal('input', `the fins' trailing edges must lie at or ahead of the base`);
     }
-    // Below M 1.5 the served body base is W2's, the curve times its band's midpoint (1.065), a free-flight
+    // Below M 1.5 the served body base is W2's, the curve times its band's midpoint (1.04), a free-flight
     // correction. The rebuilt factor's members built on fig. 35's free-flight line are already free-flight
-    // values over the curve itself, so they apply to the curve at nominal 1, not on top of W2's 1.065
+    // values over the curve itself, so they apply to the curve at nominal 1, not on top of W2's midpoint
     // (0015 section 11.2); the zero member and the flat plates' relief, ratios to the body without fins,
     // apply to W2's term as it is.
     const onW2Curve = (w: FinsOnBaseFactorW1): FinsOnBaseFactorW1 => {
@@ -294,7 +299,7 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
           `${w.label}; below M 1.5 the members built on TN 3819 fig. 35's free-flight line apply to Love's ` +
           `curve itself, not to W2's body base ${curveRange.nominal.toFixed(3)} times it, so the factor is ` +
           `stated on W2's term (those members over ${curveRange.nominal.toFixed(3)}); at M 1.5 the term ` +
-          "steps where W2's 1.065 ends (0015 section 11.2)",
+          `steps where W2's ${curveRange.nominal.toFixed(3)} ends (0015 section 11.2)`,
       };
     };
     // A trailing edge that nothing measures ahead of the base (0015 section 4): a plate's rounded one, or a
@@ -303,6 +308,14 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
       if (fins.nearBase === undefined) return fins.flatFaced === true ? ROUNDED_EDGE_NOTE : '';
       const te = trailingEdgeShape(fins.nearBase.section);
       return te === 'diverging' || te === 'converging-blunt' ? BLUNT_EDGE_NOTE : '';
+    };
+    // A flat plate whose sweep is refused below Mach 1.62 (0014 section 10.7 (z), the note of 2026-10-27): named
+    // with any refusal of its position, so that the advice for the position, the fins at the base, does not
+    // lead into the sweep's refusal.
+    const sweepNote = (): string => {
+      const sweep =
+        fins.nearBase === undefined ? undefined : flatPlateSweepNarrowing(mach, fins.nearBase);
+      return sweep === undefined ? '' : `${W1_SWEEP_REFUSED_TOO}${sweep}`;
     };
     const rebuilt = (): FinsOnBaseFactorW1 => {
       const near = fins.nearBase;
@@ -341,8 +354,9 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
       }
       // Then the position: where TN 2360 measured none, no section serves the fins, so it is named before
       // any refusal of their section, sweep, count or thickness, whose words would lead to a change still
-      // refused there (0014 section 10.7 (ad), 2026-10-27; 0015 section 3.3).
-      const position = nearBasePositionRefusal(mach, x, fins.rootChordOverDiameter);
+      // refused there (0014 section 10.7 (ad), 2026-10-27; 0015 section 3.3), with the sweep's refusal where a
+      // plate's sweep is refused too (sweepNote).
+      const position = nearBasePositionRefusal(mach, x, fins.rootChordOverDiameter, sweepNote());
       if (position !== undefined) throw position;
       if (near === undefined) {
         throw (
@@ -439,7 +453,8 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
           'base drag with fins that far ahead (TN 2360 measures up to one chord ahead, with a root chord ' +
           'of 1.5 body diameters, at Mach 1.5 and 2.0), so they are refused; until 2026-10-27 they took ' +
           "the plain curve, whose band missed TN 2360's measurement a chord ahead (0015 section 3.3)" +
-          edgeNote(),
+          edgeNote() +
+          sweepNote(),
       );
     }
   }

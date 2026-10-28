@@ -14,7 +14,7 @@
  * | fin wave drag | exact 2D section drag times the linear 3D ratio (src/fins, 0009); with a rounded leading edge, the faces of the tangent geometry on their own rise | the same, plus the quadrature error | as above |
  * | fin leading edges | rounded, unswept: modified-Newtonian front side (src/fins/rounded-leading-edge.ts) | 0.99 to 1.06 (TN 2960), +-3% more where extrapolated in Reynolds number | an analogy, not a measurement |
  * | fin leading edges, rounded, swept 60 to 75.1 deg | the midpoint between the term at the sweep and at 60 deg (0016 sections 21.2 and 21.8; beyond 75.1 deg refused) | the whole gap between the bounds | bounded, not measured; the total's claim names it (`bounded`) |
- * | body base | compiled curve times the fins-on-base factor (src/base): the present factor wherever it serves (the Basic Finner's class keeps it), the rebuilt factor of 0015 only where the present one refuses | curve 0.82 to 1.08, interpolation, fins-on-base band | correlation; the present factor measured on circular-arc fins, an analogy for others; the rebuilt factor estimated on component data, bracketed |
+ * | body base | compiled curve times the fins-on-base factor (src/base): the present factor wherever it serves (the Basic Finner's class keeps it), the rebuilt factor of 0015 only where the present one refuses | curve 0.77 to 1.17 (0014 section 10.7 (ah)), interpolation, fins-on-base band | correlation; the present factor measured on circular-arc fins, an analogy for others; the rebuilt factor estimated on component data, bracketed |
  * | fin trailing-edge base | blunt, unswept, turbulent: two-dimensional base pressure at the free-stream Mach number (src/base/fin-trailing-edge.ts) | 0.93 to 1.21 | an analogy, not a measurement, for edges in the base plane |
  *
  * Friction is at free-stream edge conditions, turbulent from the tip and
@@ -484,7 +484,7 @@ export function finnedBodyComponents(
       band:
         (base.curveBand.source === 'w2'
           ? `curve ${base.curveBand.low.toFixed(2)} to ${base.curveBand.high.toFixed(2)} below Mach 1.5 (0015 section 11), interpolation, `
-          : 'curve 0.82 to 1.08 (0008 section 3.3), interpolation, ') +
+          : `curve ${base.curveBand.low.toFixed(2)} to ${base.curveBand.high.toFixed(2)} (0008 section 3.3), interpolation, `) +
         (base.finsOnBaseSource === 'rebuilt'
           ? "the rebuilt fins-on-base factor's band (0015)"
           : 'fins-on-base band (section 3.4)'),
@@ -703,9 +703,11 @@ export const SQUARE_EDGE_REFUSAL =
   "twice and paired, then bore out the bounds' premises, not the bounds (0014 section 10.7 " +
   '(af)): on all four sets every face orifice that was given a value lay above the sonic ' +
   "pressure (six marks on TN 4300's figures were given none), and on RM L57C18, the one set " +
-  'that tests it, below the pitot pressure. They did so only at Reynolds numbers on the ' +
-  "face's height of 3.85 to 4.32 million, under the definition pinned for them; a model rocket " +
-  "fin's, on its thickness, lies far below that (in the refusal audit's population, 290,000 at " +
+  'that tests it, below the pitot pressure. Under the definition pinned for them, they did so ' +
+  "at Reynolds numbers on the face's height of 3.85 to 4.32 million (RM L57C18); TM X-19 and " +
+  'TN D-5392 bore the premises out too, at 0.90 and 1.88 million on their diameters, but on a ' +
+  "basis the readers did not record, so neither counts. A model rocket fin's, on its " +
+  "thickness, lies far below all of these (in the refusal audit's population, 290,000 at " +
   'most), so the edge stays refused (0016 section 21.6)';
 
 /**

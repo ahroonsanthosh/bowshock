@@ -113,6 +113,11 @@ MUTATIONS = [
      'src/base/fin-trailing-edge.ts',
      '  } else reasons.push(...thickLayerReasons(basis.kMach, stations.map(parameter)));',
      '  } else void thickLayerReasons;'),
+    # The review of B1 on main (M3): the layer reach over each series' own Mach intervals.
+    ("M3: the layer reach by the nodes' windows alone (the old rule, RM A51J11's X to the node at 1.15)",
+     'src/base/fin-te-transonic.ts',
+     'return Math.min(a.layerReached, b.layerReached, Math.max(0, ...measured));',
+     'return Math.min(a.layerReached, b.layerReached);'),
     # R3: the band text above 1.5 in the total.
     ("R3: the total's band text above 1.5 without the widening", 'src/total/finned-body.ts',
      ': widenedAbove(trailingEdgeBasis(conditions.mach).band)', ': false && widenedAbove(trailingEdgeBasis(conditions.mach).band)',
