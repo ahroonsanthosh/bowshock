@@ -3103,6 +3103,21 @@ only where the binding station is an edge or a bevel's end. The
 population and the advice replay are byte for byte as before (184 of
 8000 totals).
 
+**2026-10-28, the quick look of 0e56581 (NOT PASS, narrowly), fixed.** The
+shape's words offered "or longer bevels" for every section with bevels,
+but thicker than 10% no bevel length serves a section (the longest, a
+double wedge, needs an arc of its own t/c): a hexagonal section 12% thick
+with bevels over 20%, 40% or 49% of the chord, and 10.5% thick with
+bevels over 49%, was offered bevels that are refused again. Now longer
+bevels are offered only at most 10% thick, with the least length that
+serves: a bevel of length b reaches the 10% arc where t / (4 b (1 - b)) =
+0.10, so bevels each at least (1 - sqrt(1 - t / 0.10)) / 2 of the chord
+serve, rounded up to 0.1% (8% thick: 27.7%; served at it and at the
+longest, refused at 27.6%). 0017's row and note follow. The symmetric
+hexagon's test accepts either bevel junction as its binding station, the
+two tying. Population and advice replay byte for byte as before (184 of
+8000 totals).
+
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that
 registry, its content unchanged by the relabelling.

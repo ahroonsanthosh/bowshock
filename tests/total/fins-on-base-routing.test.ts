@@ -22,6 +22,7 @@ import { COMPILED_CURVE_BAND, compiledCurveBasePressure } from '../../src/base/c
 import { finsOnBaseFactor } from '../../src/base/fins-on-base';
 import {
   aheadText,
+  bevelsNeeded,
   hasBevels,
   shapeLimit,
   W1_FLAT_RELIEF_LOW,
@@ -874,7 +875,8 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
     expect(three.endedBy).toBe('served');
     expect(parts(rocket(3, hexagonal(0.064, 0.2, 0.2), 0, 2, 0), 1.8).base).toBeDefined();
     expect(refusalWords(three).change).toBe(
-      "the fins' trailing edges at the base; and fins at most 6.4% thick with this section, or longer bevels",
+      "the fins' trailing edges at the base; and fins at most 6.4% thick with this section, or longer " +
+        'bevels, each over at least 27.7% of the chord',
     );
   });
 
@@ -932,7 +934,10 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
     // A hexagonal section: its binding station is where a bevel meets the flat middle (checked by
     // sectionBracket, not assumed).
     const hex = hexagonal(0.08, 0.2, 0.2);
-    expect(sectionBracket(hex).binding).toEqual({ kind: 'interior', s: 0.8 });
+    // Either junction: the symmetric section ties there, and which one is found rests on rounding.
+    const binding = sectionBracket(hex).binding;
+    expect(binding.kind).toBe('interior');
+    expect([0.2, 0.8].some((s) => Math.abs(binding.s - s) < 1e-9)).toBe(true);
     const h = baseRefusalAt(rocket(3, hex, 0, 2, 0), 2.0);
     expect(h.message).toContain(
       `${W1_OUTSIDE_AT}where a bevel meets its flat middle, the bevel too steep for its thickness, so `,
@@ -941,7 +946,7 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
       /this section reaches outside it where a bevel meets its flat middle, the bevel too steep for its thickness$/,
     );
     expect(refusalWords(h).change).toBe(
-      'fins at most 6.4% thick with this section, or longer bevels',
+      'fins at most 6.4% thick with this section, or longer bevels, each over at least 27.7% of the chord',
     );
     // A section whose edge sets it: a steep lip at the leading edge.
     const lip: SymmetricSection = { x: [0, 1e-4, 0.5, 1], halfThickness: [0, 0.002, 0.05, 0] };
@@ -962,6 +967,44 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
     expect(message).toContain(
       `${W1_OUTSIDE_AT}at its leading edge, where its faces are steeper than the arc's, so `,
     );
+  });
+
+  it('longer bevels offered only where they can serve: at most 10% thick, with the least length; thicker, not at all (the quick look of 0e56581)', () => {
+    const at = (t: number, bevel: number) =>
+      baseRefusalAt(rocket(4, hexagonal(t, bevel, bevel), 0, 2, 0), 1.7);
+    // Thicker than 10%: no bevel length serves (the longest, a double wedge, needs an arc of its own t/c).
+    for (const [t, bevel] of [
+      [0.12, 0.2],
+      [0.12, 0.4],
+      [0.12, 0.49],
+      [0.105, 0.49],
+    ] as const) {
+      const r = at(t, bevel);
+      const what = `t/c ${t}, bevels ${bevel}`;
+      expect(r.message, what).toContain(W1_SECTION_SHAPE_MARK);
+      expect(r.message, what).not.toContain(W1_LONGER_BEVELS);
+      expect(refusalWords(r).change, what).toMatch(
+        /^fins at most [\d.]+% thick with this section$/,
+      );
+      expect(r.endedBy, what).toBe('served');
+    }
+    // 8% thick, bevels over 20%: offered, with the least length, 27.7%; following it, or taking the longest
+    // bevels, is served.
+    const r = at(0.08, 0.2);
+    expect(refusalWords(r).change).toBe(
+      'fins at most 6.4% thick with this section, or longer bevels, each over at least 27.7% of the chord',
+    );
+    expect(bevelsNeeded(0.08)).toBe(0.277);
+    for (const bevel of [0.277, 0.3, 0.49]) {
+      expect(
+        parts(rocket(4, hexagonal(0.08, bevel, bevel), 0, 2, 0), 1.7).base,
+        `bevels ${bevel}`,
+      ).toBeDefined();
+    }
+    // Just short of it: refused.
+    expect(at(0.08, 0.276).reason).toBe('fin-thickness');
+    // At 10% thick the least length is half the chord, a double wedge: still served.
+    expect(bevelsNeeded(0.1)).toBe(0.5);
   });
 
   it('the limit stated for a shape is rounded down: at it served, 0.1% of the chord above it refused (the re-check of 174490b)', () => {

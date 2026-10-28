@@ -525,9 +525,11 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
       'fin-thickness',
       `this section, t/c 0.080, ${W1_SECTION_SHAPE_MARK} (it would need an arc of t/c 0.125): its faces ` +
         `there are steeper than the arc's, so ${W1_SECTION_SHAPE_LIMIT} 0.064, thinner in proportion, ` +
-        W1_LONGER_BEVELS,
+        `${W1_LONGER_BEVELS}, each over at least 27.7% of the chord`,
     );
-    expect(shape).toBe('fins at most 6.4% thick with this section, or longer bevels');
+    expect(shape).toBe(
+      'fins at most 6.4% thick with this section, or longer bevels, each over at least 27.7% of the chord',
+    );
     // The row's reason: the page's words without the station, which the message names.
     const shapeWords = refusalWords({
       component: 'body base',
@@ -547,7 +549,7 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     expect(rowReason).not.toMatch(/faces near the edges are steeper/);
     expect(change("`fin-thickness` (the section's shape)")).toBe(
       'fins at most N% thick with this section (N from the message: 6.4% for bevels over a fifth of the ' +
-        'chord), or longer bevels where it has them',
+        'chord), or, at most 10% thick, longer bevels each over at least the length the message gives',
     );
     // A trailing edge refused near the base: square or sharp for a plate's rounded one, sharp for a wedge's
     // blunt one, the fins at the base, as the page words them.

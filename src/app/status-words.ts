@@ -425,7 +425,10 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
         at < 0
           ? undefined
           : r.message.slice(at + W1_OUTSIDE_AT.length).split(`, so ${W1_SECTION_SHAPE_LIMIT}`)[0];
-      const bevels = r.message.includes(W1_LONGER_BEVELS);
+      // The bevels' change only where the factor offers it (at most 10% thick), with its least length.
+      const bevels = new RegExp(
+        `${W1_LONGER_BEVELS}, each over at least ([\\d.]+)% of the chord`,
+      ).exec(r.message);
       return {
         reason:
           'with fins at or near the base, the base drag is measured only for sections that lie inside a ' +
@@ -433,7 +436,9 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
           (where === undefined ? '' : ` ${where}`),
         change:
           (pct === undefined ? 'thinner fins' : `fins at most ${pct} thick with this section`) +
-          (bevels ? ', or longer bevels' : ''),
+          (bevels === null
+            ? ''
+            : `, or longer bevels, each over at least ${bevels[1]!}% of the chord`),
       };
     }
     return {

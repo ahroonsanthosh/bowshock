@@ -757,8 +757,20 @@ export const W1_SECTION_SHAPE_MARK = 'does not lie inside the 10%-thick circular
 /** In that refusal, the words before where the section reaches outside the arc (outsideWhere). */
 export const W1_OUTSIDE_AT = 'it reaches outside the arc ';
 
-/** In that refusal, where the section has bevels (a flat middle between them): their change, named. */
+/**
+ * In that refusal, the bevels' change, offered only where it can serve: where the section has bevels (a flat
+ * middle between them) and is at most 10% thick. A bevel of length b (a fraction of the chord) ending at the flat
+ * middle reaches the 10% arc where t / (4 b (1 - b)) = 0.10, so at t/c 0.10 or less bevels each at least
+ * b* = (1 - sqrt(1 - t / 0.10)) / 2 long serve it (8% thick: 27.7% of the chord; bevels over 28% are served);
+ * thicker than 10%, no bevel length serves (the longest, a double wedge, needs an arc of its own t/c), so it is
+ * not offered (the quick look of 0e56581).
+ */
 export const W1_LONGER_BEVELS = 'or with longer bevels';
+
+/** The least bevel length, a fraction of the chord rounded up to 0.1%, at which a t/c of at most 0.10 is served. */
+export function bevelsNeeded(thickness: number): number {
+  return Math.ceil(1000 * ((1 - Math.sqrt(Math.max(0, 1 - thickness / 0.1))) / 2) - 1e-9) / 1000;
+}
 
 /**
  * Whether a section has separate bevels: its greatest half-thickness held over a stretch of the chord (a flat
@@ -1227,7 +1239,10 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
           : `this section, ${tcText(thickness)}, ${W1_SECTION_SHAPE_MARK} (it would need an arc of t/c ` +
             `${tr.tauEq.toFixed(3)}): ${W1_OUTSIDE_AT}${outsideAt()}, so ${W1_SECTION_SHAPE_LIMIT} ` +
             `${shapeLimit(thickness, tr.tauEq).toFixed(3)}, thinner in proportion` +
-            (stations.some(hasBevels) ? `, ${W1_LONGER_BEVELS}` : '') +
+            (stations.some(hasBevels) && thickness <= 0.1 + 1e-9
+              ? `, ${W1_LONGER_BEVELS}, each over at least ` +
+                `${(100 * bevelsNeeded(thickness)).toFixed(1)}% of the chord`
+              : '') +
             '; fins reaching outside it at or near the base are not measured (TN 2360, TN 3819 fig. 33)',
     );
   }
