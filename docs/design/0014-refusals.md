@@ -2008,6 +2008,20 @@ on 1,200 of 1,200; the reflected-wave split (`out/reflected-split.out`)
 is unchanged; the counts by section and by what else refuses are from a
 probe of the same cases, not committed.
 
+_2026-10-28, later, the ruling on (3)'s reading, under 10.2, written
+before the code:_ the strict reading. The plates' floor is RM L52E06's
+relief, measured only with the trailing edge unswept; the RM-10 is a
+sharp section and does not bracket plates; and 0015 section 12's
+argument does not cover a square edge carried out of one plane parallel
+to the base. So a plate with the trailing edge swept, aft or forward, is
+refused at the base and within a chord, the words naming why. This
+replaces (3)'s service of plates swept aft; what RM L52E06 and RM E50D28
+state stays recorded. Sharp sections with the RM-10's 60 deg aft
+trailing edge stay refused as they are; opening the RM-10's measured
+case would need its own registered procedure (readings, pairing,
+domain), recorded in 0015 section 3.4 as a possible later item. No total
+is expected to move; the run is recorded below when made.
+
 **2026-10-26 (ac): RM A51J11 and RM A52E01, named before they are opened,
 for F4's thin trailing edges and thick layers below Mach 1.5** (rule 2 of
 10.1, as (k); 0019 section 3.4, "Layers and h/c"). Neither has been

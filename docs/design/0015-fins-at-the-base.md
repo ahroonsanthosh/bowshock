@@ -94,13 +94,14 @@ of 0014 section 10.1 cover:
   have served them; 0014 section 10.7, amendment i), the same counts and
   positions, swept also below Mach 1.5, and since 2026-10-26 at every
   leading-edge sweep when the trailing edge is unswept (section 12; with
-  the trailing edge swept, the sweeps of section 3.4, and since
-  2026-10-28 swept aft only; narrowed since 2026-10-27, below Mach 1.62,
-  to the unswept plate and 45 to 60 deg, and since 2026-10-28, beyond 60
-  deg, to where M cos L, the leading edge's normal Mach number, is at
-  least 1): "bounded, not measured" (0014 section 10.2), between the
-  lowest relief measured with such fins and the circular-arc member at
-  least as thick (section 4).
+  the trailing edge swept, the sweeps of section 3.4 until 2026-10-28,
+  when a swept trailing edge on a plate was refused, the floor being
+  measured only with it unswept; narrowed since 2026-10-27, below Mach
+  1.62, to the unswept plate and 45 to 60 deg, and since 2026-10-28,
+  beyond 60 deg, to where M cos L, the leading edge's normal Mach
+  number, is at least 1): "bounded, not measured" (0014 section 10.2),
+  between the lowest relief measured with such fins and the circular-arc
+  member at least as thick (section 4).
 - **The body base below Mach 1.5** (W2, section 11): Love's curve
   continued to Mach 1.0 with a band of 0.77 to 1.31 (0.82 to 1.31 before
   0014 section 10.7 (ah)) set on free-flight data, the nominal at its
@@ -113,8 +114,8 @@ of 0014 section 10.1 cover:
   Basic Finner's wedges among them), thicker sections, sweeps not
   measured (sharp sections with the trailing edge swept aft within 0.9
   root chords of the base, or swept forward anywhere; sharp sections 0 to 45 deg below Mach 2.0 or above 60 deg; swept sharp sections
-  below 1.5; plates with a swept trailing edge outside 45 to 60 deg, and
-  since 2026-10-28 with one swept forward; plates with the trailing edge
+  below 1.5; plates with a swept trailing edge (outside 45 to 60 deg
+  until 2026-10-28, at any sweep since); plates with the trailing edge
   unswept, swept more than 0 and under 45 deg or beyond 60 deg below
   Mach 1.62 since 2026-10-27, and beyond 60 deg where M cos L is below 1
   since 2026-10-28; section 12), fins at the base below Mach 1.0 or
@@ -533,7 +534,13 @@ linear theory's factor for a supersonic swept edge, and the RM-10's edge
 is subsonic at its Mach numbers (M cos 60 deg is 0.75 to 0.99 at 1.49 to
 1.98), so it does not test one; whether the RM-10, one set at one sweep
 inside the bracket, lets a sharp section's subsonic swept edge at the
-base be served is left for a ruling. A forward-swept edge now lies
+base be served was left for a ruling, and the coordinator ruled the same
+day: sharp sections with the RM-10's 60 deg aft trailing edge stay
+refused as they are. Opening the RM-10's measured case (a sharp section
+at the base, both edges swept 60 deg aft, at Mach 1.49 to 1.98) would
+need its own registered procedure: readings of RM E50D28's base
+pressures, their pairing, and the domain they cover. It is recorded here
+as a possible later item, not done. A forward-swept edge now lies
 outside both swept sets, which both sweep it aft. The code's refusal
 messages that say the RM-10's sweep "is not stated" are corrected in the
 commit after this note to say what is stated.
@@ -857,29 +864,30 @@ measurements, not a measurement of these fins, which is what 0014 section
 
 **What is served.** At M 1.0 to 3.0 (below 1.5 W2's part, section
 11.2), with the counts and positions of section 3 and the sweeps it
-serves (a swept trailing edge among them: the faces carry no slope, so the
-argument of section 3.4 does not reach them, and RM L52E06's plates are
-swept 45 deg; since 2026-10-28 swept aft only, as the RM-10's is, RM
-L52E06's being unswept, section 12), and since 2026-10-26 at every
-leading-edge sweep when the trailing edge is unswept (section 12; since
-2026-10-27, below M 1.62, not swept more than 0 and under 45 deg, nor
-beyond 60 deg; since 2026-10-28, beyond 60 deg only where M cos L is at
-least 1): the midpoint of 0.838 and the upper member's high end, the
-band the whole gap, labelled "bounded, not measured: the rebuilt
-fins-on-base factor (0015), between the lowest relief measured with
-flat-faced fins at the base (F 0.838, RM L52E06 fig. 7 at M 1.06) and
-<upper member>; ...", with the gap's size in C_D beside it
-(`base-drag.ts`). A total containing it is at best "an estimate, not
-validated" and names the component (0014 section 10.2). The half-width
-on F, over Love's curve, is +-22.6% to +-29.6% at M 1.5 to 3.0 for
-plates at most 5% thick at their thickest station, whose upper member is
-four fins t/c 0.05 to M 2.0 (the widest just above M 1.5, 1.54 at the
-high end); for thicker plates, whose upper member is the 10% arc,
-+-34.7% at M 1.5, +-30.1% at 1.8, +-26.5% at 2.0 and +-24.4% to +-24.5%
-at 2.5 to 3.0; below M 1.5 every plate's upper member is the reference,
-and on W2's body base (section 11.2) the band is +-31.7% to +-34.9%
-(34.9% at M 1.0); +-32.8% to +-35.9% (35.9% at M 1.0) since 2026-10-27,
-when 0014 section 10.7 (ah) moved W2's nominal from 1.065 to 1.04.
+serves (a swept trailing edge among them until 2026-10-28: the faces
+carry no slope, so the argument of section 3.4 does not reach them, and
+RM L52E06's plates are swept 45 deg; since then refused, RM L52E06's
+floor being measured only with the trailing edge unswept, section 12),
+and since 2026-10-26 at every leading-edge sweep when the trailing edge
+is unswept (section 12; since 2026-10-27, below M 1.62, not swept more
+than 0 and under 45 deg, nor beyond 60 deg; since 2026-10-28, beyond 60
+deg only where M cos L is at least 1): the midpoint of 0.838 and the
+upper member's high end, the band the whole gap, labelled "bounded, not
+measured: the rebuilt fins-on-base factor (0015), between the lowest
+relief measured with flat-faced fins at the base (F 0.838, RM L52E06
+fig. 7 at M 1.06) and <upper member>; ...", with the gap's size in C_D
+beside it (`base-drag.ts`). A total containing it is at best "an
+estimate, not validated" and names the component (0014 section 10.2).
+The half-width on F, over Love's curve, is +-22.6% to +-29.6% at M 1.5
+to 3.0 for plates at most 5% thick at their thickest station, whose
+upper member is four fins t/c 0.05 to M 2.0 (the widest just above M
+1.5, 1.54 at the high end); for thicker plates, whose upper member is
+the 10% arc, +-34.7% at M 1.5, +-30.1% at 1.8, +-26.5% at 2.0 and
++-24.4% to +-24.5% at 2.5 to 3.0; below M 1.5 every plate's upper member
+is the reference, and on W2's body base (section 11.2) the band is
++-31.7% to +-34.9% (34.9% at M 1.0); +-32.8% to +-35.9% (35.9% at M 1.0)
+since 2026-10-27, when 0014 section 10.7 (ah) moved W2's nominal from
+1.065 to 1.04.
 
 **Every flat-faced fin at the base takes this value** (the review of
 2026-10-21; 0014 section 10.7, amendment i, which supersedes main's
@@ -996,23 +1004,23 @@ fin input's construction, not the base factor's routing.
 
 ## 6. What stays refused
 
-| Refused                                                                                                              | Why                                                                                                                                                                         |
-| -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| fewer than two or more than four fins                                                                                | TN 2360 has two and four                                                                                                                                                    |
-| sections outside the 10% arc (tauEq above 0.10)                                                                      | the thickest member; steep short bevels among them                                                                                                                          |
-| rounded, diverging and converging blunt trailing edges                                                               | no measurement, no ordering (section 4)                                                                                                                                     |
-| sharp sections: leading-edge sweep 0 to 45 deg with a swept trailing edge, or at M 1.5 to 2.0, or above 60           | not measured; ordering not shown (3.4). Flat-faced fins with the trailing edge unswept are served at every sweep (section 12), below M 1.62 only unswept or at 45 to 60 deg |
-| flat-faced fins with the trailing edge unswept and the leading edge swept more than 0 and under 45 deg, below M 1.62 | the floor there is RM L52E06's 45 deg plates alone, and which way the juncture vortex moves F is not shown (section 12; 0014 10.7 (z), the note of 2026-10-27)              |
-| flat-faced fins with the trailing edge unswept and the leading edge swept beyond 60 deg, below M 1.62                | past the last sweep measured, and which way the juncture vortex moves F is not shown (section 12; 0014 10.7 (z), the note of 2026-10-27)                                    |
-| flat-faced fins with the trailing edge swept, outside 45 to 60 deg of leading edge, or beyond it                     | a swept trailing edge carries the square edge out of one plane parallel to the base, which section 12's argument rests on                                                   |
-| swept fins with a sharp trailing edge below M 1.5                                                                    | no swept fins of such sections measured there (section 11)                                                                                                                  |
-| trailing edge swept more than the leading edge                                                                       | outside both swept sets                                                                                                                                                     |
-| a sharp section with the trailing edge swept aft within 0.9 root chords of the base, or forward anywhere             | not measured there (RM L52J21a's edge is swept aft, 0.85 +-0.05 chords ahead); linear theory raises the pressures behind the edge (3.4)                                     |
-| Mach below 1.0 or above 3.0                                                                                          | fig. 35's free-flight curve starts at M 1.0; the body base below 1.0 (11)                                                                                                   |
-| fins ending ahead of the base above M 2.0                                                                            | TN 2360 measures positions at M 1.5 and 2.0 only, and its fall with distance weakens as the Mach number rises; fig. 32's readings differ                                    |
-| fins ending ahead of the base below M 1.5 (bounded on 2026-10-26, then withdrawn after review, 3.3)                  | no measurement with fins ahead of the base below M 1.5; TN 2360's relief moves toward the base as the Mach number falls (3.3)                                               |
-| fins ending ahead of the base at M 1.5 to 2.0 with a root chord other than 1.5 body diameters                        | TN 2360 measures positions with that chord only; where fins still reach the base depends on the chord against the body (3.3)                                                |
-| fins ending more than a root chord ahead of the base (the plain curve until 2026-10-27)                              | nothing measures them; the plain curve's band missed TN 2360's measurement a chord ahead (3.3)                                                                              |
+| Refused                                                                                                                 | Why                                                                                                                                                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| fewer than two or more than four fins                                                                                   | TN 2360 has two and four                                                                                                                                                                                                              |
+| sections outside the 10% arc (tauEq above 0.10)                                                                         | the thickest member; steep short bevels among them                                                                                                                                                                                    |
+| rounded, diverging and converging blunt trailing edges                                                                  | no measurement, no ordering (section 4)                                                                                                                                                                                               |
+| sharp sections: leading-edge sweep 0 to 45 deg with a swept trailing edge, or at M 1.5 to 2.0, or above 60              | not measured; ordering not shown (3.4). Flat-faced fins with the trailing edge unswept are served at every sweep (section 12), below M 1.62 only unswept or at 45 to 60 deg                                                           |
+| flat-faced fins with the trailing edge unswept and the leading edge swept more than 0 and under 45 deg, below M 1.62    | the floor there is RM L52E06's 45 deg plates alone, and which way the juncture vortex moves F is not shown (section 12; 0014 10.7 (z), the note of 2026-10-27)                                                                        |
+| flat-faced fins with the trailing edge unswept and the leading edge swept beyond 60 deg, below M 1.62                   | past the last sweep measured, and which way the juncture vortex moves F is not shown (section 12; 0014 10.7 (z), the note of 2026-10-27)                                                                                              |
+| flat-faced fins with the trailing edge swept (until 2026-10-28 only outside 45 to 60 deg of leading edge, or beyond it) | the floor, RM L52E06's relief, is measured only with the trailing edge unswept (its fig. 1(c), section 12); a swept trailing edge carries the square edge out of one plane parallel to the base, which section 12's argument rests on |
+| swept fins with a sharp trailing edge below M 1.5                                                                       | no swept fins of such sections measured there (section 11)                                                                                                                                                                            |
+| trailing edge swept more than the leading edge                                                                          | outside both swept sets                                                                                                                                                                                                               |
+| a sharp section with the trailing edge swept aft within 0.9 root chords of the base, or forward anywhere                | not measured there (RM L52J21a's edge is swept aft, 0.85 +-0.05 chords ahead); linear theory raises the pressures behind the edge (3.4)                                                                                               |
+| Mach below 1.0 or above 3.0                                                                                             | fig. 35's free-flight curve starts at M 1.0; the body base below 1.0 (11)                                                                                                                                                             |
+| fins ending ahead of the base above M 2.0                                                                               | TN 2360 measures positions at M 1.5 and 2.0 only, and its fall with distance weakens as the Mach number rises; fig. 32's readings differ                                                                                              |
+| fins ending ahead of the base below M 1.5 (bounded on 2026-10-26, then withdrawn after review, 3.3)                     | no measurement with fins ahead of the base below M 1.5; TN 2360's relief moves toward the base as the Mach number falls (3.3)                                                                                                         |
+| fins ending ahead of the base at M 1.5 to 2.0 with a root chord other than 1.5 body diameters                           | TN 2360 measures positions with that chord only; where fins still reach the base depends on the chord against the body (3.3)                                                                                                          |
+| fins ending more than a root chord ahead of the base (the plain curve until 2026-10-27)                                 | nothing measures them; the plain curve's band missed TN 2360's measurement a chord ahead (3.3)                                                                                                                                        |
 
 ## 7. Readings
 
@@ -1946,15 +1954,15 @@ as section 4 left it: served with the leading edge swept 45 to 60 deg and
 the trailing edge swept no more than the leading edge, either way (RM
 L52E06's plates and the RM-10 bracket it; the code took a plate's
 trailing-edge sweep by its magnitude before this section, and still did
-until the rulings of 2026-10-28 at the end of this section, which keep
-the aft sweep only), refused at other sweeps, since a swept trailing
-edge carries the square edge out of one plane parallel to the base,
-which this section's argument does not cover. Sharp sections are
-untouched: section 3.4's rules, the linear-theory factor and the
-refusals below M 1.5 (section 11.2) stand as written. Rounded and
-diverging trailing edges stay refused (section 4). The present factor
-(0010 section 1.3) is untouched; flat-faced fins never reach it (0014
-10.7 (i)).
+until the rulings of 2026-10-28 at the end of this section, which refuse
+a swept trailing edge on a plate at any sweep), refused at other sweeps,
+since a swept trailing edge carries the square edge out of one plane
+parallel to the base, which this section's argument does not cover.
+Sharp sections are untouched: section 3.4's rules, the linear-theory
+factor and the refusals below M 1.5 (section 11.2) stand as written.
+Rounded and diverging trailing edges stay refused (section 4). The
+present factor (0010 section 1.3) is untouched; flat-faced fins never
+reach it (0014 10.7 (i)).
 
 **In the code.** `finsOnBaseFactorW1` tests the plate case (`bounded`,
 flat faces at a square trailing edge) with the trailing edge unswept
@@ -2182,3 +2190,21 @@ sweeps every swept trailing edge aft. The cross-check agrees on 1,200 of
 1,200; the reflected-wave split (`out/reflected-split.out`) is
 unchanged; the counts by section and by what else refuses are from a
 probe of the same cases, not committed.
+
+_The ruling on the reading, later on 2026-10-28_ (the coordinator's,
+under 0014 section 10.2; written here before the code): the strict
+reading. The plates' floor, 0.838, is RM L52E06's relief, measured only
+with the trailing edge unswept (its fig. 1(c), read above); the RM-10 is
+a sharp section, so it does not bracket plates; and this section's own
+argument holds only while the square edge lies in one plane parallel to
+the base, which a swept trailing edge takes it out of. So a plate with
+the trailing edge swept, aft or forward, at any leading-edge sweep, is
+refused at the base and within a chord, the words naming why: the floor
+is measured only with the trailing edge unswept. This replaces the third
+item's "unswept, or swept aft no more than a leading edge swept 45 to 60
+deg" and the refusal of a forward-swept edge alone, coded before it; the
+notes of what RM L52E06 and RM E50D28 state stand. Sharp sections with
+the RM-10's 60 deg aft trailing edge stay refused as they are (section
+3.4's note). No total is expected to move, since the trailing edge's own
+term refuses every swept square edge; the population run checks it, and
+its counts are recorded below when run.
