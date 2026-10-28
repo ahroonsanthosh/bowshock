@@ -430,3 +430,143 @@ export const TR1051_FIG23B_FAIRED_SUPERSEDED: readonly {
   { mach: 2.0, first: -0.141, audit: -0.147 },
   { mach: 2.9, first: -0.115, audit: -0.118 },
 ];
+
+/** TN 2360 fig. 5 or 7: one symbol of the body alone, every reading of both blind readers (round 20). */
+export interface Tn2360BodyAloneSymbol {
+  readonly figure: '5(a)' | '5(b)' | '7';
+  readonly mach: number;
+  /** Reynolds number on the body length, readers A and B (fig. 5's abscissa; fig. 7 gives none). */
+  readonly reynolds?: readonly [number, number];
+  /** P_B, every reading of each reader: the primary first, then the alternatives in the order written. */
+  readonly readingsA: readonly number[];
+  readonly readingsB: readonly number[];
+  /** Each reader's stated error (one standard deviation). */
+  readonly errorA: number;
+  readonly errorB: number;
+}
+
+/**
+ * NACA TN 2360 (Spahr and Dickey, 1951) figs. 5(a), 5(b) and 7: the body alone ("tail off", "without
+ * tail surface"), its nose tripped by a salt band "to insure local transition" (p. 5), at Mach 1.5 and
+ * 2.0. Round 20 (docs/research/total-drag/audit/round20/): two blind readers of every symbol of both
+ * figures, paired by a neutral party, 60 of 60 within the summed stated errors, these ten among them, no
+ * verdict changed by the alternatives. The pairer notes that both readers took nearly the same pixel
+ * positions on the same scan, so the agreement mostly tests their calibrations. Every tripped station is
+ * inside the compiled curve's domain (0014 section 10.7 (ah), the fourth addendum and its correction), so
+ * all ten enter as the plain envelope of their readings. Fig. 5(a)'s symbol at R 0.765e6 is partly hidden
+ * and carries alternatives in both readers; every reading is kept.
+ */
+export const TN2360_FIG5_FIG7_BODY_ALONE: readonly Tn2360BodyAloneSymbol[] = [
+  {
+    figure: '5(a)',
+    mach: 1.5,
+    reynolds: [0.765e6, 0.764e6],
+    readingsA: [-0.2021, -0.2023, -0.2018],
+    readingsB: [-0.2026, -0.2023],
+    errorA: 0.0007,
+    errorB: 0.001,
+  },
+  {
+    figure: '5(a)',
+    mach: 1.5,
+    reynolds: [1.954e6, 1.951e6],
+    readingsA: [-0.1962],
+    readingsB: [-0.1961],
+    errorA: 0.0006,
+    errorB: 0.0005,
+  },
+  {
+    figure: '5(a)',
+    mach: 1.5,
+    reynolds: [3.263e6, 3.262e6],
+    readingsA: [-0.1955],
+    readingsB: [-0.1953],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+  {
+    figure: '5(a)',
+    mach: 1.5,
+    reynolds: [4.414e6, 4.415e6],
+    readingsA: [-0.1966],
+    readingsB: [-0.1968],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+  {
+    figure: '5(b)',
+    mach: 2.0,
+    reynolds: [0.475e6, 0.475e6],
+    readingsA: [-0.1486],
+    readingsB: [-0.1487],
+    errorA: 0.0005,
+    errorB: 0.0005,
+  },
+  {
+    figure: '5(b)',
+    mach: 2.0,
+    reynolds: [1.832e6, 1.833e6],
+    readingsA: [-0.1475],
+    readingsB: [-0.1473],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+  {
+    figure: '5(b)',
+    mach: 2.0,
+    reynolds: [3.308e6, 3.308e6],
+    readingsA: [-0.1492],
+    readingsB: [-0.1493],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+  {
+    figure: '5(b)',
+    mach: 2.0,
+    reynolds: [4.431e6, 4.429e6],
+    readingsA: [-0.1512],
+    readingsB: [-0.1516],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+  {
+    figure: '7',
+    mach: 1.5,
+    readingsA: [-0.1951],
+    readingsB: [-0.1949],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+  {
+    figure: '7',
+    mach: 2.0,
+    readingsA: [-0.1508],
+    readingsB: [-0.1511],
+    errorA: 0.0004,
+    errorB: 0.0005,
+  },
+];
+
+/**
+ * Superseded by round 20 (0014 section 10.7 (ah), the fourth addendum and its correction), kept as the
+ * record: round 6's single readings of the same ten symbols (`audit/round6/readings/tn2360_fig5a.csv`,
+ * `tn2360_fig5b.csv`, `tn2360_fig7.csv`), which (ah) listed as checked and not used. Reynolds number in
+ * units of 1e6 as read (fig. 7 gives none).
+ */
+export const TN2360_FIG5_FIG7_ROUND6_SUPERSEDED: readonly {
+  readonly figure: '5(a)' | '5(b)' | '7';
+  readonly mach: number;
+  readonly reynolds?: number;
+  readonly pB: number;
+}[] = [
+  { figure: '5(a)', mach: 1.5, reynolds: 0.7613, pB: -0.2031 },
+  { figure: '5(a)', mach: 1.5, reynolds: 1.951, pB: -0.1964 },
+  { figure: '5(a)', mach: 1.5, reynolds: 3.262, pB: -0.1953 },
+  { figure: '5(a)', mach: 1.5, reynolds: 4.415, pB: -0.1964 },
+  { figure: '5(b)', mach: 2.0, reynolds: 0.4781, pB: -0.1506 },
+  { figure: '5(b)', mach: 2.0, reynolds: 1.853, pB: -0.1477 },
+  { figure: '5(b)', mach: 2.0, reynolds: 3.306, pB: -0.15 },
+  { figure: '5(b)', mach: 2.0, reynolds: 4.423, pB: -0.1511 },
+  { figure: '7', mach: 1.5, pB: -0.1947 },
+  { figure: '7', mach: 2.0, pB: -0.1506 },
+];

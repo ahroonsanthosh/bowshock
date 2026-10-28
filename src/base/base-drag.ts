@@ -12,8 +12,8 @@
  * F = 1 without fins near the base. The band adds linearly, as 0008
  * section 6.3 requires:
  *
- * - the compiled curve's band, measured over curve 0.77 to 1.13 (0014
- *   section 10.7 (ah) and its third addendum, round 19; 0.82 to 1.08
+ * - the compiled curve's band, measured over curve 0.77 to 1.17 (0014
+ *   section 10.7 (ah) and its addenda, rounds 19 and 20; 0.82 to 1.08
  *   before (ah)), on the term with the nominal F;
  * - the interpolation-error bound of the curve, times F and the area ratio;
  * - the fins-on-base band, (F_low - F) and (F_high - F) times -P_B and the
@@ -47,8 +47,8 @@
  * The vacuum bound (./vacuum.ts): the term and its band's ends are each at
  * most 2 / (gamma M^2) times the area ratio, clamped there (`vacuumClamped`
  * lists what was; the parts are reported unclamped). Over M 1.5 to 3.0 no
- * value reaches it (the band's high end is at most 0.9199 of it, at M 3.0
- * with fins at the base; 0.686 without fins; 0.8840 and 0.656 before 0014
+ * value reaches it (the band's high end is at most 0.9486 of it, at M 3.0
+ * with fins at the base; 0.711 without fins; 0.8840 and 0.656 before 0014
  * section 10.7 (ah)); the clamp is a guard.
  *
  * Blunt fin trailing edges are a further base, ./fin-trailing-edge.ts.

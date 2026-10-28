@@ -490,7 +490,7 @@ export const VALIDATED_CLAIM =
   '+-25% to +-28%. That tolerance is wide, so the pass alone says little (design record 0008, ' +
   "section 6.3). The body base's band was widened after this test (design record 0014, section " +
   '10.7 (ah)); the model and its residuals are unchanged, and its tolerances there would now be ' +
-  '-26.5% to -29.0% and +28.9% to +29.7%.';
+  '-26.5% to -29.0% and +30.4% to +31.0%.';
 /** Stated beside it. */
 export const ASSUMED_CAVEAT =
   "The models' diameter, the range's air and the fins' trailing-edge area at that test were " +

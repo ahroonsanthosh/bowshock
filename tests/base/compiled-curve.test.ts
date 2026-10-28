@@ -34,6 +34,8 @@ import {
   TN3819_FIG18_CURVES,
   TN3819_FIG18_MISREADS,
   TN3819_FIG18_ROUND7,
+  TN2360_FIG5_FIG7_BODY_ALONE,
+  TN2360_FIG5_FIG7_ROUND6_SUPERSEDED,
   TN3819_FIG18_TUNNEL,
   TR1051_FIG23B_FAIRED_SUPERSEDED,
   TR1051_FIG23B_THINNEST,
@@ -263,14 +265,27 @@ describe('the band, recomputed from the data', () => {
 
   it('the body-alone sets of 0014 10.7 (ah), every reading, against both curves', () => {
     const b = compiledCurveBandEvidence().bodyAlone;
-    expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'TN 2360')).toHaveLength(10);
+    // TN 2360: TN 3819 figs. 33 and 35 (10), and figs. 5 and 7's ten body-alone symbols, every reading of
+    // round 20 (23: the partly hidden symbol at R 0.765e6 carries five).
+    expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'TN 2360')).toHaveLength(33);
     expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'Langley 9 in')).toHaveLength(5);
     // RM L52J21a: W1's 10 pairs about R 8.06e6 and the 14 outside that window (the review of 2026-10-27).
     expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'RM L52J21a')).toHaveLength(48);
     expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'TR 1051')).toHaveLength(6);
-    // TN 2360's body alone: fig. 33's first reading at M 1.5 over the served curve sets its high end.
-    expect(b['TN 2360'].min).toBeCloseTo(1.0027, 4);
-    expect(b['TN 2360'].max).toBeCloseTo(0.1948 / 0.1733, 12);
+    // TN 2360's body alone: since round 20, fig. 5(a)'s symbol at M 1.5, R 0.765e6, reader B's -0.2026, over
+    // the served curve sets its high end, and fig. 5(b)'s at M 2.0, R 1.83e6, reader B's -0.1473, over the
+    // more negative curve its low end (1.0027 to 1.1241 with TN 3819 figs. 33 and 35 alone).
+    expect(b['TN 2360'].min).toBeCloseTo(-0.1473 / compiledCurveValue(2.0, 'moreNegative'), 12);
+    expect(b['TN 2360'].min).toBeCloseTo(0.9846, 4);
+    expect(b['TN 2360'].max).toBeCloseTo(-0.2026 / compiledCurveValue(1.5, 'lessNegative'), 12);
+    expect(b['TN 2360'].max).toBeCloseTo(1.1691, 4);
+    const tn3819 = BODY_ALONE_IN_DOMAIN.filter(
+      (r) => r.set === 'TN 2360' && r.source.startsWith('TN 3819'),
+    ).flatMap((r) =>
+      (['moreNegative', 'lessNegative'] as const).map((c) => r.pB / compiledCurveValue(r.mach, c)),
+    );
+    expect(Math.min(...tn3819)).toBeCloseTo(1.0027, 4);
+    expect(Math.max(...tn3819)).toBeCloseTo(0.1948 / 0.1733, 12);
     expect(b['Langley 9 in'].min).toBeCloseTo(0.9639, 4);
     expect(b['Langley 9 in'].max).toBeCloseTo(1.0006, 4);
     // RM L52J21a: the radome nose at M 1.62, round 7's -0.1331, over the more negative curve.
@@ -293,11 +308,11 @@ describe('the band, recomputed from the data', () => {
     expect(b['TR 1051'].max).toBeCloseTo(1.1253, 4);
   });
 
-  it('rounded outward: 0.77 to 1.13 (0014 10.7 (ah) with round 19); the tunnel symbols and Herrin and Dutton alone gave 0.82 to 1.08', () => {
-    expect(COMPILED_CURVE_BAND).toEqual({ low: 0.77, high: 1.13 });
+  it('rounded outward: 0.77 to 1.17 (0014 10.7 (ah) with rounds 19 and 20; 1.18, then 1.13, before); the tunnel symbols and Herrin and Dutton alone gave 0.82 to 1.08', () => {
+    expect(COMPILED_CURVE_BAND).toEqual({ low: 0.77, high: 1.17 });
     const e = compiledCurveBandEvidence();
     expect(e.min).toBeCloseTo(0.7731, 4);
-    expect(e.max).toBeCloseTo(1.1253, 4);
+    expect(e.max).toBeCloseTo(1.1691, 4);
     expect(COMPILED_CURVE_BAND.low).toBeLessThanOrEqual(e.min);
     expect(COMPILED_CURVE_BAND.high).toBeGreaterThanOrEqual(e.max);
     const before = {
@@ -492,6 +507,98 @@ describe('every body-alone base pressure read twice in the domain lies inside th
     expect(BODY_ALONE_IN_DOMAIN.some((r) => r.pB === -0.118 || r.pB === -0.115)).toBe(false);
   });
 
+  it('TN 2360 figs. 5 and 7, the body alone at every tripped station, Mach 1.5 and 2.0, every reading of both blind readers (round 20)', () => {
+    // At M 1.5 they are 1.125 to 1.169 times the curve (-0.1733), three of the five symbols above 1.13, the
+    // band's end before round 20.
+    expect(TN2360_FIG5_FIG7_BODY_ALONE).toHaveLength(10);
+    for (const p of TN2360_FIG5_FIG7_BODY_ALONE) {
+      for (const pB of [...p.readingsA, ...p.readingsB]) {
+        expectInside(`TN 2360 fig. ${p.figure}, R ${p.reynolds?.[0] ?? '-'}`, p.mach, pB);
+      }
+    }
+  });
+
+  it("TN 2360 figs. 5 and 7 held to round 20's pairing; round 6's single readings kept, superseded, as the record", () => {
+    // A CSV line with quoted fields.
+    const fields = (line: string) => {
+      const out: string[] = [];
+      let cur = '';
+      let quoted = false;
+      for (let k = 0; k < line.length; k++) {
+        const ch = line[k]!;
+        if (quoted) {
+          if (ch === '"' && line[k + 1] === '"') {
+            cur += '"';
+            k++;
+          } else if (ch === '"') quoted = false;
+          else cur += ch;
+        } else if (ch === '"') quoted = true;
+        else if (ch === ',') {
+          out.push(cur);
+          cur = '';
+        } else cur += ch;
+      }
+      out.push(cur);
+      return out;
+    };
+    const [head, ...rows] = csv('docs/research/total-drag/audit/round20/pairing/pairing.csv').map(
+      fields,
+    );
+    const col = (name: string) => head!.indexOf(name);
+    const alone = rows.filter((c) => ['tail off', 'without tail'].includes(c[col('config_key')]!));
+    expect(alone).toHaveLength(10);
+    expect(rows).toHaveLength(60);
+    expect(rows.every((c) => c[col('verdict')] === 'AGREES')).toBe(true);
+    alone.forEach((c, k) => {
+      const p = TN2360_FIG5_FIG7_BODY_ALONE[k]!;
+      const figure = c[col('figure')] === '7' ? '7' : `${c[col('figure')]}(${c[col('panel')]})`;
+      expect([p.figure, p.mach]).toEqual([figure, Number(c[col('mach')])]);
+      const readings = [...c[col('all_readings')]!.matchAll(/([AB])\d+\(x=[-\d.]+ y=([-\d.]+)\)/g)];
+      expect([...p.readingsA]).toEqual(
+        readings.filter((r) => r[1] === 'A').map((r) => Number(r[2])),
+      );
+      expect([...p.readingsB]).toEqual(
+        readings.filter((r) => r[1] === 'B').map((r) => Number(r[2])),
+      );
+      expect([p.errorA, p.errorB]).toEqual([
+        Number(c[col('A_y_error')]),
+        Number(c[col('B_y_error')]),
+      ]);
+      if (p.figure === '7') expect(p.reynolds).toBeUndefined();
+      else {
+        expect([...p.reynolds!]).toEqual([
+          Math.round(1e3 * Number(c[col('A_x')])) * 1e3,
+          Math.round(1e3 * Number(c[col('B_x')])) * 1e3,
+        ]);
+      }
+    });
+    // Every one enters; nothing of round 6 does.
+    const tn2360 = BODY_ALONE_IN_DOMAIN.filter((r) => r.source.startsWith('TN 2360 fig.'));
+    expect(tn2360).toHaveLength(23);
+    expect(tn2360.every((r) => /, round 20 [AB]\d$/.test(r.source))).toBe(true);
+    // Superseded: round 6's readings (audit/round6/readings/), which (ah) listed as checked and not used.
+    const round6 = (file: string, series: string) =>
+      csv(`docs/research/total-drag/audit/round6/readings/${file}`)
+        .slice(1)
+        .map((l) => l.split(','))
+        .filter((c) => c[1] === series)
+        .map((c) => [Number(c[2]), Number(c[3])]);
+    expect(
+      TN2360_FIG5_FIG7_ROUND6_SUPERSEDED.map((p) => [p.reynolds ?? p.mach, p.pB]).sort(
+        (x, y) => x[0]! - y[0]! || x[1]! - y[1]!,
+      ),
+    ).toEqual(
+      [
+        ...round6('tn2360_fig5a.csv', 'tail off (dome)'),
+        ...round6('tn2360_fig5b.csv', 'tail off (dome)'),
+        ...round6('tn2360_fig7.csv', 'present tests without tail (circle)').map(([m, pB]) => [
+          Math.round(10 * m!) / 10,
+          pB,
+        ]),
+      ].sort((x, y) => x[0]! - y[0]! || x[1]! - y[1]!),
+    );
+  });
+
   it("TN 3819 fig. 18's tunnel symbols at M 1.5 to 3.0 and Herrin and Dutton, as before", () => {
     for (const s of TN3819_FIG18_TUNNEL.filter((t) => t.mach <= 3.0)) {
       expectInside('fig. 18 symbol, first', s.mach, s.first);
@@ -518,7 +625,7 @@ describe('body base drag: the arithmetic', () => {
       const e = p.interpolationError * area;
       expect(r.cd).toBeCloseTo(cd, 15);
       expect(r.low).toBeCloseTo(0.77 * cd - e, 15);
-      expect(r.high).toBeCloseTo(1.13 * cd + e, 15);
+      expect(r.high).toBeCloseTo(1.17 * cd + e, 15);
       expect(r.labels).toEqual([COMPILED_CURVE_LABEL]);
       expect(r.finsOnBase).toBeUndefined();
     }
@@ -543,11 +650,11 @@ describe('body base drag: the arithmetic', () => {
     const q = -compiledCurveValue(2.4, 'lessNegative');
     expect(r.cd).toBeCloseTo(q * f.nominal, 15);
     expect(r.low).toBeCloseTo(r.cd - 0.23 * r.cd + (f.low - f.nominal) * q, 15);
-    expect(r.high).toBeCloseTo(r.cd + 0.13 * r.cd + (f.high - f.nominal) * q, 15);
+    expect(r.high).toBeCloseTo(r.cd + 0.17 * r.cd + (f.high - f.nominal) * q, 15);
     expect(r.labels[1]).toMatch(/^an analogy, not a measurement/);
   });
 
-  it('never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9199 of it (M 3.0, fins at the base; 0.8840 before 0014 10.7 (ah), 0.9535 before the correction of 0010 section 11), 0.686 without fins (0.656 before (ah))', () => {
+  it('never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9486 of it (M 3.0, fins at the base; 0.9199 with 0.77 to 1.13, 0.8840 before 0014 10.7 (ah), 0.9535 before the correction of 0010 section 11), 0.711 without fins (0.686 with 1.13, 0.656 before (ah))', () => {
     const fins = {
       count: 4,
       thicknessRatio: 0.08,
@@ -578,9 +685,9 @@ describe('body base drag: the arithmetic', () => {
       }
     }
     withFins = Math.max(withFins, at(3.0, true).high / at(3.0, true).vacuum);
-    expect(withFins).toBeCloseTo(0.9199, 4);
+    expect(withFins).toBeCloseTo(0.9486, 4);
     expect(at(3.0, true).high / at(3.0, true).vacuum).toBe(withFins);
-    expect(Math.round(1000 * without) / 1000).toBe(0.686);
+    expect(Math.round(1000 * without) / 1000).toBe(0.711);
   });
 
   it('fins a chord or more ahead: the plain curve withdrawn (2026-10-27), refused', () => {

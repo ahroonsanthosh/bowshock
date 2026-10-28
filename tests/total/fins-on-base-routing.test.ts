@@ -458,11 +458,13 @@ describe('fins a root chord or more ahead of the base: the plain curve withdrawn
     // times it with every error moved toward less suction. The plain curve's band misses both.
     const curve = -compiledCurveBasePressure(2.0).pB;
     expect(Math.round(1e4 * curve) / 1e4).toBe(0.1447);
-    // The compiled curve's band then was 0.82 to 1.08; 0014 10.7 (ah) widened it after, to 0.77 to 1.13,
-    // with which the plain curve's band here would reach 0.1635, above the measurement.
+    // The compiled curve's band then was 0.82 to 1.08; 0014 10.7 (ah) widened it after, to 0.77 to 1.17
+    // (1.13 when (ad)'s note was written), with which the plain curve's band here would reach 0.1693 (0.1635),
+    // above the measurement; the withdrawal stands on 0014 section 10.2 (the note to (ad)).
     const highThen = 1.08;
     expect(Math.round(1e4 * curve * highThen) / 1e4).toBe(0.1563);
-    expect(Math.round(1e4 * curve * COMPILED_CURVE_BAND.high) / 1e4).toBe(0.1635);
+    expect(Math.round(1e4 * curve * COMPILED_CURVE_BAND.high) / 1e4).toBe(0.1693);
+    expect(Math.round(1e4 * curve * 1.13) / 1e4).toBe(0.1635);
     const measured = 0.1507 + 0.0096;
     expect(measured / curve).toBeGreaterThan(1.107);
     expect(curve * highThen).toBeLessThan(1.09 * curve);

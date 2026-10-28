@@ -401,19 +401,20 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
     });
     // With the corrected fins-on-base factor (0010 section 11); before it, at the same Mach
     // numbers: 0.6121, 0.5501, 0.5188, 0.4768, 0.4320, 0.4072, 0.4040. The bands with the compiled
-    // curve's band 0.77 to 1.13 (0014 10.7 (ah) and its third addendum; with 0.77 to 1.18 before round 19
-    // the high ends were +22.6%, +21.6%, +21.9%, +21.9%, +21.7%, +21.3%, +21.2%); with 0.82 to 1.08 before
-    // (ah): -13.7% to +19.0%,
+    // curve's band 0.77 to 1.17 (0014 10.7 (ah) and its addenda; with 0.77 to 1.18 before round 19 the
+    // high ends were +22.6%, +21.6%, +21.9%, +21.9%, +21.7%, +21.3%, +21.2%, with 0.77 to 1.13 before round
+    // 20 +20.8%, +19.9%, +20.3%, +20.4%, +20.2%, +19.9%, +19.8%); with 0.82 to 1.08 before (ah): -13.7% to
+    // +19.0%,
     // -12.5% to +18.2%, -12.9% to +18.7%, -12.9% to +18.8%, -12.7% to +18.7%, -12.5% to +18.4%,
     // -12.4% to +18.3%.
     expect(shown).toEqual([
-      ['0.6131', '0.5184 to 0.7403', '-15.5% to +20.8%'],
-      ['0.5493', '0.4717 to 0.6584', '-14.2% to +19.9%'],
-      ['0.5176', '0.4428 to 0.6225', '-14.5% to +20.3%'],
-      ['0.4725', '0.4041 to 0.5686', '-14.5% to +20.4%'],
-      ['0.4203', '0.3606 to 0.5050', '-14.2% to +20.2%'],
-      ['0.3951', '0.3401 to 0.4735', '-14.0% to +19.9%'],
-      ['0.3919', '0.3377 to 0.4693', '-13.9% to +19.8%'],
+      ['0.6131', '0.5184 to 0.7490', '-15.5% to +22.2%'],
+      ['0.5493', '0.4717 to 0.6656', '-14.2% to +21.2%'],
+      ['0.5176', '0.4428 to 0.6292', '-14.5% to +21.6%'],
+      ['0.4725', '0.4041 to 0.5745', '-14.5% to +21.6%'],
+      ['0.4203', '0.3606 to 0.5100', '-14.2% to +21.4%'],
+      ['0.3951', '0.3401 to 0.4781', '-14.0% to +21.1%'],
+      ['0.3919', '0.3377 to 0.4738', '-13.9% to +21.0%'],
     ]);
   });
 
@@ -463,14 +464,14 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
         outwardPercent(t.low / t.cd - 1, t.high / t.cd - 1),
       ];
     });
-    // The compiled curve's band 0.77 to 1.13 (0014 10.7 (ah) and its third addendum).
+    // The compiled curve's band 0.77 to 1.17 (0014 10.7 (ah) and its addenda).
     expect(shown).toEqual([
-      ['0.6131', '0.5184 to 0.7403', '-15.5% to +20.8%'],
-      ['0.5493', '0.4717 to 0.6584', '-14.2% to +19.9%'],
-      ['0.5176', '0.4428 to 0.6225', '-14.5% to +20.3%'],
-      ['0.4896', '0.4182 to 0.5895', '-14.6% to +20.5%'],
-      ['0.4564', '0.3926 to 0.5472', '-14.0% to +19.9%'],
-      ['0.4028', '0.3462 to 0.4834', '-14.1% to +20.0%'],
+      ['0.6131', '0.5184 to 0.7490', '-15.5% to +22.2%'],
+      ['0.5493', '0.4717 to 0.6656', '-14.2% to +21.2%'],
+      ['0.5176', '0.4428 to 0.6292', '-14.5% to +21.6%'],
+      ['0.4896', '0.4182 to 0.5958', '-14.6% to +21.7%'],
+      ['0.4564', '0.3926 to 0.5528', '-14.0% to +21.2%'],
+      ['0.4028', '0.3462 to 0.4881', '-14.1% to +21.2%'],
     ]);
   });
 
@@ -584,8 +585,8 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
     });
     expect(PUBLISHED_GATE.map((p) => p.shot)).toEqual(gated.map((s) => s.shot));
     // The table is the corrected run's: its bands and tolerances were formed with the compiled
-    // curve's band at the run, 0.82 to 1.08. The library's carry 0.77 to 1.13 since 0014 10.7 (ah) and its
-    // third addendum,
+    // curve's band at the run, 0.82 to 1.08. The library's carry 0.77 to 1.17 since 0014 10.7 (ah) and its
+    // addenda,
     // so the table is held to the library less that widening of the body base's band ends (the
     // change in the band's end times the body base term); the totals and residuals are the same.
     const atTheRun = (t: TotalDrag) => {
@@ -631,7 +632,7 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
     const lo = now.map((x) => x[0]);
     const hi = now.map((x) => x[1]);
     const stated = `${pc(Math.max(...lo))} to ${pc(Math.min(...lo))} and ${pc(Math.min(...hi))} to ${pc(Math.max(...hi))}`;
-    expect(stated).toBe('-21.5% to -28.5% and +25.1% to +30.1%');
+    expect(stated).toBe('-21.5% to -28.5% and +26.5% to +31.3%');
     expect(displayText(gateDisplay())).toContain(
       `the tolerances would be ${stated}; no residual and no verdict changes`,
     );

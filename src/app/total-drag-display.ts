@@ -591,7 +591,7 @@ export function gateDisplay(): DisplayBlock[] {
         'outward, other values to the nearest last digit shown; bands and tolerances as the run ' +
         "formed them: the body base's band was widened after it (design record 0014, section 10.7 " +
         '(ah)), so a total on this page now shows a wider band and the tolerances would be ' +
-        '-21.5% to -28.5% and +25.1% to +30.1%; no residual and no verdict changes',
+        '-21.5% to -28.5% and +26.5% to +31.3%; no residual and no verdict changes',
       head: [
         'Shot',
         'Mach',
@@ -628,7 +628,7 @@ export function gateDisplay(): DisplayBlock[] {
         'modelled, minus 1; each band rounded outward, other values to the nearest last digit ' +
         "shown; bands and tolerances as the run formed them: the body base's band was widened " +
         'after it (design record 0014, section 10.7 (ah)), so a total on this page now shows a ' +
-        'wider band and the tolerances would be -26.5% to -29.0% and +28.9% to +29.7%; no ' +
+        'wider band and the tolerances would be -26.5% to -29.0% and +30.4% to +31.0%; no ' +
         'residual and no verdict changes',
       head: ['Round', 'Mach', 'CD0 measured', 'Modelled C_D (band)', 'Residual', 'Tolerance'],
       rows: PUBLISHED_BRL934.map((r) => [

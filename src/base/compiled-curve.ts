@@ -45,12 +45,14 @@
  * alone and the Langley 9 in tunnel's (TN 3819 figs. 33 and 35), RM
  * L52J21a's unfinned bodies (figs. 31 to 33 (d), every paired symbol) and TR
  * 1051 fig. 23(b) at its thinnest measured sting symbols (round 19's blind
- * pair; the addendum and the third addendum to (ah)). The sets opened in the domain and read once
- * are named in that entry and set nothing. The envelope becomes 0.7731 to
- * 1.1253, rounded outward 0.77 to 1.13: the low end RM L52J21a's radome nose
- * at M 1.62 over the more negative curve, the high end TR 1051 at M 2.9
- * (round 19's reader B, over the served curve), with TN 2360 at M 1.5,
- * 1.1241, outside the band before, just below it.
+ * pair; the addendum and the third addendum to (ah)), and TN 2360 figs. 5
+ * and 7's body alone at every tripped station (round 20's blind pair; the
+ * fourth addendum and its correction). The sets opened in the domain and
+ * read once are named in that entry and set nothing. The envelope becomes
+ * 0.7731 to 1.1691, rounded outward 0.77 to 1.17: the low end RM L52J21a's
+ * radome nose at M 1.62 over the more negative curve, the high end TN 2360
+ * fig. 5(a)'s body alone at M 1.5 and R 0.765e6 (round 20's reader B, over
+ * the served curve).
  *
  * Refused (0008 sections 3.3, 6.2 B3 and 6.4): Mach numbers outside 1.5
  * to 3.0 (below 1.5 the data opened are not claimable; the band is stated
@@ -72,6 +74,7 @@ import {
   HERRIN_DUTTON,
   TN3819_FIG18_CHECKS,
   TN3819_FIG18_CURVES,
+  TN2360_FIG5_FIG7_BODY_ALONE,
   TN3819_FIG18_TUNNEL,
   TR1051_FIG23B_THINNEST,
   type CompiledCurveName,
@@ -180,8 +183,7 @@ const reading = (
 /**
  * Every body-alone base pressure read twice inside the curve's domain (Mach 1.5 to 3.0, cylindrical
  * afterbody, turbulent, no fins, power off), each paired reading (0014 section 10.7 (ah)); the sets
- * opened there and read once (TN 2360 figs. 5 and 7, NSWCDD/TR-92/509) are named in that entry and set
- * nothing:
+ * opened there and read once (NSWCDD/TR-92/509 among them) are named in that entry and set nothing:
  *
  * - TN 2360's body alone (TN 3819's ref. 26; ogive-cylinder, sting d/h 0.4, R 4.5e6) at M 1.5 and 2.0,
  *   and the Langley 9 in tunnel's at M 2.41: TN 3819 fig. 33 at t/c 0 (W1's first reading and round
@@ -191,7 +193,11 @@ const reading = (
  *   window about R 8.06e6 and the fourteen pairs outside it, `L52J21A_FIG31_33D_OTHER_R`);
  * - TR 1051 fig. 23(b) at its thinnest measured sting symbol at each Mach number (d/h 0.347, 0.298
  *   and 0.296), round 19's two blind readings (./tn3819-fig18.ts); the faired values at d/h 0.35 that
- *   (ah) first used are superseded and set nothing (the third addendum to (ah)).
+ *   (ah) first used are superseded and set nothing (the third addendum to (ah));
+ * - TN 2360 figs. 5(a), 5(b) and 7: the body alone at every tripped station, Mach 1.5 and 2.0, R 0.475e6
+ *   to 4.43e6 (fig. 7 gives none), every reading of round 20's two blind readers (./tn3819-fig18.ts);
+ *   round 6's single readings, checked and not used before, are superseded (the fourth addendum to (ah)
+ *   and its correction).
  */
 export const BODY_ALONE_IN_DOMAIN: readonly BodyAloneReading[] = [
   ...TN3819_FIG33.filter((p) => p.thicknessRatio === 0).map((p) =>
@@ -222,6 +228,13 @@ export const BODY_ALONE_IN_DOMAIN: readonly BodyAloneReading[] = [
     reading('TR 1051', `TR 1051 fig. 23(b), d/h ${p.dOverH[1]}, round 19 A`, p.mach, p.readerA),
     reading('TR 1051', `TR 1051 fig. 23(b), d/h ${p.dOverH[1]}, round 19 B`, p.mach, p.readerB),
   ]),
+  ...TN2360_FIG5_FIG7_BODY_ALONE.flatMap((p) => {
+    const at = `TN 2360 fig. ${p.figure}, M ${p.mach}${p.reynolds === undefined ? '' : `, R ${(p.reynolds[0] / 1e6).toFixed(3)}e6`}`;
+    return [
+      ...p.readingsA.map((pB, k) => reading('TN 2360', `${at}, round 20 A${k}`, p.mach, pB)),
+      ...p.readingsB.map((pB, k) => reading('TN 2360', `${at}, round 20 B${k}`, p.mach, pB)),
+    ];
+  }),
 ];
 
 /** The evidence of 0008 section 3.3 as data over curve (ratios of base drag). */

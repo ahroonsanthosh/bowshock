@@ -62,8 +62,9 @@
  * (docs/research/base-and-total/runs/gate-corrected.out).
  *
  * The compiled curve's band widened (2026-10-27, 0014 section 10.7 (ah)):
- * from 0.82 to 1.08, which the corrected run used, to 0.77 to 1.13 (1.18
- * until round 19's blind readings of TR 1051, the third addendum to (ah)),
+ * from 0.82 to 1.08, which the corrected run used, to 0.77 to 1.17 (1.18
+ * until round 19's blind readings of TR 1051, 1.13 until round 20's of TN
+ * 2360 figs. 5 and 7; the addenda to (ah)),
  * by 0008 section 3.3's rule applied to body-alone base pressures it had
  * left out.
  * This widens a band after the hold-out was used. It moves no total and no
@@ -554,15 +555,15 @@ describe(
       });
     });
 
-    it('the tolerances after the correction: -20.0% to -27.0% and +23.3% to +28.6% (+19.6% to +23.2% without the wall), and -21.5% to -28.5% and +25.1% to +30.1% (+21.0% to +24.7%) with the band widened after it (0014 10.7 (ah) and its third addendum); after round 5, -19.5% to -26.2% and +23.1% to +27.4%', () => {
+    it('the tolerances after the correction: -20.0% to -27.0% and +23.3% to +28.6% (+19.6% to +23.2% without the wall), and -21.5% to -28.5% and +26.5% to +31.3% (+22.2% to +25.9%) with the band widened after it (0014 10.7 (ah) and its addenda); after round 5, -19.5% to -26.2% and +23.1% to +27.4%', () => {
       const lo = shots.map((s) => s.tolerance[0]);
       const hi = shots.map((s) => s.tolerance[1]);
       const noWall = shots.map((s) => s.highWithoutWall);
       const r = (v: number[]) =>
         [Math.min(...v), Math.max(...v)].map((x) => Math.round(1000 * x) / 10);
       expect(r(lo)).toEqual([-28.5, -21.5]);
-      expect(r(hi)).toEqual([25.1, 30.1]);
-      expect(r(noWall)).toEqual([21.0, 24.7]);
+      expect(r(hi)).toEqual([26.5, 31.3]);
+      expect(r(noWall)).toEqual([22.2, 25.9]);
       // The corrected run's own, as CORRECTED records them, before (ah).
       expect(r(CORRECTED.map((c) => c.tolerance[0]!))).toEqual([-27.0, -20.0]);
       expect(r(CORRECTED.map((c) => c.tolerance[1]!))).toEqual([23.3, 28.6]);
@@ -605,14 +606,14 @@ describe(
       expect(recordedFailed).toEqual([]);
     });
 
-    it('every residual lies inside the model-form band alone (-13.9% to -15.4%, +19.8% to +20.7% with the band widened by 0014 10.7 (ah) and its third addendum; corrected -12.4% to -13.7%, +18.4% to +19.0%; second run -12.0% to -13.3%, +17.5% to +18.6%)', () => {
+    it('every residual lies inside the model-form band alone (-13.9% to -15.4%, +21.0% to +22.2% with the band widened by 0014 10.7 (ah) and its addenda; corrected -12.4% to -13.7%, +18.4% to +19.0%; second run -12.0% to -13.3%, +17.5% to +18.6%)', () => {
       for (const s of shots) {
         const lo = s.total.low / s.total.cd - 1;
         const hi = s.total.high / s.total.cd - 1;
         expect(lo).toBeGreaterThan(-0.1545);
         expect(lo).toBeLessThan(-0.1385);
-        expect(hi).toBeGreaterThan(0.1975);
-        expect(hi).toBeLessThan(0.2085);
+        expect(hi).toBeGreaterThan(0.2095);
+        expect(hi).toBeLessThan(0.2225);
         expect(s.residual).toBeGreaterThan(lo);
         expect(s.residual).toBeLessThan(hi);
       }

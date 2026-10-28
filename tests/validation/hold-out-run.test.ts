@@ -80,8 +80,8 @@ const spreads = BASIC_FINNER_CLUSTERS.map(([a, b]) =>
  * tests/validation/basic-finner.test.ts, as recorded there: the corrected run's total, band,
  * residual and tolerance (CORRECTED), and the second run's input bands and its components
  * other than the body base (RECORDED), with the corrected body base. The compiled curve's band was
- * 0.82 to 1.08 at that run; 0014 10.7 (ah) widened it after, to 0.77 to 1.13 (1.18 until round 19's
- * blind readings of TR 1051, the third addendum to (ah)), which moves the body
+ * 0.82 to 1.08 at that run; 0014 10.7 (ah) widened it after, to 0.77 to 1.17 (1.18 until round 19's
+ * blind readings of TR 1051, 1.13 until round 20's of TN 2360 figs. 5 and 7), which moves the body
  * base's band ends by the change times its term (`widenedBy`), and nothing else.
  */
 const DREV_RECORDED = [
@@ -162,15 +162,15 @@ describe('the harness on the DREV gate', { timeout: 1_800_000 }, () => {
     });
   });
 
-  it('the tolerances after the correction, as basic-finner.test.ts states them with the band widened by 0014 10.7 (ah) and its third addendum: -21.5% to -28.5%, +25.1% to +30.1% (+21.0% to +24.7% without the wall)', () => {
+  it('the tolerances after the correction, as basic-finner.test.ts states them with the band widened by 0014 10.7 (ah) and its addenda: -21.5% to -28.5%, +26.5% to +31.3% (+22.2% to +25.9% without the wall)', () => {
     const v = present.map((m, k) =>
       verdictOf(m.total!, gated[k]!.cx0, spreads[clusterOf(m.mach)]!),
     );
     const r = (x: number[]) =>
       [Math.min(...x), Math.max(...x)].map((y) => Math.round(1000 * y) / 10);
     expect(r(v.map((x) => x.tolerance[0]))).toEqual([-28.5, -21.5]);
-    expect(r(v.map((x) => x.tolerance[1]))).toEqual([25.1, 30.1]);
-    expect(r(v.map((x) => x.highWithoutWall))).toEqual([21.0, 24.7]);
+    expect(r(v.map((x) => x.tolerance[1]))).toEqual([26.5, 31.3]);
+    expect(r(v.map((x) => x.highWithoutWall))).toEqual([22.2, 25.9]);
     expect(v.map((x) => Math.round(1000 * x.residual) / 10)).toEqual([
       -3.2, 0.5, -4.5, 3.9, -0.1, 0.7, 3.4, -5.1, 7.5, -2.6, -4.8,
     ]);

@@ -5,7 +5,8 @@
  * no-fin tunnel symbol, three), its four fins at the base (fig. 33 at t/c 0.05 and 0.10; fig. 35's finned
  * tunnel symbol, t/c 0.10), and every run of its fig. 6 (two and four fins, t/c 0.05 and 0.10, the trailing
  * edges 0 to 1 chord ahead of the base), each fig. 6 increment added to each reading of the body alone in
- * the same tunnel. The fins are TN 2360's: rectangular, unswept, circular-arc sections, the root chord 1.5
+ * the same tunnel; and, since round 20, its figs. 5 and 7's body alone at every tripped station, every
+ * reading (0014 section 10.7 (ah), the fourth addendum and its correction). The fins are TN 2360's: rectangular, unswept, circular-arc sections, the root chord 1.5
  * body diameters (the chord rule of 0015 section 3.3).
  *
  * Each value, as read, must lie inside the band served: the served band is meant to contain a valid
@@ -22,6 +23,7 @@ import {
   TN3819_FIG33,
   TN3819_FIG35_TUNNEL_W1,
 } from '../../src/base/fins-on-base-w1-data';
+import { TN2360_FIG5_FIG7_BODY_ALONE } from '../../src/base/tn3819-fig18';
 import { TN3819_FIG35_TUNNEL } from '../../src/base/tn3819-fig35';
 
 const xs = Array.from({ length: 41 }, (_, k) => k / 40);
@@ -98,19 +100,29 @@ function tn2360Cases(): Case[] {
       }
     }
   }
+  // Figs. 5 and 7's body alone (round 20), every reading of both readers, Mach 1.5 and 2.0.
+  for (const p of TN2360_FIG5_FIG7_BODY_ALONE) {
+    const at = `fig. ${p.figure}${p.reynolds === undefined ? '' : `, R ${p.reynolds[0] / 1e6}e6`}`;
+    for (const pB of [...p.readingsA, ...p.readingsB]) {
+      cases.push({ mach: p.mach, what: `body alone, ${at}, round 20`, pB });
+    }
+  }
   return cases;
 }
 
 describe('every TN 2360 base pressure the library holds lies inside the body base band served for it', () => {
   const cases = tn2360Cases();
 
-  it('the cases: 5 readings of the body alone, 7 of the fins at the base, every fig. 6 run on each body reading', () => {
-    const body = (m: number) => cases.filter((c) => c.mach === m && c.fins === undefined);
+  it("the cases: 5 readings of the body alone, 7 of the fins at the base, every fig. 6 run on each body reading, and figs. 5 and 7's body alone", () => {
+    const body = (m: number) =>
+      cases.filter((c) => c.mach === m && c.fins === undefined && !c.what.endsWith('round 20'));
     expect(body(1.5)).toHaveLength(5);
     expect(body(2.0)).toHaveLength(5);
     expect(cases.filter((c) => c.what.includes('at the base, fig. 3'))).toHaveLength(14);
     expect(TN2360_FIG6.length).toBeGreaterThan(70);
-    expect(cases).toHaveLength(10 + 14 + 5 * TN2360_FIG6.length);
+    // Round 20: ten symbols, 23 readings (the partly hidden one at R 0.765e6 carries five).
+    expect(cases.filter((c) => c.what.endsWith('round 20'))).toHaveLength(23);
+    expect(cases).toHaveLength(10 + 14 + 5 * TN2360_FIG6.length + 23);
   });
 
   it('each one, as read, inside the served band at its own geometry, none refused', () => {

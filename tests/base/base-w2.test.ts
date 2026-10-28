@@ -179,7 +179,7 @@ describe('the term (bodyBaseDrag)', () => {
     const below = bodyBaseDrag({ ...base, mach: 1.4999 });
     const at = bodyBaseDrag({ ...base, mach: 1.5 });
     expect(below.cd / at.cd).toBeCloseTo(1.04, 3);
-    expect(at.curveBand).toMatchObject({ low: 0.77, high: 1.13, nominal: 1, source: 'compiled' });
+    expect(at.curveBand).toMatchObject({ low: 0.77, high: 1.17, nominal: 1, source: 'compiled' });
   });
 
   it('refused below Mach 1.0', () => {
@@ -250,11 +250,11 @@ describe('the term (bodyBaseDrag)', () => {
     expect(term(arcs, 1.5 - 1e-9)[0]).toBe(0.2847);
     expect(term(arcs, 1.5)[0]).toBe(0.2817);
     expect(term(wedges, 1.5 - 1e-9)).toEqual([0.2283, 0.0918, 0.3648]);
-    expect(term(wedges, 1.5)).toEqual([0.2002, 0.0992, 0.2812]);
+    expect(term(wedges, 1.5)).toEqual([0.2002, 0.0992, 0.2892]);
     // M 1.62, where the zero member goes from RM L52E06's 0.838 to RM L52J21a's 0.938.
-    expect(term(wedges, 1.6)).toEqual([0.1967, 0.0958, 0.2779]);
-    expect(term(wedges, 1.62 - 1e-9)).toEqual([0.1947, 0.0953, 0.2746]);
-    expect(term(wedges, 1.62)).toEqual([0.2031, 0.1101, 0.2757]);
+    expect(term(wedges, 1.6)).toEqual([0.1967, 0.0958, 0.2857]);
+    expect(term(wedges, 1.62 - 1e-9)).toEqual([0.1947, 0.0953, 0.2824]);
+    expect(term(wedges, 1.62)).toEqual([0.2031, 0.1101, 0.2838]);
     expect(term(arcs, 1.62 - 1e-9)[0]).toBeCloseTo(term(arcs, 1.62)[0]!, 3);
     // Fins ahead of the base (0015 section 3.3): refused below M 1.5, and measured at M 1.5 with TN 2360's root
     // chord of 1.5 body diameters, which these numbers need (any other chord refused).
@@ -270,11 +270,12 @@ describe('the term (bodyBaseDrag)', () => {
         /root chord is 2\.00 body diameters/,
       );
     }
-    // With the compiled curve's band 0.77 to 1.13 (0014 10.7 (ah)); with 0.82 to 1.08 before it,
-    // [0.1629, 0.1159, 0.1935], [0.2262, 0.1698, 0.26] and [0.1894, 0.1497, 0.2101].
-    expect(term(w4, 1.5)).toEqual([0.1629, 0.1078, 0.2017]);
-    expect(term(a2, 1.5)).toEqual([0.2262, 0.1585, 0.2713]);
-    expect(term(a4, 1.5)).toEqual([0.1894, 0.1403, 0.2195]);
+    // With the compiled curve's band 0.77 to 1.17 (0014 10.7 (ah) and its addenda); with 0.82 to 1.08 before
+    // it, [0.1629, 0.1159, 0.1935], [0.2262, 0.1698, 0.26] and [0.1894, 0.1497, 0.2101]; with 0.77 to 1.13,
+    // high ends 0.2017, 0.2713 and 0.2195.
+    expect(term(w4, 1.5)).toEqual([0.1629, 0.1078, 0.2082]);
+    expect(term(a2, 1.5)).toEqual([0.2262, 0.1585, 0.2804]);
+    expect(term(a4, 1.5)).toEqual([0.1894, 0.1403, 0.2271]);
     // Below M 1.5, on W2's term, +-32.8% to +-35.9% on F (sharp sections and plates alike; +-31.7% to
     // +-34.9% before 0014 10.7 (ah) moved W2's midpoint from 1.065 to 1.04).
     const hw = Array.from({ length: 501 }, (_, k) => 1.0 + k * 0.000999).map((m) => {

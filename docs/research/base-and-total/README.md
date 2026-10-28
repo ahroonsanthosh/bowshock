@@ -110,4 +110,5 @@ tests/tmp-total/vitest.config.ts` from the repository root; it writes its
   with round 19 applied (the third addendum to (ah), band 0.77 to 1.13),
   all of them again and five new ones, each caught; after the merge with
   A5, `tests/base/tn2360-served.test.ts` on the merged head and the errors
-  planted for it.
+  planted for it; with round 20 applied (band 0.77 to 1.17), every
+  planted error again and four new ones, each caught.
