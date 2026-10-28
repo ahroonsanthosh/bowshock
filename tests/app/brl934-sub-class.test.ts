@@ -40,6 +40,7 @@ import {
   type TotalDragForm,
   type TotalDragView,
 } from '../../src/app/total-drag';
+import { COMPILED_CURVE_BAND } from '../../src/base/compiled-curve';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import type { TotalDrag } from '../../src/total/total-drag';
 import { basicFinnerBodyAsTyped } from '../../src/validation/basic-finner';
@@ -386,12 +387,28 @@ describe('the page against the run: the seven rounds', { timeout: 120_000 }, () 
       if (v.kind !== 'total') throw new Error(`${r.round}: ${v.kind}`);
       const t = v.total;
       expect(r.outcome.refused).toBe(false);
-      expect([t.cd - r.outcome.cd, t.low - r.outcome.low, t.high - r.outcome.high]).toEqual([
-        0, 0, 0,
-      ]);
-      expect(t.components.map((c) => [c.name, c.cd, c.low, c.high])).toEqual(
-        r.components.map((c) => [c.name, c.cd, c.low, c.high]),
-      );
+      // The run's values, plus what 0014 10.7 (ah) added after it to the body base's band ends: the
+      // change in the compiled curve's band (0.82 to 1.08 at the run, 0.77 to 1.17 now) times its term.
+      const bodyBase = r.components.find((c) => c.name === 'body base')!;
+      const w = {
+        low: (COMPILED_CURVE_BAND.low - 0.82) * bodyBase.cd,
+        high: (COMPILED_CURVE_BAND.high - 1.08) * bodyBase.cd,
+      };
+      expect(
+        [
+          t.cd - r.outcome.cd,
+          t.low - (r.outcome.low + w.low),
+          t.high - (r.outcome.high + w.high),
+        ].every((d) => Math.abs(d) < 1e-12),
+      ).toBe(true);
+      expect(t.components.map((c) => c.name)).toEqual(r.components.map((c) => c.name));
+      t.components.forEach((c, j) => {
+        const run = r.components[j]!;
+        const moved = c.name === 'body base' ? w : { low: 0, high: 0 };
+        expect(c.cd).toBe(run.cd);
+        expect(Math.abs(c.low - (run.low + moved.low))).toBeLessThan(1e-12);
+        expect(Math.abs(c.high - (run.high + moved.high))).toBeLessThan(1e-12);
+      });
       // The run's "diameter and air" band is its own (the corners); the library's inputs are equal.
       expect(t.inputs.map((i) => [i.name, i.low, i.high])).toEqual(
         r.inputs.filter((i) => i.name !== 'diameter and air').map((i) => [i.name, i.low, i.high]),
@@ -432,6 +449,27 @@ describe('the page against the run: the seven rounds', { timeout: 120_000 }, () 
     const mean = RUN.reduce((a, r) => a + r.outcome.residual, 0) / RUN.length;
     expect(Math.round(1000 * mean) / 10).toBe(7.3);
   });
+
+  it('the tolerances with the band the library carries now, as the claim and the table state them', () => {
+    // The run's, plus the body base's band ends moved by the change in the compiled curve's band since it
+    // (0.82 to 1.08 at the run; 0014 10.7 (ah) and its third addendum), over the modelled total.
+    const now = RUN.map((r) => {
+      const base = r.components.find((c) => c.name === 'body base')!.cd;
+      return [
+        r.outcome.tolerance[0] + ((COMPILED_CURVE_BAND.low - 0.82) * base) / r.outcome.cd,
+        r.outcome.tolerance[1] + ((COMPILED_CURVE_BAND.high - 1.08) * base) / r.outcome.cd,
+      ] as const;
+    });
+    const pc = (x: number) => `${x > 0 ? '+' : ''}${(Math.round(1000 * x) / 10).toFixed(1)}%`;
+    const lo = now.map((x) => x[0]);
+    const hi = now.map((x) => x[1]);
+    const stated = `${pc(Math.max(...lo))} to ${pc(Math.min(...lo))} and ${pc(Math.min(...hi))} to ${pc(Math.max(...hi))}`;
+    expect(stated).toBe('-26.5% to -29.0% and +30.4% to +31.0%');
+    expect(VALIDATED_CLAIM).toContain(`its tolerances there would now be ${stated}.`);
+    expect(displayText(gateDisplay())).toContain(
+      `a wider band and the tolerances would be ${stated}; no residual and no verdict changes`,
+    );
+  });
 });
 
 describe('the display', { timeout: 60_000 }, () => {
@@ -443,7 +481,7 @@ describe('the display', { timeout: 60_000 }, () => {
     if (head.kind !== 'paragraph' || box.kind !== 'box') throw new Error('expected a total');
     expect(head.tone).toBe('ok');
     expect(head.text).toBe(
-      `Total C_D = 0.4314, model-form band 0.3725 to 0.5189 (-13.7% to +20.3%): ${VALIDATED_HEADLINE}`,
+      `Total C_D = 0.4314, model-form band 0.3652 to 0.5320 (-15.4% to +23.4%): ${VALIDATED_HEADLINE}`,
     );
     expect(box.tone).toBe('ok');
     expect(box.blocks.map((b) => (b.kind === 'paragraph' ? b.text : b.kind))).toEqual([

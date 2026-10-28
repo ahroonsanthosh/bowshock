@@ -1,0 +1,252 @@
+=== R&M 3348 fig. 30a (M_0, p_b/p_0), W7 against round 10
+  1 px = 0.00085 (x) and 0.00085 (y); gate 8 px
+  symbols: W7 50 (13 circle, 10 cross, 9 triangle, 9 plus, 9 square); round 10 50 (13 circle, 10 cross, 9 triangle, 9 plus, 9 square)
+  matched 50; same type and within errors 44; outside errors 6; type or series disagreements 0; W7 only 0; round 10 only 0
+  largest |difference| / combined error over the matched pairs: x 0.71, y 1.46
+    OUTSIDE ERRORS: W7 t01 / round 10 a30-1 (triangle, phi 30 deg): W7 (0.6997, 0.7914) round 10 (0.7013, 0.7888); dx -0.00160 (combined 0.00230), dy +0.00260 (combined 0.00250)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at +0.0023; with that, dy +0.00030 (within 0.00250). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t03 / round 10 a30-3 (triangle, phi 30 deg): W7 (0.9006, 0.6745) round 10 (0.9014, 0.6712); dx -0.00080 (combined 0.00240), dy +0.00330 (combined 0.00240)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at +0.0023; with that, dy +0.00100 (within 0.00240). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t04 / round 10 a30-4 (triangle, phi 30 deg): W7 (0.9502, 0.6845) round 10 (0.9511, 0.6819); dx -0.00090 (combined 0.00240), dy +0.00260 (combined 0.00240)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at +0.0023; with that, dy +0.00030 (within 0.00240). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t06 / round 10 a30-6 (triangle, phi 30 deg): W7 (1.051, 0.4101) round 10 (1.0527, 0.4072); dx -0.00170 (combined 0.00240), dy +0.00290 (combined 0.00240)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at +0.0023; with that, dy +0.00060 (within 0.00240). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t07 / round 10 a30-7 (triangle, phi 30 deg): W7 (1.1118, 0.3944) round 10 (1.1131, 0.3917); dx -0.00130 (combined 0.00240), dy +0.00270 (combined 0.00250)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at +0.0023; with that, dy +0.00040 (within 0.00250). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t09 / round 10 a30-9 (triangle, phi 30 deg): W7 (1.182, 0.4583) round 10 (1.1834, 0.4548); dx -0.00140 (combined 0.00240), dy +0.00350 (combined 0.00240)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at +0.0023; with that, dy +0.00120 (within 0.00240). Information only; the verdict above stands.
+    not a symbol, one reading only: W7 did not read the faired sweep curves
+    not a symbol, one reading only: round 10 only: 17 x 'curve' phi0
+    not a symbol, one reading only: round 10 only: 1 x 'curve start' phi0
+    not a symbol, one reading only: round 10 only: 1 x 'curve end' phi0
+    not a symbol, one reading only: round 10 only: 18 x 'curve' phi15
+    not a symbol, one reading only: round 10 only: 1 x 'curve start' phi15
+    not a symbol, one reading only: round 10 only: 1 x 'curve end' phi15
+    not a symbol, one reading only: round 10 only: 20 x 'curve' phi30
+    not a symbol, one reading only: round 10 only: 1 x 'curve start' phi30
+    not a symbol, one reading only: round 10 only: 1 x 'curve end' phi30
+    not a symbol, one reading only: round 10 only: 18 x 'curve' phi45
+    not a symbol, one reading only: round 10 only: 1 x 'curve start' phi45
+    not a symbol, one reading only: round 10 only: 1 x 'curve end' phi45
+    not a symbol, one reading only: round 10 only: 20 x 'curve' phi60
+    not a symbol, one reading only: round 10 only: 1 x 'curve start' phi60
+    not a symbol, one reading only: round 10 only: 1 x 'curve end' phi60
+
+=== R&M 3348 fig. 30b (M_0 cos phi, p_b/p_0), W7 against round 10
+  1 px = 0.00085 (x) and 0.00085 (y); gate 8 px
+  symbols: W7 56 (13 circle, 10 cross, 8 triangle, 9 plus, 10 square, 2 diamond, 2 right-pointing triangle, 2 oval); round 10 56 (13 circle, 10 cross, 8 triangle, 9 plus, 10 square, 2 diamond, 2 right-pointing triangle, 2 oval)
+  matched 56; same type and within errors 53; outside errors 3; type or series disagreements 0; W7 only 0; round 10 only 0
+  largest |difference| / combined error over the matched pairs: x 0.92, y 1.69
+    OUTSIDE ERRORS: W7 t01 / round 10 b30-1 (triangle, phi 30 deg): W7 (0.6071, 0.7937) round 10 (0.6077, 0.7906); dx -0.00060 (combined 0.00270), dy +0.00310 (combined 0.00260)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at +0.0023; with that, dy +0.00080 (within 0.00260). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t05 / round 10 b30-6 (triangle, phi 30 deg): W7 (0.9084, 0.4121) round 10 (0.91, 0.4088); dx -0.00160 (combined 0.00270), dy +0.00330 (combined 0.00250)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at +0.0023; with that, dy +0.00100 (within 0.00250). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t06 / round 10 b30-7 (triangle, phi 30 deg): W7 (0.9619, 0.396) round 10 (0.9638, 0.3916); dx -0.00190 (combined 0.00270), dy +0.00440 (combined 0.00260)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at +0.0023; with that, dy +0.00210 (within 0.00260). Information only; the verdict above stands.
+    not a symbol, one reading only: W7 did not read the dashed mean curve of Cleary and Stevens
+    not a symbol, one reading only: round 10 only: 20 x 'curve' cleary_stevens
+    not a symbol, one reading only: round 10 only: 1 x 'curve start' cleary_stevens
+    not a symbol, one reading only: round 10 only: 1 x 'curve end' cleary_stevens
+
+=== R&M 3348 fig. 31b (M_0 cos phi, C_cf sec^2 phi), W7 against round 10
+  1 px = 0.00059 (x) and 8.7e-05 (y); gate 8 px
+  symbols: W7 36 (10 circle, 8 cross, 10 triangle, 8 plus); round 10 36 (10 circle, 8 cross, 10 triangle, 8 plus)
+  matched 36; same type and within errors 26; outside errors 10; type or series disagreements 0; W7 only 0; round 10 only 0
+  largest |difference| / combined error over the matched pairs: x 0.95, y 1.84
+    OUTSIDE ERRORS: W7 t01 / round 10 c45-1 (triangle, phi 45 deg): W7 (0.49446, -0.00992) round 10 (0.4951, -0.00962); dx -0.00064 (combined 0.00185), dy -0.00030 (combined 0.00026)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at -0.0002; with that, dy -0.00010 (within 0.00026). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t02 / round 10 c45-2 (triangle, phi 45 deg): W7 (0.56645, -0.00847) round 10 (0.5673, -0.00821); dx -0.00085 (combined 0.00186), dy -0.00026 (combined 0.00025)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at -0.0002; with that, dy -0.00006 (within 0.00025). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t03 / round 10 c45-3 (triangle, phi 45 deg): W7 (0.63818, -0.00733) round 10 (0.6384, -0.00701); dx -0.00022 (combined 0.00185), dy -0.00032 (combined 0.00025)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at -0.0002; with that, dy -0.00012 (within 0.00025). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t04 / round 10 c45-4 (triangle, phi 45 deg): W7 (0.67294, -0.00766) round 10 (0.6735, -0.00735); dx -0.00056 (combined 0.00185), dy -0.00031 (combined 0.00025)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at -0.0002; with that, dy -0.00011 (within 0.00025). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t05 / round 10 c45-5 (triangle, phi 45 deg): W7 (0.70883, -0.00744) round 10 (0.7092, -0.00707); dx -0.00037 (combined 0.00185), dy -0.00037 (combined 0.00025)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at -0.0002; with that, dy -0.00017 (within 0.00025). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t06 / round 10 c45-6 (triangle, phi 45 deg): W7 (0.74362, -0.00477) round 10 (0.7442, -0.00445); dx -0.00058 (combined 0.00185), dy -0.00032 (combined 0.00025)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at -0.0002; with that, dy -0.00012 (within 0.00025). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t07 / round 10 c45-7 (triangle, phi 45 deg): W7 (0.78072, 0.00108) round 10 (0.7815, 0.0014); dx -0.00078 (combined 0.00185), dy -0.00032 (combined 0.00025)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at -0.0002; with that, dy -0.00012 (within 0.00025). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t08 / round 10 c45-8 (triangle, phi 45 deg): W7 (0.79845, 0.00068) round 10 (0.8002, 0.00114); dx -0.00175 (combined 0.00185), dy -0.00046 (combined 0.00025)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at -0.0002; with that, dy -0.00026 (outside 0.00025). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t09 / round 10 c45-9 (triangle, phi 45 deg): W7 (0.82103, 0.00891) round 10 (0.8216, 0.00925); dx -0.00057 (combined 0.00187), dy -0.00034 (combined 0.00025)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at -0.0002; with that, dy -0.00014 (within 0.00025). Information only; the verdict above stands.
+    OUTSIDE ERRORS: W7 t10 / round 10 c45-10 (triangle, phi 45 deg): W7 (0.84887, 0.00959) round 10 (0.8496, 0.01005); dx -0.00073 (combined 0.00187), dy -0.00046 (combined 0.00025)
+      centre convention: W7 centres triangles on the centroid, round 10 on the bounding box and states its centroid at -0.0002; with that, dy -0.00026 (outside 0.00025). Information only; the verdict above stands.
+    not a symbol, one reading only: W7 did not read the faired 0 deg curve
+    not a symbol, one reading only: round 10 only: 27 x 'curve' phi0
+    not a symbol, one reading only: round 10 only: 1 x 'curve start' phi0
+    not a symbol, one reading only: round 10 only: 1 x 'curve end' phi0
+
+=== R&M 3348 fig. 32 (xi_0, C~_cf), W7 against round 10
+  1 px = 0.0058 (x) and 0.0044 (y); gate 8 px
+  symbols: W7 9 (9 circle); round 10 9 (9 circle)
+  matched 9; same type and within errors 9; outside errors 0; type or series disagreements 0; W7 only 0; round 10 only 0
+  largest |difference| / combined error over the matched pairs: x 0.70, y 0.74
+    not a symbol, one reading only: W7 did not read Knechtel's curve (ref. 19) or the theory curve (ref. 30)
+    not a symbol, one reading only: round 10 only: 14 x 'curve' ref19_expt
+    not a symbol, one reading only: round 10 only: 1 x 'curve start' ref19_expt
+    not a symbol, one reading only: round 10 only: 1 x 'curve end' ref19_expt
+    not a symbol, one reading only: round 10 only: 12 x 'curve' ref30_theory
+    not a symbol, one reading only: round 10 only: 1 x 'curve start' ref30_theory
+    not a symbol, one reading only: round 10 only: 1 x 'curve end' ref30_theory
+
+=== NASA CR-149372 fig. 8a (theta deg, Cp), W7 against round 10
+  1 px = 0.14 (x) and 0.0014 (y); gate 12 px
+  symbols: W7 94 (21 hexagon, 22 triangle, 24 square, 27 circle); round 10 95 (28 circle, 24 square, 21 triangle, 22 hexagon)
+  matched 93; same type and within errors 92; outside errors 0; type or series disagreements 1; W7 only 1; round 10 only 2
+  largest |difference| / combined error over the matched pairs: x 0.61, y 0.88
+    TYPE: W7 s22 square (M 0.7) against round 10 m6-27 circle (M 0.6): W7 (177.03, -1.349) round 10 (176.54, -1.3509); dx +0.49000 (combined 1.87000), dy +0.00190 (combined 0.01600)
+    W7 ONLY: t12 triangle (M 0.8) at (74.231, -1.017); nearest round 10: m8-12 (triangle, M 0.8) at 22.5 px
+    ROUND 10 ONLY: m7-15 square (M 0.7) at (89.01, -1.0748); nearest W7: s14 (square, M 0.7) at 18.7 px
+    ROUND 10 ONLY: m9-12 hexagon (M 0.9) at (85.75, -0.919); nearest W7: h11 (hexagon, M 0.9) at 16.0 px
+    not a symbol, one reading only: W7 did not read the four faired curves
+    not a symbol, one reading only: round 10 only: 33 x 'curve' M0.6
+    not a symbol, one reading only: round 10 only: 36 x 'curve' M0.7
+    not a symbol, one reading only: round 10 only: 40 x 'curve' M0.8
+    not a symbol, one reading only: round 10 only: 38 x 'curve' M0.9
+
+=== R&M 3348 fig. 30a against table 3 (hole 4, eta 0.59, alpha 0): a source inconsistency, both kept
+  table 3 as typed twice (W7 and round 8, equal at every entry used here); a symbol is set against the table's
+  M_0 when its read M_0 lies within 0.015 of it; difference = plotted minus tabulated (negative: more suction
+  in the figure); the figure's reading error is shown, the table's is a printed three-decimal value
+   phi   M_0  table 3        W7 - table      round 10 - table
+     0  0.70    0.703     -0.0005 (o01)        +0.0000 (a0-1)
+     0  0.80    0.611     -0.0009 (o02)        -0.0005 (a0-2)
+     0  0.90    0.436     -0.0003 (o08)        -0.0004 (a0-8)
+     0  1.00    0.411     +0.0002 (o10)       -0.0002 (a0-10)
+     0  1.11    0.451     -0.0051 (o12)       -0.0049 (a0-12)
+     0  1.16    0.479     -0.0073 (o13)       -0.0073 (a0-13)
+    15  0.70    0.738     -0.0004 (x01)       +0.0006 (a15-1)
+    15  0.80    0.636     +0.0001 (x03)       +0.0001 (a15-3)
+    15  0.90    0.573     -0.0013 (x05)       -0.0007 (a15-5)
+    15  1.00    0.432     +0.0015 (x07)       +0.0018 (a15-7)
+    15  1.11    0.462     -0.0038 (x09)       -0.0030 (a15-9)
+    15  1.16    0.486     -0.0053 (x10)      -0.0056 (a15-10)
+    30  0.70    0.793     -0.0016 (t01)       -0.0042 (a30-1)
+    30  0.80    0.723     -0.0045 (t02)       -0.0020 (a30-2)
+    30  0.90    0.673     +0.0015 (t03)       -0.0018 (a30-3)
+    30  1.00    0.561     +0.0059 (t05)       +0.0077 (a30-5)
+    30  1.11    0.397     -0.0026 (t07)       -0.0053 (a30-7)
+    30  1.16    0.461     -0.0055 (t08)       -0.0077 (a30-8)
+    45  0.70    0.877     -0.0019 (p01)       -0.0003 (a45-1)
+    45  0.80    0.835     -0.0012 (p02)       -0.0002 (a45-2)
+    45  0.90    0.793     +0.0020 (p03)       +0.0009 (a45-3)
+    45  1.00    0.755     -0.0035 (p05)       -0.0027 (a45-5)
+    45  1.11    0.665     -0.0090 (p07)       -0.0086 (a45-7)
+    45  1.20    0.581     -0.0152 (p09)       -0.0167 (a45-9)
+    60  0.70    0.934     -0.0041 (s01)       -0.0009 (a60-1)
+    60  0.80    0.915     -0.0013 (s02)       -0.0016 (a60-2)
+    60  0.90    0.890     -0.0006 (s03)       -0.0013 (a60-3)
+    60  1.00    0.864     -0.0003 (s05)       -0.0008 (a60-5)
+    60  1.11    0.856     -0.0094 (s07)       -0.0098 (a60-7)
+    60  1.20    0.817     -0.0216 (s09)       -0.0215 (a60-9)
+  W7: M_0 0.70 to 1.00, 20 points, |plotted - table| up to 0.0059, 16 within 0.002; M_0 1.11 to 1.20, 10 points, plotted - table -0.0216 to -0.0026, 10 of 10 below the table
+  round 10: M_0 0.70 to 1.00, 20 points, |plotted - table| up to 0.0077, 17 within 0.002; M_0 1.11 to 1.20, 10 points, plotted - table -0.0215 to -0.0030, 10 of 10 below the table
+
+=== Summary (symbols): figure, W7, round 10, matched, agree, outside errors, type or series disagreements, W7 only, round 10 only
+  rm3348_fig30a, 50, 50, 50, 44, 6, 0, 0, 0
+  rm3348_fig30b, 56, 56, 56, 53, 3, 0, 0, 0
+  rm3348_fig31b, 36, 36, 36, 26, 10, 0, 0, 0
+  rm3348_fig32, 9, 9, 9, 9, 0, 0, 0, 0
+  cr149372_fig8a, 94, 95, 93, 92, 0, 1, 1, 2
+
+=== Notes by the neutral party (hand-written; appended to pairing_output.txt by pair_figures_b.py)
+
+Pairs made: W7's first readings (claude/wip/w7-fins at 7e58173) against round 10's blind readings, symbols only:
+R&M 3348 figs. 30a, 30b, 31b, 32 and NASA CR-149372 fig. 8a. Round 10's faired curves (and fig. 32's Knechtel and
+theory curves) are read by round 10 only and are not paired. Nothing is resolved toward either reading; the value that
+later sets a band is the envelope of both (project rule).
+
+--- Per-figure table (symbols; gate 8 px on R&M 3348, 12 px on fig. 8a; the same counts at 0.75 and 1.5 times
+    those gates, except fig. 31b at 0.75 times, where t08 and c45-8 (6.1 px apart) fall apart into two singles)
+
+figure            W7  round 10  matched  agree  outside errors  type disagreements  W7 only  round 10 only
+fig. 30a          50  50        50       44     6               0                   0        0
+fig. 30b          56  56        56       53     3               0                   0        0
+fig. 31b          36  36        36       26     10              0                   0        0
+fig. 32            9   9         9        9     0               0                   0        0
+CR-149372 fig. 8a 94  95        93       92     0               1                   1        2
+
+--- Disagreements, listed
+
+1. Triangles of R&M 3348 figs. 30a, 30b and 31b: 19 pairs outside their errors, all triangles, all the same way
+   (W7 higher in p_b/p_0 by 0.0026 to 0.0044 on fig. 30, lower in C_cf sec^2 phi by 0.00026 to 0.00046 on fig. 31b).
+   Every other symbol type agrees. The two readers centre triangles differently: W7 on the centroid (symfit.py),
+   round 10 on the bounding box, and round 10 states its centroid would read +0.0023 (fig. 30) and 0.0002 lower
+   (fig. 31b). With round 10's own stated offset, 17 of the 19 fall within their errors; fig. 31b t08 / c45-8 and
+   t10 / c45-10 stay at 0.00026 against 0.00025. This explains the pattern; it does not change a verdict, and both centres stay in the
+   envelope. The pairs:
+     fig. 30a: t01/a30-1, t03/a30-3, t04/a30-4, t06/a30-6, t07/a30-7, t09/a30-9
+     fig. 30b: t01/b30-1, t05/b30-6, t06/b30-7
+     fig. 31b: t01 to t07, t09, t10 / c45-1 to c45-7, c45-9, c45-10, and t08 / c45-8 (6.1 px apart: W7 notes t08
+     overlaps circle o03 and the curve; dx -0.0018 against 0.0019, dy -0.00046 against 0.00025)
+2. CR-149372 fig. 8a, type: at theta 177 deg, Cp -1.35, W7 reads a square (s22, M 0.7; W7's own flag: "it may be part
+   of s23") where round 10 reads a partly drawn circle (m6-27, M 0.6; "its outline shares m7-23's top edge"). Values
+   within errors. This is why W7 has 27 circles and round 10 28.
+3. CR-149372 fig. 8a, one reading only:
+   - W7 t12, a triangle (M 0.8) at theta 74.2 deg, Cp -1.017. W7 flags it: "it may be the gap between two curves".
+     Round 10 has no symbol there (its nearest, m8-12, is 22 px away).
+   - round 10 m7-15, a partly drawn square (M 0.7) at theta 89.0 deg, Cp -1.075 (round 10: shares its left side with
+     m7-14). W7's nearest square, s14, is 19 px away.
+   - round 10 m9-12, a partly drawn hexagon (M 0.9) at theta 85.8 deg, Cp -0.919. Round 10 reads two partly drawn
+     hexagons overlapping m9-11 (m9-12, m9-13) and says they could be one; W7 reads one (h12, flagged, matched to
+     m9-13).
+   - W7's method says "95 symbols", but its CSV holds 94 (27 + 24 + 22 + 21, the counts the method gives). Round 10
+     holds 95 (28 + 24 + 21 + 22).
+4. Figs. 30a, 30b, 32: no other disagreement. Both readings agree on the triangle missing from fig. 30b (phi 30,
+   M_0 1.0) and on the phi 60 point at M_0 0.70 being off fig. 30b's scale.
+
+--- R&M 3348 fig. 30a against table 3 (hole 4, eta 0.59, alpha 0): a source inconsistency, both kept
+
+Table 3 is the twice-typed table on main (W7's typing and round 8's, equal at every entry used; the script asserts
+it). W7's reading of fig. 30a shows the same as round 10's (table above, fig30a_against_table3.csv):
+   - M_0 0.70 to 1.00: W7 within 0.002 of the table at 16 of 20 points (round 10: 17 of 20). Larger: phi 30 at M_0 0.80
+     (-0.0045) and 1.00 (+0.0059; round 10 +0.0077 at that point), phi 45 at 1.00 (-0.0035), phi 60 at 0.70 (-0.0041).
+   - M_0 1.11 to 1.20: every plotted point lies below the table (more suction), 10 of 10 in both readings: W7 -0.0026
+     to -0.0216, round 10 -0.0030 to -0.0215; at M_0 1.20, phi 45 -0.0152 (W7) and -0.0167 (round 10), phi 60 -0.0216
+     and -0.0215.
+   So two independent readings of the figure both put fig. 30a's points above M_0 1.1 below the report's own table,
+   by up to 0.022. This is an inconsistency in the source, not a reading error. Both the figure and the table are
+   kept; neither is resolved toward the other. W7's triangles are centroid-centred, round 10's box-centred, which
+   accounts for the phi 30 differences between the two readings (about 0.0023), not for the gap to the table.
+
+--- Blindness
+
+Commit and push times (UTC, 2026-10-22; pushes from GitHub's repository activity):
+   round 10 (claude/wip/round10-w7-figures): 620c0a6 figs. 30a and 30b 04:24:28; c8bb424 figs. 31b and 32 04:33:23;
+     9a2d488 CR-149372 fig. 8a 08:48:51; the branch first pushed 09:35:12.
+   W7 (claude/wip/w7-fins): 07ce82f fig. 30 22:33:32 (pushed 22:33:34); 818d9f2 fig. 31b 22:37:34 (22:37:36);
+     3c5a9f5 fig. 32 22:37:49 (22:37:52); e94adb7 fig. 8a 22:47:40 (22:47:42).
+   Round 10 read these figures about 14 to 18 hours before W7. Round 10 cannot have seen W7's readings: they did not
+   exist. Round 10's method.md says its reader never opened W7's readings or scripts; it counts as blind.
+   W7 read second in time, with round 10's readings on GitHub since 09:35 and in the shared repository since 04:24.
+   W7's method files say no file of round 10 and no pairing file was opened. The repository is consistent with that:
+   W7's commits 07ce82f to 7e58173 add only files under audit/w7-fins/, and no round 10 file was ever on w7-fins.
+   It cannot prove a file was not opened.
+
+What W7 is recorded as having seen before reading:
+   - The reviewer's first-look numbers in 0019 (sections 3.2 and 3.3): fig. 8a front-side integrals 0.21, 0.29, 0.41,
+     0.55 at M 0.6 to 0.9; fig. 31b values (60 deg at -0.007 to -0.0105 at 0.55 to 0.60; 45 deg +0.009 to +0.010 at
+     0.82 to 0.85); fig. 32 values (reduced drag 0.10 to 2.52 at xi_0 -1.15 to 0.65). W7 says so and says they were not
+     used. For fig. 8a W7 also ran the reviewer's script fs8a.py, which holds the reviewer's rough pixel positions. These
+     are a third party's rough first look, not round 10's reading.
+   - The existence and the direction of the fig. 30 against table 3 inconsistency: HANDOFF.md (claude/wip/handoff,
+     which every agent's brief says to read) says "R&M 3348 fig. 30's points at Mach 1.11 to 1.20 lie below its own
+     table 3", and 0019 (line 980, on main since db6ba30, merged into w7-fins at e592d40 before W7's reading) names
+     "the fig. 30 against table 3 inconsistency raised at the pairing". Neither gives a value. The handoff's
+     status/round10-reader.md does give round 10's differences (a30-1 -0.004, a30-5 +0.008, 0.003 to 0.010, 0.017 and
+     0.022); W7's method does not say whether that file was opened. W7 states table 3 was not consulted while reading
+     fig. 30.
+Verdicts:
+   - Round 10 (the blind reading) on all five figures: blind.
+   - W7's readings of figs. 30a, 30b, 31b, 32 and 8a: blind to round 10's readings as far as its statements and the
+     repository show. For fig. 30a, W7 knew before reading that above Mach 1.1 the figure's points had been found below
+     table 3, so W7's agreement with that finding is not a fully independent confirmation of it. W7's values match
+     round 10's within errors there (all symbols but the triangles, whose differences follow the centre convention), so
+     the inconsistency rests on round 10's reading as much as on W7's. The coordinator may ask W7 whether
+     status/round10-reader.md was opened.
+   - No reading here is marked "not blind".
+   - A correction to W7's note added to method_rm3427_figs9_10.md (in 7e58173): it says round 10's branch was "pushed
+     at 09:21"; 09:21 is the commit time of 5c7c746. GitHub's activity shows the branch first pushed at 09:35:12, six
+     minutes after W7's 09:29 commit. Round 10's commit was in the shared local repository from 09:21.

@@ -1,0 +1,15 @@
+{"page": "/tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/te15c/C/work/p30_native.npy", "cal": "/tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/te15c/C/work/cal30.json", "panel": "M=1.2, 1.4, 1.7", "band": 4, "alpha_step": 0.5,
+ "curves": [
+  {"name": "G1", "guide": [[1953,1312],[1948,1325],[1942,1340],[1938,1352],[1936,1362],[1934,1380],[1935,1395],[1936,1410],[1940,1425],[1946,1437],[1953,1447],[1958,1453],[1966,1460],[1975,1469]],
+   "exclude": [[1941,1365,1966,1398]],
+   "boxes": [{"rows": [1380,1403], "x0": 1932, "x1": 1942, "how": "touched by the second arrowhead of the 1.2 label"},
+             {"rows": [1455,1465], "x0": 1958, "x1": 1972, "how": "crosses curve G2 here; ink merged"},
+             {"rows": [1311,1316], "x0": 1949, "x1": 1958, "how": "top apex shared with curve G2"}],
+   "turning": [{"box": [1928,1355,1945,1415], "kind": "min_x"}]},
+  {"name": "G2", "guide": [[1955,1312],[1958,1322],[1961,1335],[1964,1345],[1965,1358],[1966,1375],[1967,1390],[1968,1404],[1969,1416],[1968,1430],[1967,1440],[1966,1450],[1966,1460],[1966,1469]],
+   "exclude": [[1966,1314,1995,1332],[1940,1362,1964,1400]],
+   "boxes": [{"rows": [1316,1330], "x0": 1954, "x1": 1965, "how": "touched by the tip of the first arrowhead of the 1.2 label"},
+             {"rows": [1360,1380], "x0": 1961, "x1": 1970, "how": "crossed by the shaft of the second arrow of the 1.2 label"},
+             {"rows": [1455,1465], "x0": 1960, "x1": 1972, "how": "crossed by curve G1 here; ink merged"},
+             {"rows": [1311,1315], "x0": 1949, "x1": 1958, "how": "top apex shared with curve G1"}]}
+ ]}

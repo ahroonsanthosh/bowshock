@@ -60,13 +60,30 @@
  * the factor was on the free-flight curve before the correction, Mach 1.799
  * to 2.15 (0011 section 3). CORRECTED holds the corrected run
  * (docs/research/base-and-total/runs/gate-corrected.out).
+ *
+ * The compiled curve's band widened (2026-10-27, 0014 section 10.7 (ah)):
+ * from 0.82 to 1.08, which the corrected run used, to 0.77 to 1.17 (1.18
+ * until round 19's blind readings of TR 1051, 1.13 until round 20's of TN
+ * 2360 figs. 5 and 7; the addenda to (ah)),
+ * by 0008 section 3.3's rule applied to body-alone base pressures it had
+ * left out.
+ * This widens a band after the hold-out was used. It moves no total and no
+ * residual: only the body base's band ends, each by the change in the
+ * band's end times the body base term, and with them the model-form band
+ * and the tolerance. CORRECTED keeps the corrected run's values; the tests
+ * below check the model against them plus that widening (`widenedBy`), and
+ * every shot is still inside its tolerance.
  */
 
 import { beforeAll, describe, expect, it } from 'vitest';
 import {
+  bandHighAbove,
+  bandLowAbove,
+  FIN_TRAILING_EDGE_BAND,
   finTrailingEdgeBaseDrag,
   type FinTrailingEdgeBase,
 } from '../../src/base/fin-trailing-edge';
+import { COMPILED_CURVE_BAND } from '../../src/base/compiled-curve';
 import { trapezoidalPlanform } from '../../src/fins/planform';
 import { singleWedge } from '../../src/fins/section';
 import {
@@ -371,6 +388,15 @@ const CORRECTED = [
   },
 ];
 
+/** The compiled curve's band when the corrected run was made (0010 section 1.2), before 0014 10.7 (ah). */
+const BAND_AT_THE_RUN = { low: 0.82, high: 1.08 } as const;
+
+/** What 0014 10.7 (ah) adds to the body base's band ends, in C_D, for a body base term `cd`. */
+const widenedBy = (cd: number) => ({
+  low: (COMPILED_CURVE_BAND.low - BAND_AT_THE_RUN.low) * cd,
+  high: (COMPILED_CURVE_BAND.high - BAND_AT_THE_RUN.high) * cd,
+});
+
 interface Shot {
   readonly shot: string;
   readonly mach: number;
@@ -392,6 +418,20 @@ const clusterSpread = BASIC_FINNER_CLUSTERS.map(([a, b]) => {
   return { lo: Math.min(...v) / mean - 1, hi: Math.max(...v) / mean - 1 };
 });
 const clusterOf = (m: number) => BASIC_FINNER_CLUSTERS.findIndex(([a, b]) => m >= a && m <= b);
+
+/**
+ * F4's move of a shot's trailing-edge ends (0019 section 3.4.1, F4 and R1): at the low end, the
+ * term's low end with the band's low end 0.93, as the correction ran, less its low end now; at
+ * the high end, its high end now less the high end with 1.21. Each zero outside Mach 1.60 to
+ * 1.80.
+ */
+function f4Move(s: { mach: number; total: TotalDrag }): { low: number; high: number } {
+  const te = s.total.components.find((c) => c.name === 'fin trailing-edge base')!;
+  return {
+    low: te.low * (FIN_TRAILING_EDGE_BAND.low / bandLowAbove(s.mach) - 1),
+    high: te.high * (1 - FIN_TRAILING_EDGE_BAND.high / bandHighAbove(s.mach)),
+  };
+}
 
 let shots: Shot[] = [];
 
@@ -482,19 +522,33 @@ describe(
         const c = CORRECTED[k]!;
         expect(s.shot).toBe(r.shot);
         expect(c.shot).toBe(r.shot);
+        // The corrected run's values, plus 0014 10.7 (ah)'s widening of the body base's band, and, since F4
+        // (0019 section 3.4.1, 2026-10-27; R1, 2026-10-28), the trailing edges' band at Mach 1.60 to 1.80
+        // widened at both ends by RM A52E01's lines at Mach 1.7: at the 1.799 shot its low end, and so the
+        // total's and the tolerance's, lie below the correction's record, and its high end above it, by
+        // these amounts.
+        const w = widenedBy(c.bodyBase[0]!);
+        const f4 = f4Move(s);
+        expect(f4.low > 0).toBe(s.mach < 1.8);
+        expect(f4.high > 0).toBe(s.mach < 1.8);
         expect(Math.abs(s.total.cd - c.cd)).toBeLessThan(1e-5);
-        expect(Math.abs(s.total.low - c.low)).toBeLessThan(1e-5);
-        expect(Math.abs(s.total.high - c.high)).toBeLessThan(1e-5);
+        expect(Math.abs(s.total.low + f4.low - (c.low + w.low))).toBeLessThan(1e-5);
+        expect(Math.abs(s.total.high - f4.high - (c.high + w.high))).toBeLessThan(1e-5);
         expect(Math.abs(s.inputLow - r.inputLow)).toBeLessThan(1e-5);
         expect(Math.abs(s.inputHigh - r.inputHigh)).toBeLessThan(1e-5);
         expect(Math.abs(s.residual - c.residual)).toBeLessThan(1e-4);
-        expect(Math.abs(s.tolerance[0] - c.tolerance[0]!)).toBeLessThan(1e-4);
-        expect(Math.abs(s.tolerance[1] - c.tolerance[1]!)).toBeLessThan(1e-4);
+        expect(
+          Math.abs(s.tolerance[0] + f4.low / s.total.cd - (c.tolerance[0]! + w.low / c.cd)),
+        ).toBeLessThan(1e-4);
+        expect(
+          Math.abs(s.tolerance[1] - f4.high / s.total.cd - (c.tolerance[1]! + w.high / c.cd)),
+        ).toBeLessThan(1e-4);
         s.total.components.forEach((x, j) => {
           if (x.name === 'body base') {
+            const corrected = [c.bodyBase[0]!, c.bodyBase[1]! + w.low, c.bodyBase[2]! + w.high];
             expect(
               [x.cd, x.low, x.high]
-                .map((v, i) => Math.abs(v - c.bodyBase[i]!))
+                .map((v, i) => Math.abs(v - corrected[i]!))
                 .every((d) => d < 1e-5),
             ).toBe(true);
           } else {
@@ -529,15 +583,18 @@ describe(
       });
     });
 
-    it('the tolerances after the correction: -20.0% to -27.0% and +23.3% to +28.6% (+19.6% to +23.2% without the wall); after round 5, -19.5% to -26.2% and +23.1% to +27.4%', () => {
+    it('the tolerances after the correction: -20.0% to -27.0% and +23.3% to +28.6% (+19.6% to +23.2% without the wall), and -21.5% to -28.5% and +26.5% to +31.3% (+22.2% to +25.9%) with the band widened after it (0014 10.7 (ah) and its addenda); after round 5, -19.5% to -26.2% and +23.1% to +27.4%', () => {
       const lo = shots.map((s) => s.tolerance[0]);
       const hi = shots.map((s) => s.tolerance[1]);
       const noWall = shots.map((s) => s.highWithoutWall);
       const r = (v: number[]) =>
         [Math.min(...v), Math.max(...v)].map((x) => Math.round(1000 * x) / 10);
-      expect(r(lo)).toEqual([-27.0, -20.0]);
-      expect(r(hi)).toEqual([23.3, 28.6]);
-      expect(r(noWall)).toEqual([19.6, 23.2]);
+      expect(r(lo)).toEqual([-28.5, -21.5]);
+      expect(r(hi)).toEqual([26.5, 31.3]);
+      expect(r(noWall)).toEqual([22.2, 25.9]);
+      // The corrected run's own, as CORRECTED records them, before (ah).
+      expect(r(CORRECTED.map((c) => c.tolerance[0]!))).toEqual([-27.0, -20.0]);
+      expect(r(CORRECTED.map((c) => c.tolerance[1]!))).toEqual([23.3, 28.6]);
       // After round 5, as recorded to four decimals: -26.15% (published -26.2%) to -19.49%, +23.10% to +27.44%.
       const ends = (v: number[]) => [Math.min(...v), Math.max(...v)];
       expect(ends(RECORDED.map((x) => x.tolerance[0]!))).toEqual([-0.2615, -0.1949]);
@@ -577,17 +634,24 @@ describe(
       expect(recordedFailed).toEqual([]);
     });
 
-    it('every residual lies inside the model-form band alone (-12.4% to -13.7%, +18.4% to +19.0%; second run -12.0% to -13.3%, +17.5% to +18.6%)', () => {
+    it("every residual lies inside the model-form band alone (-13.9% to -15.6%, +21.0% to +22.2% with the band widened by 0014 10.7 (ah) and its addenda and the trailing edges' band by 0019 section 3.4.1's F4; corrected -12.4% to -13.7%, +18.4% to +19.0%; second run -12.0% to -13.3%, +17.5% to +18.6%)", () => {
       for (const s of shots) {
         const lo = s.total.low / s.total.cd - 1;
         const hi = s.total.high / s.total.cd - 1;
-        expect(lo).toBeGreaterThan(-0.1375);
-        expect(lo).toBeLessThan(-0.1235);
-        expect(hi).toBeGreaterThan(0.1835);
-        expect(hi).toBeLessThan(0.1905);
+        // -15.64% at the Mach 1.799 shot since F4 (0019 section 3.4.1), -15.4% before it.
+        expect(lo).toBeGreaterThan(-0.1566);
+        expect(lo).toBeLessThan(-0.1385);
+        expect(hi).toBeGreaterThan(0.2095);
+        expect(hi).toBeLessThan(0.2225);
         expect(s.residual).toBeGreaterThan(lo);
         expect(s.residual).toBeLessThan(hi);
       }
+      // The ends the title states, to one decimal, from the computed values.
+      const pct = (v: number) => Math.round(1000 * v) / 10;
+      const los = shots.map((s) => s.total.low / s.total.cd - 1);
+      const his = shots.map((s) => s.total.high / s.total.cd - 1);
+      expect([pct(Math.min(...los)), pct(Math.max(...los))]).toEqual([-15.6, -13.9]);
+      expect([pct(Math.min(...his)), pct(Math.max(...his))]).toEqual([21.0, 22.2]);
     });
 
     it('per cluster: mean, min, max and standard deviation of the residuals, corrected and as the second run gave them', () => {
@@ -737,8 +801,10 @@ describe(
         (s) =>
           s.total.components.find((c) => c.name === 'fin trailing-edge base')!.high / s.te.vacuum,
       );
+      // 0.722 at the Mach 1.799 shot since R1 (0019 section 3.4.1), a widening made after the
+      // gate was used; 0.721 before.
       expect([Math.min(...r), Math.max(...r)].map((x) => Math.round(1000 * x) / 1000)).toEqual([
-        0.721, 0.931,
+        0.722, 0.931,
       ]);
     });
 
@@ -755,7 +821,17 @@ describe(
         const le = r.refusals.find((x) => x.component === 'fin leading edges');
         if (s.mach < 1.3) expect(le?.message).toMatch(/^Reynolds number .* is below 6700/);
         else expect(le).toBeUndefined();
-        expect(reasons).toContain('mach-range');
+        // The wedges' trailing edges (c/[h Re^(1/5)] about 0.8, 0019 section 3.4.1): to Mach 1.15
+        // RM A51J11's thick layers reach them, and the transition input that leaves them laminar
+        // is refused there (shots at 1.056, 1.058, 1.116); from 1.15 to 1.5 the sets reach only
+        // 0.666 (RM A52E01 counts toward no reach), so the shots at 1.254 and 1.332 are refused
+        // for the layer too, with every reason given.
+        expect(
+          r.refusals.filter((x) => x.component === 'fin trailing-edge base').map((x) => x.reason),
+        ).toEqual(
+          s.mach < 1.15 ? ['laminar-trailing-edge'] : ['thick-layer', 'laminar-trailing-edge'],
+        );
+        expect(reasons.length).toBeGreaterThan(0);
         // Below M 1.5 fin friction and the wedges' wave drag are refused first: the fins' own-drag
         // band is measured only at M 1.5 to 2.96 (0014 section 10.7 (f)).
         expect(
