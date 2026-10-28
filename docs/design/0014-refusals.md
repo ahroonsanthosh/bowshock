@@ -2127,19 +2127,30 @@ that the increment is nearly zero a chord fore or aft.
   chord ahead, a plate's rounded trailing edge or such a blunt one is
   named beside the position. Where fins ahead of the base are refused for
   their position or for such a trailing edge, the words send the
-  rocketeer to the base, so the same fins are run at the base: refused
-  there for another reason, that refusal is carried with the first, in
-  its message and in its words, which name both and give both changes
-  (or none, where nothing about the rocket changes the second); served
-  there, the first reason alone is named. The review's case, three 5%
+  rocketeer to the base, so the fins are run at the base as the words'
+  change makes them: for a refusal of the position the same fins; for a
+  plate's rounded trailing edge the same plate with square trailing
+  edges; for a blunt edge the faces widen or narrow to, a symmetric
+  double wedge of the same thickness ratio standing for "sharp trailing
+  edges". Refused there, that refusal is carried with the first, in its
+  message and in its words, which name both and give both changes (or
+  none, where nothing about the rocket changes the second); served there,
+  the first reason alone is named. The review's case, three 5%
   double wedges on a clipped delta with the leading edge swept 34.2 deg,
   the trailing edge unswept, a root chord of 2.0 diameters, x/c 0.5, Mach
   1.8, was refused for its position and told to move the fins to the
   base, where they are refused again for their sweep; its words now name
-  both. What is run at the base is the same fins, not the fins as the
-  change would make them, so a refusal the changed fins alone would meet
-  (sharp edges swept beyond the data, say, in place of the blunt ones) is
-  not named. A change named never moves the fins further ahead.
+  both. Until the review of e232dca the same fins were run at the base
+  for the trailing-edge refusals too, where they are refused for the
+  same edge again, so a plate's or a wedge's sweep, count and thickness
+  at the base were never checked: in the population the change the words
+  advise was still refused for 22 of 36 rounded plates per band from Mach
+  1.0 to 1.8 (for sweep) and 6 of 36 at 1.8 to 3.0; the fins as the change
+  makes them are run since. Still not checked: a sharp section other
+  than that double wedge, which may meet a refusal of its own shape
+  (steep bevels, say); and the changes that the refusal at the base names
+  in turn, so a chain of more than two reasons is not followed. A change
+  named never moves the fins further ahead.
 - _What it cost (the same 2000 rockets, `docs/research/refusals/`):_ on
   the merged head (main at 5921198 merged at 1ec9df1, whose audit counts
   the Von Karman noses the page serves), 155 of 8000 cases serve a total

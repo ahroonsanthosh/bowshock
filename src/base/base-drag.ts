@@ -125,6 +125,26 @@ export const ROUNDED_PLATE_AHEAD_OF_BASE = 'a plate with a rounded trailing edge
 export const BLUNT_AHEAD_OF_BASE =
   'fins whose faces widen or narrow to a blunt trailing edge, ending';
 
+/**
+ * The section of a flat plate with square trailing edges, thickness over chord `thicknessRatio`, as the
+ * rebuilt factor takes it (`baseFinsOf` in src/total/finned-body.ts gives square-edged plates this one).
+ */
+export function squarePlateSection(thicknessRatio: number): FinsNearBase['section'] {
+  return {
+    x: [0, 1e-3, 1],
+    halfThickness: [0, thicknessRatio / 2, thicknessRatio / 2],
+    bluntTrailingEdge: true,
+  };
+}
+
+/**
+ * What "sharp trailing edges" stands for in place of a blunt one when the words' change is run at the base: a
+ * symmetric double wedge of the same thickness ratio (another sharp section may meet another refusal).
+ */
+function sharpStandInSection(thicknessRatio: number): FinsNearBase['section'] {
+  return { x: [0, 0.5, 1], halfThickness: [0, thicknessRatio / 2, 0] };
+}
+
 /** How the refusal of fins ending more than a root chord ahead of the base begins (0015 section 3.3). */
 export const MORE_THAN_A_CHORD_AHEAD = 'fins ending more than a root chord ahead of the base';
 
@@ -298,23 +318,64 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
       };
     };
     // Where fins ahead of the base are refused for their position, or for a trailing edge nothing measures
-    // there, the words send the rocketeer to the base; so the same fins are run at the base. Refused there too
-    // for another reason, that reason is carried beside this one, in the message and for the words, so the
-    // words name both; served there, this reason alone is named (the review of b323511, its finding 1).
+    // there, the words send the rocketeer to the base, so the fins are run at the base as the words' change
+    // makes them (advisedAtBase). Refused there, that refusal is carried beside this one, in the message and
+    // for the words, so the words name both; served there, this reason alone is named (the review of b323511,
+    // its finding 1, and of e232dca: the advised fins, not the same ones, where the change alters the edge).
     const withAtBase = (refusal: BaseRefusal): BaseRefusal => {
+      const advised = advisedAtBase();
       let at: BaseRefusal | undefined;
       try {
-        bodyBaseDrag({ ...input, fins: { ...fins, trailingEdgeAheadOfBase: 0 } });
+        bodyBaseDrag({ ...input, fins: advised.fins });
       } catch (e) {
         if (!(e instanceof BaseRefusal)) throw e;
         at = e;
       }
-      if (at === undefined || at.reason === refusal.reason) return refusal;
+      // The same fins refused at the base for the same reason add nothing; fins the change alters do.
+      if (at === undefined || (advised.same && at.reason === refusal.reason)) return refusal;
       return new BaseRefusal(
         refusal.reason,
-        `${refusal.message}; at the base the same fins are refused too: ${at.message}`,
+        `${refusal.message}; at the base ${advised.what} refused too: ${at.message}`,
         { reason: at.reason, message: at.message },
       );
+    };
+    // The fins at the base as the words' change makes them: a plate's rounded trailing edge squared (the
+    // same plate, square-edged), a blunt edge the faces widen or narrow to made sharp (a symmetric double
+    // wedge of the same thickness ratio stands for "sharp trailing edges"); otherwise the same fins.
+    const advisedAtBase = (): { fins: BaseFins; what: string; same: boolean } => {
+      const atBase: BaseFins = { ...fins, trailingEdgeAheadOfBase: 0 };
+      const note = edgeNote();
+      if (note === ROUNDED_EDGE_NOTE) {
+        return {
+          fins: {
+            ...atBase,
+            nearBase: {
+              section: squarePlateSection(fins.thicknessRatio),
+              sectionFamily: 'other',
+              tanLeadingEdgeSweep: fins.tanLeadingEdge,
+              tanTrailingEdgeSweep: fins.tanTrailingEdge,
+            },
+          },
+          what: 'the same plates with square trailing edges are',
+          same: false,
+        };
+      }
+      if (note === BLUNT_EDGE_NOTE && fins.nearBase !== undefined) {
+        return {
+          fins: {
+            ...atBase,
+            nearBase: {
+              section: sharpStandInSection(fins.thicknessRatio),
+              sectionFamily: 'other',
+              tanLeadingEdgeSweep: fins.nearBase.tanLeadingEdgeSweep,
+              tanTrailingEdgeSweep: fins.nearBase.tanTrailingEdgeSweep,
+            },
+          },
+          what: 'the same fins with sharp trailing edges (a symmetric double wedge of the same thickness) are',
+          same: false,
+        };
+      }
+      return { fins: atBase, what: 'the same fins are', same: true };
     };
     // A trailing edge that nothing measures ahead of the base (0015 section 4): a plate's rounded one, or a
     // blunt one that the faces widen or narrow to.

@@ -70,6 +70,7 @@
 import {
   bodyBaseDrag,
   FINS_ON_BASE_THINNEST_DATA,
+  squarePlateSection,
   type BaseFins,
   type BodyBaseDrag,
 } from '../base/base-drag';
@@ -708,11 +709,7 @@ export function baseFinsOf(fins: FinSet, bodyDiameter?: number): BaseFins {
     plate === undefined
       ? (fins.section as SymmetricSection)
       : plate.trailingEdge === 'square'
-        ? {
-            x: [0, 1e-3, 1],
-            halfThickness: [0, thicknessRatio / 2, thicknessRatio / 2],
-            bluntTrailingEdge: true,
-          }
+        ? squarePlateSection(thicknessRatio)
         : undefined;
   // Flat faces at the trailing edge (plates; a plate bevelled at the leading edge only): not the present
   // factor's families (0014 section 10.7).

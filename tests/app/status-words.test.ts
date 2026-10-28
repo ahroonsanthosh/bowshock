@@ -268,8 +268,19 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
       atBase: { reason: 'fin-sweep', message: 'swept fins at the base ...' },
     });
     expect(both.reason).toBe(
-      `${alone.reason}; and with the fins at the base, with fins at the base, the base drag is ` +
-        'measured with unswept fins only (a tapered fin has a swept edge)',
+      `${alone.reason}; and with the fins at the base, the base drag is measured with unswept ` +
+        'fins only (a tapered fin has a swept edge)',
+    );
+    expect(both.reason).not.toMatch(/at the base, with fins at the base/);
+    // A reason at the base that names the fins at the base inside it: said once.
+    const edge = refusalWords({
+      ...position,
+      atBase: { reason: 'fin-trailing-edge', message: 'x' },
+    });
+    expect(edge.reason).toBe(
+      `${alone.reason}; and with the fins at the base, at this speed, the base drag is measured ` +
+        'only for flat fins with square trailing edges or fins with sharp ones, not for this ' +
+        'trailing edge (a wedge thickening to it, or a rounded one)',
     );
     expect(both.change).toBe(
       "the fins' trailing edges at the base, and unswept fins of constant chord",

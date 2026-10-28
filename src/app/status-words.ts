@@ -448,8 +448,12 @@ export function refusalWords(r: ComponentRefusal): PlainReason {
     reason: r.atBase.reason,
     message: r.atBase.message,
   });
+  // The words at the base say "with fins at the base" themselves; said once here (the review of e232dca).
+  const atReason = at.reason
+    .replace(/^with fins at the base, /, '')
+    .replace('the base drag with fins at the base', 'the base drag');
   return {
-    reason: `${own.reason}; and with the fins at the base, ${at.reason}`,
+    reason: `${own.reason}; and with the fins at the base, ${atReason}`,
     change:
       own.change === NOTHING || at.change === NOTHING ? NOTHING : `${own.change}, and ${at.change}`,
   };

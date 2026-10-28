@@ -633,7 +633,7 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
     const words = refusalWords(r);
     expect(words.reason).toMatch(/^fins ending ahead of the base: /);
     expect(words.reason).toContain(
-      '; and with the fins at the base, with fins at the base, the base drag is measured with unswept fins only',
+      '; and with the fins at the base, the base drag is measured with unswept fins only',
     );
     expect(words.change).toBe(
       "the fins' trailing edges at the base, and unswept fins of constant chord",
@@ -675,6 +675,71 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
     expect(refusalWords(b).change).toBe(
       'sharp trailing edges, with the fins ending at the base, and four fins',
     );
+  });
+
+  it('a rounded or blunt trailing edge ahead of the base: the fins as the change makes them are run at the base (the review of e232dca)', () => {
+    const at = (c: FinnedBody, mach = 1.8) =>
+      finnedBodyComponents(
+        c,
+        { mach, temperature: 290, reynoldsPerLength: 1.5e6 },
+        exactConeNoseWaveDrag(mach, Math.atan(0.25)),
+      );
+    const withSection = (
+      c: FinnedBody,
+      section: FinnedBody['fins']['section'],
+      trailingEdgeAheadOfBase = 1,
+    ): FinnedBody => ({ ...c, fins: { ...c.fins, section, trailingEdgeAheadOfBase } });
+    // A rounded plate on a clipped delta, leading edge 30 deg, trailing edge unswept, half a chord ahead.
+    // The change, square edges at the base, is refused there for the sweep at M 1.8; the same rounded plate
+    // at the base is refused only for its edge again, which named nothing new.
+    const swept = rocket(4, doubleWedge(0.05), 30);
+    const rounded = withSection(swept, flatPlate(0.03, 'rounded', 'rounded'));
+    const r = baseRefusal(rounded);
+    expect(r.reason).toBe('fin-trailing-edge');
+    expect(r.message.startsWith(ROUNDED_PLATE_AHEAD_OF_BASE)).toBe(true);
+    expect(r.atBase?.reason).toBe('fin-sweep');
+    expect(r.message).toContain(
+      '; at the base the same plates with square trailing edges are refused too: ',
+    );
+    expect(refusalWords(r).change).toBe(
+      'square or sharp trailing edges, with the fins ending at the base, and unswept fins of constant chord',
+    );
+    const sameAtBase = at(withSection(swept, flatPlate(0.03, 'rounded', 'rounded'), 0));
+    expect(sameAtBase.refusals.find((x) => x.component === 'body base')?.reason).toBe(
+      'fin-trailing-edge',
+    );
+    // Unswept, the square-edged plate is served at the base: the edge alone is named.
+    const unswept = withSection(
+      rocket(4, doubleWedge(0.05), 0),
+      flatPlate(0.03, 'rounded', 'rounded'),
+    );
+    expect(
+      at(withSection(rocket(4, doubleWedge(0.05), 0), flatPlate(0.03, 'rounded', 'square'), 0))
+        .base,
+    ).toBeDefined();
+    expect(baseRefusal(unswept).atBase).toBeUndefined();
+    // More than a chord ahead, the same.
+    const far = baseRefusal(withSection(swept, flatPlate(0.03, 'rounded', 'rounded'), 6));
+    expect(far.message.startsWith(MORE_THAN_A_CHORD_AHEAD)).toBe(true);
+    expect(far.atBase?.reason).toBe('fin-sweep');
+    // Blunt wedges, leading edge 30 deg: sharp edges at the base (a double wedge of the same thickness) are
+    // refused there for the sweep; the same wedges at the base only for their edge.
+    const blunt = withSection(swept, singleWedge(0.08));
+    const b = baseRefusal(blunt);
+    expect(b.reason).toBe('fin-trailing-edge');
+    expect(b.atBase?.reason).toBe('fin-sweep');
+    expect(b.message).toContain(
+      '; at the base the same fins with sharp trailing edges (a symmetric double wedge of the same ' +
+        'thickness) are refused too: ',
+    );
+    expect(
+      at(withSection(swept, singleWedge(0.08), 0)).refusals.find((x) => x.component === 'body base')
+        ?.reason,
+    ).toBe('fin-trailing-edge');
+    // Unswept, sharp edges are served at the base: the edge alone is named.
+    expect(
+      baseRefusal(withSection(rocket(4, doubleWedge(0.05), 0), singleWedge(0.08))).atBase,
+    ).toBe(undefined);
   });
 });
 

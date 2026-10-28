@@ -276,9 +276,10 @@ faces widen or narrow to (the Basic Finner's wedges) likewise, its
 change sharp edges with the fins at the base, its reason adding that at
 the base four unswept wedges like the Basic Finner's are measured from
 Mach 1.8. Where fins ahead of the base are refused for their position or
-such a trailing edge and the same fins are refused at the base for
-another reason, the words name both and give both changes (or none,
-where nothing about the rocket changes the second). `tests/app/status-words.test.ts`
+such a trailing edge, and the fins as the change makes them (the same
+fins; square edges on the plate; sharp edges in place of the blunt) are
+refused at the base too, the words name both and give both changes (or
+none, where nothing about the rocket changes the second). `tests/app/status-words.test.ts`
 holds these rows to the words.
 
 Below Mach 1.2 every point is computed as at any other Mach number and
