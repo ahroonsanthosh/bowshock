@@ -523,4 +523,10 @@ with the nose assumed served, and with the page's section offered too
 above still hold. After main's B1 and the body base band (cdd26e6 and
 0b2def5, also 2026-10-28) the counts are unchanged: 184, 628, 633 and
 811; the reflected-wave figures still hold, and the cross-check agrees
-on all 1,200 cases checked.
+on all 1,200 cases checked. After the rulings of 2026-10-28 on flat
+plates at the base (0015 section 12: beyond 60 deg where M cos L is
+below 1, and a forward-swept trailing edge, refused), 184 and 628 are
+unchanged and the count with the page's section offered is 809 (811
+before): two plates bevelled at the leading edge only, which this
+section serves, swept beyond 60 deg with the edge subsonic; the
+reflected-wave figures still hold.

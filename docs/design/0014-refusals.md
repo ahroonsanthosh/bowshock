@@ -1983,6 +1983,31 @@ swept 45 to 60 deg, as before; one swept forward is refused at the base
 and within a chord, with words that say so. No data enter and no band
 moves. What it costs is recorded below when run.
 
+_2026-10-28, what the rulings cost,_ the run after the code
+(`out/impact.out`, 2,000 rockets, 8,000 cases; the run before is the
+same file as committed before it): the rule on subsonic edges refuses
+the base term of 81 cases, 49 at Mach 1.62 to 1.8 and 32 at 1.8 to 3.0
+(the rebuilt factor's sweep refusal 28.6% to 29.3% of cases; some of the
+81 were refused for a section outside the 10% arc before, which the
+sweep now names first): 44 plates with a rounded leading edge, 31 with a
+square-cut one, 6 bevelled. None was a total: totals served stay 184 of
+8,000 (Mach 1.5 to 1.8: 73; 1.8 to 3.0: 111), and 628 with the nose
+assumed served. Every one is refused for something else too: 38 of the
+rounded-edge plates for the edge's normal Mach number alone (the rounded
+term needs M cos L of at least 1, as the review said), 25 of the
+square-cut plates for the square-cut edge alone (refused, 0016 section
+21.6; if it is lifted, these now need the base too), and 3 of the
+bevelled plates for the page's section alone (the page does not offer a
+plate bevelled at the leading edge only, W12), one of them ahead of the
+base where its position is refused too: with that section offered too,
+811 totals become 809 (Mach 1.5 to 1.8: 299 to 298; 1.8 to 3.0: 512 to
+511), the other two plates (one rocket, swept 67.2 deg, at Mach 1.71 and
+2.17). The rule on forward-swept trailing edges refuses no case: the
+population sweeps every swept trailing edge aft. The cross-check agrees
+on 1,200 of 1,200; the reflected-wave split (`out/reflected-split.out`)
+is unchanged; the counts by section and by what else refuses are from a
+probe of the same cases, not committed.
+
 **2026-10-26 (ac): RM A51J11 and RM A52E01, named before they are opened,
 for F4's thin trailing edges and thick layers below Mach 1.5** (rule 2 of
 10.1, as (k); 0019 section 3.4, "Layers and h/c"). Neither has been
