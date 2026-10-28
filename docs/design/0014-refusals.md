@@ -2148,6 +2148,17 @@ that the increment is nearly zero a chord fore or aft.
   to 4.3%, in both runs on the merged head) because ahead of the base the
   position is now named first. The cross-check against
   `src/total` agrees on all 1200 cases checked, in each run.
+- _Noted 2026-10-28, after (ah) was merged (the coordinator's ruling):_
+  the reviewer's case rests partly on the plain curve's band missing TN
+  2360's measurement a chord ahead (0.1187 to 0.1563 against 0.1603 at
+  Mach 2.0). With the compiled curve's band since (ah), 0.77 to 1.13,
+  that band would be 0.1114 to 0.1635 and would hold 0.1603. The
+  withdrawal stands on section 10.2: nothing measures fins more than a
+  chord ahead, and at x/c 1.0 TN 2360's own increments are not zero (the
+  two-fin tail, 10% thick: -0.0101 on -0.1948 at Mach 1.5 and -0.0137 on
+  -0.1507 at 2.0, about +5% and +9% in base drag), so the plain curve's
+  assumption of no fin effect is not shown there.
+  `fins-on-base-routing.test.ts` holds both numbers, 0.1563 and 0.1635.
 
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that
@@ -2493,7 +2504,9 @@ becomes **0.77 to 1.13** at Mach 1.5 to 3.0.
   0.1563, measured 0.1603, at least 1.09 times the curve). With 0.77 to
   1.13 that band would be 0.1114 to 0.1635, which holds the measurement.
   Nothing is changed for it: A5's routing stands as merged, and
-  `fins-on-base-routing.test.ts` holds both numbers.
+  `fins-on-base-routing.test.ts` holds both numbers. (Ruled 2026-10-28:
+  the withdrawal stands on section 10.2; the note at the end of (ad)'s
+  entry of 2026-10-27.)
 - _Every TN 2360 base pressure against the band served_ (the review's
   comparison, made permanent after the merge: `tn2360-served.test.ts`).
   Each reading the library holds, at its own geometry (four or two
