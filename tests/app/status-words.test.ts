@@ -20,6 +20,7 @@ import {
   changeText,
   claimWords,
   W1_BOUNDED_WORDS,
+  W1_BOUNDED_SWEPT_WORDS,
   VALIDATED_WORDS,
   CLASS_WORDS,
   ESTIMATE_WORDS,
@@ -51,6 +52,7 @@ import {
   totalDragView,
   VALIDATED_CLAIM,
   W1_BOUNDED_REASON,
+  W1_BOUNDED_SWEPT_REASON,
 } from '../../src/app/total-drag';
 import { designForm } from '../../src/rocket/adapter';
 import { preset } from '../../src/rocket/presets';
@@ -64,6 +66,7 @@ describe('the words', () => {
       CLASS_WORDS,
       BOUNDED_WORDS,
       W1_BOUNDED_WORDS,
+      W1_BOUNDED_SWEPT_WORDS,
       SWEPT_EDGE_BOUNDED_WORDS,
       SEVERAL_BOUNDED_WORDS,
       provisionalWords(2, 4),
@@ -112,6 +115,24 @@ describe('the words', () => {
     expect(claimWords(claim(CLASS_CLAIM, [BOUNDED_REASON]))).toBe(BOUNDED_WORDS);
     // The rebuilt fins-on-base factor's bounded values (main's W1).
     expect(claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_REASON]))).toBe(W1_BOUNDED_WORDS);
+    // The same at a sweep no flat plate at the base is measured at (0015 section 12's argument): the
+    // reason and the words name it, exactly.
+    expect(W1_BOUNDED_SWEPT_REASON).toBe(
+      "the body base's rebuilt fins-on-base factor is bounded, not measured (flat faces at a square " +
+        'trailing edge, or above Mach 2.56, where the free-flight curve of TN 3819 fig. 35 ends; and the ' +
+        'leading edge swept where no flat plate is measured at the base, beyond the last sweep measured ' +
+        "or short of the first, bounded by 0015 section 12's argument)",
+    );
+    expect(claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_SWEPT_REASON]))).toBe(
+      W1_BOUNDED_SWEPT_WORDS,
+    );
+    expect(W1_BOUNDED_SWEPT_WORDS.sentence).toBe(
+      "An estimate with one part bounded, not measured: the fins' effect on the base drag, set from " +
+        'bounds, at a fin sweep no measurement of such fins at the base covers.',
+    );
+    expect(
+      claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_SWEPT_REASON, SWEPT_EDGE_BOUNDED_REASON])),
+    ).toBe(SEVERAL_BOUNDED_WORDS);
     // The fins' rounded leading edges swept beyond 60 deg, bounded (0016 section 21.2).
     expect(claimWords(claim(CLASS_CLAIM, ['x', SWEPT_EDGE_BOUNDED_REASON]))).toBe(
       SWEPT_EDGE_BOUNDED_WORDS,

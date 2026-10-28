@@ -29,7 +29,11 @@ import {
 } from '../../src/validation/basic-finner';
 import { outward, outwardPercent } from '../../src/app/band';
 import { displayText, totalDragDisplay } from '../../src/app/total-drag-display';
-import { claimWords, SWEPT_EDGE_BOUNDED_WORDS } from '../../src/app/status-words';
+import {
+  claimWords,
+  SEVERAL_BOUNDED_WORDS,
+  SWEPT_EDGE_BOUNDED_WORDS,
+} from '../../src/app/status-words';
 import {
   ABOVE_THE_CLASS,
   BASIC_FINNER_CLASS,
@@ -37,6 +41,7 @@ import {
   BOUNDED_REASON,
   boundedReasons,
   W1_BOUNDED_REASON,
+  W1_BOUNDED_SWEPT_REASON,
   BASIC_FINNER_TEMPERATURE,
   TEMPERATURE_SENSITIVITY,
   basicFinnerClass,
@@ -1059,6 +1064,23 @@ describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
     const base = v.total.components.find((c) => c.name === 'body base')!;
     expect(base.label).toContain('the leading edge swept 66.4 deg with the trailing edge unswept');
     expect(base.label).toContain('0015 section 12');
+    // The claim names both bounded parts: the base's, with section 12's sweep argument, and the edge's.
+    const named = reasonsOf(v.claim);
+    expect(named).toContain(W1_BOUNDED_SWEPT_REASON);
+    expect(named).toContain(SWEPT_EDGE_BOUNDED_REASON);
+    expect(named).not.toContain(W1_BOUNDED_REASON);
+    expect(claimWords(v.claim)).toBe(SEVERAL_BOUNDED_WORDS);
+    // At a measured sweep (45 deg, RM L52E06's) the base's reason has no sweep argument in it.
+    const tip45 = rootChord - span * Math.tan((45 * Math.PI) / 180);
+    const at45 = {
+      ...form,
+      planform: { kind: 'clipped-delta' as const, taperRatio: tip45 / rootChord },
+    };
+    const v45 = totalDragView(at45, exactNose(at45));
+    if (v45.kind !== 'total')
+      throw new Error(`expected a total, got ${JSON.stringify(reasons(v45))}`);
+    expect(reasonsOf(v45.claim)).toContain(W1_BOUNDED_REASON);
+    expect(reasonsOf(v45.claim)).not.toContain(W1_BOUNDED_SWEPT_REASON);
   });
 
   it('square-cut leading edges and rounded trailing edges: refused, with the reasons', () => {

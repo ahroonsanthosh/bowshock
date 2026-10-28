@@ -919,6 +919,17 @@ export const W1_BOUNDED_REASON =
   `${FIG35_FREE_FLIGHT_END}, where the free-flight curve of TN 3819 fig. 35 ends; 0015)`;
 
 /**
+ * The same, for flat-faced fins whose leading-edge sweep no flat plate at the base is measured at, taken on 0015
+ * section 12's argument that neither bound uses the leading edge (FinsOnBaseFactorW1.sweepByArgument).
+ */
+export const W1_BOUNDED_SWEPT_REASON =
+  "the body base's rebuilt fins-on-base factor is bounded, not measured (flat faces at a square " +
+  'trailing edge, or above Mach ' +
+  `${FIG35_FREE_FLIGHT_END}, where the free-flight curve of TN 3819 fig. 35 ends; and the leading edge ` +
+  'swept where no flat plate is measured at the base, beyond the last sweep measured or short of the ' +
+  "first, bounded by 0015 section 12's argument)";
+
+/**
  * The bounded components a total contains, named in its claim (0014 section
  * 10.2): the body base's fins-on-base factor where it is bounded, and every
  * component the library marks bounded (the fins' square-cut leading edges, or
@@ -930,7 +941,14 @@ export function boundedReasons(
 ): string[] {
   const out: string[] = [];
   if (base?.finsOnBase?.bounded === true) {
-    out.push(base.finsOnBaseSource === 'rebuilt' ? W1_BOUNDED_REASON : BOUNDED_REASON);
+    const f = base.finsOnBase;
+    out.push(
+      base.finsOnBaseSource !== 'rebuilt'
+        ? BOUNDED_REASON
+        : 'sweepByArgument' in f && f.sweepByArgument
+          ? W1_BOUNDED_SWEPT_REASON
+          : W1_BOUNDED_REASON,
+    );
   }
   for (const c of components) {
     if (c.bounded !== undefined && !out.includes(c.bounded)) out.push(c.bounded);
