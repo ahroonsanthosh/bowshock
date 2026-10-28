@@ -88,7 +88,7 @@ function rocket(s: Shape): FinnedBody {
       section: s.section,
       sectionFamily: 'other',
       leadingEdgeRadius: s.leadingEdgeRadius ?? 0,
-      trailingEdgeAheadOfBase: (s.ahead ?? 2) * root,
+      trailingEdgeAheadOfBase: (s.ahead ?? 0) * root,
     },
   };
 }
@@ -183,6 +183,10 @@ describe('each refused part, and the floor', () => {
         'the fin wave drag of a single wedge (a blunt trailing edge) is refused, and its faces ' +
           'are shown not to be negative only with supersonic edges (design record 0011, section ' +
           '10.3): the Mach number 1.3 is below 1.5',
+        // The body base is refused too: these fins sat two chords ahead, on the plain curve,
+        // until 2026-10-27; now at the base, and nothing ahead of it is served below Mach 1.5.
+        'the body base is refused, and its sign with these fins or this afterbody is not ' +
+          'argued (design record 0011, section 10.2)',
       ],
     });
   });

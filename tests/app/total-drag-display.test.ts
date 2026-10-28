@@ -548,7 +548,9 @@ describe('the display', { timeout: 60_000 }, () => {
   });
 
   it('an estimate: said in the headline and the box, with every reason and the tolerance', () => {
-    const form = { ...basicFinnerForm(2.0), trailingEdgeAheadOfBase: 1, leadingEdgeRadius: 0 };
+    // Outside the class on two counts, both served. (The fins a chord ahead were one of them until
+    // 2026-10-27; refused there now, 0014 section 10.7 (ad).)
+    const form = { ...basicFinnerForm(2.0), span: 1.2, leadingEdgeRadius: 0 };
     const blocks = totalDragDisplay(totalDragView(form, exactNose(form)));
     const head = blocks[0]!;
     expect(head.kind === 'paragraph' && head.text.endsWith(': an estimate, not validated')).toBe(
@@ -562,7 +564,7 @@ describe('the display', { timeout: 60_000 }, () => {
     expect(box.blocks).toContainEqual({
       kind: 'list',
       items: [
-        'the fins end 1 cal ahead of the base, not at it',
+        'the span is 1.2 cal, not 1.0 within 0.5%',
         'the leading-edge radius is 0 cal, not 0.004 within 0.5%',
       ],
     });
