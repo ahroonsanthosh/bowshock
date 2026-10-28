@@ -12,6 +12,12 @@
  * new reason fails the build here until it is worded.
  */
 
+import {
+  BLUNT_AHEAD_OF_BASE,
+  BLUNT_EDGE_NOTE,
+  ROUNDED_EDGE_NOTE,
+  ROUNDED_PLATE_AHEAD_OF_BASE,
+} from '../base/base-drag';
 import type { BaseRefusalReason } from '../base/refusal';
 import { W1_FLAT_BEYOND_60_MARK, W1_FLAT_UNDER_45_MARK } from '../base/fins-on-base-w1';
 import type { FinRefusalReason } from '../fins/refusal';
@@ -237,15 +243,26 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
     reason: 'the air would reach the base smooth (laminar); base drag is measured in turbulent air',
     change: 'no laminar run past the base',
   }),
-  'fins-near-base': () => ({
+  // Never advice to move the fins further ahead: nothing is served more than a root chord ahead (0014
+  // section 10.7 (ad), 2026-10-27). Where their trailing edge is refused near the base too, the change
+  // names one served at the base.
+  'fins-near-base': (r) => ({
     reason:
-      "fins ending less than a root chord ahead of the base: the base drag isn't measured with " +
-      'fins there',
-    change: "the fins' trailing edges at the base, or a root chord or more ahead of it",
+      'fins ending ahead of the base: the base drag with fins there is measured only up to one ' +
+      'root chord ahead, at Mach 1.5 to 2.0 (none is known below Mach 1.5), and only with a fin ' +
+      'root chord of 1.5 body diameters' +
+      (r.message.includes(ROUNDED_EDGE_NOTE) || r.message.includes(BLUNT_EDGE_NOTE)
+        ? ', and only for square or sharp trailing edges'
+        : ''),
+    change: r.message.includes(ROUNDED_EDGE_NOTE)
+      ? 'square or sharp trailing edges, with the fins ending at the base'
+      : r.message.includes(BLUNT_EDGE_NOTE)
+        ? 'sharp trailing edges, with the fins ending at the base'
+        : "the fins' trailing edges at the base",
   }),
   'fin-count': () => ({
     reason: 'with fins at the base, the base drag is measured with four fins only',
-    change: 'four fins, or fins a root chord or more ahead of the base',
+    change: 'four fins',
   }),
   'fin-sweep': (r) =>
     // Flat fins swept more than 0 and under 45 deg, or beyond 60 deg, below Mach 1.62 (0014 section 10.7 (z),
@@ -255,18 +272,14 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
           reason:
             'below Mach 1.62 the base drag behind flat fins at the base is measured only with fins ' +
             'swept 45 deg, and nothing measured shows a lighter sweep gives the same',
-          change:
-            'flat fins swept 45 to 60 deg at the leading edge, or unswept ones; or fins a root chord ' +
-            'or more ahead of the base',
+          change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
         }
       : r.message.includes(W1_FLAT_BEYOND_60_MARK)
         ? {
             reason:
               'below Mach 1.62 the base drag behind flat fins at the base is not measured with fins ' +
               'swept beyond 60 deg, and nothing measured shows a sharper sweep gives the same',
-            change:
-              'flat fins swept 45 to 60 deg at the leading edge, or unswept ones; or fins a root chord ' +
-              'or more ahead of the base',
+            change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
           }
         : {
             reason:
@@ -276,24 +289,39 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
               'unswept or swept 45 to 60 deg',
             change:
               'flat fins with a square, unswept trailing edge (below Mach 1.62, unswept or swept 45 to ' +
-              '60 deg); unswept fins of constant chord; or fins a root chord or more ahead of the base',
+              '60 deg), or unswept fins of constant chord',
           },
-  'fin-trailing-edge': () => ({
-    reason:
-      'at this speed, the base drag with fins at the base is measured only for flat fins with ' +
-      'square trailing edges or fins with sharp ones, not for this trailing edge (a wedge ' +
-      'thickening to it, or a rounded one)',
-    change:
-      'flat fins with square trailing edges, sharp trailing edges, or fins a root chord or more ' +
-      'ahead of the base',
-  }),
+  'fin-trailing-edge': (r) =>
+    // A rounded plate ending ahead of the base (src/base/base-drag.ts): refused at every speed, near the base.
+    r.message.startsWith(ROUNDED_PLATE_AHEAD_OF_BASE)
+      ? {
+          reason:
+            'with fins near the base, the base drag is measured only for fins with square or sharp ' +
+            'trailing edges, not for a rounded one',
+          change: 'square or sharp trailing edges, with the fins ending at the base',
+        }
+      : // Fins ahead of the base whose faces widen or narrow to a blunt trailing edge (src/base/base-drag.ts):
+        // at the base, below Mach 1.8, only sharp edges of such sections are served, so the change names sharp.
+        r.message.startsWith(BLUNT_AHEAD_OF_BASE)
+        ? {
+            reason:
+              'with fins near the base, the base drag is measured only for fins with square or sharp ' +
+              'trailing edges, not for a blunt one that the faces widen or narrow to (as the Basic ' +
+              "Finner's wedges)",
+            change: 'sharp trailing edges, with the fins ending at the base',
+          }
+        : {
+            reason:
+              'at this speed, the base drag with fins at the base is measured only for flat fins with ' +
+              'square trailing edges or fins with sharp ones, not for this trailing edge (a wedge ' +
+              'thickening to it, or a rounded one)',
+            change: 'flat fins with square trailing edges, or sharp trailing edges',
+          },
   'flat-plate-fins': () => ({
     reason:
       'flat plates at the base lower the base drag by up to 15% in the one measurement of them, ' +
       "which the base drag's data do not cover yet",
-    change:
-      'fins a root chord or more ahead of the base, or wedge or bevelled fins of constant ' +
-      'chord at the base',
+    change: 'wedge or bevelled fins of constant chord at the base',
   }),
   'rounded-trailing-edge': () => ({
     reason:
@@ -305,7 +333,7 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
     reason:
       'with fins at the base, the base drag is measured for fins 5% to 10% as thick as their ' +
       'chord',
-    change: 'fins of that thickness, or fins a root chord or more ahead of the base',
+    change: 'fins of that thickness',
   }),
   'swept-trailing-edge': () => ({
     reason: "a swept square trailing edge's drag is not measured",

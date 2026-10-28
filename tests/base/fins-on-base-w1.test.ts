@@ -34,6 +34,8 @@ import {
   W1_RELIEF_MEASURED_FROM,
   W1_RELIEF_ON_ONE_CALL,
   W1_RELIEF_SINGLE_CALLS,
+  W1_POSITION_CHORD_OVER_DIAMETER,
+  W1_POSITION_CHORD_TOLERANCE,
   W1_SWEPT_TRAILING_EDGE_AHEAD,
   W1_ZERO_MEMBER_PENDING,
   flatPlateReliefs,
@@ -45,6 +47,7 @@ import {
   largestTunnelExcess,
   memberBand,
   memberRatio,
+  nearBasePositionReasons,
   referenceBand,
   sectionBracket,
   trailingEdgeShape,
@@ -483,6 +486,8 @@ const plate = (tc: number): SymmetricSection => ({
   bluntTrailingEdge: true,
 });
 
+// TN 2360's root chord over body diameter by default, so that positions ahead of the base are served at M 1.5 to
+// 2.0 where measured (0015 section 3.3); the chord rule's own tests set it.
 const fins = (over: Partial<FinsNearBase> = {}): FinsNearBase => ({
   count: 3,
   section: doubleWedge(0.024, 0.5),
@@ -490,8 +495,15 @@ const fins = (over: Partial<FinsNearBase> = {}): FinsNearBase => ({
   tanLeadingEdgeSweep: 1,
   tanTrailingEdgeSweep: 0,
   trailingEdgeAheadOfBase: 0,
+  rootChordOverDiameter: 1.5,
   ...over,
 });
+/** The same fins with no root chord over body diameter given. */
+const withoutChord = (f: FinsNearBase): FinsNearBase => {
+  const copy = { ...f };
+  delete copy.rootChordOverDiameter;
+  return copy;
+};
 
 describe(
   'the band widths 0015 quotes (sections 1, 3.6, 4 and 11.2), held to the code',
@@ -662,7 +674,9 @@ describe('the bands (0015 section 3.6)', () => {
       1.3826,
       true,
     ],
-    // W2's part, below M 1.5: the zero member down to RM L52E06's relief; the reference from fig. 35's line.
+    // W2's part, below M 1.5: the zero member down to RM L52E06's relief; the reference from fig. 35's line. This
+    // is the factor function's own output, its zero member a ratio to the body without fins and its reference
+    // over Love's curve, two bases; 0015 section 3.6 gives these rows on W2's term as served (base-w2.test.ts).
     [
       1.2,
       'double wedge 2.4%, three fins, unswept',
@@ -962,7 +976,8 @@ describe('refusals', () => {
       ),
     ).toBe('fin-sweep');
     expect(reason(() => finsOnBaseFactorW1(2, fins({ tanLeadingEdgeSweep: 0 })))).toBe('served');
-    // Below M 1.5 (W2's part): from M 1.0; swept fins only with flat faces; no position ahead of the base.
+    // Below M 1.5 (W2's part): from M 1.0; swept fins only with flat faces; positions ahead of the base
+    // refused there and above M 2.0 (0015 section 3.3; a bound built on 2026-10-26 was withdrawn after review).
     expect(reason(() => finsOnBaseFactorW1(0.99, fins({ tanLeadingEdgeSweep: 0 })))).toBe(
       'mach-range',
     );
@@ -970,6 +985,11 @@ describe('refusals', () => {
     expect(reason(() => finsOnBaseFactorW1(1.09, fins({ tanLeadingEdgeSweep: 0 })))).toBe('served');
     expect(reason(() => finsOnBaseFactorW1(1.49, fins()))).toBe('fin-sweep');
     expect(reason(() => finsOnBaseFactorW1(1.49, fins({ section: plate(0.024) })))).toBe('served');
+    expect(
+      reason(() =>
+        finsOnBaseFactorW1(1.3, fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.2 })),
+      ),
+    ).toBe('fins-near-base');
     expect(
       reason(() =>
         finsOnBaseFactorW1(1.3, fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.5 })),
@@ -1323,5 +1343,302 @@ describe('refusals', () => {
         ),
       ).toBe('served');
     });
+  });
+});
+
+describe('fins ending within a chord ahead of the base: what TN 2360 measures, and where they are served (0015 section 3.3)', () => {
+  /** TN 2360 fig. 6's symbols of one member at one Mach number, both readings. */
+  const pts = (m: 1.5 | 2.0, n: 2 | 4, t: 0.05 | 0.1, withSingle = true) =>
+    TN2360_FIG6.filter(
+      (p) =>
+        p.mach === m &&
+        p.count === n &&
+        p.thicknessRatio === t &&
+        (withSingle || p.singleReader !== true),
+    );
+  const MEMBERS = [
+    [2, 0.05],
+    [2, 0.1],
+    [4, 0.05],
+    [4, 0.1],
+  ] as const;
+  const r4 = (x: number) => Math.round(1e4 * x) / 1e4;
+
+  it('the ordering, upper side: the increment ahead of the base is no larger than at it, within the errors', () => {
+    for (const withSingle of [true, false]) {
+      const margin: Record<string, number> = {};
+      for (const m of [1.5, 2.0] as const) {
+        for (const [n, t] of MEMBERS) {
+          const ps = pts(m, n, t, withSingle);
+          const ahead = ps.filter((p) => p.xc > 0);
+          if (ahead.length === 0) continue;
+          const atBase = ps.filter((p) => p.xc === 0);
+          // Each end moved by its reading error toward more suction (a more negative dPb).
+          margin[`${m} ${n} ${t}`] = r4(
+            Math.min(...ahead.map((p) => p.dPb - p.error)) -
+              Math.min(...atBase.map((p) => p.dPb - p.error)),
+          );
+          // Every symbol ahead against the base's most negative, within the two readings' errors.
+          const most = atBase.reduce((a, b) => (b.dPb < a.dPb ? b : a));
+          for (const p of ahead) {
+            expect(
+              p.dPb - most.dPb,
+              `M ${m}, ${n} fins t/c ${t}, x/c ${p.xc}`,
+            ).toBeGreaterThanOrEqual(-(p.error + most.error));
+          }
+        }
+      }
+      // 0014 section 10.7 (ad): at M 1.5 inside by 0.015 to 0.076; at 2.0 by 0.005 and 0.010, and four 10% fins
+      // level with the base to 0.0002 (the symbols one reader alone found set none of these).
+      expect(margin).toEqual(
+        withSingle
+          ? {
+              '1.5 2 0.05': 0.0231,
+              '1.5 2 0.1': 0.0147,
+              '1.5 4 0.05': 0.0508,
+              '1.5 4 0.1': 0.0764,
+              '2 2 0.1': 0.005,
+              '2 4 0.05': 0.01,
+              '2 4 0.1': -0.0002,
+            }
+          : {
+              '1.5 2 0.05': 0.0231,
+              '1.5 2 0.1': 0.0147,
+              '1.5 4 0.05': 0.0508,
+              '1.5 4 0.1': 0.0792,
+              '2 2 0.1': 0.005,
+              '2 4 0.05': 0.01,
+              '2 4 0.1': -0.0002,
+            },
+      );
+    }
+    // The four 10% fins at M 2.0, x/c 0.2: -0.0642 +-0.002 against the base's -0.0644 +-0.0002, equal within both.
+    const four = pts(2.0, 4, 0.1);
+    expect(Math.min(...four.filter((p) => p.xc === 0.2).map((p) => p.dPb))).toBe(-0.0642);
+    expect(Math.min(...four.filter((p) => p.xc === 0).map((p) => p.dPb))).toBe(-0.0644);
+  });
+
+  it('the ordering, lower side: the most relief ahead of the base lies within the zero member', () => {
+    /** The least F ahead of the base at M, over every member, symbol and body-alone reading, errors toward relief. */
+    const fMin = (m: 1.5 | 2.0) => {
+      const bodies = TN3819_FIG33.filter(
+        (q) => Math.abs(q.mach - m) < 1e-9 && q.thicknessRatio === 0,
+      );
+      const fs: number[] = [];
+      for (const [n, t] of MEMBERS) {
+        for (const p of pts(m, n, t).filter((q) => q.xc > 0)) {
+          for (const b of bodies) {
+            fs.push(1 - Math.max(0, p.dPb + p.error) / (Math.abs(b.pB) - b.error));
+          }
+        }
+      }
+      return Math.min(...fs);
+    };
+    expect(r4(fMin(1.5))).toBe(0.9097);
+    expect(r4(fMin(2.0))).toBe(0.9439);
+    expect(fMin(1.5)).toBeGreaterThan(zeroMember(1.5).low);
+    expect(fMin(2.0)).toBeGreaterThan(zeroMember(2.0).low);
+    // Carried linearly in M from 2.0 and 1.5 to 1.0: 0.124 of relief, inside the zero member's 0.162.
+    const at10 = 2 * (1 - fMin(1.5)) - (1 - fMin(2.0));
+    expect(Math.round(1000 * at10) / 1000).toBe(0.124);
+    expect(at10).toBeLessThan(1 - zeroMember(1.0).low);
+    expect(r4(1 - zeroMember(1.0).low)).toBe(0.1621);
+  });
+
+  it('up to x/c 0.4 TN 2360 measures no relief at all, at M 1.5 and 2.0 only (the narrowing of (ad), withdrawn)', () => {
+    // Every symbol at 0 < x/c <= 0.4, both Mach numbers, every member, moved by its error toward relief.
+    const near = (m: 1.5 | 2.0) =>
+      MEMBERS.flatMap(([n, t]) => pts(m, n, t)).filter((p) => p.xc > 0 && p.xc <= 0.4 + 1e-9);
+    const towardRelief = [1.5, 2.0]
+      .flatMap((m) => near(m as 1.5 | 2.0))
+      .map((p) => p.dPb + p.error);
+    expect(r4(Math.max(...towardRelief))).toBe(-0.0028);
+    // As F over fig. 33's body alone (the largest body suction, which makes F least): at least 1.014.
+    const fNear = Math.min(
+      ...([1.5, 2.0] as const).flatMap((m) =>
+        TN3819_FIG33.filter((q) => Math.abs(q.mach - m) < 1e-9 && q.thicknessRatio === 0).flatMap(
+          (b) => near(m).map((p) => 1 - (p.dPb + p.error) / (Math.abs(b.pB) + b.error)),
+        ),
+      ),
+    );
+    expect(Math.round(1000 * fNear) / 1000).toBe(1.014);
+    // Relief appears from x/c 0.6 (four 5% fins at M 1.5), the first station beyond the bound's reach.
+    const relieving = ([1.5, 2.0] as const)
+      .flatMap((m) => MEMBERS.flatMap(([n, t]) => pts(m, n, t)))
+      .filter((p) => p.xc > 0 && p.dPb + p.error > 0);
+    expect(Math.min(...relieving.map((p) => p.xc))).toBe(0.6);
+  });
+
+  it("the direction in Mach number: the fins' effect falls faster with distance at M 1.5 than at 2.0", () => {
+    // At x/c 0.4, each symbol over the member's most negative at the base, for the three members measured at
+    // both Mach numbers there.
+    const frac = (m: 1.5 | 2.0, n: 2 | 4, t: 0.05 | 0.1) => {
+      const ps = pts(m, n, t);
+      const most = Math.min(...ps.filter((p) => p.xc === 0).map((p) => p.dPb));
+      return ps.filter((p) => Math.abs(p.xc - 0.4) < 1e-9).map((p) => p.dPb / most);
+    };
+    const both = [
+      [2, 0.1],
+      [4, 0.05],
+      [4, 0.1],
+    ] as const;
+    for (const [n, t] of both) {
+      expect(Math.max(...frac(1.5, n, t))).toBeLessThan(Math.min(...frac(2.0, n, t)));
+    }
+    const pc = (xs: number[]) => [Math.min(...xs), Math.max(...xs)].map((x) => Math.round(100 * x));
+    expect(pc(both.flatMap(([n, t]) => frac(1.5, n, t)))).toEqual([6, 63]);
+    expect(pc(both.flatMap(([n, t]) => frac(2.0, n, t)))).toEqual([64, 98]);
+  });
+
+  /** A circular arc of t/c tau (half-thickness 2 tau s (1 - s)). */
+  const arc = (tau: number): SymmetricSection => {
+    const x = Array.from({ length: 201 }, (_, k) => k / 200);
+    return { x, halfThickness: x.map((s) => 2 * tau * s * (1 - s)) };
+  };
+  const CASES: [string, FinsNearBase][] = [
+    ['double wedge 2.4%, three fins, unswept', fins({ tanLeadingEdgeSweep: 0 })],
+    [
+      'four 10% circular arcs, unswept',
+      fins({ count: 4, section: arc(0.1), sectionFamily: 'circular-arc', tanLeadingEdgeSweep: 0 }),
+    ],
+    [
+      'four 5% circular arcs, unswept',
+      fins({ count: 4, section: arc(0.05), sectionFamily: 'circular-arc', tanLeadingEdgeSweep: 0 }),
+    ],
+    [
+      'double wedge 5%, two fins, unswept',
+      fins({ count: 2, section: doubleWedge(0.05, 0.5), tanLeadingEdgeSweep: 0 }),
+    ],
+    ['flat plate 2.4%, three fins, 45 deg', fins({ section: plate(0.024) })],
+  ];
+  const refusal = (f: () => unknown): BaseRefusal => {
+    try {
+      f();
+    } catch (e) {
+      if (e instanceof BaseRefusal) return e;
+      throw e;
+    }
+    throw new Error('served');
+  };
+
+  it('below M 1.5 every position ahead of the base is refused, the words naming the missing measurement', () => {
+    for (const [name, c] of CASES) {
+      for (const m of [1.0, 1.1, 1.2, 1.3, 1.4, 1.4999]) {
+        // At the base the same fins are served, so the refusal is the position's alone.
+        expect(finsOnBaseFactorW1(m, { ...c, trailingEdgeAheadOfBase: 0 }).low).toBeGreaterThan(0);
+        for (const xc of [0.001, 0.2, 0.4, 0.6, 0.999]) {
+          const e = refusal(() => finsOnBaseFactorW1(m, { ...c, trailingEdgeAheadOfBase: xc }));
+          const what = `${name}, M ${m}, x/c ${xc}`;
+          expect(e.reason, what).toBe('fins-near-base');
+          expect(e.message, what).toContain(
+            `fins ending ${Number(xc.toPrecision(3))} root chords ahead of the base at Mach ${m}: ` +
+              'below Mach 1.5 no measurement with fins ahead of the base is known',
+          );
+          expect(e.message, what).toContain(
+            "the fins' pressures grow as the Mach number falls (p. 7)",
+          );
+          expect(e.message, what).toContain('until such a measurement is found');
+          // Fig. 32, at Mach 2.41, cannot settle a case below Mach 1.5, so the words do not lean on it.
+          expect(e.message, what).not.toContain('fig. 32');
+        }
+      }
+    }
+    // The review's case: four unswept 5% arcs at x/c 0.4, M 1.2, served before as F 0.838 to 1.621.
+    expect(
+      refusal(() => finsOnBaseFactorW1(1.2, { ...CASES[2]![1], trailingEdgeAheadOfBase: 0.4 }))
+        .reason,
+    ).toBe('fins-near-base');
+  });
+
+  it("the chord rule: at M 1.5 to 2.0 positions are served only with TN 2360's root chord of 1.5 diameters", () => {
+    expect(W1_POSITION_CHORD_OVER_DIAMETER).toBe(1.5);
+    expect(W1_POSITION_CHORD_TOLERANCE).toBe(0.005);
+    for (const m of [1.5, 1.8, 2.0]) {
+      for (const xc of [0.001, 0.5, 0.999]) {
+        const at = (c: number | undefined) =>
+          finsOnBaseFactorW1(
+            m,
+            c === undefined
+              ? withoutChord(fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: xc }))
+              : fins({
+                  tanLeadingEdgeSweep: 0,
+                  trailingEdgeAheadOfBase: xc,
+                  rootChordOverDiameter: c,
+                }),
+          );
+        const served = at(1.5);
+        expect(served.label).toContain(
+          'the position bracketed between the stations of TN 2360 fig. 6, measured with a root chord ' +
+            'of 1.5 body diameters, as these fins have',
+        );
+        // Within 0.5% the same numbers; beyond it refused.
+        for (const c of [1.5 * 0.996, 1.5 * 1.004]) {
+          expect(at(c).low).toBe(served.low);
+          expect(at(c).high).toBe(served.high);
+        }
+        for (const c of [1.5 * 0.994, 1.5 * 1.006, 1.0, 2.0, 3.0]) {
+          const e = refusal(() => at(c));
+          expect(e.reason, `M ${m}, x/c ${xc}, c/D ${c}`).toBe('fins-near-base');
+          expect(e.message).toContain(
+            `the fins' root chord is ${c.toFixed(2)} body diameters, and TN 2360 measures fins ahead ` +
+              'of the base only with a root chord of 1.5 body diameters',
+          );
+          expect(e.message).not.toContain('below Mach 1.5');
+          expect(e.message).not.toContain('above Mach 2.0');
+        }
+        const none = refusal(() => at(undefined));
+        expect(none.reason).toBe('fins-near-base');
+        expect(none.message).toContain("the fins' root chord over the body diameter");
+        expect(none.message).toContain('is not given');
+      }
+    }
+    // The swept fins served from 0.9 root chords ahead fall under the rule too.
+    const swept = (c: number) =>
+      fins({ tanTrailingEdgeSweep: 1, trailingEdgeAheadOfBase: 0.95, rootChordOverDiameter: c });
+    expect(finsOnBaseFactorW1(1.8, swept(1.5)).swept).toBe(true);
+    expect(refusal(() => finsOnBaseFactorW1(1.8, swept(1.18))).reason).toBe('fins-near-base');
+    // At the base the chord does not enter: any chord, or none, is served.
+    for (const c of [0.5, 1.0, 3.0]) {
+      expect(finsOnBaseFactorW1(1.8, fins({ rootChordOverDiameter: c })).low).toBeGreaterThan(0);
+    }
+    expect(finsOnBaseFactorW1(1.8, withoutChord(fins())).low).toBeGreaterThan(0);
+    expect(nearBasePositionReasons(1.2, 0, undefined)).toEqual([]);
+  });
+
+  it('above M 2.0 refused, its words saying what fig. 32 is now; every reason given together', () => {
+    for (const m of [2.0001, 2.2, 2.41, 2.6, 3.0]) {
+      for (const xc of [0.01, 0.5, 0.99]) {
+        const e = refusal(() =>
+          finsOnBaseFactorW1(m, fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: xc })),
+        );
+        expect(e.reason).toBe('fins-near-base');
+        expect(e.message).toContain(
+          `fins ending ${xc} root chords ahead of the base at Mach ${m}: above Mach 2.0 no ` +
+            'measurement with fins ahead of the base is settled',
+        );
+        expect(e.message).toContain(
+          "TN 3819 fig. 32's, at Mach 2.41, is read three times but no method using it is written yet",
+        );
+        expect(e.message).not.toContain('awaits its second reading');
+      }
+    }
+    // Above Mach 2.0 with another chord: both reasons.
+    const both = refusal(() =>
+      finsOnBaseFactorW1(
+        2.2,
+        fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.5, rootChordOverDiameter: 2.0 }),
+      ),
+    );
+    expect(both.message).toContain('above Mach 2.0');
+    expect(both.message).toContain("; and the fins' root chord is 2.00 body diameters");
+    // Below Mach 1.5 with no chord given: both reasons.
+    const below = refusal(() =>
+      finsOnBaseFactorW1(
+        1.2,
+        withoutChord(fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.2 })),
+      ),
+    );
+    expect(below.message).toContain('below Mach 1.5');
+    expect(below.message).toContain('is not given');
   });
 });

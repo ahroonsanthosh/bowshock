@@ -370,7 +370,7 @@ describe('refusals', { timeout: 60_000 }, () => {
     ]);
   });
 
-  it('swept fins at the base: the leading edge swept, the rebuilt factor (0015) serves its bracket; the trailing edge swept, refused; a chord ahead, served', () => {
+  it('swept fins at the base: the leading edge swept, the rebuilt factor (0015) serves its bracket; the trailing edge swept, refused; a chord ahead, refused', () => {
     // The review's probe: four 8% double wedges swept 45 deg at both edges, at the base. No sharp fins with
     // a swept trailing edge are measured at the base (0015 section 3.4): refused.
     const probe: FinnedBody = {
@@ -408,9 +408,11 @@ describe('refusals', { timeout: 60_000 }, () => {
       // Above M 2.56, where fig. 35's free-flight curve ends, bounded, not measured.
       expect(b.finsOnBase?.bounded).toBe(mach > 2.56);
     }
+    // A chord ahead: served on the plain curve until 2026-10-27, refused now (0014 section 10.7 (ad)):
+    // a root chord of one body diameter, not TN 2360's 1.5, and above Mach 2.0 nothing measured ahead.
     const ahead = { ...probe, fins: { ...probe.fins, trailingEdgeAheadOfBase: 1 } };
-    expect(refusals(ahead, 2.0)).toEqual([]);
-    expect(refusals(ahead, 2.8)).toEqual([]);
+    expect(refusals(ahead, 2.0)).toEqual(['body base: fins-near-base']);
+    expect(refusals(ahead, 2.8)).toEqual(['body base: fins-near-base']);
   });
 
   it('a rounded leading edge on a section other than a single wedge', () => {

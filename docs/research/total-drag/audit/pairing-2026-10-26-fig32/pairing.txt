@@ -1,0 +1,236 @@
+Pairing of two blind readings of NACA TN 3819 fig. 32 (Love 1957, NTRS 19930084517, PDF p. 64), 2026-10-26.
+By a neutral party who made neither reading and did not look at the figure, the page images or either reader's
+overlays: only the two CSV files, the two readers' method notes and reading 1's spec and calibration files were
+used. scratchpad/decisions.md was not opened.
+  reading 1: round 6, docs/research/total-drag/audit/round6/readings/tn3819_fig32.csv (blob ec8f87b, same on main; symbol rows
+    re-read by reading 1 itself in 66ad83e), method notes round6/readings/method_tn3819_figs32-35.md, spec
+    round6/scripts/specs/tn3819_fig32.json, calibration round6/readings/tn3819_fig32_cal.txt.
+  reading 2: round 14, docs/research/total-drag/audit/round14-fig32/readings/tn3819_fig32.csv, method round14-fig32/method.md.
+Registration: 0014 section 10.7 (ad) names the Mach 2.41 symbols for the position members at Mach 2.0 to 3.0;
+the method that uses them is written in 0015 after this pairing. This pairing sets nothing.
+Rule: agree when |reading 1 - reading 2| <= e1 + e2 on each axis both readers state (stated reading errors summed;
+reading 1 adds its terms in quadrature, reading 2 linearly; neither states a confidence level). Curves: P_B only,
+at the same station. Nothing is resolved toward either reading, nothing averaged, no envelope formed.
+Sign of differences: reading 1 minus reading 2.
+
+=== 1. Conventions (checked first)
+  1. x/c axis direction. Reading 1: +1.0 at the left frame to -1.5 at the right, 26 lines 0.1 apart (method notes;
+     spec xvals listed left to right). Reading 2: the same, 26 lines, +1.0 the left frame, -1.5 the unlabelled
+     right frame, every label checked against its line. AGREE.
+  2. Meaning of the sign of x/c. Reading 2: positive when the fin trailing edge is ahead of the base (symbol list,
+     PDF p. 6; text PDF pp. 22 and 23); 'shifted to right' means toward negative x/c. Reading 1 does not state what
+     the sign means; it reads against the same printed labels, so its values carry the same sign, and nothing in
+     it says otherwise. NOT A DISAGREEMENT; the meaning is stated by reading 2 only.
+  3. P_B axis direction. Reading 1: -0.40 at the top frame to +0.08 at the bottom, 25 lines 0.02 apart (spec yvals
+     listed top to bottom). Reading 2: -0.40 at the top to +0.08 at the bottom, up is more negative, every label
+     checked. AGREE.
+  4. P_B sign. Both give every triangle and every faired-curve value as negative P_B (-0.06 to -0.17), and the
+     12 common ref. 26 check values agree within the summed errors (largest |difference| 0.0007,
+     at most 0.64 of the allowed), which a flipped or shifted axis in either reading would not give.
+     Reading 2 quotes P_B = (p_B - p_inf)/q_inf from the symbol list; reading 1 does not state the definition.
+     AGREE.
+  5. Scale per scan pixel (300 ppi). Reading 1: 0.0015653 x/c, 0.00031505 P_B (its cal.txt, per 600 dpi render
+     px, times 2). Reading 2: 0.0015661 x/c, 0.00031540 P_B (global plane). Apart by 0.05% and 0.11%. AGREE.
+  6. Which symbol is which Reynolds number, in the legend. Reading 1: plain triangle R = 2.8e6, flagged triangle
+     R = 11.3e6. Reading 2: open triangle R = 2.8e6 (key K01), flagged R = 11.3e6 (key K02, a short stroke up and
+     right from the apex). AGREE.
+  7. Which symbol is which Reynolds number, symbol by symbol. Reading 2 gives one for each of its 12 symbols
+     (with stated doubt at x/c 1.0 lower, 0.8 and 0.0). Reading 1 gives none: its CSV has no Reynolds number or
+     flag on any row, and its method says the plain and flagged triangles 'overlap at most stations and are read
+     as one symbol each where they do'. NOT A DISAGREEMENT BUT A GAP, the main one this pairing finds:
+     no value can be paired by Reynolds number; every per-Reynolds-number value below rests on reading 2's
+     assignment alone, and reading 1's value is the same number on both sides wherever it gives one value.
+  8. Triangle centre. Both take the point one third of the height above the base. AGREE.
+  9. What the symbols are. Both: Langley 9-in. tunnel, Mach 2.41, plain and flagged triangles. AGREE.
+ 10. Which curves are ref. 26's. Both: the Mach 1.50 and 2.00 long-short dashed 'measured P_B' curves, by their
+     labels on the plot. Neither read the calculated curves (circles, squares, Prandtl-Meyer). AGREE.
+ 11. Faired curve. Both: the solid curve through the triangles, read over x/c 0 to 1. AGREE (ends differ, below).
+
+=== 2. Counts
+  reading 1: 7 symbol values at 6 stations, faired curve M 2.41 13, ref. 26 M 1.50 (check) 21, ref. 26 M 2.00 (check) 21; 62 rows.
+  reading 2: 12 symbols (10 under its own one-symbol alternatives at x/c 0.8 and 0.0), 2 legend keys (not data), faired curve M 2.41 12, ref. 26 M 1.50 (check) 6, ref. 26 M 2.00 (check) 6; 38 rows.
+  symbols per station (reading 1 / reading 2):
+    x/c 1.0: 2 / 2
+    x/c 0.8: 1 / 2  reading 1 notes no overlap or second symbol
+    x/c 0.6: 1 / 2  reading 1 notes no overlap or second symbol
+    x/c 0.4: 1 / 2  reading 1's one value is stated as both overlapping triangles
+    x/c 0.2: 1 / 2  reading 1's one value is stated as both overlapping triangles
+    x/c 0.0: 1 / 2  reading 1's one value is stated as both overlapping triangles
+  symbol comparisons (each of reading 2's 12 symbols against reading 1's value at its station): 12; agree 9; disagree 3
+  reading 2's value-changing alternatives compared: 4; agree 2; disagree 2
+  faired curve M 2.41: paired 11; agree 10; disagree 1; reading 1 only 2; reading 2 only 1
+  ref. 26 M 1.50 (check): paired 6; agree 6; disagree 0; reading 1 only 15; reading 2 only 0
+  ref. 26 M 2.00 (check): paired 6; agree 6; disagree 0; reading 1 only 15; reading 2 only 0
+
+=== 3. Symbols, station by station (P_B; x/c in brackets; errors as stated)
+  x/c 1.0
+    reading 1 tri_xc1.0_upper: -0.0757 +-0.0003 (x/c 0.9975 +-0.0017); Reynolds number not stated; symbol triangle 41 px (score 0.71); x err 0.0017
+    reading 1 tri_xc1.0_lower: -0.0617 +-0.0003 (x/c 0.9994 +-0.0017); Reynolds number not stated; symbol triangle 41 px (score 0.71); x err 0.0017
+    reading 2 S01 open triangle, R 2.8e6: -0.0752 +-0.0006 (x/c 0.9973 +-0.0029)
+      against reading 1 tri_xc1.0_upper: dP_B -0.0005 (allowed 0.0009), dx/c +0.0002 (allowed 0.0046): AGREE
+    reading 2 S02 flagged triangle (flag faint), R 11.3e6: -0.0613 +-0.0006 (x/c 0.9997 +-0.0029)
+      against reading 1 tri_xc1.0_lower: dP_B -0.0004 (allowed 0.0009), dx/c -0.0003 (allowed 0.0046): AGREE
+  x/c 0.8
+    reading 1 tri_xc0.8: -0.1604 +-0.0003 (x/c 0.8001 +-0.0017); Reynolds number not stated; symbol triangle 33 px (score 0.78); x err 0.0017
+    reading 2 S03 flagged triangle, R 11.3e6: -0.1601 +-0.0015 (x/c 0.8004 +-0.0028)
+      against reading 1 tri_xc0.8: dP_B -0.0003 (allowed 0.0018), dx/c -0.0003 (allowed 0.0045): AGREE
+    reading 2 S04 open triangle (no flag seen), R 2.8e6: -0.1582 +-0.0008 (x/c 0.7997 +-0.0030)
+      against reading 1 tri_xc0.8: dP_B -0.0022 (allowed 0.0011), dx/c +0.0004 (allowed 0.0047): DISAGREE on P_B
+  x/c 0.6
+    reading 1 tri_xc0.6: -0.1566 +-0.0003 (x/c 0.6007 +-0.0017); Reynolds number not stated; symbol triangle 35 px (score 0.59); x err 0.0017
+    reading 2 S05 flagged triangle, R 11.3e6: -0.1612 +-0.0007 (x/c 0.6006 +-0.0028)
+      against reading 1 tri_xc0.6: dP_B +0.0046 (allowed 0.0010), dx/c +0.0001 (allowed 0.0045): DISAGREE on P_B
+    reading 2 S06 open triangle, R 2.8e6: -0.1569 +-0.0007 (x/c 0.6012 +-0.0028)
+      against reading 1 tri_xc0.6: dP_B +0.0003 (allowed 0.0010), dx/c -0.0005 (allowed 0.0045): AGREE
+  x/c 0.4
+    reading 1 tri_xc0.4: -0.1728 +-0.0020 (x/c 0.3996 +-0.0017); Reynolds number not stated; symbol triangle 39 px (score 0.77); x err 0.0017; plain and flagged triangles overlap
+    reading 2 S07 open triangle, R 2.8e6: -0.1727 +-0.0009 (x/c 0.4004 +-0.0028)
+      against reading 1 tri_xc0.4: dP_B -0.0001 (allowed 0.0029), dx/c -0.0008 (allowed 0.0045): AGREE
+    reading 2 S08 flagged triangle, R 11.3e6: -0.1694 +-0.0007 (x/c 0.4004 +-0.0036)
+      against reading 1 tri_xc0.4: dP_B -0.0034 (allowed 0.0027), dx/c -0.0008 (allowed 0.0053): DISAGREE on P_B
+  x/c 0.2
+    reading 1 tri_xc0.2: -0.1679 +-0.0030 (x/c 0.1999 +-0.0017); Reynolds number not stated; symbol triangle 35 px (score 0.81); x err 0.0017; plain and flagged triangles overlap
+    reading 2 S09 flagged triangle, R 11.3e6: -0.1682 +-0.0009 (x/c 0.2002 +-0.0028)
+      against reading 1 tri_xc0.2: dP_B +0.0003 (allowed 0.0039), dx/c -0.0003 (allowed 0.0045): AGREE
+    reading 2 S10 open triangle, R 2.8e6: -0.1650 +-0.0007 (x/c 0.1997 +-0.0028)
+      against reading 1 tri_xc0.2: dP_B -0.0029 (allowed 0.0037), dx/c +0.0002 (allowed 0.0045): AGREE
+  x/c 0.0
+    reading 1 tri_xc0.0: -0.1642 +-0.0020 (x/c -0.0005 +-0.0017); Reynolds number not stated; symbol triangle 37 px (score 0.61); x err 0.0017; plain and flagged triangles overlap
+    reading 2 S11 flagged triangle (assignment unsure), R 11.3e6: -0.1657 +-0.0011 (x/c 0.0001 +-0.0028)
+      against reading 1 tri_xc0.0: dP_B +0.0015 (allowed 0.0031), dx/c -0.0006 (allowed 0.0045): AGREE
+    reading 2 S12 open triangle (assignment unsure), R 2.8e6: -0.1642 +-0.0008 (x/c 0.0007 +-0.0031)
+      against reading 1 tri_xc0.0: dP_B +0.0000 (allowed 0.0028), dx/c -0.0012 (allowed 0.0048): AGREE
+
+=== 4. Faired curve and ref. 26 check curves (P_B at the station)
+  faired curve M 2.41
+    x/c +1.000: r1 -0.0737 +-0.0011  r2 C00 -0.0675 +-0.0014    d -0.0062 (allowed 0.0025) DISAGREE
+    x/c +0.950: r1 -0.1118 +-0.0007  r2 --                      reading 1 only
+    x/c +0.900: r1 -0.1402 +-0.0007  r2 C01 -0.1409 +-0.0015    d +0.0007 (allowed 0.0022) AGREE
+    x/c +0.850: r1 -0.1538 +-0.0004  r2 --                      reading 1 only
+    x/c +0.800: r1 -0.1595 +-0.0004  r2 C02 -0.1600 +-0.0011    d +0.0005 (allowed 0.0015) AGREE
+    x/c +0.700: r1 -0.1616 +-0.0004  r2 C03 -0.1616 +-0.0005    d +0.0000 (allowed 0.0009) AGREE
+    x/c +0.600: r1 -0.1601 +-0.0004  r2 C04 -0.1601 +-0.0009    d +0.0000 (allowed 0.0013) AGREE
+    x/c +0.500: r1 -0.1628 +-0.0004  r2 C05 -0.1629 +-0.0006    d +0.0001 (allowed 0.0010) AGREE
+    x/c +0.400: r1 -0.1714 +-0.0004  r2 C06 -0.1712 +-0.0008    d -0.0002 (allowed 0.0012) AGREE
+    x/c +0.300: r1 -0.1681 +-0.0004  r2 C07 -0.1681 +-0.0006    d +0.0000 (allowed 0.0010) AGREE
+    x/c +0.200: r1 -0.1666 +-0.0004  r2 C08 -0.1658 +-0.0009    d -0.0008 (allowed 0.0013) AGREE
+    x/c +0.100: r1 -0.1646 +-0.0004  r2 C09 -0.1645 +-0.0005    d -0.0001 (allowed 0.0009) AGREE
+    x/c +0.012: r1 --                r2 C11 -0.1648 +-0.0005 at x/c 0.0117 reading 2 only
+    x/c +0.000: r1 -0.1657 +-0.0004  r2 C10 -0.1648 +-0.0008    d -0.0009 (allowed 0.0012) AGREE
+  ref. 26 M 1.50 (check)
+    x/c +1.000: r1 -0.1800 +-0.0003  r2 R01 -0.1807 +-0.0008    d +0.0007 (allowed 0.0011) AGREE
+    x/c +0.900: r1 -0.1859 +-0.0004  r2 --                      reading 1 only
+    x/c +0.800: r1 -0.1958 +-0.0004  r2 R02 -0.1961 +-0.0008    d +0.0003 (allowed 0.0012) AGREE
+    x/c +0.700: r1 -0.2085 +-0.0004  r2 --                      reading 1 only
+    x/c +0.600: r1 -0.2150 +-0.0004  r2 R03 -0.2152 +-0.0006    d +0.0002 (allowed 0.0010) AGREE
+    x/c +0.500: r1 -0.2180 +-0.0003  r2 --                      reading 1 only
+    x/c +0.400: r1 -0.2199 +-0.0004  r2 R04 -0.2202 +-0.0010    d +0.0003 (allowed 0.0014) AGREE
+    x/c +0.300: r1 -0.2293 +-0.0004  r2 --                      reading 1 only
+    x/c +0.200: r1 -0.2592 +-0.0007  r2 R05 -0.2594 +-0.0015    d +0.0002 (allowed 0.0022) AGREE
+    x/c +0.100: r1 -0.3001 +-0.0007  r2 --                      reading 1 only
+    x/c +0.000: r1 -0.3251 +-0.0004  r2 R06 -0.3250 +-0.0006    d -0.0001 (allowed 0.0010) AGREE
+    x/c -0.100: r1 -0.3276 +-0.0004  r2 --                      reading 1 only
+    x/c -0.200: r1 -0.3294 +-0.0004  r2 --                      reading 1 only
+    x/c -0.300: r1 -0.3391 +-0.0005  r2 --                      reading 1 only
+    x/c -0.400: r1 -0.3650 +-0.0004  r2 --                      reading 1 only
+    x/c -0.500: r1 -0.3355 +-0.0006  r2 --                      reading 1 only
+    x/c -0.600: r1 -0.2892 +-0.0007  r2 --                      reading 1 only
+    x/c -0.700: r1 -0.2389 +-0.0008  r2 --                      reading 1 only
+    x/c -0.800: r1 -0.1878 +-0.0008  r2 --                      reading 1 only
+    x/c -0.900: r1 -0.1355 +-0.0010  r2 --                      reading 1 only
+    x/c -1.000: r1 -0.0999 +-0.0004  r2 --                      reading 1 only
+  ref. 26 M 2.00 (check)
+    x/c +1.000: r1 -0.1643 +-0.0003  r2 R07 -0.1646 +-0.0008    d +0.0003 (allowed 0.0011) AGREE
+    x/c +0.900: r1 -0.1661 +-0.0003  r2 --                      reading 1 only
+    x/c +0.800: r1 -0.1695 +-0.0004  r2 R08 -0.1698 +-0.0006    d +0.0003 (allowed 0.0010) AGREE
+    x/c +0.700: r1 -0.1750 +-0.0004  r2 --                      reading 1 only
+    x/c +0.600: r1 -0.1824 +-0.0004  r2 R09 -0.1826 +-0.0007    d +0.0002 (allowed 0.0011) AGREE
+    x/c +0.500: r1 -0.1935 +-0.0004  r2 --                      reading 1 only
+    x/c +0.400: r1 -0.2083 +-0.0004  r2 R10 -0.2082 +-0.0015    d -0.0001 (allowed 0.0019) AGREE
+    x/c +0.300: r1 -0.2199 +-0.0009  r2 --                      reading 1 only
+    x/c +0.200: r1 -0.2107 +-0.0004  r2 R11 -0.2106 +-0.0006    d -0.0001 (allowed 0.0010) AGREE
+    x/c +0.100: r1 -0.2067 +-0.0004  r2 --                      reading 1 only
+    x/c +0.000: r1 -0.2005 +-0.0003  r2 R12 -0.2005 +-0.0010    d +0.0000 (allowed 0.0013) AGREE
+    x/c -0.100: r1 -0.1929 +-0.0020  r2 --                      reading 1 only
+    x/c -0.200: r1 -0.1849 +-0.0004  r2 --                      reading 1 only
+    x/c -0.300: r1 -0.1861 +-0.0004  r2 --                      reading 1 only
+    x/c -0.400: r1 -0.1960 +-0.0004  r2 --                      reading 1 only
+    x/c -0.500: r1 -0.2027 +-0.0004  r2 --                      reading 1 only
+    x/c -0.600: r1 -0.1984 +-0.0020  r2 --                      reading 1 only
+    x/c -0.700: r1 -0.1813 +-0.0021  r2 --                      reading 1 only
+    x/c -0.800: r1 -0.1544 +-0.0021  r2 --                      reading 1 only
+    x/c -0.900: r1 -0.1262 +-0.0020  r2 --                      reading 1 only
+    x/c -1.000: r1 -0.0998 +-0.0020  r2 --                      reading 1 only
+
+=== 5. Every disagreement (unresolved; no winner picked, nothing averaged)
+  D1. Symbol S04 (x/c 0.8, open triangle (no flag seen), R 2.8e6 by reading 2): reading 1 tri_xc0.8 -0.1604 +-0.0003, reading 2 -0.1582 +-0.0008; difference -0.0022, allowed 0.0011, outside on P_B.
+  D2. Symbol S05 (x/c 0.6, flagged triangle, R 11.3e6 by reading 2): reading 1 tri_xc0.6 -0.1566 +-0.0003, reading 2 -0.1612 +-0.0007; difference +0.0046, allowed 0.0010, outside on P_B.
+  D3. Symbol S08 (x/c 0.4, flagged triangle, R 11.3e6 by reading 2): reading 1 tri_xc0.4 -0.1728 +-0.0020, reading 2 -0.1694 +-0.0007; difference -0.0034, allowed 0.0027, outside on P_B.
+  D4. Reading 2's alternative 'x/c 0.8 as ONE symbol (flagged, R 11.3e6)': reading 1 tri_xc0.8 -0.1604 +-0.0003, alternative -0.1582 +-0.0008; difference -0.0022, allowed 0.0011.
+  D5. faired curve M 2.41 at x/c 1.0: reading 1 -0.0737 +-0.0011, reading 2 C00 -0.0675 +-0.0014; difference -0.0062, allowed 0.0025.
+  D6. Faired curve left end, reading 2's alternative (hidden in the frame line to S02's apex, about -0.0636): reading 1 -0.0737; difference -0.0101, allowed 0.0025 (with C00's error; reading 2 states none for the alternative).
+  D7. Number of symbols. Reading 1: 7 values at 6 stations; reading 2: 12 symbols (10 under
+       its alternatives). Where reading 1 gives one value and notes no second symbol: x/c 0.8 and x/c 0.6; reading 2 resolves two there (5.9 px and 13.8 px apart in page y).
+       Where reading 1 states one value for the overlapping pair: x/c 0.4, x/c 0.2, x/c 0.0; reading 2 resolves two there (10.5 px, 10.2 px, 4.8 px apart in page y).
+  D8. Reynolds number per symbol: stated by reading 2 only (conventions item 7). Not a numeric disagreement;
+       listed so that no per-Reynolds-number value is taken as read twice.
+  Stated as fact only, no conclusion drawn: where reading 1 gives one value and reading 2 two symbols, the
+  symbols reading 1's value agrees with:
+    x/c 0.8: S03 (upper, flagged triangle)
+    x/c 0.6: S06 (lower, open triangle)
+    x/c 0.4: S07 (upper, open triangle)
+    x/c 0.2: S09 (upper, flagged triangle) and S10 (lower, open triangle)
+    x/c 0.0: S11 (upper, flagged triangle (assignment unsure)) and S12 (lower, open triangle (assignment unsure))
+
+=== 6. Every flagged or ambiguous point, with both readers' alternatives (all unresolved)
+  F1. x/c 0.8, one or two symbols.
+      Reading 2: two overlapping outlines, S03 upper, clear flag, R 11.3e6, -0.1601 +-0.0015 (base hidden), and S04 lower, no flag seen, R 2.8e6 resting only on S03 carrying the
+      flag, -0.1582 +-0.0008; low confidence. Alternative: ONE tall symbol at (538.0, 1516.0) px, x/c 0.800, P_B -0.158, flagged (R 11.3e6).
+      Reading 1: one value, -0.1604 +-0.0003 (x/c 0.8001; symbol triangle 33 px (score 0.78); x err 0.0017); no Reynolds number, no overlap noted.
+      Pairing: with S03 agree (-0.0003, allowed 0.0018); with S04 disagree (-0.0022, allowed 0.0011); with the one-symbol alternative disagree (-0.0022, allowed 0.0011, with S04's error).
+  F2. x/c 0.0, which symbol carries the flag (and one or two symbols).
+      Reading 2: S11 upper, middle of its base not visible, flagged R 11.3e6, -0.1657 +-0.0011; S12 lower, full outline, open R 2.8e6, -0.1642 +-0.0008;
+      low confidence. Alternatives: (a) the flag is S12's and S11 is open (the flag line meets the axis between
+      the two apexes); (b) only S12 is a symbol, and it carries the flag.
+      Reading 1: one value for the overlapping plain and flagged triangles, -0.1642 +-0.0020 (x/c -0.0005; symbol triangle 37 px (score 0.61); x err 0.0017; plain and flagged triangles overlap); no Reynolds number.
+      Pairing: with S11 agree (+0.0015, allowed 0.0031); with S12 agree (+0.0000, allowed 0.0028); so in every one of reading 2's
+      alternatives the values agree; which Reynolds number goes with which value is reading 2's alone, in doubt.
+  F3. x/c 1.0 lower symbol (S02), flag faint.
+      Reading 2: flagged R 11.3e6 by a faint tick about 3 px above the apex, where the faired curve meets the
+      frame line; alternative open R 2.8e6 (two R 2.8e6 symbols at the station). -0.0613 +-0.0006.
+      Reading 1: lower symbol -0.0617 +-0.0003, no Reynolds number.
+      Pairing: values agree (-0.0004, allowed 0.0009); the Reynolds number is reading 2's alone, with its alternative.
+  F4. S01 at x/c 0.997.
+      Reading 2: drawn about 2 px right of the frame line, entered as printed, x/c 0.9973 +-0.0029. Reading 1: upper symbol at x/c 0.9975 +-0.0017.
+      Pairing: agree (dx/c +0.0002, allowed 0.0046); both place it inside the frame, right of x/c 1.0; neither moves it to 1.0.
+  F5. S09 (x/c 0.2 upper, flagged).
+      Reading 2: vertex reading -0.1682 +-0.0009 adopted; the joint template fit, about -0.1676, not adopted (pulled down the page by the faired curve).
+      Reading 1: one value for the overlapping pair, -0.1679 +-0.0030.
+      Pairing: with S09 agree (+0.0003, allowed 0.0039); with the template alternative agree (-0.0003, allowed 0.0039); with S10 agree (-0.0029, allowed 0.0037).
+  F6. Faired curve, left end (x/c 1.0).
+      Reading 2: C00 -0.0675 +-0.0014, the last point where the ink is separate from the frame line (y 1801 to 1806 px); alternative: hidden in the frame line down to S02's apex, about -0.0636.
+      Reading 1: -0.0737 +-0.0011, by row tracking between x/c 0.9 and 1.0 (curve; n=20).
+      Pairing: with C00 disagree (-0.0062, allowed 0.0025); with the alternative disagree (-0.0101, allowed 0.0025 with C00's error).
+  F7. Faired curve, right end (x/c 0).
+      Reading 2: the curve ends at x/c 0.0117 (C11, -0.1648 +-0.0005) at the left
+      side of the x/c 0 symbols; C10 at x/c 0 (-0.1648 +-0.0008) is that level carried 7 px, not ink.
+      Reading 1: x/c 0 read as a curve value, -0.1657 +-0.0004 (curve; n=6); it states no end.
+      Pairing: with C10 agree (-0.0009, allowed 0.0012). Stated as fact only: reading 2's
+      S11 is -0.1657; reading 1 does not say whether its x/c 0 value is curve ink.
+  F8. Faired curve bridged behind the symbols at x/c 0.8, 0.6, 0.4, 0.2 (reading 2; 0.6 read by hand where the
+      curve lies along the -0.16 gridline). Reading 1: traced values there, no bridge noted.
+      Pairing: x/c 0.8 agree (+0.0005, allowed 0.0015); x/c 0.6 agree (+0.0000, allowed 0.0013); x/c 0.4 agree (-0.0002, allowed 0.0012); x/c 0.2 agree (-0.0008, allowed 0.0013).
+  F9. Reading 1's own markers: extra error 0.002, 0.003, 0.002 at x/c 0.4, 0.2, 0.0 (overlap); lowest template
+      scores 0.59 (x/c 0.6) and 0.61 (x/c 0.0); M 2.00 ref. 26 extra 0.002 at x/c -0.1 and -0.6 to -1.0 (outside
+      reading 2's check stations, not paired).
+ F10. Reading 2: the model's support and the length the Reynolds numbers are based on are not stated in the text
+      it read. Reading 1 does not address them. Not a figure value; listed for completeness.
+
+=== 7. Read by one reader only (not paired)
+  faired curve M 2.41, reading 1 only (2): x/c +0.95, +0.85
+  faired curve M 2.41, reading 2 only (1): C11 x/c 0.0117
+  ref. 26 M 1.50 (check), reading 1 only (15): x/c +0.90, +0.70, +0.50, +0.30, +0.10, -0.10, -0.20, -0.30, -0.40, -0.50, -0.60, -0.70, -0.80, -0.90, -1.00
+  ref. 26 M 2.00 (check), reading 1 only (15): x/c +0.90, +0.70, +0.50, +0.30, +0.10, -0.10, -0.20, -0.30, -0.40, -0.50, -0.60, -0.70, -0.80, -0.90, -1.00
+  legend keys, reading 2 only (2): K01, K02 (not data; reading 1 lists none)
+
+Files: pairs_tn3819_fig32.csv (one row per comparison, alternative, one-reading value or legend key), this file.
