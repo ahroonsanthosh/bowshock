@@ -1244,6 +1244,41 @@ describe('refusals', () => {
         'no fin of any section is measured at the base swept beyond 60 deg',
       );
     });
+    it('the flag for the sweep argument: set at 0 deg and outside 45 to 60 deg, not inside it nor for other sections (the review of 2026-10-28)', () => {
+      const flagAt = (mach: number, le: number, xc = 0, section = plate(0.024)) =>
+        finsOnBaseFactorW1(
+          mach,
+          fins({
+            section,
+            tanLeadingEdgeSweep: tanDeg(le),
+            tanTrailingEdgeSweep: 0,
+            trailingEdgeAheadOfBase: xc,
+            rootChordOverDiameter: 1.5,
+          }),
+        ).sweepByArgument;
+      for (const mach of [2.0, 2.8]) {
+        expect(flagAt(mach, 0), `M ${mach}, 0 deg`).toBe(true);
+        expect(flagAt(mach, 20), `M ${mach}, 20 deg`).toBe(true);
+        expect(flagAt(mach, 70), `M ${mach}, 70 deg`).toBe(true);
+        expect(flagAt(mach, 45), `M ${mach}, 45 deg`).toBe(false);
+        expect(flagAt(mach, 60), `M ${mach}, 60 deg`).toBe(false);
+      }
+      expect(flagAt(2.0, 0, 0.5)).toBe(true);
+      // Below Mach 1.62 an unswept plate is still served, and flagged.
+      expect(flagAt(1.2, 0)).toBe(true);
+      // A sharp section is never flagged; a plate with a swept trailing edge at 45 to 60 deg is not either.
+      expect(flagAt(2.0, 0, 0, doubleWedge(0.024, 0.5))).toBe(false);
+      expect(
+        finsOnBaseFactorW1(
+          2.0,
+          fins({
+            section: plate(0.024),
+            tanLeadingEdgeSweep: tanDeg(50),
+            tanTrailingEdgeSweep: tanDeg(30),
+          }),
+        ).sweepByArgument,
+      ).toBe(false);
+    });
     it('the sweep is printed on its own side of 45 and 60 deg (the review of 2026-10-27)', () => {
       const plateAt = (le: number) =>
         fins({ section: plate(0.024), tanLeadingEdgeSweep: tanDeg(le), tanTrailingEdgeSweep: 0 });

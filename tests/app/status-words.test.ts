@@ -120,15 +120,15 @@ describe('the words', () => {
     expect(W1_BOUNDED_SWEPT_REASON).toBe(
       "the body base's rebuilt fins-on-base factor is bounded, not measured (flat faces at a square " +
         'trailing edge, or above Mach 2.56, where the free-flight curve of TN 3819 fig. 35 ends; and the ' +
-        'leading edge swept where no flat plate is measured at the base, beyond the last sweep measured ' +
-        "or short of the first, bounded by 0015 section 12's argument)",
+        'leading edge unswept or swept where no flat plate is measured at the base, short of 45 deg or ' +
+        'beyond 60 deg, bounded by the argument of 0015 sections 4 and 12)',
     );
     expect(claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_SWEPT_REASON]))).toBe(
       W1_BOUNDED_SWEPT_WORDS,
     );
     expect(W1_BOUNDED_SWEPT_WORDS.sentence).toBe(
       "An estimate with one part bounded, not measured: the fins' effect on the base drag, set from " +
-        'bounds, at a fin sweep no measurement of such fins at the base covers.',
+        'bounds for fins unswept or at a sweep not measured at the base.',
     );
     expect(
       claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_SWEPT_REASON, SWEPT_EDGE_BOUNDED_REASON])),

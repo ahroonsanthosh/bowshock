@@ -33,6 +33,7 @@ import {
   claimWords,
   SEVERAL_BOUNDED_WORDS,
   SWEPT_EDGE_BOUNDED_WORDS,
+  W1_BOUNDED_SWEPT_WORDS,
 } from '../../src/app/status-words';
 import {
   ABOVE_THE_CLASS,
@@ -1081,6 +1082,42 @@ describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
       throw new Error(`expected a total, got ${JSON.stringify(reasons(v45))}`);
     expect(reasonsOf(v45.claim)).toContain(W1_BOUNDED_REASON);
     expect(reasonsOf(v45.claim)).not.toContain(W1_BOUNDED_SWEPT_REASON);
+  });
+
+  it('an unswept plate at the base and half a chord ahead, at Mach 2.0 and 2.8: the claim names the sweep argument of 0015 sections 4 and 12', () => {
+    // No flat plate is measured at the base unswept: its bracket is argued (0015 section 4, 0014 10.7 (i)),
+    // so the claim names the argument as it does for the sweeps section 12 takes.
+    const unswept = (mach: number, aheadChords: number) => ({
+      ...basicFinnerForm(mach, (1.6e7 * mach) / 2.8),
+      section: {
+        kind: 'flat-plate' as const,
+        thickness: 0.05,
+        leadingEdge: 'rounded' as const,
+        trailingEdge: 'square' as const,
+      },
+      planform: { kind: 'rectangular' as const },
+      rootChord: 1.5,
+      // In calibres: the root chord is 1.5 body diameters, TN 2360's, so x/c 0.5 is 0.75 calibres.
+      trailingEdgeAheadOfBase: aheadChords * 1.5,
+    });
+    for (const [mach, ahead] of [
+      [2.0, 0],
+      [2.8, 0],
+      [2.0, 0.5],
+    ] as const) {
+      const form = unswept(mach, ahead);
+      const v = totalDragView(form, exactNose(form));
+      const where = `M ${mach}, x/c ${ahead}`;
+      if (v.kind !== 'total')
+        throw new Error(`${where}: expected a total, got ${JSON.stringify(reasons(v))}`);
+      const named = reasonsOf(v.claim);
+      expect(named, where).toContain(W1_BOUNDED_SWEPT_REASON);
+      expect(named, where).not.toContain(W1_BOUNDED_REASON);
+      expect(claimWords(v.claim), where).toBe(W1_BOUNDED_SWEPT_WORDS);
+    }
+    // Half a chord ahead at Mach 2.8: the position is refused (TN 2360 measures it at Mach 1.5 and 2.0 only).
+    const far = unswept(2.8, 0.5);
+    expect(reasons(totalDragView(far, exactNose(far)))).toEqual(['body base: fins-near-base']);
   });
 
   it('square-cut leading edges and rounded trailing edges: refused, with the reasons', () => {

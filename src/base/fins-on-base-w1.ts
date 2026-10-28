@@ -756,9 +756,10 @@ export interface FinsOnBaseFactorW1 {
   readonly tauEq: number;
   readonly swept: boolean;
   /**
-   * Flat-faced fins served at a leading-edge sweep at which no flat plate is measured at the base (outside RM
-   * L52E06's 45 deg and the RM-10's 60 deg, the range section 4 serves), on 0015 section 12's argument that neither
-   * bound uses the leading edge; the total's claim names it (src/app/total-drag.ts).
+   * Flat-faced fins with the trailing edge unswept, served at a leading-edge sweep at which no flat plate is
+   * measured at the base: unswept (0015 section 4, 0014 section 10.7 (i)), or swept short of 45 deg or beyond 60
+   * deg (section 12), outside the 45 to 60 deg that RM L52E06's plates and the RM-10 bracket. Their bracket rests on
+   * the argument that neither bound uses the leading edge; the total's claim names it (src/app/total-drag.ts).
    */
   readonly sweepByArgument: boolean;
   /**
@@ -1277,7 +1278,7 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     tauLow: tr.tauLow,
     tauEq: tr.tauEq,
     swept,
-    sweepByArgument: plateAnyLeadingEdgeSweep && !measuredSwept,
+    sweepByArgument: bounded && tes <= 1e-9 && !measuredSwept,
     // The zero member above M 1.5 rests on fig. 38(c), read once; moderate sweeps on NSWC's Table 2, read once.
     // Above M 2.56 the bounded reference's low end is the zero member's, so it rests on fig. 38(c) too.
     secondReadingPending:
