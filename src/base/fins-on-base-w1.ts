@@ -155,6 +155,18 @@ export const W1_MODERATE_SWEEP = {
 export const W1_TUNNEL_MACHS = [1.5, 2.0] as const;
 /** The measured thickness ratios (circular arcs) and counts. */
 export const W1_THICKNESSES = [0.05, 0.1] as const;
+/**
+ * A position ahead of the base, in root chords, for a message: three significant digits, or as many as show
+ * which side of one chord it lies (1 + 2e-9 is not printed 1; the review of 86bcf73, its item 6).
+ */
+export function aheadText(x: number): string {
+  for (let digits = 3; digits <= 15; digits++) {
+    const v = Number(x.toPrecision(digits));
+    if (Math.sign(v - 1) === Math.sign(x - 1)) return String(v);
+  }
+  return String(x);
+}
+
 /** TN 2360 fig. 6's stations, x/c (trailing edge ahead of the base, in chords). */
 export const W1_STATIONS = [0, 0.2, 0.4, 0.6, 0.8, 1.0] as const;
 /**
@@ -238,7 +250,7 @@ export function nearBasePositionRefusal(
   if (reasons.length === 0) return undefined;
   return new BaseRefusal(
     'fins-near-base',
-    `fins ending ${Number(xc.toPrecision(3))} root chords ahead of the base at Mach ${mach}: ` +
+    `fins ending ${aheadText(xc)} root chords ahead of the base at Mach ${mach}: ` +
       `${reasons.join('; and ')} (0015 section 3.3)${note}`,
   );
 }
@@ -1072,7 +1084,8 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   if (!bounded && xc < W1_SWEPT_TRAILING_EDGE_AHEAD - 1e-9 && tes > 1e-9) {
     const k = (m: number) => Math.sqrt(m * m - 1) / Math.sqrt(m * m - 1 / Math.cos(tes) ** 2);
     const factor = mach * Math.cos(tes) > 1 ? `${k(mach).toFixed(2)} times` : 'more than';
-    const where = xc === 0 ? 'at the base' : `ending ${xc} root chords ahead of the base`;
+    const where =
+      xc === 0 ? 'at the base' : `ending ${aheadText(xc)} root chords ahead of the base`;
     throw new BaseRefusal(
       'fin-sweep',
       `fins of a sharp section ${where} with the trailing edge swept ${deg(tes)} deg ` +
@@ -1133,9 +1146,38 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   };
   // Fins ending ahead of the base: served only where TN 2360 measured positions, M 1.5 to 2.0 and its root chord
   // of 1.5 body diameters (0015 section 3.3); every reason they are refused, in plain words.
-  const xcText = `${Number(xc.toPrecision(3))}`;
+  const xcText = aheadText(xc);
   const positionRefusal = nearBasePositionRefusal(mach, xc, fins.rootChordOverDiameter);
   if (positionRefusal !== undefined) throw positionRefusal;
+  // After the position, so a position TN 2360 did not measure is named first. Ahead of the base, a sharp
+  // section swept at the leading edge with the trailing edge unswept: the record
+  // serves it at the base (the RM-10) and, as a trailing edge swept no more than the leading edge, from 0.9
+  // root chords ahead (RM L52J21a's position, 0015 section 3.4). Between, and for W1b's moderate sweeps
+  // (argued at the base only, NSWCDD/TR-92/509's fins there) at any position ahead, no measurement and no
+  // registered argument covers it, so it is refused under 0014 section 10.2 (the review of 86bcf73, its
+  // items 1 and 2; 0015 section 3.4, the note of 2026-10-28).
+  if (!bounded && xc > 0 && le > 1e-9 && tes <= 1e-9) {
+    const at = `ending ${aheadText(xc)} root chords ahead of the base`;
+    if (moderate) {
+      throw new BaseRefusal(
+        'fin-sweep',
+        `fins of a sharp section ${at} with the leading edge swept ${deg(le)} deg and the trailing edge ` +
+          `unswept at M ${mach}: such sweeps (up to 45 deg, from M 2.0) are argued at the base only, on ` +
+          "NSWCDD/TR-92/509's fins there; no measurement ahead of the base covers them, so they are refused " +
+          'there (0014 section 10.2; 0015 section 3.4)',
+      );
+    }
+    if (xc < W1_SWEPT_TRAILING_EDGE_AHEAD - 1e-9) {
+      throw new BaseRefusal(
+        'fin-sweep',
+        `fins of a sharp section ${at} with the leading edge swept ${deg(le)} deg and the trailing edge ` +
+          `unswept at M ${mach}: swept fins of a sharp section are measured at the base (the RM-10) and ` +
+          "0.85 +-0.05 root chords ahead of it (RM L52J21a's 45 deg fins), and none between, so they are " +
+          `served from ${W1_SWEPT_TRAILING_EDGE_AHEAD} root chords ahead and refused closer (0014 section 10.2; ` +
+          '0015 section 3.4)',
+      );
+    }
+  }
   const upper = pick(highT, highN, xc);
   const lower: MemberUsed | undefined = bounded
     ? {

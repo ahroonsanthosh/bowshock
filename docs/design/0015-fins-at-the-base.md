@@ -482,6 +482,24 @@ end of their position's uncertainty, `W1_SWEPT_TRAILING_EDGE_AHEAD`; at M
 1.5 to 2.0, where positions ahead of the base are measured, 3.3); in both, bracketed
 between the zero member and the unswept member that bounds the section.
 
+_Note, 2026-10-28 (the review of 86bcf73, its items 1 and 2; 0014 section
+10.7 (ad), its entry of that date):_ the code served more than this
+paragraph names. A sharp section with the leading edge swept 45 to 60 deg
+and the trailing edge unswept was served at every measured position ahead
+of the base (for example 50 deg, x/c 0.5, M 1.8), and W1b's moderate
+sweeps (the leading edge up to 45 deg, the trailing edge unswept), argued
+at the base only on NSWCDD/TR-92/509's fins there, were served ahead of
+it at exactly M 2.0, where W1b's Mach range meets that of the measured
+positions. No measurement covers swept fins of a sharp section between
+the base and RM L52J21a's 0.85 +-0.05 root chords, and no registered
+argument carries the RM-10 or RM L52J21a there, so both are now refused
+under 0014 section 10.2 (`fin-sweep`, its message naming the position):
+a sharp section swept at the leading edge with the trailing edge unswept
+is served ahead of the base only from 0.9 root chords (a trailing edge
+"swept no more than the leading edge", unswept included, as RM L52J21a's
+position covers it), and W1b's sweeps only at the base. Flat-faced fins
+are not touched by this: their sweeps rest on section 4 and section 12.
+
 **A swept trailing edge at the base** (the review of 2026-10-21). This
 record said before that swept fins were served at the base with the
 trailing edge swept no more than the leading edge, "as in both sets".
