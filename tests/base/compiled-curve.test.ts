@@ -329,6 +329,9 @@ describe('the band, recomputed from the data', () => {
     expect(roundedOutward(0.8237, 1.0783)).toEqual({ low: 0.82, high: 1.08 });
     expect(roundedOutward(0.77, 1.17)).toEqual({ low: 0.77, high: 1.17 });
     expect(roundedOutward(0.77 - 1e-12, 1.17 + 1e-12)).toEqual({ low: 0.77, high: 1.17 });
+    // Just past a decimal: a guard set too wide (1e-2 in place of 1e-9) would keep these on it.
+    expect(roundedOutward(0.7731, 1.1601)).toEqual({ low: 0.77, high: 1.17 });
+    expect(roundedOutward(0.76995, 1.1601)).toEqual({ low: 0.76, high: 1.17 });
     const e = compiledCurveBandEvidence();
     expect(COMPILED_CURVE_BAND).toEqual(roundedOutward(e.min, e.max));
   });

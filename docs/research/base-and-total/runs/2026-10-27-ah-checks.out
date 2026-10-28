@@ -391,3 +391,13 @@ thinnest sting".
         × 0008 section 3.3's rounding, outward to two decimals, on synthetic ends: down at the low end, up at the high end, an end on the second decimal kept 12ms
 == label-no-thinnest:       Tests  1 failed | 17 passed (18)
         × a total inside the class: an estimate, its claim suspended, the headline rounded outward, every label, the notes 156ms
+
+## 2026-10-28, after Fable's quick look: the rounding guard set too wide, at each end
+
+guard-high-wide: the high end's guard 1e-2 in place of 1e-9; guard-low-wide: the low end's. Caught by the
+cases just past a decimal, 1.1601 (to 1.17) and 0.76995 (to 0.76).
+
+== guard-high-wide:       Tests  1 failed | 31 passed (32)
+        × 0008 section 3.3's rounding, outward to two decimals, on synthetic ends: down at the low end, up at the high end, an end on the second decimal kept 11ms
+== guard-low-wide:       Tests  1 failed | 31 passed (32)
+        × 0008 section 3.3's rounding, outward to two decimals, on synthetic ends: down at the low end, up at the high end, an end on the second decimal kept 12ms
