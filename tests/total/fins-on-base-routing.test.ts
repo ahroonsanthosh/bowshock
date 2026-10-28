@@ -26,8 +26,10 @@ import {
   shapeLimit,
   W1_FLAT_RELIEF_LOW,
   W1_LONGER_BEVELS,
+  W1_OUTSIDE_AT,
   W1_SECTION_SHAPE_LIMIT,
   W1_SECTION_SHAPE_MARK,
+  sectionBracket,
   finsOnBaseFactorW1,
   type FinsOnBaseFactorW1,
 } from '../../src/base/fins-on-base-w1';
@@ -900,14 +902,66 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
     expect(hasBevels(doubleWedge(0.12))).toBe(false);
     expect(hasBevels(arc(0.12))).toBe(false);
     expect(hasBevels(hexagonal(0.08, 0.2, 0.2))).toBe(true);
-    // A double wedge with its ridge off the middle is steeper than an arc of its own thickness: refused for its
-    // shape, its change a thickness, no bevels named (three fins, which the rebuilt factor takes; the present
-    // factor, which takes four, serves such a wedge at the base from Mach 1.8).
-    const offset = baseRefusalAt(rocket(3, doubleWedge(0.09, 0.3), 0, 2, 0), 2.0);
-    expect(offset.message).toContain(W1_SECTION_SHAPE_MARK);
-    expect(offset.message).not.toContain(W1_LONGER_BEVELS);
-    expect(refusalWords(offset).change).toMatch(/^fins at most [\d.]+% thick with this section$/);
-    expect(offset.endedBy).toBe('served');
+  });
+
+  it('where a section reaches outside the 10% arc, as the geometry says: at the ridge, where a bevel meets the flat, at an edge (the quick look of 5a9ce16)', () => {
+    // A double wedge with its ridge off the middle does not lie inside an arc of its own thickness: it reaches
+    // outside the 10% arc at its ridge, not near its edges, whose half-slopes are shallower than the arc's.
+    // Three fins, which the rebuilt factor takes (the present factor, which takes four, serves such a wedge
+    // at the base from Mach 1.8).
+    for (const ridge of [0.3, 0.2]) {
+      const r = baseRefusalAt(rocket(3, doubleWedge(0.1, ridge), 0, 2, 0), 2.0);
+      const what = `ridge ${ridge}`;
+      expect(r.message, what).toContain(W1_SECTION_SHAPE_MARK);
+      expect(r.message, what).toContain(`${W1_OUTSIDE_AT}at its ridge, so `);
+      expect(r.message, what).not.toContain('steeper');
+      expect(r.message, what).not.toContain(W1_LONGER_BEVELS);
+      const words = refusalWords(r);
+      expect(words.reason, what).toBe(
+        'with fins at or near the base, the base drag is measured only for sections that lie inside a ' +
+          '10%-thick circular arc everywhere, and this section reaches outside it at its ridge',
+      );
+      expect(words.change, what).toMatch(/^fins at most [\d.]+% thick with this section$/);
+      expect(r.endedBy, what).toBe('served');
+    }
+    // At 10% thick, ridge 0.3: the limit 8.4%, served.
+    expect(refusalWords(baseRefusalAt(rocket(3, doubleWedge(0.1, 0.3), 0, 2, 0), 2.0)).change).toBe(
+      'fins at most 8.4% thick with this section',
+    );
+    expect(parts(rocket(3, doubleWedge(0.084, 0.3), 0, 2, 0), 2.0).base).toBeDefined();
+    // A hexagonal section: its binding station is where a bevel meets the flat middle (checked by
+    // sectionBracket, not assumed).
+    const hex = hexagonal(0.08, 0.2, 0.2);
+    expect(sectionBracket(hex).binding).toEqual({ kind: 'interior', s: 0.8 });
+    const h = baseRefusalAt(rocket(3, hex, 0, 2, 0), 2.0);
+    expect(h.message).toContain(
+      `${W1_OUTSIDE_AT}where a bevel meets its flat middle, the bevel too steep for its thickness, so `,
+    );
+    expect(refusalWords(h).reason).toMatch(
+      /this section reaches outside it where a bevel meets its flat middle, the bevel too steep for its thickness$/,
+    );
+    expect(refusalWords(h).change).toBe(
+      'fins at most 6.4% thick with this section, or longer bevels',
+    );
+    // A section whose edge sets it: a steep lip at the leading edge.
+    const lip: SymmetricSection = { x: [0, 1e-4, 0.5, 1], halfThickness: [0, 0.002, 0.05, 0] };
+    expect(sectionBracket(lip).binding.kind).toBe('leading-edge');
+    let message = '';
+    try {
+      finsOnBaseFactorW1(2.0, {
+        count: 3,
+        section: lip,
+        sectionFamily: 'other',
+        tanLeadingEdgeSweep: 0,
+        tanTrailingEdgeSweep: 0,
+        trailingEdgeAheadOfBase: 0,
+      });
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    expect(message).toContain(
+      `${W1_OUTSIDE_AT}at its leading edge, where its faces are steeper than the arc's, so `,
+    );
   });
 
   it('the limit stated for a shape is rounded down: at it served, 0.1% of the chord above it refused (the re-check of 174490b)', () => {
@@ -930,7 +984,9 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
     const stated = Number(new RegExp(`${W1_SECTION_SHAPE_LIMIT} (\\d+\\.\\d+)`).exec(message)![1]);
     expect(stated).toBe(0.056);
     expect(() => at(stated)).not.toThrow();
-    expect(() => at(stated + 0.001)).toThrow(/is not inside the 10%-thick circular arc/);
+    expect(() => at(stated + 0.001)).toThrow(
+      /does not lie inside the 10%-thick circular arc everywhere/,
+    );
     expect(shapeLimit(0.08, 0.08 / (4 * 0.17 * 0.83))).toBe(0.056);
   });
 

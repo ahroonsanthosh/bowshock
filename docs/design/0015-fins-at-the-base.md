@@ -73,7 +73,9 @@ Mach 1.80 to 3.0 (below 5% extended, 0016 section 18). It refuses 96% of
 of 0014 section 10.1 cover:
 
 - **Sharp trailing edges** of any section that lies inside the 10%
-  circular arc near its edges, two to four fins, at Mach 1.5 to 3.0: at
+  circular arc near its edges (corrected 2026-10-28: everywhere along the
+  chord, as `sectionBracket` tests it; 0014 10.7 (ad)), two to four fins,
+  at Mach 1.5 to 3.0: at
   the base unswept or with the leading edge swept 45 to 60 deg and the
   trailing edge unswept, and with the leading edge swept up to 45 deg and
   the trailing edge unswept at Mach 2.0 to 3.0 (W1b, section 3.4); fins

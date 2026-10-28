@@ -3069,8 +3069,8 @@ argument is cited for it or it is refused under section 10.2.
   the changes move no count.
 
 **2026-10-28, the re-check of 174490b (PASS), its three small items.** A
-double wedge or a circular arc thicker than 10%, whose faces are no
-steeper than an arc of its own thickness, is refused for its thickness
+double wedge or a circular arc thicker than 10%, which lies inside a
+circular arc of its own thickness, is refused for its thickness
 alone and worded so ("fins of that thickness", the change 10%); the
 shape's words name bevels only where the section has them (a flat middle
 between bevels, `hasBevels`), so a double wedge with its ridge off the
@@ -3080,6 +3080,28 @@ out, and if the committed `out/advice-replay.out` differs from a fresh run.
 The shape's stated limit is rounded down, tested where it is not a round
 number (bevels over 17% of the chord, 8% thick: 0.056, served at it,
 refused 0.001 above), with rounding up planted.
+
+**2026-10-28, the quick look of 5a9ce16 (NOT PASS, narrowly), fixed.**
+The test of a section's shape (`sectionBracket`'s tauEq, the largest of its
+half-thickness over 2 s (1 - s) along the chord and of its edges'
+half-slopes) asks whether the section lies inside the 10%-thick circular
+arc everywhere, not near its edges. The message, the page's words and
+0017's row said "its faces near the edges are steeper", false for a double
+wedge with its ridge off the middle: at ridge 0.3 and t/c 0.10 its edge
+half-slopes, 0.083 and 0.036, are shallower than the arc's 0.100, and it
+reaches outside the arc at its ridge (tauEq 1.19 times its thickness).
+Now `sectionBracket` returns the station that sets tauEq, and the message
+and the words say the section does not lie inside the arc everywhere and
+where it reaches outside: at its ridge (a double wedge), where a bevel
+meets its flat middle, the bevel too steep for its thickness (a hexagonal
+section; that junction is the binding station, checked, not assumed), or
+at an edge, where its faces are steeper than the arc's. The advice, a
+thickness at which the shape is served (8.4% at ridge 0.3), is unchanged
+and served. This entry's note of the 55a76d2 review, "a section whose
+faces near the edges are steeper than the 10% circular arc's", holds
+only where the binding station is an edge or a bevel's end. The
+population and the advice replay are byte for byte as before (184 of
+8000 totals).
 
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that

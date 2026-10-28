@@ -23,6 +23,7 @@ import {
   W1_FLAT_BEYOND_60_MARK,
   W1_FLAT_UNDER_45_MARK,
   W1_LONGER_BEVELS,
+  W1_OUTSIDE_AT,
   W1_SECTION_SHAPE_LIMIT,
   W1_SECTION_SHAPE_MARK,
   W1_SWEEP_REFUSED_TOO,
@@ -410,20 +411,26 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
     change: 'square or bevelled trailing edges',
   }),
   'fin-thickness': (r) => {
-    // A section refused for its shape, not its thickness (the review of 55a76d2): its faces near the edges are
-    // steeper than the 10% circular arc's. The change: thinner fins, as thin as the message says this shape is
-    // served, or longer bevels.
+    // A section refused for its shape, not its thickness (the review of 55a76d2): it does not lie inside the 10%
+    // circular arc everywhere. The change: thinner fins, as thin as the message says this shape is served, or
+    // longer bevels where it has them.
     if (r.message.includes(W1_SECTION_SHAPE_MARK)) {
       const limit = new RegExp(`${W1_SECTION_SHAPE_LIMIT} (\\d+\\.\\d+)`).exec(r.message);
       const pct =
         limit === null ? undefined : `${Number((100 * Number(limit[1])).toPrecision(3))}%`;
-      // Bevels are named only where the section has them (the re-check of 174490b).
+      // Where the section reaches outside the arc, as the factor found it (the quick look of 5a9ce16): at the
+      // ends of its bevels, at its ridge, at an edge; bevels named only where the section has them.
+      const at = r.message.indexOf(W1_OUTSIDE_AT);
+      const where =
+        at < 0
+          ? undefined
+          : r.message.slice(at + W1_OUTSIDE_AT.length).split(`, so ${W1_SECTION_SHAPE_LIMIT}`)[0];
       const bevels = r.message.includes(W1_LONGER_BEVELS);
       return {
         reason:
-          'with fins at or near the base, the base drag is measured only for sections whose faces near ' +
-          "the edges are no steeper than a 10%-thick circular arc's, and this section's are steeper" +
-          (bevels ? ' (its bevels too short for its thickness)' : ''),
+          'with fins at or near the base, the base drag is measured only for sections that lie inside a ' +
+          '10%-thick circular arc everywhere, and this section reaches outside it' +
+          (where === undefined ? '' : ` ${where}`),
         change:
           (pct === undefined ? 'thinner fins' : `fins at most ${pct} thick with this section`) +
           (bevels ? ', or longer bevels' : ''),

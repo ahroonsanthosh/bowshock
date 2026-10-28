@@ -42,6 +42,7 @@ import {
   W1_FLAT_BEYOND_60_MARK,
   W1_FLAT_UNDER_45_MARK,
   W1_LONGER_BEVELS,
+  W1_OUTSIDE_AT,
   W1_SECTION_SHAPE_LIMIT,
   W1_SECTION_SHAPE_MARK,
   W1_SWEEP_REFUSED_TOO,
@@ -527,6 +528,23 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         W1_LONGER_BEVELS,
     );
     expect(shape).toBe('fins at most 6.4% thick with this section, or longer bevels');
+    // The row's reason: the page's words without the station, which the message names.
+    const shapeWords = refusalWords({
+      component: 'body base',
+      reason: 'fin-thickness',
+      message: `this section, t/c 0.100, ${W1_SECTION_SHAPE_MARK} (it would need an arc of t/c 0.119): ${W1_OUTSIDE_AT}at its ridge, so ${W1_SECTION_SHAPE_LIMIT} 0.084, thinner in proportion`,
+    });
+    expect(shapeWords.reason).toBe(
+      'with fins at or near the base, the base drag is measured only for sections that lie inside a ' +
+        '10%-thick circular arc everywhere, and this section reaches outside it at its ridge',
+    );
+    expect(shapeWords.change).toBe('fins at most 8.4% thick with this section');
+    const rowReason = rows
+      .find((l) => l.startsWith("| `fin-thickness` (the section's shape)"))!
+      .split('|')[2]!
+      .trim();
+    expect(rowReason.startsWith(shapeWords.reason.replace(' at its ridge', ''))).toBe(true);
+    expect(rowReason).not.toMatch(/faces near the edges are steeper/);
     expect(change("`fin-thickness` (the section's shape)")).toBe(
       'fins at most N% thick with this section (N from the message: 6.4% for bevels over a fifth of the ' +
         'chord), or longer bevels where it has them',

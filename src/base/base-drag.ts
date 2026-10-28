@@ -644,8 +644,8 @@ function adviceFor(
     case 'fin-thickness': {
       const t = fins.thicknessRatio;
       const near = fins.nearBase;
-      // A section refused for its shape (its faces near the edges steeper than the 10% arc's): its thickness
-      // scaled by 0.1 / tauEq, which puts it exactly on the 10% arc, so it is served (the review of 55a76d2).
+      // A section refused for its shape (it does not lie inside the 10% arc everywhere): its thickness scaled by
+      // 0.1 / tauEq, which puts it exactly inside the 10% arc, so it is served (the review of 55a76d2).
       // Otherwise a thickness outside 5% to 10% brought to the nearer end.
       let k: number;
       if (refusal.message.includes(W1_SECTION_SHAPE_MARK) && near !== undefined) {

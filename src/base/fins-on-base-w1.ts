@@ -675,10 +675,21 @@ export function memberEndOnSingleReader(
  * dominates, tauEq the thinnest that dominates it, the arcs taken as
  * 2 tau s (1 - s). Only for sections with a sharp trailing edge.
  */
-export function sectionBracket(section: SymmetricSection): { tauLow: number; tauEq: number } {
+/** Where a section's tauEq is reached: inside the chord at x/c `s`, or as the half-slope at an edge. */
+export interface Binding {
+  readonly kind: 'interior' | 'leading-edge' | 'trailing-edge';
+  readonly s: number;
+}
+
+export function sectionBracket(section: SymmetricSection): {
+  tauLow: number;
+  tauEq: number;
+  binding: Binding;
+} {
   const { x, halfThickness: h } = section;
   let lo = Infinity;
   let hi = 0;
+  let hiAt = 0.5;
   const n = 4000;
   for (let k = 1; k < n; k++) {
     const s = k / n;
@@ -687,23 +698,64 @@ export function sectionBracket(section: SymmetricSection): { tauLow: number; tau
     const hs = h[j]! + ((h[j + 1]! - h[j]!) * (s - x[j]!)) / (x[j + 1]! - x[j]!);
     const r = hs / (2 * s * (1 - s));
     lo = Math.min(lo, r);
-    hi = Math.max(hi, r);
+    if (r > hi) {
+      hi = r;
+      hiAt = s;
+    }
   }
   // The limits at the edges: the half-slopes there.
   const slopeLe = (h[1]! - h[0]!) / (x[1]! - x[0]!);
   const m = x.length - 1;
   const slopeTe = (h[m - 1]! - h[m]!) / (x[m]! - x[m - 1]!);
   lo = Math.min(lo, slopeLe / 2, slopeTe / 2);
-  hi = Math.max(hi, slopeLe / 2, slopeTe / 2);
-  return { tauLow: lo, tauEq: hi };
+  let binding: Binding = { kind: 'interior', s: hiAt };
+  if (slopeLe / 2 > hi) {
+    hi = slopeLe / 2;
+    binding = { kind: 'leading-edge', s: 0 };
+  }
+  if (slopeTe / 2 > hi) {
+    hi = slopeTe / 2;
+    binding = { kind: 'trailing-edge', s: 1 };
+  }
+  return { tauLow: lo, tauEq: hi, binding };
 }
 
 /**
- * A section refused for its shape, not its thickness (the review of 55a76d2): its faces near the edges are steeper
- * than the 10%-thick circular arc's, the bound of the members (a bevel over a fifth of the chord, say, refuses any
- * fin thicker than 6.4%). The refusal's reason is `fin-thickness`; its message carries this phrase.
+ * Where a section reaches outside the circular arc that bounds it, in words (the quick look of 5a9ce16): at an
+ * edge, where its faces are steeper than the arc's; where a bevel meets its flat middle (a hexagonal section, the
+ * bevel too steep for its thickness: checked, its binding station is that junction); at its ridge (a double wedge with the ridge off the middle); or at a
+ * named station.
  */
-export const W1_SECTION_SHAPE_MARK = 'is not inside the 10%-thick circular arc near its edges';
+export function outsideWhere(section: SymmetricSection, binding: Binding): string {
+  if (binding.kind === 'leading-edge')
+    return "at its leading edge, where its faces are steeper than the arc's";
+  if (binding.kind === 'trailing-edge')
+    return "at its trailing edge, where its faces are steeper than the arc's";
+  const { x, halfThickness: h } = section;
+  const top = Math.max(...h);
+  const atTop = (v: number) => Math.abs(v - top) <= 1e-12 * Math.max(1, top);
+  let k = 0;
+  for (let j = 1; j < x.length; j++)
+    if (Math.abs(x[j]! - binding.s) < Math.abs(x[k]! - binding.s)) k = j;
+  if (Math.abs(x[k]! - binding.s) <= 2 / 4000 + 1e-12 && atTop(h[k]!)) {
+    const flatBeside = (k > 0 && atTop(h[k - 1]!)) || (k + 1 < h.length && atTop(h[k + 1]!));
+    return flatBeside
+      ? 'where a bevel meets its flat middle, the bevel too steep for its thickness'
+      : 'at its ridge';
+  }
+  return `at x/c ${binding.s.toFixed(2)}`;
+}
+
+/**
+ * A section refused for its shape, not its thickness (the review of 55a76d2): it does not lie inside the 10%-thick
+ * circular arc that bounds the members everywhere (a hexagonal section with bevels over a fifth of the chord,
+ * say, is refused when thicker than 6.4%; a double wedge with its ridge off the middle at its ridge). The
+ * refusal's reason is `fin-thickness`; its message carries this phrase and says where (outsideWhere).
+ */
+export const W1_SECTION_SHAPE_MARK = 'does not lie inside the 10%-thick circular arc everywhere';
+
+/** In that refusal, the words before where the section reaches outside the arc (outsideWhere). */
+export const W1_OUTSIDE_AT = 'it reaches outside the arc ';
 
 /** In that refusal, where the section has bevels (a flat middle between them): their change, named. */
 export const W1_LONGER_BEVELS = 'or with longer bevels';
@@ -1153,6 +1205,12 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     tauLow: Math.min(...brackets.map((b) => b.tauLow)),
     tauEq: Math.max(...brackets.map((b) => b.tauEq)),
   };
+  // Where the station that sets tauEq reaches outside the arc (its own sectionBracket's binding).
+  const outsideAt = (): string => {
+    const k = brackets.findIndex((b) => b.tauEq === tr.tauEq);
+    const st = stations[k]!;
+    return outsideWhere(st, sectionBracket(st).binding);
+  };
   if (tr.tauEq > 0.1 + 1e-9) {
     throw new BaseRefusal(
       'fin-thickness',
@@ -1163,14 +1221,14 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
           // thickness alone; a steeper one for its shape, its bevels named only where it has them (the re-check of
           // 174490b).
           tr.tauEq <= thickness * (1 + 1e-9)
-          ? `this section, ${tcText(thickness)}, is thicker than the members, which reach t/c 0.10; its ` +
-            'faces are no steeper than a circular arc of its own thickness, and thicker fins at or near the base ' +
-            'are not measured (TN 2360, TN 3819 fig. 33)'
+          ? `this section, ${tcText(thickness)}, is thicker than the members, which reach t/c 0.10; it lies ` +
+            'inside a circular arc of its own thickness, and thicker fins at or near the base are not measured ' +
+            '(TN 2360, TN 3819 fig. 33)'
           : `this section, ${tcText(thickness)}, ${W1_SECTION_SHAPE_MARK} (it would need an arc of t/c ` +
-            `${tr.tauEq.toFixed(3)}): its faces there are steeper than the arc's, so ${W1_SECTION_SHAPE_LIMIT} ` +
+            `${tr.tauEq.toFixed(3)}): ${W1_OUTSIDE_AT}${outsideAt()}, so ${W1_SECTION_SHAPE_LIMIT} ` +
             `${shapeLimit(thickness, tr.tauEq).toFixed(3)}, thinner in proportion` +
             (stations.some(hasBevels) ? `, ${W1_LONGER_BEVELS}` : '') +
-            '; steeper fins at or near the base are not measured (TN 2360, TN 3819 fig. 33)',
+            '; fins reaching outside it at or near the base are not measured (TN 2360, TN 3819 fig. 33)',
     );
   }
   const taus: Thickness[] = [0, 0.05, 0.1];
