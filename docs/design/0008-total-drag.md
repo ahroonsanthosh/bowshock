@@ -287,10 +287,11 @@ Every base data set opened at these conditions is used to set this band, so
 none is left to gate it: the base correlation is **band estimation**, and its
 only test is through the total (section 6.2, B5).
 
-**Corrected 2026-10-27: the band is 0.77 to 1.13** (0014 section 10.7
-(ah) and its third addendum, 2026-10-28; 0.77 to 1.18 as first corrected,
-on faired readings of TR 1051 that round 19's blind readings of its
-symbols replaced). The rule above was not applied to body-alone base pressures opened
+**Corrected 2026-10-27: the band is 0.77 to 1.17** (0014 section 10.7
+(ah) and its addenda; 0.77 to 1.18 as first corrected, on faired readings
+of TR 1051 that round 19's blind readings of its symbols replaced; 0.77
+to 1.13 from 2026-10-28 until round 20's blind readings of TN 2360 figs.
+5 and 7 entered, the same day). The rule above was not applied to body-alone base pressures opened
 inside this domain after the band was set, nor to one this record opened
 itself: fig. 35's no-fin tunnel symbol at M 1.50, -0.194, in section 3.4's
 table, which is TN 2360's body without fins, 1.12 times the curve. An
@@ -298,7 +299,10 @@ independent review found it outside 0.82 to 1.08. Applied now, with every
 paired reading, against both curves, as above:
 
 - TN 2360's body alone (TN 3819 figs. 33 and 35, M 1.5 and 2.0; ogive-cylinder,
-  sting d/h 0.4, R 4.5e6): 1.003 to 1.124;
+  sting d/h 0.4, R 4.5e6): 1.003 to 1.124; with TN 2360's own figs. 5
+  and 7 (the body alone, its nose tripped, at every station, R 0.48e6 to
+  4.43e6, read twice blind in round 20): 0.985 to 1.169, fig. 5(a) at M
+  1.5 and R 0.765e6 the high end;
 - the Langley 9 in tunnel's body alone (the same figures, M 2.41): 0.964 to
   1.001;
 - RM L52J21a figs. 31 to 33 (d) (unfinned, cylindrical base, sting, R near
@@ -312,7 +316,8 @@ paired reading, against both curves, as above:
   data.
 
 With the tunnel symbols and Herrin and Dutton the envelope is 0.7731 to
-1.1253, rounded outward: **0.77 to 1.13**. Nothing in the domain stated here
+1.1691, rounded outward: **0.77 to 1.17** (0.7731 to 1.1253 and 0.77 to
+1.13 before round 20). Nothing in the domain stated here
 excludes these sets: no limit on Reynolds number, layer thickness, afterbody
 length or nose shape is stated, and every tunnel datum is sting-supported.
 Thicker stings measure the sting effect itself (the last item of the list
@@ -718,12 +723,12 @@ Added by this record:
 | B5 Total    | Sum of nose wave drag (solved), body friction, base (with B3's fins-on-base factor where fins end at the base, and the fins' trailing-edge base), fins (their own drag, friction counted there only); Cd with the model-form band (6.3) and, separately, the input bands (transition, wall temperature, roughness)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | **Basic Finner, the 11 shots at M 1.80 to 2.97** (used for no band). **Run twice.** The first run was refused for the fin-edge terms, which then had no method with a band (0010 section 6.1). The second, with the fins' trailing-edge base read twice, its area decided (0.32 cal^2), the base-plane question of section 3.4 answered by analogy, and the 0.004 cal leading-edge radius modelled as a rounded edge (0010 section 5, every choice registered before the run), **passed at all 11 shots**: residuals -7.7% to +4.5%, mean -1.9%, cluster means -2.4%, +0.7%, -0.8% and -6.5% (0010 section 4.2). The rule it ran under: every shot inside its tolerance, which is the model-form band (with the fins-on-base and fin-edge bands) plus the input bands for its unknown transition and wall temperature plus the shot-to-shot spread of its Mach cluster. Without the fin-edge terms that tolerance is -21.7% to -28.3% and +20.2% to +23.5% (+24.6% to +30.5% with the wall input) of the modelled sum (6.3). With them it was -19.5% to -26.2% and +26.5% to +31.4% at the second run (0010 section 4.2). After the round 5 audit the band arithmetic was changed, after the hold-out was used: the transition input is taken as states of the boundary layer (the fins' friction and their trailing edges' laminar base together) and no base term or band end exceeds the vacuum bound. Re-derived so, the tolerance is -19.5% to -26.2% and +23.1% to +27.4%, the residuals are unchanged, and every shot still passes (0010 section 10). The report gives each shot's residual (measured over modelled) and their mean and spread per cluster, not only pass or fail; a failed shot refuses the configuration (6.1). The five shots at M 1.06 to 1.33 are reported, not gated. Reported with their confounders, not gates: RM L55G28a, ARCAS (TN D-4014, D-4013), RM A53D02 (with its observed transition as input), RM-10 (TN 3320) |
 
 **Corrected 2026-10-27 (0014 section 10.7 (ah)).** B3's base band in the
-table is now 0.77 to 1.13 at Mach 1.5 to 3.0 (0.77 to 1.18 before the
-third addendum to (ah), 2026-10-28), set on every body-alone base
-pressure read twice in its domain (section 3.3): TN 2360's and the
-Langley 9 in tunnel's (TN 3819 figs. 33 and 35), RM L52J21a figs. 31 to 33
-(d) and TR 1051 fig. 23(b), beside the tunnel points and Herrin and
-Dutton. The row is kept as written.
+table is now 0.77 to 1.17 at Mach 1.5 to 3.0 (0.77 to 1.18 before the
+third addendum to (ah), 0.77 to 1.13 before round 20, both 2026-10-28),
+set on every body-alone base pressure read twice in its domain (section
+3.3): TN 2360's and the Langley 9 in tunnel's (TN 3819 figs. 33 and 35),
+TN 2360 figs. 5 and 7, RM L52J21a figs. 31 to 33 (d) and TR 1051 fig.
+23(b), beside the tunnel points and Herrin and Dutton. The row is kept as written.
 
 ### 6.3 Combining the bands, and the width of the gate
 
