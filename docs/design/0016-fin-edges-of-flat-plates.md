@@ -2306,11 +2306,14 @@ served changes.
   label said the 70 deg point alone holds the ordering, which overclaims;
   Fable's quick look of the same day.) The label was shortened elsewhere
   to make room: the longest on a grid of Mach 1.2 to 8, sweeps 60.1 to
-  75.1 deg and four Reynolds numbers is 1,790 characters (1,706 before),
-  under the test's 1,800. Among the cuts, the Reynolds qualifier is
-  "+-3%, an allowance" in the bounded label. Planted, each fails the
+  75.1 deg and four Reynolds numbers is 1,786 characters (1,706 before),
+  under the test's 1,800. Among the cuts, the bounded label's Reynolds
+  qualifier is "(+-3% of the term)", without ", an allowance". (It was
+  "+-3%, an allowance" in 56c933b, which can read as 3% of the Reynolds
+  number or of kappa; Fable's quick look.) Planted, each fails the
   label test: the old wording whole; "alone holds it" in the new; the
-  flagged points' margins dropped; "to 70 deg" dropped.
+  flagged points' margins dropped; "to 70 deg" dropped; "+-3%, an
+  allowance".
 - **The rule's outcome asserted.**
   - `docs/research/tn3861-fig17/rule/apply.test.ts` asserts that the
     rule holds, and that the committed `out/verdict.txt` matches a fresh

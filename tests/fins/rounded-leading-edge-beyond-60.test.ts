@@ -146,7 +146,7 @@ describe('the bounds', () => {
     expect(e.label.length).toBeLessThan(1800);
     expect(at(2.2, 60.1).label.length).toBeLessThan(1800);
     // The longest on a grid of Mach 1.2 to 8, sweeps 60.1 to 75.1 deg and four Reynolds numbers
-    // (0016 section 21.10): 1,790 characters.
+    // (0016 section 21.10): 1,786 characters.
     expect(at(2.45, 60.1, 2e4).label.length).toBeLessThan(1800);
   });
 
@@ -204,6 +204,11 @@ describe('the bounds', () => {
     expect(beyond.label).toContain('no yawed datum below M_n 1.95 at 60 deg of sweep or less');
     expect(beyond.bounded!.lower.regime).toBe('extrapolated in Reynolds number');
     expect(beyond.bounded!.upper.regime).toBe('extrapolated in Reynolds number');
+    // Each term's Reynolds qualifier says what the 3% is of: the term, not the Reynolds number
+    // or kappa (Fable's quick look, 2026-10-28).
+    const qualifier = 'extrapolated in Reynolds number (+-3% of the term); its band';
+    expect(beyond.label.split(qualifier).length - 1).toBe(2);
+    expect(beyond.label).not.toMatch(/\+-3%, an allowance/);
     expect(beyond.bounded!.upper.transonic).toBeDefined();
     expect(beyond.bounded!.lower.transonic).toBeDefined();
   });

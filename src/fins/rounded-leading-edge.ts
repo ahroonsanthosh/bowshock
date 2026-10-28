@@ -869,7 +869,7 @@ function termSummary(t: RoundedLeadingEdge, where: 'lower' | 'upper'): string {
       ? ''
       : t.regime === 'covered by RM A55H31'
         ? ", beyond TN 2960's Mach or Reynolds numbers, covered by RM A55H31's statement"
-        : ', extrapolated in Reynolds number (+-3%, an allowance)';
+        : ', extrapolated in Reynolds number (+-3% of the term)';
   const a = sweepAllowanceAt(t.sweepDegrees);
   const allowance = `the sweep allowance ${a.low.toFixed(3)} to ${a.high.toFixed(3)}`;
   const sweep =
