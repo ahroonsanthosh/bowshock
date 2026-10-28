@@ -1899,7 +1899,16 @@ and, with a 2.5-diameter chord, 1.55). A sweep is printed to one
 decimal, or to as many as keep it on its own side of 45 and 60 deg
 (44.99 deg is not printed 45.0; `sweepDegrees`), and the narrowed words
 say "at or near the base", the first naming RM L52E06's Mach numbers,
-1.06 to 1.10.
+1.06 to 1.10. A total that holds such a plate names the argument in its
+claim (2026-10-28): the factor's `sweepByArgument` is set for flat-faced
+fins with the trailing edge unswept at any leading-edge sweep outside 45
+to 60 deg, 0 deg included, since no flat plate is measured at the base
+unswept either (section 4, 0014 10.7 (i)), and `src/app/total-drag.ts`
+then gives `W1_BOUNDED_SWEPT_REASON`, "... and the leading edge unswept
+or swept where no flat plate is measured at the base, short of 45 deg or
+beyond 60 deg, bounded by the argument of 0015 sections 4 and 12)", with
+its own words (`total-drag.test.ts`, `status-words.test.ts`,
+`fins-on-base-w1.test.ts`).
 
 **Coverage.** Measured on the population of 0014 at 400 rockets, one
 condition per Mach band (1,600 cases), before and after this section

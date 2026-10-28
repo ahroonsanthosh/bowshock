@@ -2197,14 +2197,14 @@ bounded value. The edge needs a normal Mach number M cos(sweep) of at
 least 1.0, so the lowest Mach number served is 1/cos(sweep), 2.0 at 60
 deg and 3.0 at 70.5 deg: such totals lie at about Mach 2.0 to 3.0 for
 sweeps of 60 to 70.5 deg, and past 70.5 deg none within Mach 3.0. The
-estimate's claim names both bounded parts, the base's reason with 0015
-section 12's sweep argument (`tests/app/total-drag.test.ts`: a plate
-swept 66.4 deg at Mach 2.8 on a 3-calibre root chord; in the audit's
-population, three such plates at the base, swept 60.6 to 63.6 deg, at
-Mach 2.44 to 2.87, as the review of 2026-10-28 traced them). The page
-test of the paragraph above, on a plate whose tip chord is short, is
-refused at the base for its thickness over the tip chord, not for its
-sweep. The other two points stand.
+estimate's claim names both bounded parts, the base's reason with the
+sweep argument of 0015 sections 4 and 12
+(`tests/app/total-drag.test.ts`: a plate swept 66.4 deg at Mach 2.8 on a
+3-calibre root chord; in the audit's population, three such plates at
+the base, swept 60.6 to 63.6 deg, at Mach 2.44 to 2.87, as the review of
+2026-10-28 traced them). The page test of the paragraph above, on a
+plate whose tip chord is short, is refused at the base for its thickness
+over the tip chord, not for its sweep. The other two points stand.
 
 ### 21.9 Corrections after the re-review of ef7fc7d..5159cac (2026-10-28)
 

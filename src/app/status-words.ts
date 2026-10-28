@@ -99,12 +99,12 @@ export const W1_BOUNDED_WORDS: StatusWords = {
   mark: 'square',
 };
 
-/** The same, the fins' leading-edge sweep taken on 0015 section 12's argument (W1_BOUNDED_SWEPT_REASON). */
+/** The same, the fins' sweep taken on the argument of 0015 sections 4 and 12 (W1_BOUNDED_SWEPT_REASON). */
 export const W1_BOUNDED_SWEPT_WORDS: StatusWords = {
   word: 'Estimate, bounded',
   sentence:
     "An estimate with one part bounded, not measured: the fins' effect on the base drag, set from " +
-    'bounds, at a fin sweep no measurement of such fins at the base covers.',
+    'bounds for fins unswept or at a sweep not measured at the base.',
   tone: 'bounded',
   mark: 'square',
 };

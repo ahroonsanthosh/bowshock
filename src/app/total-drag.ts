@@ -919,15 +919,16 @@ export const W1_BOUNDED_REASON =
   `${FIG35_FREE_FLIGHT_END}, where the free-flight curve of TN 3819 fig. 35 ends; 0015)`;
 
 /**
- * The same, for flat-faced fins whose leading-edge sweep no flat plate at the base is measured at, taken on 0015
- * section 12's argument that neither bound uses the leading edge (FinsOnBaseFactorW1.sweepByArgument).
+ * The same, for flat-faced fins with the trailing edge unswept whose leading edge is unswept or swept where no
+ * flat plate at the base is measured (short of 45 deg or beyond 60 deg), bracketed on the argument of 0015
+ * sections 4 and 12 that neither bound uses the leading edge (FinsOnBaseFactorW1.sweepByArgument).
  */
 export const W1_BOUNDED_SWEPT_REASON =
   "the body base's rebuilt fins-on-base factor is bounded, not measured (flat faces at a square " +
   'trailing edge, or above Mach ' +
   `${FIG35_FREE_FLIGHT_END}, where the free-flight curve of TN 3819 fig. 35 ends; and the leading edge ` +
-  'swept where no flat plate is measured at the base, beyond the last sweep measured or short of the ' +
-  "first, bounded by 0015 section 12's argument)";
+  'unswept or swept where no flat plate is measured at the base, short of 45 deg or beyond 60 deg, ' +
+  'bounded by the argument of 0015 sections 4 and 12)';
 
 /**
  * The bounded components a total contains, named in its claim (0014 section
