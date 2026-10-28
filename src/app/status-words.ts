@@ -21,6 +21,8 @@ import {
 import type { BaseRefusalReason } from '../base/refusal';
 import {
   W1_FLAT_BEYOND_60_MARK,
+  W1_FLAT_FORWARD_TE_MARK,
+  W1_FLAT_SUBSONIC_EDGE_MARK,
   W1_FLAT_UNDER_45_MARK,
   W1_SWEEP_REFUSED_TOO,
 } from '../base/fins-on-base-w1';
@@ -269,6 +271,23 @@ const asMessage = (r: ComponentRefusal): PlainReason => ({
 
 type Worded = (r: ComponentRefusal) => PlainReason;
 
+/**
+ * The flat-plate sweep rules a refusal's message names (src/base/fins-on-base-w1.ts, flatPlateSweepNarrowing; 0014
+ * section 10.7 (z), its notes of 2026-10-27 and 2026-10-28), each worded below where it joins another reason.
+ */
+const plateSweep = (message: string) => ({
+  forward: message.includes(W1_FLAT_FORWARD_TE_MARK),
+  belowMach162: message.includes(W1_FLAT_UNDER_45_MARK) || message.includes(W1_FLAT_BEYOND_60_MARK),
+  subsonic: message.includes(W1_FLAT_SUBSONIC_EDGE_MARK),
+});
+const PLATE_FORWARD_CLAUSE =
+  'at or near the base, flat fins are taken only with the trailing edge unswept or swept back';
+const PLATE_BELOW_162_CLAUSE =
+  'below Mach 1.62, at or near the base, flat fins are taken only unswept or swept 45 to 60 deg';
+const PLATE_SUBSONIC_CLAUSE =
+  'at or near the base, flat fins swept beyond 60 deg are taken only where the leading edge meets ' +
+  'the air faster than sound';
+
 /** Every reason src/base gives. */
 const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
   'mach-range': (r) =>
@@ -293,9 +312,17 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
   // section 10.7 (ad), 2026-10-27). Where their trailing edge is refused near the base too, the change
   // names one served at the base.
   'fins-near-base': (r) => {
-    // A flat plate whose sweep is refused below Mach 1.62 too (0014 section 10.7 (z), the note of 2026-10-27):
-    // both reasons, and a change that the sweep's refusal does not stop.
+    // A flat plate whose sweep is refused too (0014 section 10.7 (z), its notes of 2026-10-27 and 2026-10-28):
+    // every reason, and a change that the sweep's refusal does not stop.
     const sweep = r.message.includes(W1_SWEEP_REFUSED_TOO);
+    const s = plateSweep(r.message);
+    const clauses = [
+      ...(s.forward ? [PLATE_FORWARD_CLAUSE] : []),
+      ...(s.belowMach162 ? [PLATE_BELOW_162_CLAUSE] : []),
+      ...(s.subsonic ? [PLATE_SUBSONIC_CLAUSE] : []),
+    ];
+    if (sweep && clauses.length === 0)
+      clauses.push('at or near the base, their sweep is refused too');
     return {
       reason:
         'fins ending ahead of the base: the base drag with fins there is measured only up to one ' +
@@ -304,17 +331,17 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
         (r.message.includes(ROUNDED_EDGE_NOTE) || r.message.includes(BLUNT_EDGE_NOTE)
           ? ', and only for square or sharp trailing edges'
           : '') +
-        (sweep
-          ? '; and below Mach 1.62, at or near the base, flat fins are taken only unswept or swept ' +
-            '45 to 60 deg'
-          : ''),
+        clauses.map((c) => `; and ${c}`).join(''),
       change: r.message.includes(ROUNDED_EDGE_NOTE)
         ? 'square or sharp trailing edges, with the fins ending at the base'
         : r.message.includes(BLUNT_EDGE_NOTE)
           ? 'sharp trailing edges, with the fins ending at the base'
           : sweep
-            ? "the fins' trailing edges at the base, the fins unswept or swept 45 to 60 deg at the " +
-              'leading edge'
+            ? "the fins' trailing edges at the base" +
+              (s.forward ? ', unswept' : '') +
+              (s.belowMach162 || s.subsonic || !s.forward
+                ? ', the fins unswept or swept 45 to 60 deg at the leading edge'
+                : '')
             : "the fins' trailing edges at the base",
     };
   },
@@ -322,34 +349,66 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
     reason: 'with fins at the base, the base drag is measured with four fins only',
     change: 'four fins',
   }),
-  'fin-sweep': (r) =>
-    // Flat fins swept more than 0 and under 45 deg, or beyond 60 deg, below Mach 1.62 (0014 section 10.7 (z),
-    // the note of 2026-10-27): the missing measurement, named.
-    r.message.includes(W1_FLAT_UNDER_45_MARK)
-      ? {
-          reason:
-            'below Mach 1.62 the base drag behind flat fins at or near the base is measured only at ' +
-            'Mach 1.06 to 1.10, with fins swept 45 deg, and nothing measured shows a lighter sweep ' +
-            'gives the same',
-          change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
-        }
-      : r.message.includes(W1_FLAT_BEYOND_60_MARK)
-        ? {
-            reason:
-              'below Mach 1.62 the base drag behind flat fins at or near the base is not measured ' +
-              'with fins swept beyond 60 deg, and nothing measured shows a sharper sweep gives the same',
-            change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
-          }
-        : {
-            reason:
-              'with fins at the base, the base drag behind wedge or bevelled fins is measured only ' +
-              'unswept or at a few sweeps (a tapered fin has a swept edge); flat fins with a square, ' +
-              'unswept trailing edge are taken at any leading-edge sweep, but below Mach 1.62 only ' +
-              'unswept or swept 45 to 60 deg',
-            change:
-              'flat fins with a square, unswept trailing edge (below Mach 1.62, unswept or swept 45 to ' +
-              '60 deg), or unswept fins of constant chord',
-          },
+  'fin-sweep': (r) => {
+    // Flat fins: a forward-swept trailing edge (0014 section 10.7 (z), the note of 2026-10-28), with the leading
+    // edge's reason too where the same fins with the edge unswept would be refused for it; swept more than 0 and
+    // under 45 deg, or beyond 60 deg, below Mach 1.62 (the note of 2026-10-27); beyond 60 deg from Mach 1.62 with
+    // the edge subsonic (the note of 2026-10-28): the missing measurement, named.
+    const s = plateSweep(r.message);
+    if (s.forward) {
+      const le = s.belowMach162 || s.subsonic;
+      return {
+        reason:
+          'the base drag behind flat fins at or near the base is taken only with the trailing edge ' +
+          'unswept, as in the one measurement of such fins, or swept back, as in a measurement of other ' +
+          'fins; nothing measured has it swept forward' +
+          (s.belowMach162 ? `; and ${PLATE_BELOW_162_CLAUSE}` : '') +
+          (s.subsonic ? `; and ${PLATE_SUBSONIC_CLAUSE}` : ''),
+        change:
+          'flat fins with an unswept trailing edge' +
+          (le ? ', unswept or swept 45 to 60 deg at the leading edge' : ''),
+      };
+    }
+    if (r.message.includes(W1_FLAT_UNDER_45_MARK)) {
+      return {
+        reason:
+          'below Mach 1.62 the base drag behind flat fins at or near the base is measured only at ' +
+          'Mach 1.06 to 1.10, with fins swept 45 deg, and nothing measured shows a lighter sweep ' +
+          'gives the same',
+        change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
+      };
+    }
+    if (r.message.includes(W1_FLAT_BEYOND_60_MARK)) {
+      return {
+        reason:
+          'below Mach 1.62 the base drag behind flat fins at or near the base is not measured ' +
+          'with fins swept beyond 60 deg, and nothing measured shows a sharper sweep gives the same',
+        change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
+      };
+    }
+    if (s.subsonic) {
+      return {
+        reason:
+          'the base drag behind flat fins swept beyond 60 deg at or near the base rests on a margin over ' +
+          'fins whose leading edges meet the air faster than sound, not on a measurement; this leading ' +
+          'edge meets it slower, where flat fins have lowered the base drag most',
+        change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
+      };
+    }
+    // The swept sets measured at the base are circular arcs (RM L52J21a, the RM-10) and double wedges
+    // (NSWCDD/TR-92/509; the review of 2026-10-28).
+    return {
+      reason:
+        'with fins at the base, the base drag behind sharp-edged fins is measured only unswept or at a ' +
+        'few sweeps (circular arcs swept 45 and 60 deg, double wedges 43.9 deg; a tapered fin has a ' +
+        'swept edge); flat fins with a square, unswept trailing edge are taken at any leading-edge ' +
+        'sweep, but below Mach 1.62 only unswept or swept 45 to 60 deg, and beyond 60 deg only where ' +
+        'the leading edge meets the air faster than sound',
+      change:
+        'flat fins with a square, unswept trailing edge (below Mach 1.62, unswept or swept 45 to ' +
+        '60 deg), or unswept fins of constant chord',
+    };
+  },
   'fin-trailing-edge': (r) =>
     // A rounded plate ending ahead of the base (src/base/base-drag.ts): refused at every speed, near the base.
     r.message.startsWith(ROUNDED_PLATE_AHEAD_OF_BASE)

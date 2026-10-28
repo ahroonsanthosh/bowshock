@@ -40,6 +40,8 @@ import { SQUARE_EDGE_REFUSAL, SWEPT_EDGE_BOUNDED_REASON } from '../../src/total/
 import {
   finsOnBaseFactorW1,
   W1_FLAT_BEYOND_60_MARK,
+  W1_FLAT_FORWARD_TE_MARK,
+  W1_FLAT_SUBSONIC_EDGE_MARK,
   W1_FLAT_UNDER_45_MARK,
   W1_SWEEP_REFUSED_TOO,
 } from '../../src/base/fins-on-base-w1';
@@ -307,6 +309,128 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     expect(beyond.reason).toContain('not measured with fins swept beyond 60 deg');
     expect(beyond.reason).toContain('flat fins at or near the base');
     expect(new Set([words.reason, under.reason, beyond.reason]).size).toBe(3);
+    // The general row names the swept sets measured, circular arcs and double wedges (the review of 2026-10-28).
+    expect(words.reason).toContain(
+      'behind sharp-edged fins is measured only unswept or at a few sweeps (circular arcs swept 45 and ' +
+        '60 deg, double wedges 43.9 deg;',
+    );
+    expect(words.reason).not.toContain('wedge or bevelled');
+    expect(words.reason).toContain(
+      'and beyond 60 deg only where the leading edge meets the air faster than sound',
+    );
+  });
+
+  it("the rulings of 2026-10-28 in words, 0017's rows: a flat plate beyond 60 deg with its edge subsonic from Mach 1.62, and a plate's forward-swept trailing edge, with every reason", () => {
+    const rows = readFileSync(
+      new URL('../../docs/design/0017-rocketeer-interface.md', import.meta.url),
+      'utf8',
+    )
+      .split('\n')
+      .filter((l) => l.startsWith('| `fin-sweep`') || l.startsWith('| `fins-near-base`'))
+      .map((l) =>
+        l
+          .split('|')
+          .slice(1, -1)
+          .map((c) => c.trim()),
+      );
+    const row = (key: string) => {
+      const found = rows.filter((r) => r[0] === key);
+      expect(found, key).toHaveLength(1);
+      return found[0]!;
+    };
+    const tan = (d: number) => Math.tan((d * Math.PI) / 180);
+    const plate = (le: number, te: number, xc = 0, chord = 1.5) => ({
+      count: 3,
+      section: { x: [0, 0.1, 1], halfThickness: [0, 0.012, 0.012], bluntTrailingEdge: true },
+      sectionFamily: 'other' as const,
+      tanLeadingEdgeSweep: tan(le),
+      tanTrailingEdgeSweep: tan(te),
+      trailingEdgeAheadOfBase: xc,
+      rootChordOverDiameter: chord,
+    });
+    const refused = (mach: number, le: number, te: number, xc = 0, chord = 1.5) => {
+      try {
+        finsOnBaseFactorW1(mach, plate(le, te, xc, chord));
+      } catch (e) {
+        return {
+          component: 'body base',
+          reason: (e as BaseRefusal).reason,
+          message: (e as Error).message,
+        };
+      }
+      throw new Error(`served: M ${mach}, ${le} deg, ${te} deg`);
+    };
+    const NOTE = '(0014 10.7 (z), the note of 2026-10-28)';
+    // Beyond 60 deg with the edge subsonic, from Mach 1.62.
+    const s = refused(1.8, 70, 0);
+    expect(s.reason).toBe('fin-sweep');
+    expect(s.message).toContain(W1_FLAT_SUBSONIC_EDGE_MARK);
+    const sub = refusalWords(s);
+    const [, sReason, sChange] = row(
+      '`fin-sweep` (flat fins swept beyond 60 deg, the edge subsonic, from Mach 1.62)',
+    );
+    expect(sReason).toBe(`${sub.reason} ${NOTE}`);
+    expect(sChange).toBe(sub.change);
+    expect(sub.reason).toContain(
+      'rests on a margin over fins whose leading edges meet the air faster than sound, not on a measurement',
+    );
+    // A forward-swept trailing edge.
+    const f = refused(1.8, 50, -10);
+    expect(f.message).toContain(W1_FLAT_FORWARD_TE_MARK);
+    const fwd = refusalWords(f);
+    const [, fReason, fChange] = row('`fin-sweep` (flat fins with a forward-swept trailing edge)');
+    expect(fReason).toBe(`${fwd.reason} ${NOTE}`);
+    expect(fChange).toBe(fwd.change);
+    expect(fwd.change).toBe('flat fins with an unswept trailing edge');
+    // Forward, and its leading edge refused too with the edge unswept: both clauses, and the change asks for both;
+    // below Mach 1.62 (20 deg) and from it beyond 60 deg with the edge subsonic (70 deg).
+    const both = refusalWords(refused(1.55, 20, -10));
+    expect(both.reason).toBe(
+      `${fwd.reason}; and below Mach 1.62, at or near the base, flat fins are taken only unswept or swept ` +
+        '45 to 60 deg',
+    );
+    expect(both.change).toBe(
+      'flat fins with an unswept trailing edge, unswept or swept 45 to 60 deg at the leading edge',
+    );
+    const both2 = refusalWords(refused(1.8, 70, -10));
+    expect(both2.reason).toBe(
+      `${fwd.reason}; and at or near the base, flat fins swept beyond 60 deg are taken only where the ` +
+        'leading edge meets the air faster than sound',
+    );
+    expect(both2.change).toBe(both.change);
+    // And that advice is served: the same plates with the trailing edge unswept and the leading edge at 45 deg.
+    expect(() => finsOnBaseFactorW1(1.55, plate(45, 0))).not.toThrow();
+    expect(() => finsOnBaseFactorW1(1.8, plate(45, 0))).not.toThrow();
+    // Ahead of the base, the position refused too (another chord): the position's words with the sweep's clause.
+    const plain = refusalWords({ component: 'body base', reason: 'fins-near-base', message: '' });
+    for (const [le, te, key, clause, change] of [
+      [
+        70,
+        0,
+        '`fins-near-base` (a flat plate swept beyond 60 deg refused too, the edge subsonic)',
+        'at or near the base, flat fins swept beyond 60 deg are taken only where the leading edge meets the ' +
+          'air faster than sound',
+        "the fins' trailing edges at the base, the fins unswept or swept 45 to 60 deg at the leading edge",
+      ],
+      [
+        50,
+        -10,
+        "`fins-near-base` (a flat plate's forward-swept trailing edge refused too)",
+        'at or near the base, flat fins are taken only with the trailing edge unswept or swept back',
+        "the fins' trailing edges at the base, unswept",
+      ],
+    ] as const) {
+      const r = refused(1.8, le, te, 0.5, 2.5);
+      expect(r.reason).toBe('fins-near-base');
+      expect(r.message).toContain(W1_SWEEP_REFUSED_TOO);
+      const w = refusalWords(r);
+      expect(w.reason).toBe(`${plain.reason}; and ${clause}`);
+      expect(w.change).toBe(change);
+      const [, rReason, rChange] = row(key);
+      expect(rReason).toBe(`the reason of \`fins-near-base\`, and ${clause} ${NOTE}`);
+      expect(rChange).toBe(change);
+    }
+    expect(new Set([sub.reason, fwd.reason]).size).toBe(2);
   });
 
   it('a rounded edge refused past 60 deg: less sweep offered beside a bevelled edge', () => {
