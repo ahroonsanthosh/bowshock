@@ -195,39 +195,64 @@ passes. Branch `claude/wip/vk-outline`.
   `node outline/analysis/judge.mjs marches/moc.jsonl outline/fits/saved
   outline/marches --json outline/analysis/judge.json`).
 
-Results so far, by the registered criteria:
+Results, by the registered criteria (2026-10-28):
 
 | Case             | nj = 20      | nj = 40      | nj = 80      | Order | Lines passing (x)  | Verdict |
 | ---------------- | ------------ | ------------ | ------------ | ----- | ------------------ | ------- |
 | 6 cal., Mach 1.5 | 0.0247060757 | 0.0245586673 | 0.0245288358 | 2.30  | one, 0.25 (90.8%)  | passes  |
 | 6 cal., Mach 2   | 0.0235075806 | 0.0234152171 | 0.0233932940 | 2.07  | none               | fails   |
+| 5 cal., Mach 3   | 0.0302101841 | 0.0301320717 | 0.0301044386 | 1.50  | one, 0.48 (82.1%)  | passes  |
+| 6 cal., Mach 3   | 0.0218239931 | 0.0217627111 | 0.0217401958 | 1.44  | one, 0.49 (84.1%)  | passes  |
 
 - 6 calibers at Mach 1.5 (iterations 5500, 9000, 15000; gates passed,
-  wall cells at 71.6 deg or more): the one passing line misses by +1.11e-4
+  wall cells at 71.5 deg or more): the one passing line misses by +1.11e-4
   and +1.21e-4, the marched lines next to it (x = 0.10 and 0.63) by up to
   1.67e-4; the band with the allowance contains the error against the
-  lowest bound 2.40 times. As 5 calibers at Mach 2, it rests on one line.
+  lowest bound 2.40 times.
 - 6 calibers at Mach 2 (iterations 5500, 8000, 14000; gates passed, wall
   cells at 76.6 deg or more) fails: no line passes the line criterion.
   The five lines at x = 0.002 to 0.17 fail both the mass balance (4.4e-5
   to 8.6e-3 on nj = 80) and the change from 1280 intervals, two of them
-  without monotone marches; the line at x = 0.54 (81% of the
-  drag) fails only the change from 1280 intervals on nj = 20 and 40
-  (4.91e-5 and 3.54e-5, against 3.5e-5; 2.26e-5 on nj = 80), and the line
-  at x = 1.78 that change on every grid (8.7e-5 to 1.6e-4). Those two
-  would miss by +3.51e-4 to +4.31e-4. The outline is not extended there.
-- 5 and 6 calibers at Mach 3: nj = 20 and 40 settled (6 calibers
-  0.0218239931 and 0.0217627111, 6000 and 8000 iterations; 5 calibers
-  0.0302101841 and 0.0301320717, 5500 and 8000, as W5's saved fits to
-  6.4e-12 and 4.8e-15), gates passed; nj = 80 running (on 2026-10-28 at
-  05:08, resumed at 8000 and 4500 iterations after a restart; the lanes'
-  stops and resumptions are in `fits/queue-log.txt` and `fits/log.txt`).
+  without monotone marches; the line at x = 0.54 (81% of the drag) fails
+  only the change from 1280 intervals on nj = 20 and 40 (4.91e-5 and
+  3.54e-5, against 3.5e-5; 2.26e-5 on nj = 80), and the line at x = 1.78
+  that change on every grid (8.7e-5 to 1.6e-4). Those two would miss by
+  +3.51e-4 to +4.31e-4.
+- 5 calibers at Mach 3 (iterations 5500, 8000, 13000; gates passed, wall
+  cells at 79.4 deg or more; nj = 20 and 40 as W5's saved fits to 6.4e-12
+  and 4.8e-15): the one passing line misses by -9.08e-5 and -6.29e-5, the
+  lines next to it (x = 0.14 and 1.66) by up to 1.92e-4; containment 3.07.
+- 6 calibers at Mach 3 (iterations 6000, 8000, 14000; gates passed, wall
+  cells at 79.3 deg or more): the one passing line misses by -5.85e-5 and
+  -1.84e-5, the lines next to it (x = 0.13 and 1.92) by up to 2.04e-4;
+  containment 2.56.
+- Every passing case rests on one line, as W5's 5 calibers at Mach 2. The
+  largest miss counted stays W5's 3.57e-4, so the allowance stays 8e-4.
+- The registration's hold: the outline of the passing cases has the
+  corners (1, 1.5), (6, 1.5), (6, 3) and (1, 3), and the failed (6, 2)
+  lies on its edge, so nothing is added until the owner decides;
+  `VON_KARMAN_REFERENCES` keeps W5's seven (0006 gives the choices).
+- The lanes ran from 2026-10-27 08:47 to 2026-10-28 08:59 UTC, through
+  four container restarts, each fit resuming from its last checkpoint
+  (`fits/queue-log.txt`, `fits/log.txt`).
 
 The refusal audit's population (`docs/research/refusals`, 2000 rockets,
-8000 cases) with 6 calibers at Mach 1.5 added, an interim run before
-the Mach 3 verdicts: served totals 181 to 198 against main at 5921198
-(Mach 1.5 to 1.8: 68 to 84; 1.8 to 3.0: 113 to 114), and 155 to 168
-against main at 3e026a8, after fins near the base and the leading edges
-(Mach 1.5 to 1.8: 53 to 65; 1.8 to 3.0: 102 to 103); the run without the
-change gave main's outputs byte for byte both times, and the
-cross-check with `src/total` agreed on 1200 of 1200 cases each time.
+8000 cases), served totals:
+
+| Base, references                               | All bands | Mach 1.5 to 1.8 | Mach 1.8 to 3.0 |
+| ---------------------------------------------- | --------- | --------------- | --------------- |
+| main 5921198, W5's seven                       | 181       | 68              | 113             |
+| main 5921198, with 6 cal. Mach 1.5 (interim)   | 198       | 84              | 114             |
+| main 3e026a8, W5's seven                       | 155       | 53              | 102             |
+| main 3e026a8, with 6 cal. Mach 1.5 (interim)   | 168       | 65              | 103             |
+| main cdd26e6, W5's seven (the branch, held)    | 155       | 53              | 102             |
+| main cdd26e6, with 6 cal. Mach 1.5, 5 cal. Mach 3 | 213    | 71              | 142             |
+| main cdd26e6, with all three passing cases     | 242       | 73              | 169             |
+
+None below Mach 1.5 in any run. Each run with W5's seven gave main's
+`impact.out` byte for byte, and every run's cross-check with `src/total`
+agreed on 1200 of 1200 cases. The runs with added cases are for the
+owner's decision only (`population/option-a` and `population/all-three`:
+the run of `docs/research/refusals` on the merged head with those points
+added to `VON_KARMAN_REFERENCES` for the run, then taken out); the
+branch's own outputs are the held run, which is main's.
