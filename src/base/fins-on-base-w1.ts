@@ -76,8 +76,9 @@
  * tunnel excess carried, the zero member reaches down to RM L52E06's
  * relief with flat plates (the lowest relief measured at or below M 1.5),
  * no ratio member and no position ahead of the base is measured, and
- * swept fins are served only with flat faces (RM L52E06's plates are
- * swept 45 deg). Fins ending ahead of the base are refused there: no
+ * swept fins are served only with flat faces swept 45 to 60 deg (RM
+ * L52E06's plates are swept 45 deg; 0014 section 10.7 (z), the note of
+ * 2026-10-27). Fins ending ahead of the base are refused there: no
  * measurement with fins ahead of the base below M 1.5 is known (0015
  * section 3.3; 0014 section 10.7 (ad), narrowed after the independent
  * review of 2026-10-26, which withdrew a bound built on carries).
@@ -88,8 +89,13 @@
  * field still reaches the base depends on the chord against the body, and
  * no other chord is measured.
  *
- * Fins with flat faces at a square trailing edge (flat plates) are
- * "bounded, not measured" (0014 section 10.2): between the lowest relief
+ * Fins with flat faces at a square trailing edge (flat plates), the
+ * trailing edge unswept, are served at every leading-edge sweep from M
+ * 1.62, and below it unswept or swept 45 to 60 deg (0015 section 12,
+ * 2026-10-26: neither bound below uses the leading edge; narrowed on
+ * 2026-10-27, flatPlateSweepNarrowing); with the trailing edge swept, at
+ * the sweeps above. They are "bounded, not measured" (0014 section
+ * 10.2): between the lowest relief
  * measured with such fins at the base (RM L52E06 fig. 7, M 1.06 to 1.10:
  * W1_FLAT_RELIEF_LOW) and the unswept circular-arc member at least as
  * thick, the ordering argued in 0015 section 4 from TN 2360 (the increment
@@ -750,6 +756,13 @@ export interface FinsOnBaseFactorW1 {
   readonly tauEq: number;
   readonly swept: boolean;
   /**
+   * Flat-faced fins with the trailing edge unswept, served at a leading-edge sweep at which no flat plate is
+   * measured at the base: unswept (0015 section 4, 0014 section 10.7 (i)), or swept short of 45 deg or beyond 60
+   * deg (section 12), outside the 45 to 60 deg that RM L52E06's plates and the RM-10 bracket. Their bracket rests on
+   * the argument that neither bound uses the leading edge; the total's claim names it (src/app/total-drag.ts).
+   */
+  readonly sweepByArgument: boolean;
+  /**
    * A band-setting input of this result has one reading: the zero member from M 1.5 while any nose call of
    * RM L52J21a fig. 8 it uses has one reader (W1_RELIEF_SINGLE_CALLS; 0015 sections 3.5, 7), or a moderate
    * sweep's ordering (NSWCDD/TR-92/509 Table 2, its blind second transcription requested).
@@ -798,6 +811,18 @@ export const W1_FLAT_RELIEF_LOW = Math.min(...flatPlateReliefs().map((r) => r.fa
  * is measured between M 1.10 and 1.62.
  */
 export const W1_RELIEF_MEASURED_FROM = Math.min(...L52J21A_FIG38C.map((p) => p.mach));
+
+/**
+ * A phrase only the refusal of flat-faced fins swept more than 0 and under 45 deg below M 1.62 carries (the
+ * ruling of 2026-10-27, 0014 section 10.7 (z)); the page's words for it key on this.
+ */
+export const W1_FLAT_UNDER_45_MARK = 'more than 0 and under 45 deg, below M 1.62';
+
+/**
+ * A phrase only the refusal of flat-faced fins swept beyond 60 deg below M 1.62 carries (the second ruling of
+ * 2026-10-27, 0014 section 10.7 (z)); the page's words for it key on this.
+ */
+export const W1_FLAT_BEYOND_60_MARK = 'beyond 60 deg, below M 1.62';
 
 /**
  * The zero member at M: from M 1.62 down to RM L52J21a's relief (W1_RELIEF_LOW), measured at 1.62 to 2.41 and
@@ -872,6 +897,67 @@ const tcText = (tc: number) =>
     ? `t/c ${tc.toFixed(3)}`
     : 'whose t/c grows without bound toward a tip chord of zero';
 
+/**
+ * A sweep angle (radians) in degrees for a message or label: to one decimal, or to as many as it takes for the
+ * printed value to stay on its own side of 45 and 60 deg, the bounds the sweep rules turn on (44.99 deg is never
+ * printed 45.0, nor 60.01 deg 60.0; the review of 2026-10-27).
+ */
+export function sweepDegrees(a: number): string {
+  const d = (a * 180) / Math.PI;
+  const onBound = (b: number) => Math.abs(d - b) <= (1e-9 * 180) / Math.PI;
+  for (const digits of [1, 2, 3, 4, 6, 9, 12]) {
+    const text = d.toFixed(digits);
+    const v = Number(text);
+    if ([45, 60].every((b) => onBound(b) || Math.sign(v - b) === Math.sign(d - b))) return text;
+  }
+  return String(d);
+}
+
+/** Added to a refusal of fins ahead of the base whose sweep the narrowing of 2026-10-27 refuses too. */
+export const W1_SWEEP_REFUSED_TOO =
+  '; their leading-edge sweep is refused at or near the base too: ';
+
+/**
+ * Why flat-faced fins (a square, unswept trailing edge) are refused for their leading-edge sweep below M 1.62, or
+ * undefined: swept more than 0 and under 45 deg, or beyond 60 deg (0014 section 10.7 (z), the note of 2026-10-27;
+ * 0015 section 12). Below M 1.62 the floor is RM L52E06's relief with plates swept 45 deg alone, measured at M 1.06
+ * to 1.10, and which way the juncture vortex moves F is not shown: under 45 deg the plate is not shown to lie
+ * between the unswept plate and the 45 deg ones, beyond 60 deg it lies past the last sweep measured. Exactly 60
+ * deg, and 45 to 60, stay as section 4 serves them; from M 1.62, where RM L52J21a measures at most 5% relief,
+ * these plates stay served.
+ */
+export function flatPlateSweepNarrowing(
+  mach: number,
+  fins: Pick<FinsNearBase, 'section' | 'tanLeadingEdgeSweep' | 'tanTrailingEdgeSweep'>,
+): string | undefined {
+  if (trailingEdgeShape(fins.section) !== 'flat') return undefined;
+  const le = Math.abs(Math.atan(fins.tanLeadingEdgeSweep));
+  const tes = Math.abs(Math.atan(fins.tanTrailingEdgeSweep));
+  if (!(le > 1e-9 && tes <= 1e-9 && mach < W1_RELIEF_MEASURED_FROM - 1e-12)) return undefined;
+  const head =
+    `flat-faced fins with the leading edge swept ${sweepDegrees(le)} deg and the trailing edge unswept ` +
+    `at M ${mach}`;
+  if (le < W1_SWEPT_RANGE[0] - 1e-9) {
+    return (
+      `${head}, ${W1_FLAT_UNDER_45_MARK}: no base pressure is measured with such fins at or near the base ` +
+      "there; the floor is RM L52E06's relief with plates swept 45 deg alone, measured at M 1.06 to 1.10, " +
+      "and which way a lighter sweep's stronger juncture vortex moves the relief is not shown, so these " +
+      'fins are not shown to lie between the unswept plate and the 45 deg ones (0015 section 12; 0014 ' +
+      'section 10.7 (z), the note of 2026-10-27)'
+    );
+  }
+  if (le > W1_SWEPT_RANGE[1] + 1e-9) {
+    return (
+      `${head}, ${W1_FLAT_BEYOND_60_MARK}: no base pressure is measured with fins swept beyond 60 deg ` +
+      "at or near the base there (no fin of any section is measured at the base swept beyond the RM-10's " +
+      "60 deg); the floor is RM L52E06's relief with plates swept 45 deg alone, these fins lie past the " +
+      "last sweep measured, and which way a sharper sweep's weaker juncture vortex moves the relief is " +
+      'not shown (0015 section 12; 0014 section 10.7 (z), the note of 2026-10-27)'
+    );
+  }
+  return undefined;
+}
+
 export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBaseFactorW1 {
   const { count, section } = fins;
   if (!(Number.isInteger(count) && count >= 2 && count <= 4)) {
@@ -915,8 +1001,14 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     le < W1_MODERATE_SWEEP.leadingEdge + 1e-9 &&
     mach >= W1_MODERATE_SWEEP.mach[0] - 1e-12 &&
     mach <= W1_MODERATE_SWEEP.mach[1] + 1e-12;
-  const deg = (a: number) => ((a * 180) / Math.PI).toFixed(1);
-  if (swept && !measuredSwept && !moderate) {
+  // Flat faces at a square trailing edge with the trailing edge unswept: served at every leading-edge sweep from
+  // M 1.62, below it unswept or swept 45 to 60 deg (0015 section 12; 0014 section 10.7 (z) and its note). Neither bound of the flat-plate value uses the leading edge:
+  // the upper rests on the faces' slope near the trailing edge (zero on a flat face at any sweep), the lower
+  // on RM L52E06's relief at the fin-body junctures and the square edge, in one plane parallel to the base
+  // (the base plane at x/c 0), which the leading-edge sweep does not move when the trailing edge is unswept.
+  const plateAnyLeadingEdgeSweep = bounded && swept && tes <= 1e-9;
+  const deg = sweepDegrees;
+  if (swept && !measuredSwept && !moderate && !plateAnyLeadingEdgeSweep) {
     throw new BaseRefusal(
       'fin-sweep',
       `fins with a leading edge swept ${deg(le)} deg and a trailing edge ${deg(tes)} deg at M ${mach}: ` +
@@ -924,6 +1016,21 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         'chord ahead of the base) and 60 deg (the RM-10, TN 3819 fig. 34), and, at M 2.0 to 3.0 only, ' +
         'with the leading edge swept 43.9 deg and the trailing edge unswept (NSWCDD/TR-92/509); other ' +
         'sweeps are not measured and their ordering is not shown (0015 section 3.4)',
+    );
+  }
+  // The rulings after A1's second review (0014 section 10.7 (z), its note of 2026-10-27; 0015 section 12): below
+  // M 1.62 a plate swept more than 0 and under 45 deg, or beyond 60 deg, is refused (flatPlateSweepNarrowing).
+  // Ahead of the base, where its position is refused too, both reasons are named, the position first, so that
+  // neither refusal's advice leads into the other (0015 section 3.3).
+  const narrowing = flatPlateSweepNarrowing(mach, fins);
+  if (narrowing !== undefined) {
+    throw (
+      nearBasePositionRefusal(
+        mach,
+        fins.trailingEdgeAheadOfBase,
+        fins.rootChordOverDiameter,
+        `${W1_SWEEP_REFUSED_TOO}${narrowing}`,
+      ) ?? new BaseRefusal('fin-sweep', narrowing)
     );
   }
   if (swept && !bounded && mach < W1_MACH_RANGE[0] - 1e-12) {
@@ -1069,7 +1176,25 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         `${tr.tauEq.toFixed(3)}), not measured on this section`,
     );
   }
-  if (swept && bounded) {
+  if (plateAnyLeadingEdgeSweep) {
+    // Flat faces, the trailing edge unswept: the bounds are set at the trailing edge, which the leading-edge
+    // sweep does not move (0015 section 12). That edge lies in the base plane only for fins at the base; fins
+    // within a chord have it in one plane parallel to the base, ahead of it.
+    const plane =
+      xc === 0
+        ? 'in the base plane'
+        : `in one plane parallel to the base, ${xc.toFixed(2)} root chords ahead of it`;
+    reasons.push(
+      `the leading edge swept ${deg(le)} deg with the trailing edge unswept, with flat faces: bracketed ` +
+        "between RM L52E06's relief with flat plates at the base (F " +
+        `${W1_FLAT_RELIEF_LOW.toFixed(3)}, its plates swept 45 deg) and unswept circular-arc fins; both ` +
+        `bounds are set at the trailing edge, ${plane}, which the leading-edge sweep does not ` +
+        'move, and the faces carry no slope for the sweep to act on (0015 section 12)' +
+        (le > W1_SWEPT_RANGE[1] + 1e-9
+          ? '; no fin of any section is measured at the base swept beyond 60 deg'
+          : ''),
+    );
+  } else if (swept && bounded) {
     // Flat faces: the lower bound is RM L52E06's relief with swept plates, not the zero member (0015 section 4).
     reasons.push(
       `the leading edge swept ${deg(le)} deg and the trailing edge ${deg(tes)} deg, with flat faces: ` +
@@ -1153,6 +1278,7 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     tauLow: tr.tauLow,
     tauEq: tr.tauEq,
     swept,
+    sweepByArgument: bounded && tes <= 1e-9 && !measuredSwept,
     // The zero member above M 1.5 rests on fig. 38(c), read once; moderate sweeps on NSWC's Table 2, read once.
     // Above M 2.56 the bounded reference's low end is the zero member's, so it rests on fig. 38(c) too.
     secondReadingPending:

@@ -459,10 +459,16 @@ describe('fins a root chord or more ahead of the base: the plain curve withdrawn
     // times it with every error moved toward less suction. The plain curve's band misses both.
     const curve = -compiledCurveBasePressure(2.0).pB;
     expect(Math.round(1e4 * curve) / 1e4).toBe(0.1447);
-    expect(Math.round(1e4 * curve * COMPILED_CURVE_BAND.high) / 1e4).toBe(0.1563);
+    // The compiled curve's band then was 0.82 to 1.08; 0014 10.7 (ah) widened it after, to 0.77 to 1.17
+    // (1.13 when (ad)'s note was written), with which the plain curve's band here would reach 0.1693 (0.1635),
+    // above the measurement; the withdrawal stands on 0014 section 10.2 (the note to (ad)).
+    const highThen = 1.08;
+    expect(Math.round(1e4 * curve * highThen) / 1e4).toBe(0.1563);
+    expect(Math.round(1e4 * curve * COMPILED_CURVE_BAND.high) / 1e4).toBe(0.1693);
+    expect(Math.round(1e4 * curve * 1.13) / 1e4).toBe(0.1635);
     const measured = 0.1507 + 0.0096;
     expect(measured / curve).toBeGreaterThan(1.107);
-    expect(curve * COMPILED_CURVE_BAND.high).toBeLessThan(1.09 * curve);
+    expect(curve * highThen).toBeLessThan(1.09 * curve);
     // Now: TN 2360's position, through the rebuilt factor.
     const r = base(2.0, arcs10());
     expect(r.finsOnBaseSource).toBe('rebuilt');
@@ -633,10 +639,13 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
     const words = refusalWords(r);
     expect(words.reason).toMatch(/^fins ending ahead of the base: /);
     expect(words.reason).toContain(
-      '; and with the fins at the base, the base drag is measured with unswept fins only',
+      '; and with the fins at the base, the base drag behind wedge or bevelled fins is measured only ' +
+        'unswept or at a few sweeps',
     );
+    expect(words.reason).not.toMatch(/at the base, with fins at the base/);
     expect(words.change).toBe(
-      "the fins' trailing edges at the base, and unswept fins of constant chord",
+      "the fins' trailing edges at the base, and flat fins with a square, unswept trailing edge (below " +
+        'Mach 1.62, unswept or swept 45 to 60 deg), or unswept fins of constant chord',
     );
   });
 
@@ -689,12 +698,15 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
       section: FinnedBody['fins']['section'],
       trailingEdgeAheadOfBase = 1,
     ): FinnedBody => ({ ...c, fins: { ...c.fins, section, trailingEdgeAheadOfBase } });
+    const refusalAt = (c: FinnedBody, mach: number) =>
+      at(c, mach).refusals.find((x) => x.component === 'body base')!;
     // A rounded plate on a clipped delta, leading edge 30 deg, trailing edge unswept, half a chord ahead.
-    // The change, square edges at the base, is refused there for the sweep at M 1.8; the same rounded plate
-    // at the base is refused only for its edge again, which named nothing new.
+    // The change, square edges at the base, is refused there for the sweep at M 1.55 (a flat plate swept
+    // under 45 deg below M 1.62, main's A1); the same rounded plate at the base is refused only for its edge
+    // again, which named nothing new.
     const swept = rocket(4, doubleWedge(0.05), 30);
     const rounded = withSection(swept, flatPlate(0.03, 'rounded', 'rounded'));
-    const r = baseRefusal(rounded);
+    const r = refusalAt(rounded, 1.55);
     expect(r.reason).toBe('fin-trailing-edge');
     expect(r.message.startsWith(ROUNDED_PLATE_AHEAD_OF_BASE)).toBe(true);
     expect(r.atBase?.reason).toBe('fin-sweep');
@@ -702,9 +714,10 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
       '; at the base the same plates with square trailing edges are refused too: ',
     );
     expect(refusalWords(r).change).toBe(
-      'square or sharp trailing edges, with the fins ending at the base, and unswept fins of constant chord',
+      'square or sharp trailing edges, with the fins ending at the base, and flat fins swept 45 to 60 ' +
+        'deg at the leading edge, or unswept ones',
     );
-    const sameAtBase = at(withSection(swept, flatPlate(0.03, 'rounded', 'rounded'), 0));
+    const sameAtBase = at(withSection(swept, flatPlate(0.03, 'rounded', 'rounded'), 0), 1.55);
     expect(sameAtBase.refusals.find((x) => x.component === 'body base')?.reason).toBe(
       'fin-trailing-edge',
     );
@@ -719,7 +732,7 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
     ).toBeDefined();
     expect(baseRefusal(unswept).atBase).toBeUndefined();
     // More than a chord ahead, the same.
-    const far = baseRefusal(withSection(swept, flatPlate(0.03, 'rounded', 'rounded'), 6));
+    const far = refusalAt(withSection(swept, flatPlate(0.03, 'rounded', 'rounded'), 6), 1.55);
     expect(far.message.startsWith(MORE_THAN_A_CHORD_AHEAD)).toBe(true);
     expect(far.atBase?.reason).toBe('fin-sweep');
     // Blunt wedges, leading edge 30 deg: sharp edges at the base (a double wedge of the same thickness) are

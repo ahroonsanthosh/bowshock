@@ -53,7 +53,7 @@ export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
     'finsNearBase',
   ],
   'W2 the base below Mach 1.5 (served since 0015 section 11): what remains, the body base outside 1.0 to 3.0 and fins at the base below 1.0': ['baseMach', 'finsAtBaseLowMach'],
-  'W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)': ['teThick', 'teTaper', 'teSwept', 'teMach'],
+  'W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)': ['teThick', 'teTaper', 'teSwept', 'teMach', 'teBelow15'],
   'W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0': [
     'flatPlateLe',
     'roundedLeTaper',
@@ -194,6 +194,39 @@ function greedy(evals: readonly Evaluation[], lines: string[], title: string): s
   return order;
 }
 
+/**
+ * The totals the refusal plan counts, as counts: every nose reason lifted (`total` holds no nose reason), and
+ * with it the page's wedge-flat section offered too (W12, which the library takes). Printed since the review of
+ * 2026-10-26, which found these numbers read off the greedy tables.
+ */
+function noseServedTable(
+  evals: readonly Evaluation[],
+  lines: string[],
+): Record<string, { cases: number; noseServed: number; withPageSection: number }> {
+  lines.push(
+    '## Totals with the nose assumed served, as the refusal plan counts them',
+    '',
+    "Every nose reason lifted; the last column also offers the page's wedge-flat section with a square trailing edge (W12).",
+    '',
+    "| Band | Totals, the nose assumed served | And the page's section offered |",
+    '| --- | --- | --- |',
+  );
+  const json: Record<string, { cases: number; noseServed: number; withPageSection: number }> = {};
+  const row = (name: string, sel: readonly Evaluation[]) => {
+    const noseServed = sel.filter((e) => e.total.length === 0).length;
+    const withPageSection = sel.filter((e) => e.total.every((k) => k === 'pageSection')).length;
+    json[name] = { cases: sel.length, noseServed, withPageSection };
+    lines.push(
+      `| ${name} | ${noseServed} of ${sel.length} (${pct(noseServed, sel.length)}) | ` +
+        `${withPageSection} of ${sel.length} (${pct(withPageSection, sel.length)}) |`,
+    );
+  };
+  row('all bands', evals);
+  MACH_BANDS.forEach((_, b) => row(bandName(b), evals.filter((e) => e.band === b)));
+  lines.push('');
+  return json;
+}
+
 /** 0014's ranked order (section 6), packages in a row lifted together. */
 const PLAN_ORDER: readonly (readonly string[])[] = [
   ['W1'],
@@ -315,6 +348,7 @@ test('refusal impact on a population of supersonic amateur rockets', () => {
   packageTable(evals, lines, 'Work packages: the share of cases each is needed for (its refusals appear in them)');
   json.order = greedy(evals, lines, 'Work packages in greedy order (each lifted with those above it)');
   planTable(evals, lines, "Totals after each step of 0014's ranked order (cumulative)");
+  json.noseServed = noseServedTable(evals, lines);
 
   // The same with the rounded tip counted as the page treats it today (a
   // sharp nose entered, the bluntness "not represented", a number served).
@@ -325,7 +359,7 @@ test('refusal impact on a population of supersonic amateur rockets', () => {
   for (const altitude of [0, 20]) {
     const at = evaluateAll(rockets, 7, altitude);
     json[`altitude${altitude}`] = outcomeTable(at, lines, `Outcome today, every condition at ${altitude} km`);
-    const k: ReasonKey[] = ['teThick', 'roundedLeReynolds'];
+    const k: ReasonKey[] = ['teThick', 'teBelow15', 'roundedLeReynolds'];
     lines.push(
       ...k.map((key) => `- ${REASONS[key]}: ${pct(at.filter((e) => e.total.includes(key)).length, at.length)} of cases at ${altitude} km`),
       '',

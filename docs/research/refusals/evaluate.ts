@@ -18,6 +18,7 @@
 
 import { bluntNoseRefusal, sharpFitProblem } from '../../../src/analysis/fitted-flow';
 import { bodyBaseDrag } from '../../../src/base/base-drag';
+import { finTrailingEdgeBaseDrag } from '../../../src/base/fin-trailing-edge';
 import { BaseRefusal } from '../../../src/base/refusal';
 import { FinRefusal } from '../../../src/fins/refusal';
 import { exactSectionDrag } from '../../../src/fins/section-drag';
@@ -59,9 +60,11 @@ export const REASONS = {
   noseEllipsoid: 'nose: ellipsoid outside the measured domain',
   // Fin sections and leading edges.
   squareLe:
-    EDGES !== 'before'
-      ? 'fins: square-cut (blunt) leading edge (bounded; the ordering not shown, 0016)'
-      : 'fins: square-cut (blunt) leading edge not represented',
+    EDGES === 'w4e'
+      ? "fins: square-cut (blunt) leading edge (bounded between the sonic and the pitot pressure; its premises measured only at face Reynolds numbers far above a fin's, 0016 section 21.6)"
+      : EDGES === 'w34'
+        ? 'fins: square-cut (blunt) leading edge (bounded; the ordering not shown, 0016)'
+        : 'fins: square-cut (blunt) leading edge not represented',
   roundedTe:
     EDGES !== 'before'
       ? 'fins: rounded trailing edge (bounded; the ordering not shown, 0016)'
@@ -75,7 +78,11 @@ export const REASONS = {
       ? 'fins: rounded leading edge on fins of varying chord (lifted by 0016)'
       : 'fins: rounded leading edge on fins of varying chord',
   roundedLeSwept:
-    EDGES !== 'before' ? 'fins: rounded leading edge swept beyond 60 deg' : 'fins: swept rounded leading edge',
+    EDGES === 'w4e'
+      ? 'fins: rounded leading edge swept beyond 75.1 deg (refused at any Mach number; from 60 deg bounded where the term at its sweep and at 60 deg are both served, 0016 sections 21.2 and 21.8)'
+      : EDGES === 'w34'
+        ? 'fins: rounded leading edge swept beyond 60 deg'
+        : 'fins: swept rounded leading edge',
   roundedLeMach:
     EDGES === 'w4e'
       ? 'fins: rounded leading edge, normal Mach number M cos(sweep) outside 1.0 to 3.0 (on a flat plate, 0016)'
@@ -105,14 +112,16 @@ export const REASONS = {
   finsW1Count: 'base (rebuilt factor): fins at the base, not two to four',
   finsW1Thickness: 'base (rebuilt factor): a section outside the 10% circular arc (steep bevels)',
   finsW1TrailingEdge: 'base (rebuilt factor): a rounded or diverging blunt trailing edge',
-  finsW1Sweep: 'base (rebuilt factor): sweep not measured (leading edge 0 to 45 or above 60 deg, or trailing edge beyond it; a sharp section with a trailing edge swept aft closer to the base than 0.9 root chords, or swept forward)',
+  finsW1Sweep: 'base (rebuilt factor): sweep not measured (sharp sections with the leading edge 0 to 45 or above 60 deg, or the trailing edge beyond it, or swept aft closer to the base than 0.9 root chords, or swept forward; plates with a swept trailing edge outside 45 to 60 deg; since 0015 section 12 plates with an unswept trailing edge are served at every leading-edge sweep, but since 2026-10-27 not swept more than 0 and under 45 deg, or beyond 60 deg, below Mach 1.62, 0014 10.7 (z))',
   // Fin trailing-edge base.
   teTaper:
     EDGES !== 'before'
       ? 'te: blunt trailing edge on fins of varying chord (lifted by 0016)'
       : 'te: blunt trailing edge on fins of varying chord',
   teSwept: 'te: swept blunt trailing edge',
-  teMach: 'te: Mach outside 1.5 to 3.2',
+  teMach: EDGES !== 'before' ? 'te: Mach outside 1.0 to 3.2' : 'te: Mach outside 1.5 to 3.2',
+  teBelow15:
+    'te: below Mach 1.5, c/[h Re_c^(1/5)] or h/c beyond the sets that reach there (0019 section 3.4.1)',
   teThick:
     EDGES !== 'before'
       ? 'te: thick boundary layer, c/[h Re_c^(1/5)] > 4.5 anywhere along the span (> 1 above M 3.1)'
@@ -244,6 +253,8 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
   // own (baseFinsOf), asked through finsOnBaseReason below.
 
   // Sections and edges.
+  // 0016 section 21: the bounded term exists but stays unwired: its computed check (21.3) failed, and the
+  // measured flat faces that bore out its premises (21.6) lie far above any fin's face Reynolds number.
   if (r.section === 'square-both') out.push('squareLe');
   if (r.section === 'rounded-both') out.push('roundedTe');
   if (roundedLeadingEdge(r) && EDGES === 'before') {
@@ -254,13 +265,23 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
     const reD = rePerMetre * r.thickness;
     if (!(reD >= 6.7e3 && reD <= 1e6)) out.push('roundedLeReynolds');
   } else if (roundedLeadingEdge(r)) {
-    // 0016: on the normal components, to 60 deg of sweep.
+    // 0016: on the normal components, to 60 deg of sweep; from 60 to 75.1 deg (EDGES=w4e, 0016 sections
+    // 21.2 and 21.8) bounded between the term at the sweep and at 60 deg, each with its own domain;
+    // beyond 75.1 deg refused at any Mach number (counted under the sweep alone).
     const cos = Math.cos(r.leadingEdgeSweepDeg * DEG);
-    if (r.leadingEdgeSweepDeg > 60 + 1e-9) out.push('roundedLeSwept');
-    else {
+    if (r.leadingEdgeSweepDeg > 60 + 1e-9 && (EDGES !== 'w4e' || r.leadingEdgeSweepDeg > 75.1 + 1e-9)) {
+      out.push('roundedLeSwept');
+    } else {
       if (!(mach * cos >= LE_NORMAL_MACH_FLOOR && mach * cos <= 3.0)) out.push('roundedLeMach');
       const reN = rePerMetre * r.thickness * cos;
-      if (!(reN >= 6.7e3 && reN <= 1e6)) out.push('roundedLeReynolds');
+      const reN60 = rePerMetre * r.thickness * Math.cos(60 * DEG);
+      const beyond = r.leadingEdgeSweepDeg > 60 + 1e-9;
+      if (!(reN >= 6.7e3 && reN <= 1e6) || (beyond && !(reN60 >= 6.7e3 && reN60 <= 1e6))) {
+        out.push('roundedLeReynolds');
+      }
+      if (beyond && !(mach * 0.5 >= LE_NORMAL_MACH_FLOOR && mach * 0.5 <= 3.0) && !out.includes('roundedLeMach')) {
+        out.push('roundedLeMach');
+      }
     }
   }
   if (r.section === 'bevel-le-square-te') out.push('pageSection');
@@ -299,16 +320,54 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
     // 0016: integrated along the span; a plate's thickness the same at every station, the
     // bevelled section's (in chord units, as the library holds it) scaled with the chord.
     if (tanTe !== 0) out.push('teSwept');
-    if (!(mach >= 1.5 && mach <= 3.2)) out.push('teMach');
     const tip = r.rootChord + r.span * (tanTe - tanLe);
     const x = (c: number) => {
       const h = r.section === 'bevel-le-square-te' ? (r.thickness * c) / r.rootChord : r.thickness;
       return c / (h * (rePerMetre * c) ** 0.2);
     };
     const xMax = Math.max(x(r.rootChord), x(tip));
-    if (xMax > 4.5 || (xMax > 1 && mach > 3.1)) out.push('teThick');
+    const thick = xMax > 4.5 || (xMax > 1 && mach > 3.1);
+    // Below Mach 1.5 an edge beyond 4.5 is counted as teThick only, not as teBelow15 too.
+    if (!(mach >= 1.0 && mach <= 3.2)) out.push('teMach');
+    else if (mach < 1.5 && tanTe === 0 && !thick && teBelow15Refused(r, mach, rePerMetre)) {
+      out.push('teBelow15');
+    }
+    if (thick) out.push('teThick');
   }
   return out;
+}
+
+/**
+ * Below Mach 1.5 (0019 section 3.4.1), the trailing-edge term's own coverage refusals, asked of the
+ * library (src/base/fin-trailing-edge.ts) with the edge as src/total builds it: a plate's thickness
+ * the same at every station, the bevelled section's scaled with the chord. Only its layer and h/c
+ * refusals count here; Mach, sweep and the thick layer above 4.5 are counted on their own (the
+ * caller asks only for edges at 4.5 or below, so that no edge is counted under both).
+ */
+export function teBelow15Refused(r: Rocket, mach: number, rePerMetre: number): boolean {
+  const tip = r.rootChord + r.span * (Math.tan(r.trailingEdgeSweepDeg * DEG) - Math.tan(r.leadingEdgeSweepDeg * DEG));
+  const scaled = r.section === 'bevel-le-square-te';
+  try {
+    finTrailingEdgeBaseDrag({
+      mach,
+      count: r.finCount,
+      thickness: r.thickness,
+      span: r.span,
+      chord: r.rootChord,
+      ...(Math.abs(tip - r.rootChord) < 1e-12
+        ? {}
+        : { tipChord: tip, tipThickness: scaled ? (r.thickness * tip) / r.rootChord : r.thickness }),
+      tanSweep: 0,
+      inBasePlane: r.trailingEdgeAheadChords === 0,
+      layer: 'turbulent',
+      reynoldsPerLength: rePerMetre,
+      referenceArea: 1,
+    });
+  } catch (e) {
+    if (!(e instanceof BaseRefusal)) throw e;
+    return e.reason === 'thick-layer' || e.reason === 'beyond-read-range';
+  }
+  return false;
 }
 
 /** The section of the fins as the body base sees it: the physical section, flat plates as plates. */

@@ -197,17 +197,18 @@ describe('the nose term', () => {
     expect(x.label.startsWith('an analogy, not a measurement')).toBe(true);
   });
 
-  it('refuses edges swept beyond 60 deg, Mach numbers outside 1.0 to 3.0, Re_D below 6.7e3', () => {
-    expect(
-      reason(() =>
-        roundedLeadingEdgeDrag({
-          ...base,
-          mach: 2.9,
-          reynoldsOnDiameter: 2e5,
-          tanLeadingEdgeSweep: Math.tan(60.5 * deg),
-        }),
-      ),
-    ).toBe('swept-leading-edge');
+  it('bounds edges swept beyond 60 deg (0016 section 21.2); refuses Mach numbers outside 1.0 to 3.0, Re_D below 6.7e3', () => {
+    const beyond = (mach: number) =>
+      roundedLeadingEdgeDrag({
+        ...base,
+        mach,
+        reynoldsOnDiameter: 2e5,
+        tanLeadingEdgeSweep: Math.tan(60.5 * deg),
+      });
+    expect(beyond(2.9).bounded).toBeDefined();
+    expect(beyond(2.9).label.startsWith('bounded, not measured')).toBe(true);
+    // M 1.9 at 60.5 deg: M_n 0.936 at the sweep, 0.95 at 60 deg; both terms refused.
+    expect(reason(() => beyond(1.9))).toBe('leading-edge-range');
     expect(
       reason(() => roundedLeadingEdgeDrag({ ...base, mach: 0.98, reynoldsOnDiameter: 2e5 })),
     ).toBe('leading-edge-range');

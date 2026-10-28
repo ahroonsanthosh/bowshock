@@ -29,6 +29,11 @@ export interface DragComponent {
   readonly label: string;
   /** Where the band comes from. */
   readonly band: string;
+  /**
+   * Set when the component is "bounded, not measured" (0014 section 10.2):
+   * the reason a total that contains it names in its claim, in words.
+   */
+  readonly bounded?: string;
 }
 
 export interface InputBand {

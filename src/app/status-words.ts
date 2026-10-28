@@ -19,7 +19,13 @@ import {
   ROUNDED_PLATE_AHEAD_OF_BASE,
 } from '../base/base-drag';
 import type { BaseRefusalReason } from '../base/refusal';
+import {
+  W1_FLAT_BEYOND_60_MARK,
+  W1_FLAT_UNDER_45_MARK,
+  W1_SWEEP_REFUSED_TOO,
+} from '../base/fins-on-base-w1';
 import type { FinRefusalReason } from '../fins/refusal';
+import { SWEPT_EDGE_BOUNDED_REASON } from '../total/finned-body';
 import type { ComponentRefusal } from '../total/total-drag';
 import type { RocketDesign } from '../rocket/design';
 import {
@@ -28,6 +34,7 @@ import {
   FINS_AHEAD_OF_BASE,
   NOSE_UNVERIFIED_REASON,
   W1_BOUNDED_REASON,
+  W1_BOUNDED_SWEPT_REASON,
   type Claim,
 } from './total-drag';
 
@@ -92,6 +99,51 @@ export const W1_BOUNDED_WORDS: StatusWords = {
   mark: 'square',
 };
 
+/** The same, the fins' sweep taken on the argument of 0015 sections 4 and 12 (W1_BOUNDED_SWEPT_REASON). */
+export const W1_BOUNDED_SWEPT_WORDS: StatusWords = {
+  word: 'Estimate, bounded',
+  sentence:
+    "An estimate with one part bounded, not measured: the fins' effect on the base drag, set from " +
+    'bounds for fins unswept or at a sweep not measured at the base.',
+  tone: 'bounded',
+  mark: 'square',
+};
+
+/** The fins' rounded leading edges swept beyond 60 deg, bounded (0016 section 21.2). */
+export const SWEPT_EDGE_BOUNDED_WORDS: StatusWords = {
+  word: 'Estimate, bounded',
+  sentence:
+    "An estimate with one part bounded, not measured: the fins' rounded leading edges, swept past " +
+    '60 degrees, whose band runs from the drag at their sweep to that at 60.',
+  tone: 'bounded',
+  mark: 'square',
+};
+
+/** More than one part bounded: Details names each. */
+export const SEVERAL_BOUNDED_WORDS: StatusWords = {
+  word: 'Estimate, bounded',
+  sentence:
+    'An estimate with more than one part bounded, not measured: each band runs between two ' +
+    'limits, not from a measurement; Details names each part.',
+  tone: 'bounded',
+  mark: 'square',
+};
+
+/** Each bounded part's reason, as the logic names it in a claim, and its words. */
+const BOUNDED_PARTS: readonly (readonly [string, StatusWords])[] = [
+  [BOUNDED_REASON, BOUNDED_WORDS],
+  [W1_BOUNDED_REASON, W1_BOUNDED_WORDS],
+  [W1_BOUNDED_SWEPT_REASON, W1_BOUNDED_SWEPT_WORDS],
+  [SWEPT_EDGE_BOUNDED_REASON, SWEPT_EDGE_BOUNDED_WORDS],
+];
+
+/** The words of a claim with bounded parts, or undefined where it has none. */
+function boundedWords(reasons: readonly string[]): StatusWords | undefined {
+  const found = BOUNDED_PARTS.filter(([reason]) => reasons.includes(reason));
+  if (found.length === 0) return undefined;
+  return found.length === 1 ? found[0]![1] : SEVERAL_BOUNDED_WORDS;
+}
+
 /**
  * The one validated claim (main's BRL Report 934 run, 0014 section 10.7
  * (q)): the Basic Finner's narrow sub-class at that range's conditions,
@@ -124,13 +176,8 @@ const CLAIM_KINDS: { readonly [K in Claim['kind']]: (claim: ClaimOf<K>) => Statu
   estimate: (claim) =>
     claim.reasons.includes(NOSE_UNVERIFIED_REASON)
       ? NOSE_UNVERIFIED_WORDS
-      : claim.reasons.includes(BOUNDED_REASON)
-        ? BOUNDED_WORDS
-        : claim.reasons.includes(W1_BOUNDED_REASON)
-          ? W1_BOUNDED_WORDS
-          : claim.text === CLASS_CLAIM
-            ? CLASS_WORDS
-            : ESTIMATE_WORDS,
+      : (boundedWords(claim.reasons) ??
+        (claim.text === CLASS_CLAIM ? CLASS_WORDS : ESTIMATE_WORDS)),
 };
 
 /** A claim of the logic in plain words. */
@@ -245,30 +292,64 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
   // Never advice to move the fins further ahead: nothing is served more than a root chord ahead (0014
   // section 10.7 (ad), 2026-10-27). Where their trailing edge is refused near the base too, the change
   // names one served at the base.
-  'fins-near-base': (r) => ({
-    reason:
-      'fins ending ahead of the base: the base drag with fins there is measured only up to one ' +
-      'root chord ahead, at Mach 1.5 to 2.0 (none is known below Mach 1.5), and only with a fin ' +
-      'root chord of 1.5 body diameters' +
-      (r.message.includes(ROUNDED_EDGE_NOTE) || r.message.includes(BLUNT_EDGE_NOTE)
-        ? ', and only for square or sharp trailing edges'
-        : ''),
-    change: r.message.includes(ROUNDED_EDGE_NOTE)
-      ? 'square or sharp trailing edges, with the fins ending at the base'
-      : r.message.includes(BLUNT_EDGE_NOTE)
-        ? 'sharp trailing edges, with the fins ending at the base'
-        : "the fins' trailing edges at the base",
-  }),
+  'fins-near-base': (r) => {
+    // A flat plate whose sweep is refused below Mach 1.62 too (0014 section 10.7 (z), the note of 2026-10-27):
+    // both reasons, and a change that the sweep's refusal does not stop.
+    const sweep = r.message.includes(W1_SWEEP_REFUSED_TOO);
+    return {
+      reason:
+        'fins ending ahead of the base: the base drag with fins there is measured only up to one ' +
+        'root chord ahead, at Mach 1.5 to 2.0 (none is known below Mach 1.5), and only with a fin ' +
+        'root chord of 1.5 body diameters' +
+        (r.message.includes(ROUNDED_EDGE_NOTE) || r.message.includes(BLUNT_EDGE_NOTE)
+          ? ', and only for square or sharp trailing edges'
+          : '') +
+        (sweep
+          ? '; and below Mach 1.62, at or near the base, flat fins are taken only unswept or swept ' +
+            '45 to 60 deg'
+          : ''),
+      change: r.message.includes(ROUNDED_EDGE_NOTE)
+        ? 'square or sharp trailing edges, with the fins ending at the base'
+        : r.message.includes(BLUNT_EDGE_NOTE)
+          ? 'sharp trailing edges, with the fins ending at the base'
+          : sweep
+            ? "the fins' trailing edges at the base, the fins unswept or swept 45 to 60 deg at the " +
+              'leading edge'
+            : "the fins' trailing edges at the base",
+    };
+  },
   'fin-count': () => ({
     reason: 'with fins at the base, the base drag is measured with four fins only',
     change: 'four fins',
   }),
-  'fin-sweep': () => ({
-    reason:
-      'with fins at the base, the base drag is measured with unswept fins only (a tapered fin ' +
-      'has a swept edge)',
-    change: 'unswept fins of constant chord',
-  }),
+  'fin-sweep': (r) =>
+    // Flat fins swept more than 0 and under 45 deg, or beyond 60 deg, below Mach 1.62 (0014 section 10.7 (z),
+    // the note of 2026-10-27): the missing measurement, named.
+    r.message.includes(W1_FLAT_UNDER_45_MARK)
+      ? {
+          reason:
+            'below Mach 1.62 the base drag behind flat fins at or near the base is measured only at ' +
+            'Mach 1.06 to 1.10, with fins swept 45 deg, and nothing measured shows a lighter sweep ' +
+            'gives the same',
+          change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
+        }
+      : r.message.includes(W1_FLAT_BEYOND_60_MARK)
+        ? {
+            reason:
+              'below Mach 1.62 the base drag behind flat fins at or near the base is not measured ' +
+              'with fins swept beyond 60 deg, and nothing measured shows a sharper sweep gives the same',
+            change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
+          }
+        : {
+            reason:
+              'with fins at the base, the base drag behind wedge or bevelled fins is measured only ' +
+              'unswept or at a few sweeps (a tapered fin has a swept edge); flat fins with a square, ' +
+              'unswept trailing edge are taken at any leading-edge sweep, but below Mach 1.62 only ' +
+              'unswept or swept 45 to 60 deg',
+            change:
+              'flat fins with a square, unswept trailing edge (below Mach 1.62, unswept or swept 45 to ' +
+              '60 deg), or unswept fins of constant chord',
+          },
   'fin-trailing-edge': (r) =>
     // A rounded plate ending ahead of the base (src/base/base-drag.ts): refused at every speed, near the base.
     r.message.startsWith(ROUNDED_PLATE_AHEAD_OF_BASE)
@@ -365,18 +446,34 @@ const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
     change: 'a longer bevel or thinner fins',
   }),
   planform: asMessage,
-  'swept-leading-edge': () => ({
-    reason: "a swept rounded leading edge's drag is not measured",
-    change: 'unswept leading edges, or bevelled ones',
-  }),
-  'leading-edge-range': () => ({
+  // Beyond 75.1 deg a rounded edge is refused at any Mach number (0016 sections 21.7 and 21.8);
+  // otherwise this reason is thrown only for a sweep that is not a number.
+  'swept-leading-edge': (r) =>
+    /^a rounded leading edge swept [\d.]+ deg is refused/.test(r.message)
+      ? {
+          reason:
+            "a rounded leading edge's drag is bounded only up to 75 degrees of sweep, the most at " +
+            'which its bounds have been checked against a measured swept cylinder',
+          change: 'less sweep (75 degrees or less), or a bevelled leading edge',
+        }
+      : {
+          reason: "the leading edge's sweep is not a usable number",
+          change: 'a sweep of zero or more',
+        },
+  // From 60 to 75.1 deg the edge is bounded only where the term at its sweep and at 60 deg are both
+  // served (0016 section 21.2); there less sweep is a change that can help too.
+  'leading-edge-range': (r) => ({
     reason:
       "a rounded leading edge's drag is measured only where the Mach number across the edge is " +
       '1.0 to 3.0 and for edge sizes within its data',
-    change: 'bevelled leading edges',
+    change: /^a rounded leading edge swept [\d.]+ deg, beyond the 60 deg/.test(r.message)
+      ? 'less sweep (60 degrees or less), or a bevelled leading edge'
+      : 'bevelled leading edges',
   }),
   'square-leading-edge': () => ({
-    reason: "a square-cut leading edge's drag cannot yet be bounded from measurements",
+    reason:
+      "a square-cut leading edge's drag has bounds, but measurements bear out what they rest on " +
+      "only on flat faces far larger than a model rocket fin's",
     change: 'rounded or bevelled leading edges',
   }),
   'leading-edge-geometry': () => ({

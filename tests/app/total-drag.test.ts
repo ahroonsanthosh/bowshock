@@ -15,7 +15,12 @@ import { trapezoidalPlanform } from '../../src/fins/planform';
 import { roundedLeadingEdgeDrag, TN2960_RANGE } from '../../src/fins/rounded-leading-edge';
 import { doubleWedge, singleWedge } from '../../src/fins/section';
 import { BLUNT_AHEAD_OF_BASE, bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
-import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
+import { COMPILED_CURVE_BAND } from '../../src/base/compiled-curve';
+import {
+  finnedBodyComponents,
+  SWEPT_EDGE_BOUNDED_REASON,
+  type FinnedBody,
+} from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents, type TotalDrag } from '../../src/total/total-drag';
 import {
@@ -24,7 +29,13 @@ import {
   BASIC_FINNER_SHOTS,
 } from '../../src/validation/basic-finner';
 import { outward, outwardPercent } from '../../src/app/band';
-import { displayText, totalDragDisplay } from '../../src/app/total-drag-display';
+import { displayText, gateDisplay, totalDragDisplay } from '../../src/app/total-drag-display';
+import {
+  claimWords,
+  SEVERAL_BOUNDED_WORDS,
+  SWEPT_EDGE_BOUNDED_WORDS,
+  W1_BOUNDED_SWEPT_WORDS,
+} from '../../src/app/status-words';
 import {
   ABOVE_THE_CLASS,
   BASIC_FINNER_CLASS,
@@ -32,6 +43,7 @@ import {
   BOUNDED_REASON,
   boundedReasons,
   W1_BOUNDED_REASON,
+  W1_BOUNDED_SWEPT_REASON,
   BASIC_FINNER_TEMPERATURE,
   TEMPERATURE_SENSITIVITY,
   basicFinnerClass,
@@ -394,15 +406,21 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
       ];
     });
     // With the corrected fins-on-base factor (0010 section 11); before it, at the same Mach
-    // numbers: 0.6121, 0.5501, 0.5188, 0.4768, 0.4320, 0.4072, 0.4040.
+    // numbers: 0.6121, 0.5501, 0.5188, 0.4768, 0.4320, 0.4072, 0.4040. The bands with the compiled
+    // curve's band 0.77 to 1.17 (0014 10.7 (ah) and its addenda; with 0.77 to 1.18 before round 19 the
+    // high ends were +22.6%, +21.6%, +21.9%, +21.9%, +21.7%, +21.3%, +21.2%, with 0.77 to 1.13 before round
+    // 20 +20.8%, +19.9%, +20.3%, +20.4%, +20.2%, +19.9%, +19.8%); with 0.82 to 1.08 before (ah): -13.7% to
+    // +19.0%,
+    // -12.5% to +18.2%, -12.9% to +18.7%, -12.9% to +18.8%, -12.7% to +18.7%, -12.5% to +18.4%,
+    // -12.4% to +18.3%.
     expect(shown).toEqual([
-      ['0.6131', '0.5294 to 0.7293', '-13.7% to +19.0%'],
-      ['0.5493', '0.4808 to 0.6493', '-12.5% to +18.2%'],
-      ['0.5176', '0.4512 to 0.6141', '-12.9% to +18.7%'],
-      ['0.4725', '0.4115 to 0.5612', '-12.9% to +18.8%'],
-      ['0.4203', '0.3669 to 0.4987', '-12.7% to +18.7%'],
-      ['0.3951', '0.3459 to 0.4678', '-12.5% to +18.4%'],
-      ['0.3919', '0.3434 to 0.4636', '-12.4% to +18.3%'],
+      ['0.6131', '0.5184 to 0.7490', '-15.5% to +22.2%'],
+      ['0.5493', '0.4717 to 0.6656', '-14.2% to +21.2%'],
+      ['0.5176', '0.4428 to 0.6292', '-14.5% to +21.6%'],
+      ['0.4725', '0.4041 to 0.5745', '-14.5% to +21.6%'],
+      ['0.4203', '0.3606 to 0.5100', '-14.2% to +21.4%'],
+      ['0.3951', '0.3401 to 0.4781', '-14.0% to +21.1%'],
+      ['0.3919', '0.3377 to 0.4738', '-13.9% to +21.0%'],
     ]);
   });
 
@@ -452,13 +470,14 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
         outwardPercent(t.low / t.cd - 1, t.high / t.cd - 1),
       ];
     });
+    // The compiled curve's band 0.77 to 1.17 (0014 10.7 (ah) and its addenda).
     expect(shown).toEqual([
-      ['0.6131', '0.5294 to 0.7293', '-13.7% to +19.0%'],
-      ['0.5493', '0.4808 to 0.6493', '-12.5% to +18.2%'],
-      ['0.5176', '0.4512 to 0.6141', '-12.9% to +18.7%'],
-      ['0.4896', '0.4260 to 0.5818', '-13.0% to +18.9%'],
-      ['0.4564', '0.3996 to 0.5401', '-12.5% to +18.4%'],
-      ['0.4028', '0.3521 to 0.4775', '-12.6% to +18.6%'],
+      ['0.6131', '0.5184 to 0.7490', '-15.5% to +22.2%'],
+      ['0.5493', '0.4717 to 0.6656', '-14.2% to +21.2%'],
+      ['0.5176', '0.4428 to 0.6292', '-14.5% to +21.6%'],
+      ['0.4896', '0.4182 to 0.5958', '-14.6% to +21.7%'],
+      ['0.4564', '0.3926 to 0.5528', '-14.0% to +21.2%'],
+      ['0.4028', '0.3462 to 0.4881', '-14.1% to +21.2%'],
     ]);
   });
 
@@ -571,16 +590,29 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       return { lo: Math.min(...v) / mean - 1, hi: Math.max(...v) / mean - 1 };
     });
     expect(PUBLISHED_GATE.map((p) => p.shot)).toEqual(gated.map((s) => s.shot));
-    // The band rounded outward, as every band on the page is (src/app/band.ts), so that the
-    // table and a total's headline show the same interval for the same shot.
+    // The table is the corrected run's: its bands and tolerances were formed with the compiled
+    // curve's band at the run, 0.82 to 1.08. The library's carry 0.77 to 1.17 since 0014 10.7 (ah) and its
+    // addenda,
+    // so the table is held to the library less that widening of the body base's band ends (the
+    // change in the band's end times the body base term); the totals and residuals are the same.
+    const atTheRun = (t: TotalDrag) => {
+      const base = t.components.find((c) => c.name === 'body base')!.cd;
+      return {
+        low: t.low - (COMPILED_CURVE_BAND.low - 0.82) * base,
+        high: t.high - (COMPILED_CURVE_BAND.high - 1.08) * base,
+      };
+    };
+    // The band rounded outward, as every band on the page is (src/app/band.ts).
     expect(PUBLISHED_GATE.map((p) => [p.cd, p.low, p.high])).toEqual(
       views.map((v) => {
         const t = totalOf(v);
-        return [Math.round(1e4 * t.cd) / 1e4, ...outward(t.low, t.high, 4).map(Number)];
+        const r = atTheRun(t);
+        return [Math.round(1e4 * t.cd) / 1e4, ...outward(r.low, r.high, 4).map(Number)];
       }),
     );
     PUBLISHED_GATE.forEach((p, k) => {
       const t = totalOf(views[k]!);
+      const r = atTheRun(t);
       expect(p.mach).toBe(gated[k]!.mach);
       expect(p.cx0).toBe(cx0(p.mach));
       expect(p.residual).toBe(Math.round(1000 * (p.cx0 / t.cd - 1)) / 10);
@@ -588,11 +620,42 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       const inHigh = t.inputs.reduce((a, i) => a + i.high, 0);
       const s = spread[BASIC_FINNER_CLUSTERS.findIndex(([a, b]) => p.mach >= a && p.mach <= b)]!;
       expect(p.tolerance).toEqual(
-        [(t.low + inLow) / t.cd - 1 + s.lo, (t.high + inHigh) / t.cd - 1 + s.hi].map(
+        [(r.low + inLow) / t.cd - 1 + s.lo, (r.high + inHigh) / t.cd - 1 + s.hi].map(
           (x) => Math.round(1000 * x) / 10,
         ),
       );
     });
+    // The tolerances with the band the library carries now (0014 10.7 (ah) and its third addendum), as the
+    // table's caption states them.
+    const now = PUBLISHED_GATE.map((p, k) => {
+      const t = totalOf(views[k]!);
+      const inLow = t.inputs.reduce((a, i) => a + i.low, 0);
+      const inHigh = t.inputs.reduce((a, i) => a + i.high, 0);
+      const s = spread[BASIC_FINNER_CLUSTERS.findIndex(([a, b]) => p.mach >= a && p.mach <= b)]!;
+      return [(t.low + inLow) / t.cd - 1 + s.lo, (t.high + inHigh) / t.cd - 1 + s.hi] as const;
+    });
+    const pc = (x: number) => `${x > 0 ? '+' : ''}${(Math.round(1000 * x) / 10).toFixed(1)}%`;
+    const lo = now.map((x) => x[0]);
+    const hi = now.map((x) => x[1]);
+    const stated = `${pc(Math.max(...lo))} to ${pc(Math.min(...lo))} and ${pc(Math.min(...hi))} to ${pc(Math.max(...hi))}`;
+    expect(stated).toBe('-21.5% to -28.5% and +26.5% to +31.3%');
+    // The caption word for word: what the table shows (the run's values, F4's widening at the Mach
+    // 1.799 row) and what it does not ((ah)'s widening of the body base's band), with the tolerances
+    // the library gives now.
+    const table = gateDisplay().find((b) => b.kind === 'table');
+    if (table?.kind !== 'table') throw new Error('expected the gate table');
+    expect(table.caption).toBe(
+      'The Basic Finner gate re-run with the corrected fins-on-base factor (design record 0010 ' +
+        'section 11): a recorded correction made after the residuals were known, not a new test, ' +
+        'beside the second run (its section 4.2); tolerances as re-derived after an independent ' +
+        'audit (its section 10); residual: measured CX0 over modelled, minus 1; each band rounded ' +
+        'outward, other values to the nearest last digit shown; bands and tolerances as the run ' +
+        "formed them, except that the trailing edges' band at the Mach 1.799 shot widened at both " +
+        'ends since (design record 0019 section 3.4.1, F4), also after the gate was used, and that ' +
+        "row shows it; the body base's band was widened after the run too (design record 0014, " +
+        'section 10.7 (ah)), which the table does not show: a total on this page now shows a wider ' +
+        `band and the tolerances would be ${stated}; no residual and no verdict changes`,
+    );
   });
 
   it('every shot is an estimate: the three at Mach 1.80 to 1.85, inside the class, with the suspension as the reason; the eight above Mach 2.15 outside it', () => {
@@ -945,6 +1008,23 @@ describe('a bounded fins-on-base factor is named in the claim (0014 section 10.2
     expect(boundedReasons(body(2.8, three))).toEqual([W1_BOUNDED_REASON]);
     expect(boundedReasons(body(2.4, three))).toEqual([]);
     expect(boundedReasons(undefined)).toEqual([]);
+    // Components the library marks bounded (0016 section 21.2), each named once, after the base's.
+    const edge = {
+      name: 'fin leading edges',
+      cd: 0.01,
+      low: 0.005,
+      high: 0.015,
+      label: 'x',
+      band: 'x',
+      bounded: SWEPT_EDGE_BOUNDED_REASON,
+    };
+    expect(boundedReasons(undefined, [edge, edge])).toEqual([SWEPT_EDGE_BOUNDED_REASON]);
+    expect(boundedReasons(body(2.8, four), [edge])).toEqual([
+      BOUNDED_REASON,
+      SWEPT_EDGE_BOUNDED_REASON,
+    ]);
+    const plain = { name: edge.name, cd: 0.01, low: 0.005, high: 0.015, label: 'x', band: 'x' };
+    expect(boundedReasons(undefined, [plain])).toEqual([]);
   });
 });
 
@@ -987,6 +1067,109 @@ describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
     if (v.kind !== 'total') throw new Error(JSON.stringify(v));
     expect(v.claim.kind).toBe('estimate');
     expect(v.total.components.find((c) => c.name === 'fin wave drag')!.cd).toBe(0);
+  });
+
+  it('rounded leading edges swept 66.4 deg at Mach 2.8: the bounded edge served among the parts, the total refused at the base', () => {
+    // On main (A4 with A5) the body base refused this plate for its sweep; with A1 (0015 section 12)
+    // flat plates with an unswept trailing edge are taken at the base at any leading-edge sweep from
+    // Mach 1.62, and this one is refused for its thickness over its short tip chord instead. The edge
+    // is served among the refused total's parts, bounded, and names it.
+    const form = {
+      ...plate('rounded', 'square'),
+      planform: { kind: 'clipped-delta' as const, taperRatio: 0.2 },
+      rootChord: 2,
+      span: 0.7,
+    };
+    const v = totalDragView(form, exactNose(form));
+    if (v.kind !== 'refused') throw new Error(`expected a refusal, got ${v.kind}`);
+    expect(reasons(v)).toEqual(['body base: fin-thickness']);
+    const le = v.parts!.served.find((c) => c.name === 'fin leading edges')!;
+    expect(le.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
+    expect(le.label.startsWith('bounded, not measured: swept 66.4 deg')).toBe(true);
+    // The claim's words for a total that holds it, should one be served (boundedReasons, above).
+    expect(
+      claimWords({
+        kind: 'estimate',
+        text: ESTIMATE_CLAIM,
+        reasons: boundedReasons(undefined, [le]),
+      }),
+    ).toBe(SWEPT_EDGE_BOUNDED_WORDS);
+  });
+
+  it('rounded leading edges swept 66.4 deg at Mach 2.8 on a longer tip: a total, both bounded parts named (A1 with A4)', () => {
+    // A1 (0015 section 12) takes the plate at the base at this sweep from Mach 1.62; A4 (0016 section
+    // 21.8) bounds the rounded edge to 75.1 deg. The total is served as an estimate whose reasons name
+    // the swept edge's bound; its body base is the flat plates' bounded value with the sweep named.
+    const rootChord = 3;
+    const span = 0.7;
+    const tip = rootChord - span * Math.tan((66.4 * Math.PI) / 180);
+    const form = {
+      ...plate('rounded', 'square'),
+      planform: { kind: 'clipped-delta' as const, taperRatio: tip / rootChord },
+      rootChord,
+      span,
+    };
+    const v = totalDragView(form, exactNose(form));
+    if (v.kind !== 'total') throw new Error(`expected a total, got ${JSON.stringify(reasons(v))}`);
+    expect(v.claim.kind).toBe('estimate');
+    const le = v.total.components.find((c) => c.name === 'fin leading edges')!;
+    expect(le.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
+    const base = v.total.components.find((c) => c.name === 'body base')!;
+    expect(base.label).toContain('the leading edge swept 66.4 deg with the trailing edge unswept');
+    expect(base.label).toContain('0015 section 12');
+    // The claim names both bounded parts: the base's, with section 12's sweep argument, and the edge's.
+    const named = reasonsOf(v.claim);
+    expect(named).toContain(W1_BOUNDED_SWEPT_REASON);
+    expect(named).toContain(SWEPT_EDGE_BOUNDED_REASON);
+    expect(named).not.toContain(W1_BOUNDED_REASON);
+    expect(claimWords(v.claim)).toBe(SEVERAL_BOUNDED_WORDS);
+    // At a measured sweep (45 deg, RM L52E06's) the base's reason has no sweep argument in it.
+    const tip45 = rootChord - span * Math.tan((45 * Math.PI) / 180);
+    const at45 = {
+      ...form,
+      planform: { kind: 'clipped-delta' as const, taperRatio: tip45 / rootChord },
+    };
+    const v45 = totalDragView(at45, exactNose(at45));
+    if (v45.kind !== 'total')
+      throw new Error(`expected a total, got ${JSON.stringify(reasons(v45))}`);
+    expect(reasonsOf(v45.claim)).toContain(W1_BOUNDED_REASON);
+    expect(reasonsOf(v45.claim)).not.toContain(W1_BOUNDED_SWEPT_REASON);
+  });
+
+  it('an unswept plate at the base and half a chord ahead, at Mach 2.0 and 2.8: the claim names the sweep argument of 0015 sections 4 and 12', () => {
+    // No flat plate is measured at the base unswept: its bracket is argued (0015 section 4, 0014 10.7 (i)),
+    // so the claim names the argument as it does for the sweeps section 12 takes.
+    const unswept = (mach: number, aheadChords: number) => ({
+      ...basicFinnerForm(mach, (1.6e7 * mach) / 2.8),
+      section: {
+        kind: 'flat-plate' as const,
+        thickness: 0.05,
+        leadingEdge: 'rounded' as const,
+        trailingEdge: 'square' as const,
+      },
+      planform: { kind: 'rectangular' as const },
+      rootChord: 1.5,
+      // In calibres: the root chord is 1.5 body diameters, TN 2360's, so x/c 0.5 is 0.75 calibres.
+      trailingEdgeAheadOfBase: aheadChords * 1.5,
+    });
+    for (const [mach, ahead] of [
+      [2.0, 0],
+      [2.8, 0],
+      [2.0, 0.5],
+    ] as const) {
+      const form = unswept(mach, ahead);
+      const v = totalDragView(form, exactNose(form));
+      const where = `M ${mach}, x/c ${ahead}`;
+      if (v.kind !== 'total')
+        throw new Error(`${where}: expected a total, got ${JSON.stringify(reasons(v))}`);
+      const named = reasonsOf(v.claim);
+      expect(named, where).toContain(W1_BOUNDED_SWEPT_REASON);
+      expect(named, where).not.toContain(W1_BOUNDED_REASON);
+      expect(claimWords(v.claim), where).toBe(W1_BOUNDED_SWEPT_WORDS);
+    }
+    // Half a chord ahead at Mach 2.8: the position is refused (TN 2360 measures it at Mach 1.5 and 2.0 only).
+    const far = unswept(2.8, 0.5);
+    expect(reasons(totalDragView(far, exactNose(far)))).toEqual(['body base: fins-near-base']);
   });
 
   it('square-cut leading edges and rounded trailing edges: refused, with the reasons', () => {
