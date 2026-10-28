@@ -181,8 +181,8 @@
   "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
   "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
   "W11 square-cut leading edges and rounded trailing edges",
-  "W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0",
   "W8 steep, detached and subsonic sharp tips",
+  "W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0",
   "W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)",
   "W12 page: the wedge-flat section with a blunt trailing edge",
   "W10 boat-tails"
