@@ -1344,12 +1344,15 @@ formed on two of them, and the shape widening's size on two of them.
       without the library's builder (equal to 1e-9). The review's three
       plants that passed before now fail: the window by each point's
       nominal Mach number, K dropped below 1.5, and K read at Mach 2.0.
-      Planted errors, `audit/te-below-1.5/planted-errors.out`: 32 of 32
+      Planted errors, `audit/te-below-1.5/planted-errors.out`: 34 of 34
       caught (the review's three, and plants for F1, F2, F4 with #10 and
       #7 as any wing, and F10; since the re-review, R1's three: the high
       end not widened, 8(a) #9 left out, #9 taken as wing 4; R2's three:
       the coverage, the stations and the sweep each stopping at the first
-      reason; and R3's: the total's band text without the widening). The
+      reason; R3's: the total's band text without the widening; and, after
+      the quick look on ae4d478..1994584, the thick-layer reason dropped
+      above 1.5, on a constant chord, which passed every test before, and
+      on a varying one). The
       independent test recomputes the band above 1.5 at both ends from the
       four-way and three-way identity maps (each line's ratios, then the
       band at 81 Mach numbers from 1.5 to 1.9; R1).
@@ -1368,7 +1371,10 @@ formed on two of them, and the shape widening's size on two of them.
       layer and the tip's h/c, once each over every station; a swept
       laminar edge for the sweep and the layer, above 1.5 and below
       (`fin-trailing-edge-transonic.test.ts`, the reviewer's three
-      examples). `finned-body.ts` lists each.
+      examples). `finned-body.ts` lists each. After the quick look on
+      ae4d478..1994584 the same test holds an edge above 1.5 that is swept,
+      laminar and beyond X 4.5 (Mach 2.0, X 4.7, on a constant chord and a
+      tapered one): the sweep, the layer and the thick layer, each once.
     - _The total's band text (R3)._ `tests/total/refused-floor.test.ts`
       pins `finned-body.ts`'s band text above 1.5: "0.350 to 1.260 ...
       widened near Mach 1.7 on RM A52E01, 0019 section 3.4.1" at Mach 1.7,

@@ -1050,6 +1050,23 @@ describe('what is refused below Mach 1.5 (item 7), and the labels (item 8)', () 
         finTrailingEdgeBaseDrag({ ...edge, mach: 1.3, tanSweep: 0.2, transitionReynolds: [3e6] }),
       ),
     ).toEqual(['swept-trailing-edge', 'laminar-trailing-edge']);
+    // Above 1.5, swept, laminar and beyond X 4.5 (the quick look's example: Mach 2.0, X 4.7): the
+    // sweep, the layer and the thick layer, each once, on a constant chord and a tapered one.
+    const beyond = {
+      ...edge,
+      mach: 2.0,
+      tanSweep: 0.2,
+      layer: 'laminar' as const,
+      reynoldsPerLength: (0.1 / (0.01 * 4.7)) ** 5 / 0.1,
+    };
+    expect(reasons(() => finTrailingEdgeBaseDrag(beyond))).toEqual([
+      'swept-trailing-edge',
+      'laminar-trailing-edge',
+      'thick-layer',
+    ]);
+    expect(
+      reasons(() => finTrailingEdgeBaseDrag({ ...beyond, tipChord: 0.08, tipThickness: 0.01 })),
+    ).toEqual(['swept-trailing-edge', 'laminar-trailing-edge', 'thick-layer']);
     // One reason once: a tapered plate beyond the reach at every station is refused for it once.
     const allThin = { ...tapered, tipChord: 0.08 };
     expect(reasons(() => finTrailingEdgeBaseDrag(allThin))).toEqual(['thick-layer']);

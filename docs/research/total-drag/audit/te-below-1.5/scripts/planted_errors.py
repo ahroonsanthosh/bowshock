@@ -104,6 +104,15 @@ MUTATIONS = [
     ('R2: a swept edge refused before anything else (a swept laminar edge)', 'src/base/fin-trailing-edge.ts',
      "  if (input.tanSweep !== 0) early.push({ key: 'swept', refusal: sweptRefusal() });",
      '  if (input.tanSweep !== 0) throw sweptRefusal();'),
+    # The quick look on ae4d478..1994584: the thick layer above 1.5 beside a sweep or a laminar layer.
+    ('the thick-layer reason dropped above 1.5 (swept, laminar, X 4.7 at Mach 2.0; the quick look)',
+     'src/base/fin-trailing-edge.ts',
+     '  } else reasons.push(...thickLayerReasons(basis.kMach, [thin]));',
+     '  } else void thickLayerReasons;'),
+    ('the thick-layer reason dropped above 1.5 on fins of varying chord (the same, tapered)',
+     'src/base/fin-trailing-edge.ts',
+     '  } else reasons.push(...thickLayerReasons(basis.kMach, stations.map(parameter)));',
+     '  } else void thickLayerReasons;'),
     # R3: the band text above 1.5 in the total.
     ("R3: the total's band text above 1.5 without the widening", 'src/total/finned-body.ts',
      ': widenedAbove(trailingEdgeBasis(conditions.mach).band)', ': false && widenedAbove(trailingEdgeBasis(conditions.mach).band)',
