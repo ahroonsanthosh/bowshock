@@ -1,0 +1,456 @@
+Three-way pairing of the three blind readings of NACA TN 3819 fig. 32 (Love 1957, NTRS 19930084517, PDF p. 64),
+2026-10-26, by a neutral party who made none of the readings and did not look at the figure, the page images or
+any reader's overlays or renders; scratchpad/decisions.md was not opened. Used: the three CSV files, the three
+method files, reading 3's 22_alternatives.out, and the two-way pairing of readings 1 and 2.
+  reading 1: round 6 (2026-10-20), docs/research/total-drag/audit/round6/readings/tn3819_fig32.csv, method round6/readings/method_tn3819_figs32-35.md.
+  reading 2: round 14 (2026-10-26), docs/research/total-drag/audit/round14-fig32/readings/tn3819_fig32.csv, method round14-fig32/method.md.
+  reading 3: round 16 (2026-10-26), docs/research/total-drag/audit/round16/readings/tn3819_fig32.csv, method round16/method.md.
+  two-way pairing of readings 1 and 2: pairing-2026-10-26-fig32/ (commit e15934c).
+Rule: two values agree when |difference| <= the two readers' stated errors summed, on each axis both state.
+Curves: P_B at the same station (the right end of the faired curve, not at a station, on both axes).
+Every pair of readers is compared. Differences are 'first minus second' of the pair. Nothing is resolved toward
+any reading, nothing averaged, no envelope formed; where two readings agree and the third differs it is said
+so and not treated as settled. This pairing sets nothing: by 0014 section 10.7 (ad) and its narrowing of
+2026-10-26, fig. 32 sets nothing until its readings are settled and its method is written in 0015.
+Consistency: the reading 1 and 2 verdicts recomputed here equal the two-way pairing's in 35 of 35 values.
+
+=== 1. Source file and pixels
+  reading 2 (round 14): download SHA-256 9acd67dc393b26162f773602f477be6e9bf3b5e2823edb18df105a1159c9ce55; cut at the first %PDF- (byte 436) c0c3a964d17c93c0133202ed512bbc10018ce7b228ad5f4edc079f73b32693af; page 64 image c3ea56ee79ac39d780b36b93563ea4ba7542c37db771f09703a6d44f46fa6fd0.
+  reading 3 (round 16): download SHA-256 9acd67dc393b26162f773602f477be6e9bf3b5e2823edb18df105a1159c9ce55; cut at the first %PDF- (byte 436) c0c3a964d17c93c0133202ed512bbc10018ce7b228ad5f4edc079f73b32693af; page 64 image c3ea56ee79ac39d780b36b93563ea4ba7542c37db771f09703a6d44f46fa6fd0.
+  Readings 2 and 3: all three hashes are the same (the cut PDF c0c3a964... matches). Both worked in the native
+  pixels of that same page image (2258 x 3092 px, 300 ppi), so their pixel positions can be compared directly
+  (section 4, last column).
+  Reading 1 recorded no hash: its method notes name the same URL, 68 pages, PDF p. 64, scans at 300 ppi, rendered
+  with pdftoppm at 600 dpi grey. Whether its file matches cannot be checked from the record. (The only earlier
+  TN 3819 hash in the repository, round 7's for fig. 18, is the same download hash 9acd67dc...; it is not
+  reading 1's record.)
+
+=== 2. Conventions, three readers
+  x/c axis: all three have +1.0 at the left frame to -1.5 at the right, 26 lines 0.1 apart. AGREE.
+  Sign of x/c: readings 2 and 3 both quote the symbol list (positive when the trailing edge is ahead of the base);
+    reading 1 does not state it but reads against the same labels. NOT A DISAGREEMENT.
+  P_B axis: all three have -0.40 at the top frame to +0.08 at the bottom (up is more negative). AGREE.
+  P_B definition: readings 2 and 3 quote P_B = (p_B - p_inf)/q_inf; reading 1 does not state it. Values are
+    negative in all three and the ref. 26 check values agree in every pair (section 5). AGREE.
+  Scale per scan pixel: reading 1 0.0015653 x/c and 0.00031505 P_B (its cal.txt, 600 dpi px times 2); reading 2
+    0.0015661 and 0.00031540; reading 3 63.85 px per 0.1 x/c (0.0015661) and 63.40 px per 0.02 P_B (0.00031546).
+    AGREE (within 0.12%).
+  Legend: all three: open (plain) triangle R = 2.8e6, flagged triangle R = 11.3e6. AGREE.
+  Identity per symbol: readings 2 and 3 give one for each of their 12 symbols and give the SAME identity to every
+    one (station by station, upper and lower); reading 1 gives none. Readings 2 and 3 both mark x/c 0.0 as
+    uncertain with the swap as the alternative; reading 2 also marks x/c 1.0 lower (faint flag) and x/c 0.8.
+  Triangle centre: all three use the point one third of the height above the base. AGREE.
+  Error basis: reading 1 quadrature sum; readings 2 and 3 linear sums of components (reading 3's centring term
+    is twice a Monte Carlo standard deviation). None states a confidence level. Summed as stated.
+
+=== 3. Per station: how many symbols each reader found, each one's identity and value (P_B; x/c)
+  x/c 1.0
+    reading 1: 2 values
+      tri_xc1.0_upper: identity not stated, -0.0757 +-0.0003 (x/c 0.9975 +-0.0017)
+      tri_xc1.0_lower: identity not stated, -0.0617 +-0.0003 (x/c 0.9994 +-0.0017)
+    reading 2: 2 symbols
+      S01 upper: open, R 2.8e6, -0.0752 +-0.0006 (x/c 0.9973 +-0.0029) [open triangle]
+      S02 lower: flagged, R 11.3e6, -0.0613 +-0.0006 (x/c 0.9997 +-0.0029) [flagged triangle (flag faint); its notes: UNSURE]
+    reading 3: 2 symbols
+      S01 upper: open, R 2.8e6, -0.0751 +-0.0008 (x/c 0.9986 +-0.0036) [open triangle]
+      S02 lower: flagged, R 11.3e6, -0.0612 +-0.0007 (x/c 1.0005 +-0.0036) [flagged triangle]
+  x/c 0.8
+    reading 1: 1 value, no second symbol noted
+      tri_xc0.8: identity not stated, -0.1604 +-0.0003 (x/c 0.8001 +-0.0017)
+    reading 2: 2 symbols
+      S03 upper: flagged, R 11.3e6, -0.1601 +-0.0015 (x/c 0.8004 +-0.0028) [flagged triangle; its notes: AMBIGUOUS]
+      S04 lower: open, R 2.8e6, -0.1582 +-0.0008 (x/c 0.7997 +-0.0030) [open triangle (no flag seen); its notes: UNSURE]
+    reading 3: 2 symbols
+      S03 upper: flagged, R 11.3e6, -0.1604 +-0.0010 (x/c 0.8004 +-0.0040) [flagged triangle; its flag column: 'base hidden']
+      S04 lower: open, R 2.8e6, -0.1579 +-0.0014 (x/c 0.7988 +-0.0040) [open triangle; its flag column: 'apex hidden; one-symbol alternative']
+  x/c 0.6
+    reading 1: 1 value, no second symbol noted
+      tri_xc0.6: identity not stated, -0.1566 +-0.0003 (x/c 0.6007 +-0.0017)
+    reading 2: 2 symbols
+      S05 upper: flagged, R 11.3e6, -0.1612 +-0.0007 (x/c 0.6006 +-0.0028) [flagged triangle]
+      S06 lower: open, R 2.8e6, -0.1569 +-0.0007 (x/c 0.6012 +-0.0028) [open triangle]
+    reading 3: 2 symbols
+      S05 upper: flagged, R 11.3e6, -0.1614 +-0.0012 (x/c 0.6002 +-0.0033) [flagged triangle; its flag column: 'base hidden']
+      S06 lower: open, R 2.8e6, -0.1565 +-0.0007 (x/c 0.6007 +-0.0033) [open triangle]
+  x/c 0.4
+    reading 1: 1 value, given for 'plain and flagged triangles overlap' (two symbols named, one value)
+      tri_xc0.4: identity not stated, -0.1728 +-0.0020 (x/c 0.3996 +-0.0017)
+    reading 2: 2 symbols
+      S07 upper: open, R 2.8e6, -0.1727 +-0.0009 (x/c 0.4004 +-0.0028) [open triangle]
+      S08 lower: flagged, R 11.3e6, -0.1694 +-0.0007 (x/c 0.4004 +-0.0036) [flagged triangle]
+    reading 3: 2 symbols
+      S07 upper: open, R 2.8e6, -0.1730 +-0.0014 (x/c 0.3994 +-0.0042) [open triangle; its flag column: 'base hidden']
+      S08 lower: flagged, R 11.3e6, -0.1694 +-0.0007 (x/c 0.3994 +-0.0034) [flagged triangle]
+  x/c 0.2
+    reading 1: 1 value, given for 'plain and flagged triangles overlap' (two symbols named, one value)
+      tri_xc0.2: identity not stated, -0.1679 +-0.0030 (x/c 0.1999 +-0.0017)
+    reading 2: 2 symbols
+      S09 upper: flagged, R 11.3e6, -0.1682 +-0.0009 (x/c 0.2002 +-0.0028) [flagged triangle]
+      S10 lower: open, R 2.8e6, -0.1650 +-0.0007 (x/c 0.1997 +-0.0028) [open triangle]
+    reading 3: 2 symbols
+      S09 upper: flagged, R 11.3e6, -0.1679 +-0.0012 (x/c 0.1988 +-0.0034) [flagged triangle; its flag column: 'base hidden']
+      S10 lower: open, R 2.8e6, -0.1650 +-0.0007 (x/c 0.1981 +-0.0034) [open triangle]
+  x/c 0.0
+    reading 1: 1 value, given for 'plain and flagged triangles overlap' (two symbols named, one value)
+      tri_xc0.0: identity not stated, -0.1642 +-0.0020 (x/c -0.0005 +-0.0017)
+    reading 2: 2 symbols
+      S11 upper: flagged, R 11.3e6, -0.1657 +-0.0011 (x/c 0.0001 +-0.0028) [flagged triangle (assignment unsure); its notes: AMBIGUOUS]
+      S12 lower: open, R 2.8e6, -0.1642 +-0.0008 (x/c 0.0007 +-0.0031) [open triangle (assignment unsure)]
+    reading 3: 2 symbols
+      S11 upper: flagged, R 11.3e6, -0.1658 +-0.0008 (x/c -0.0010 +-0.0033) [flagged triangle; its flag column: 'identity ambiguous']
+      S12 lower: open, R 2.8e6, -0.1640 +-0.0007 (x/c -0.0001 +-0.0033) [open triangle; its flag column: 'identity ambiguous']
+  Symbols only one reader gives: none. Every symbol of reading 2 has a counterpart in reading 3 at the same
+  station, in the same vertical order and with the same identity, and the other way round. Reading 1 gives
+  separate values only at x/c 1.0; at the other five stations it gives one value where readings 2 and 3 give two.
+
+=== 4. Symbols, pair by pair (difference/allowed in P_B; then x/c)
+  Columns: 1-2, 1-3, 2-3 verdicts; pattern; reading 2 minus reading 3 in page pixels (same page image).
+  x/c 1.0 upper: r1 tri_xc1.0_upper -0.0757; r2 S01 open -0.0752; r3 S01 open -0.0751; identities 2/3 same
+      1-2 agree (-0.0005/0.0009; x/c +0.0002/0.0046)
+      1-3 agree (-0.0006/0.0011; x/c -0.0011/0.0053)
+      2-3 agree (-0.0001/0.0014; x/c -0.0013/0.0065); pixels +0.16, -0.02
+      all three agree
+  x/c 1.0 lower: r1 tri_xc1.0_lower -0.0617; r2 S02 flagged -0.0613; r3 S02 flagged -0.0612; identities 2/3 same
+      1-2 agree (-0.0004/0.0009; x/c -0.0003/0.0046)
+      1-3 agree (-0.0005/0.0010; x/c -0.0011/0.0053)
+      2-3 agree (-0.0001/0.0013; x/c -0.0008/0.0065); pixels +0.03, -0.17
+      all three agree
+  x/c 0.8 upper: r1 tri_xc0.8 -0.1604; r2 S03 flagged -0.1601; r3 S03 flagged -0.1604; identities 2/3 same
+      1-2 agree (-0.0003/0.0018; x/c -0.0003/0.0045)
+      1-3 agree (+0.0000/0.0013; x/c -0.0003/0.0057)
+      2-3 agree (+0.0003/0.0025; x/c +0.0000/0.0068); pixels +0.39, +1.46
+      all three agree  [reading 1: one value at the station, no second symbol noted]
+  x/c 0.8 lower: r1 tri_xc0.8 -0.1604; r2 S04 open -0.1582; r3 S04 open -0.1579; identities 2/3 same
+      1-2 disagree (-0.0022/0.0011; x/c +0.0004/0.0047)
+      1-3 disagree (-0.0025/0.0017; x/c +0.0013/0.0057)
+      2-3 agree (-0.0003/0.0022; x/c +0.0009/0.0070); pixels -0.15, -0.57
+      readings 2 and 3 agree; reading 1 differs from both  [reading 1: one value at the station, no second symbol noted]
+  x/c 0.6 upper: r1 tri_xc0.6 -0.1566; r2 S05 flagged -0.1612; r3 S05 flagged -0.1614; identities 2/3 same
+      1-2 disagree (+0.0046/0.0010; x/c +0.0001/0.0045)
+      1-3 disagree (+0.0048/0.0015; x/c +0.0005/0.0050)
+      2-3 agree (+0.0002/0.0019; x/c +0.0004/0.0061); pixels +0.14, +0.41
+      readings 2 and 3 agree; reading 1 differs from both  [reading 1: one value at the station, no second symbol noted]
+  x/c 0.6 lower: r1 tri_xc0.6 -0.1566; r2 S06 open -0.1569; r3 S06 open -0.1565; identities 2/3 same
+      1-2 agree (+0.0003/0.0010; x/c -0.0005/0.0045)
+      1-3 agree (-0.0001/0.0010; x/c +0.0000/0.0050)
+      2-3 agree (-0.0004/0.0014; x/c +0.0005/0.0061); pixels +0.08, -1.23
+      all three agree  [reading 1: one value at the station, no second symbol noted]
+  x/c 0.4 upper: r1 tri_xc0.4 -0.1728; r2 S07 open -0.1727; r3 S07 open -0.1730; identities 2/3 same
+      1-2 agree (-0.0001/0.0029; x/c -0.0008/0.0045)
+      1-3 agree (+0.0002/0.0034; x/c +0.0002/0.0059)
+      2-3 agree (+0.0003/0.0023; x/c +0.0010/0.0070); pixels -0.01, +0.68
+      all three agree  [reading 1: one value for the overlapping plain and flagged triangles]
+  x/c 0.4 lower: r1 tri_xc0.4 -0.1728; r2 S08 flagged -0.1694; r3 S08 flagged -0.1694; identities 2/3 same
+      1-2 disagree (-0.0034/0.0027; x/c -0.0008/0.0053)
+      1-3 disagree (-0.0034/0.0027; x/c +0.0002/0.0051)
+      2-3 agree (+0.0000/0.0014; x/c +0.0010/0.0070); pixels +0.05, -0.08
+      readings 2 and 3 agree; reading 1 differs from both  [reading 1: one value for the overlapping plain and flagged triangles]
+  x/c 0.2 upper: r1 tri_xc0.2 -0.1679; r2 S09 flagged -0.1682; r3 S09 flagged -0.1679; identities 2/3 same
+      1-2 agree (+0.0003/0.0039; x/c -0.0003/0.0045)
+      1-3 agree (+0.0000/0.0042; x/c +0.0011/0.0051)
+      2-3 agree (-0.0003/0.0021; x/c +0.0014/0.0062); pixels +0.02, -1.13
+      all three agree  [reading 1: one value for the overlapping plain and flagged triangles]
+  x/c 0.2 lower: r1 tri_xc0.2 -0.1679; r2 S10 open -0.1650; r3 S10 open -0.1650; identities 2/3 same
+      1-2 agree (-0.0029/0.0037; x/c +0.0002/0.0045)
+      1-3 agree (-0.0029/0.0037; x/c +0.0018/0.0051)
+      2-3 agree (+0.0000/0.0014; x/c +0.0016/0.0062); pixels -0.08, +0.01
+      all three agree  [reading 1: one value for the overlapping plain and flagged triangles]
+  x/c 0.0 upper: r1 tri_xc0.0 -0.1642; r2 S11 flagged -0.1657; r3 S11 flagged -0.1658; identities 2/3 same
+      1-2 agree (+0.0015/0.0031; x/c -0.0006/0.0045)
+      1-3 agree (+0.0016/0.0028; x/c +0.0005/0.0050)
+      2-3 agree (+0.0001/0.0019; x/c +0.0011/0.0061); pixels -0.41, -0.18
+      all three agree  [reading 1: one value for the overlapping plain and flagged triangles]
+  x/c 0.0 lower: r1 tri_xc0.0 -0.1642; r2 S12 open -0.1642; r3 S12 open -0.1640; identities 2/3 same
+      1-2 agree (+0.0000/0.0028; x/c -0.0012/0.0048)
+      1-3 agree (-0.0002/0.0027; x/c -0.0004/0.0050)
+      2-3 agree (-0.0002/0.0015; x/c +0.0008/0.0064); pixels -0.26, -0.87
+      all three agree  [reading 1: one value for the overlapping plain and flagged triangles]
+  Legend keys (not data; reading 1 lists none), reading 2 minus reading 3 in page pixels: K01/K01 +0.02, -0.21; K02/K02 -0.05, -0.42
+
+=== 5. Faired curve and ref. 26 check curves (P_B at the station; difference/allowed)
+  faired curve M 2.41
+       x/c +1.00: r1 -0.0737, r2 -0.0675, r3 -0.0679; 1-2 disagree (-0.0062/0.0025); 1-3 disagree (-0.0058/0.0021); 2-3 agree (+0.0004/0.0024); readings 2 and 3 agree; reading 1 differs from both
+       x/c +0.95: r1 -0.1118, r2 --, r3 --; reading 1 only
+       x/c +0.90: r1 -0.1402, r2 -0.1409, r3 -0.1406; 1-2 agree (+0.0007/0.0022); 1-3 agree (+0.0004/0.0012); 2-3 agree (-0.0003/0.0020); all three agree
+       x/c +0.85: r1 -0.1538, r2 --, r3 --; reading 1 only
+       x/c +0.80: r1 -0.1595, r2 -0.1600, r3 -0.1596; 1-2 agree (+0.0005/0.0015); 1-3 agree (+0.0001/0.0014); 2-3 agree (-0.0004/0.0021); all three agree
+       x/c +0.70: r1 -0.1616, r2 -0.1616, r3 -0.1616; 1-2 agree (+0.0000/0.0009); 1-3 agree (+0.0000/0.0008); 2-3 agree (+0.0000/0.0009); all three agree
+       x/c +0.60: r1 -0.1601, r2 -0.1601, r3 -0.1602; 1-2 agree (+0.0000/0.0013); 1-3 agree (+0.0001/0.0013); 2-3 agree (+0.0001/0.0018); all three agree
+       x/c +0.50: r1 -0.1628, r2 -0.1629, r3 -0.1628; 1-2 agree (+0.0001/0.0010); 1-3 agree (+0.0000/0.0008); 2-3 agree (-0.0001/0.0010); all three agree
+       x/c +0.40: r1 -0.1714, r2 -0.1712, r3 -0.1712; 1-2 agree (-0.0002/0.0012); 1-3 agree (-0.0002/0.0015); 2-3 agree (+0.0000/0.0019); all three agree
+       x/c +0.30: r1 -0.1681, r2 -0.1681, r3 -0.1682; 1-2 agree (+0.0000/0.0010); 1-3 agree (+0.0001/0.0008); 2-3 agree (+0.0001/0.0010); all three agree
+       x/c +0.20: r1 -0.1666, r2 -0.1658, r3 -0.1658; 1-2 agree (-0.0008/0.0013); 1-3 agree (-0.0008/0.0013); 2-3 agree (+0.0000/0.0018); all three agree
+       x/c +0.10: r1 -0.1646, r2 -0.1645, r3 -0.1646; 1-2 agree (-0.0001/0.0009); 1-3 agree (+0.0000/0.0008); 2-3 agree (+0.0001/0.0009); all three agree
+       right end: r1 --, r2 -0.1648 at 0.0117, r3 -0.1647 at 0.0120; 2-3 agree (-0.0001/0.0011); readings 2 and 3 agree (only two readings give a value)
+       x/c +0.00: r1 -0.1657, r2 -0.1648, r3 -0.1649; 1-2 agree (-0.0009/0.0012); 1-3 agree (-0.0008/0.0013); 2-3 agree (+0.0001/0.0017); all three agree
+  ref. 26 M 1.50 (check)
+       x/c +1.00: r1 -0.1800, r2 -0.1807, r3 -0.1803; 1-2 agree (+0.0007/0.0011); 1-3 agree (+0.0003/0.0011); 2-3 agree (-0.0004/0.0016); all three agree
+       x/c +0.90: r1 -0.1859, r2 --, r3 --; reading 1 only
+       x/c +0.80: r1 -0.1958, r2 -0.1961, r3 -0.1959; 1-2 agree (+0.0003/0.0012); 1-3 agree (+0.0001/0.0009); 2-3 agree (-0.0002/0.0013); all three agree
+       x/c +0.70: r1 -0.2085, r2 --, r3 --; reading 1 only
+       x/c +0.60: r1 -0.2150, r2 -0.2152, r3 -0.2150; 1-2 agree (+0.0002/0.0010); 1-3 agree (+0.0000/0.0008); 2-3 agree (-0.0002/0.0010); all three agree
+       x/c +0.50: r1 -0.2180, r2 --, r3 --; reading 1 only
+       x/c +0.40: r1 -0.2199, r2 -0.2202, r3 -0.2195; 1-2 agree (+0.0003/0.0014); 1-3 agree (-0.0004/0.0010); 2-3 agree (-0.0007/0.0016); all three agree
+       x/c +0.30: r1 -0.2293, r2 --, r3 --; reading 1 only
+       x/c +0.20: r1 -0.2592, r2 -0.2594, r3 -0.2593; 1-2 agree (+0.0002/0.0022); 1-3 agree (+0.0001/0.0012); 2-3 agree (-0.0001/0.0020); all three agree
+       x/c +0.10: r1 -0.3001, r2 --, r3 --; reading 1 only
+       x/c +0.00: r1 -0.3251, r2 -0.3250, r3 -0.3253; 1-2 agree (-0.0001/0.0010); 1-3 agree (+0.0002/0.0008); 2-3 agree (+0.0003/0.0010); all three agree
+       x/c -0.10: r1 -0.3276, r2 --, r3 --; reading 1 only
+       x/c -0.20: r1 -0.3294, r2 --, r3 --; reading 1 only
+       x/c -0.30: r1 -0.3391, r2 --, r3 --; reading 1 only
+       x/c -0.40: r1 -0.3650, r2 --, r3 --; reading 1 only
+       x/c -0.50: r1 -0.3355, r2 --, r3 --; reading 1 only
+       x/c -0.60: r1 -0.2892, r2 --, r3 --; reading 1 only
+       x/c -0.70: r1 -0.2389, r2 --, r3 --; reading 1 only
+       x/c -0.80: r1 -0.1878, r2 --, r3 --; reading 1 only
+       x/c -0.90: r1 -0.1355, r2 --, r3 --; reading 1 only
+       x/c -1.00: r1 -0.0999, r2 --, r3 --; reading 1 only
+  ref. 26 M 2.00 (check)
+       x/c +1.00: r1 -0.1643, r2 -0.1646, r3 -0.1642; 1-2 agree (+0.0003/0.0011); 1-3 agree (-0.0001/0.0008); 2-3 agree (-0.0004/0.0013); all three agree
+       x/c +0.90: r1 -0.1661, r2 --, r3 --; reading 1 only
+       x/c +0.80: r1 -0.1695, r2 -0.1698, r3 -0.1696; 1-2 agree (+0.0003/0.0010); 1-3 agree (+0.0001/0.0008); 2-3 agree (-0.0002/0.0010); all three agree
+       x/c +0.70: r1 -0.1750, r2 --, r3 --; reading 1 only
+       x/c +0.60: r1 -0.1824, r2 -0.1826, r3 -0.1826; 1-2 agree (+0.0002/0.0011); 1-3 agree (+0.0002/0.0009); 2-3 agree (+0.0000/0.0012); all three agree
+       x/c +0.50: r1 -0.1935, r2 --, r3 --; reading 1 only
+       x/c +0.40: r1 -0.2083, r2 -0.2082, r3 -0.2085; 1-2 agree (-0.0001/0.0019); 1-3 agree (+0.0002/0.0013); 2-3 agree (+0.0003/0.0024); all three agree
+       x/c +0.30: r1 -0.2199, r2 --, r3 --; reading 1 only
+       x/c +0.20: r1 -0.2107, r2 -0.2106, r3 -0.2107; 1-2 agree (-0.0001/0.0010); 1-3 agree (+0.0000/0.0008); 2-3 agree (+0.0001/0.0010); all three agree
+       x/c +0.10: r1 -0.2067, r2 --, r3 --; reading 1 only
+       x/c +0.00: r1 -0.2005, r2 -0.2005, r3 -0.2007; 1-2 agree (+0.0000/0.0013); 1-3 agree (+0.0002/0.0008); 2-3 agree (+0.0002/0.0015); all three agree
+       x/c -0.10: r1 -0.1929, r2 --, r3 --; reading 1 only
+       x/c -0.20: r1 -0.1849, r2 --, r3 --; reading 1 only
+       x/c -0.30: r1 -0.1861, r2 --, r3 --; reading 1 only
+       x/c -0.40: r1 -0.1960, r2 --, r3 --; reading 1 only
+       x/c -0.50: r1 -0.2027, r2 --, r3 --; reading 1 only
+       x/c -0.60: r1 -0.1984, r2 --, r3 --; reading 1 only
+       x/c -0.70: r1 -0.1813, r2 --, r3 --; reading 1 only
+       x/c -0.80: r1 -0.1544, r2 --, r3 --; reading 1 only
+       x/c -0.90: r1 -0.1262, r2 --, r3 --; reading 1 only
+       x/c -1.00: r1 -0.0998, r2 --, r3 --; reading 1 only
+
+=== 6. Every disagreement, and where two readings agree and the third differs (nothing settled)
+  D1. x/c 0.8 lower symbol (open by readings 2 and 3), readings 1 and 2: -0.1604 +-0.0003 against -0.1582 +-0.0008, difference -0.0022, allowed 0.0011, outside on P_B [reading 1: one value at the station, no second symbol noted].
+  D2. x/c 0.8 lower symbol (open by readings 2 and 3), readings 1 and 3: -0.1604 +-0.0003 against -0.1579 +-0.0014, difference -0.0025, allowed 0.0017, outside on P_B [reading 1: one value at the station, no second symbol noted].
+  D3. x/c 0.6 upper symbol (flagged by readings 2 and 3), readings 1 and 2: -0.1566 +-0.0003 against -0.1612 +-0.0007, difference +0.0046, allowed 0.0010, outside on P_B [reading 1: one value at the station, no second symbol noted].
+  D4. x/c 0.6 upper symbol (flagged by readings 2 and 3), readings 1 and 3: -0.1566 +-0.0003 against -0.1614 +-0.0012, difference +0.0048, allowed 0.0015, outside on P_B [reading 1: one value at the station, no second symbol noted].
+  D5. x/c 0.4 lower symbol (flagged by readings 2 and 3), readings 1 and 2: -0.1728 +-0.0020 against -0.1694 +-0.0007, difference -0.0034, allowed 0.0027, outside on P_B [reading 1: one value for the overlapping plain and flagged triangles].
+  D6. x/c 0.4 lower symbol (flagged by readings 2 and 3), readings 1 and 3: -0.1728 +-0.0020 against -0.1694 +-0.0007, difference -0.0034, allowed 0.0027, outside on P_B [reading 1: one value for the overlapping plain and flagged triangles].
+  D7. Alternative 'x/c 0.8 as ONE flagged symbol (R 11.3e6), named by readings 2 and 3', readings 1 and 2: -0.1604 against -0.1582, difference -0.0022, allowed 0.0011.
+  D8. Alternative 'x/c 0.8 as ONE flagged symbol (R 11.3e6), named by readings 2 and 3', readings 1 and 3: -0.1604 against -0.1584, difference -0.0020, allowed 0.0017.
+  D9. faired curve M 2.41 at x/c 1.0, readings 1 and 2: -0.0737 +-0.0011 against -0.0675 +-0.0014, difference -0.0062, allowed 0.0025.
+  D10. faired curve M 2.41 at x/c 1.0, readings 1 and 3: -0.0737 +-0.0011 against -0.0679 +-0.0010, difference -0.0058, allowed 0.0021.
+  D11. Reading 2's alternative left end (hidden in the frame line to S02's apex, about -0.0636), against reading 1: difference -0.0101, allowed 0.0025 (with C00's error).
+  D12. Reading 2's alternative left end (hidden in the frame line to S02's apex, about -0.0636), against reading 3: difference +0.0043, allowed 0.0024 (with C00's error).
+  D13. Number of values: readings 2 and 3 give 12 symbols (two at every station); reading 1 gives 7 values,
+       two at x/c 1.0 and one at each other station (at 0.4, 0.2 and 0.0 stated as both overlapping triangles;
+       at 0.8 and 0.6 with no second symbol noted).
+  D14. Identity per symbol: given by readings 2 and 3 (the same at all 12), not by reading 1.
+
+  Two readings agree and the third differs (stated as found, not settled):
+    x/c 0.8 lower (open): readings 2 and 3 agree; reading 1 differs from both: r1 -0.1604, r2 -0.1582, r3 -0.1579 [reading 1: one value at the station, no second symbol noted]
+    x/c 0.6 upper (flagged): readings 2 and 3 agree; reading 1 differs from both: r1 -0.1566, r2 -0.1612, r3 -0.1614 [reading 1: one value at the station, no second symbol noted]
+    x/c 0.4 lower (flagged): readings 2 and 3 agree; reading 1 differs from both: r1 -0.1728, r2 -0.1694, r3 -0.1694 [reading 1: one value for the overlapping plain and flagged triangles]
+    faired curve M 2.41 x/c 1.0: readings 2 and 3 agree; reading 1 differs from both: r1 -0.0737, r2 -0.0675, r3 -0.0679
+    alternative 'x/c 0.8 as ONE flagged symbol (R 11.3e6), named by readings 2 and 3': readings 2 and 3 agree; reading 1 differs from both: r1 -0.1604, r2 -0.1582, r3 -0.1584
+    count at x/c 0.8, 0.6, 0.4, 0.2, 0.0: readings 2 and 3 two symbols each; reading 1 one value (D above).
+    identities: readings 2 and 3 the same at every symbol; reading 1 none.
+  In no case do readings 1 and 2, or 1 and 3, agree against the third, and no symbol, curve or check value has
+  all three readings apart. No pair of readings disagrees on any other symbol, curve value or check value.
+
+=== 7. Every reader's flags and alternatives, verbatim (quoted lines start with '>')
+  Reading 1, method notes, the fig. 32 section:
+    > ## Fig. 32 (P_B against fin location x/c, several Mach numbers)
+    >
+    > Axes: x/c +1.0 (left) to -1.5 (26 lines, 0.1 apart), P_B +0.08 to -0.40
+    > (25 lines, 0.02 apart). Read: the measured curves of ref. 26 at M 1.50 and
+    > 2.00 (the long-short dashed curves; the text, p. 22, says they extend over
+    > x/c = +-1, so they are read from +1 to -1 only) and the Langley 9-in. M 2.41
+    > measurements (triangles, plain R = 2.8e6 and flagged R = 11.3e6, which
+    > overlap at most stations and are read as one symbol each where they do;
+    > the faired curve through them read at x/c 0 to 1). The calculated curves
+    > (circles and squares from fig. 30, the Prandtl-Meyer line) were not read.
+    > M 2.00 from x/c -0.55 to -1.0 runs within about 0.002 of the dashed
+    > Prandtl-Meyer line: extra error 0.002 there; at x/c -0.1 it crosses that
+    > line (column read, extra 0.002). M 1.50 between x/c 0.3 and 0.05 and
+    > beyond -0.45 is steep (0.04 to 0.05 in P_B per 0.1 in x/c): its error is
+    > mostly the x calibration through the slope.
+  Reading 1, CSV 'how' of each symbol row:
+    > tri_xc1.0_upper: symbol triangle 41 px (score 0.71); x err 0.0017
+    > tri_xc1.0_lower: symbol triangle 41 px (score 0.71); x err 0.0017
+    > tri_xc0.8: symbol triangle 33 px (score 0.78); x err 0.0017
+    > tri_xc0.6: symbol triangle 35 px (score 0.59); x err 0.0017
+    > tri_xc0.4: symbol triangle 39 px (score 0.77); x err 0.0017; plain and flagged triangles overlap
+    > tri_xc0.2: symbol triangle 35 px (score 0.81); x err 0.0017; plain and flagged triangles overlap
+    > tri_xc0.0: symbol triangle 37 px (score 0.61); x err 0.0017; plain and flagged triangles overlap
+  Reading 1, CSV 'how' of the faired curve at x/c 1 and 0:
+    > M2.41_9in_faired x/c 1: curve; n=20
+    > M2.41_9in_faired x/c 0: curve; n=6
+  Reading 2, method.md, overlaps:
+    > ### Overlaps and how each pair was read
+    >
+    > - x/c 1.0: S01 and S02 are 44 px apart, no overlap. The faired curve runs through S01's right half.
+    > - x/c 0.8 (low confidence): the cluster is 19 to 20 px tall, taller than one symbol (15 to 16 px), and its sides
+    >   bend, so I read two outlines offset by about 6 px. The upper (S03) shows its apex, upper sides and a clear
+    >   flag; its base would lie on the -0.16 gridline and the faired curve and cannot be seen. The lower (S04) shows
+    >   its base and lower sides; its apex is inside S03 and the gridline. Each was read from its own parts; S03's
+    >   error carries 2 px centring and 1.5 px overlap.
+    > - x/c 0.6: S05's base lies on the -0.16 gridline and touches S06's apex. Read separately, no real overlap.
+    > - x/c 0.4: outlines overlap by about 4 px. S07's base coincides with the faired curve. S08's flag crosses S07's
+    >   right side. Read separately with a joint fit.
+    > - x/c 0.2: outlines overlap by about 5 px. The left half of S09's base merges with the faired curve, so its base
+    >   row was taken from its right half; the joint template fit was pulled 1.9 px down by the curve and was not
+    >   adopted.
+    > - x/c 0.0 (low confidence): centres about 5 px apart. S12 has a full outline. S11's sides and base corners are
+    >   clear but the middle of its base, which would lie inside S12, is missing (only faint grey along row 1494).
+  Reading 2, method.md, faired curve:
+    > ## Faired curve
+    >
+    > A solid curve is drawn through the Mach 2.41 triangles from x/c 1.0 to x/c 0. I traced its ink centre
+    > (`scripts/trace.py`): by rows on the steep part (y 1792 to 1535) and by columns elsewhere, leaving out pixels
+    > on gridlines, under symbols and where a Prandtl-Meyer dash crosses it (x 925 to 962). At each station
+    > (`scripts/curve_stations.py`) a quadratic through the traced centres within 12 px (up to 30 px across a symbol)
+    > is intersected with the local gridline.
+    > - Stations 0.9, 0.7, 0.5, 0.3 and 0.1 are clean readings (gaps under 3 px).
+    > - Stations 0.8, 0.6, 0.4 and 0.2 are hidden behind the symbols there, so the curve is bridged across 10 to
+    >   22 px. At 0.6 and 0.8 it also runs into the -0.16 gridline (0.6 was read by hand from column profiles where
+    >   curve and gridline overlap: its centre sits 0.3 to 0.7 px above the gridline's). A bridge term of 1 to 1.5 px
+    >   is in the error.
+    > - Left end (C00): the curve comes down through S01 and joins the frame line at y about 1801 to 1806; I enter
+    >   1803 +- 3 px. It may continue hidden inside the frame line to the apex of S02 (y 1811.6, P_B about -0.0636).
+    > - Right end (C11): the curve stops at the left side of the x/c 0 cluster, at x/c about 0.012, P_B -0.1648.
+    >   C10 at x/c 0 is the curve level carried 7 px to the station (the curve is flat there); it is not ink at the
+    >   station.
+    > No smoothing: every value is the printed ink at or next to the station. The bridged stations are marked.
+  Reading 2, method.md, judgement calls and flags:
+    > ## Judgement calls and flags (all in the CSV notes)
+    >
+    > 1. x/c 0.8, S03/S04: read as two symbols. Alternative: one tall symbol at (538.0, 1516.0) px, x/c 0.800,
+    >    P_B -0.158, carrying the flag (R = 11.3 x 10^6). If two, S04's Reynolds number rests only on S03 having the
+    >    flag.
+    > 2. x/c 0.0, S11/S12: read as two symbols, S11 (upper, base not visible in the middle) flagged and S12 open.
+    >    Alternatives: (a) the flag belongs to S12 and S11 is open (the flag line meets the axis at y about 1486,
+    >    between the two apexes, nearer S12's apex by the template fit and 3 to 4.5 px below S11's apex by the vertex
+    >    reading; I followed the legend geometry); (b) only S12 is a symbol, carrying the flag.
+    > 3. x/c 1.0, S02: its flag is a faint short tick about 3 px above the apex, where the faired curve meets the frame
+    >    line. Read as flagged (R = 11.3 x 10^6). Alternative: open (R = 2.8 x 10^6).
+    > 4. S01 is drawn about 2 px right of the x/c 1.0 frame line; read as printed, x/c 0.997.
+    > 5. S09: adopted the vertex reading (P_B -0.1682) over the joint template fit (1.9 px lower on the page,
+    >    P_B about -0.1676) because the template was pulled by the faired curve along its base.
+    > 6. Faired curve left end: the curve's last separate ink is at y 1801 to 1806 on the frame; possible hidden
+    >    continuation to S02's apex.
+    > 7. Faired curve at 0.8, 0.6, 0.4, 0.2 is bridged behind symbols; at 0 it is carried 7 px from its end.
+    > 8. Support of the model (sting or not) and the Reynolds number's length basis are not stated in the text read.
+  Reading 2, method.md, confidence:
+    > ## Confidence
+    >
+    > High: calibration; S01, S02 positions; S05 to S10 positions and flags at 0.6, 0.4, 0.2; curve at 0.9, 0.7,
+    > 0.5, 0.3, 0.1. Medium: S02's Reynolds assignment; curve at 0.8, 0.6, 0.4, 0.2 and its two ends. Low: the
+    > number of symbols and their Reynolds assignment at x/c 0.8 and 0.0 (S03, S04, S11, S12), though the P_B of
+    > whatever is there is known to within about 0.002 in every alternative.
+  Reading 3, method.md, per station:
+    > ### Per station (top and bottom are as printed: top is more negative P_B)
+    >
+    > - **x/c 1.0: 2 symbols.** The left frame line runs through both.
+    >   Upper (S01) **open**: the paper up-right of its apex (columns 411 to 415, rows 1764 to 1768) is clean
+    >   apart from gridline -0.08, which crosses at row 1763; a flag there would show in its first 3 to 4 px,
+    >   before it could reach the faired curve or the gridline. Lower (S02) **flagged**:
+    >   flag from its apex to (413.7, 1805.0), 7.9 px, line 1.3 px from the apex. The right half of the lower
+    >   symbol's base merges with gridline -0.06, so its base was read left of the frame (row 1828.31).
+    >   The faired curve runs down through the right part of the upper symbol (section 7).
+    >   Confidence: count high, identities high.
+    > - **x/c 0.8: 2 symbols**, overlapping, with the faired curve and gridline -0.16 across them.
+    >   Upper (S03) **flagged**: flag line passes 0.1 px from its apex (537.78, 1501.83), tip (544.8, 1497.0).
+    >   Its two sides are clean on rows 1504 to 1508; its base is hidden under the curve and gridline but is seen
+    >   on its right part (columns 541 to 545, row 1511.9) after gridline subtraction. Squat outline (h 10.1 px).
+    >   Lower (S04) **open**: base clear (row 1521.14), sides clear on rows 1514 to 1520 only. Its apex is hidden.
+    >   The two side lines meet at row 1503.7, but a lower symbol that tall would put left-side ink at columns
+    >   536 to 537 on rows 1506 to 1508, and that paper is clean, so I did not use that apex. Its centre is
+    >   taken as base minus h/3 with h = 14 +- 3 px (the measured symbols span 10 to 17 px), in the error.
+    >   No flag can come from it: a flag from an apex hidden in the curve band would show at columns 543 to 547 on
+    >   rows 1504 to 1506, which are clean.
+    >   Two symbols rather than one: two separate bases (rows 1511.9 and 1521.1); on rows 1504 to 1508 the upper
+    >   left side lies 2.4 to 4.1 px left of the lower symbol's left side extended, and the upper right side
+    >   0.5 to 1.6 px right of its right side; and the flag starts at the upper apex.
+    >   ALTERNATIVE (less likely): one tall flagged symbol only, centre P_B -0.1584 at x/c 0.798 (the extra strokes
+    >   then have no explanation). Confidence: count medium-high, upper identity medium-high, lower position medium.
+    > - **x/c 0.6: 2 symbols**, clearly separate. Upper (S05) **flagged**: flag line 1.8 px right of its apex,
+    >   tip (673.9, 1490.0), 24.8 px from the lower apex. Its base lies in the band of the faired curve and
+    >   gridline -0.16 (rows 1508 to 1511), taken 1509.5 +- 1.5. Lower (S06) **open**: complete outline, no flag.
+    >   Confidence high.
+    > - **x/c 0.4: 2 symbols.** Upper (S07) **open**: clean paper above and right of its apex (rows 1452 to 1459).
+    >   Its base is hidden in the faired curve (taken 1474.5 +- 1.5) and its right side is visible only on rows
+    >   1470 to 1472 because the lower symbol's flag crosses it. Lower (S08) **flagged**: flag line 1.2 px from its
+    >   apex and 9.5 px from the upper apex; tip (801.5, 1464.0). Confidence high.
+    > - **x/c 0.2: 2 symbols.** Upper (S09) **flagged**: flag line 1.1 px from its apex, 5.4 px from the lower
+    >   apex, tip (929.2, 1471.0). Base hidden in the faired curve and the lower symbol (taken 1490.0 +- 1.5).
+    >   Lower (S10) **open**, apex inside the upper symbol. Confidence high.
+    > - **x/c 0.0: 2 symbols**, offset only 5.5 px vertically, so every side is doubled. The faired curve ends at
+    >   the upper one's left base corner. **AMBIGUOUS IDENTITY.** There is one flag (tip (1055.3, 1480.0)).
+    >   Its line passes 1.8 px right of the upper apex (7.7 px long from it) and 1.2 px left of the lower apex
+    >   (11.8 px long from it); its lower part, where it would show which apex it starts from, lies under the
+    >   vertical gridline and the upper symbol's apex. Both fit the flags at the other stations (7.9 to 12.0 px,
+    >   0 to 1.8 px). I take the upper (S11) as **flagged** and the lower (S12) as **open**, because the flag
+    >   meets the upper symbol just right of its apex, as the flags do at 0.6, 0.4 and 0.2.
+    >   ALTERNATIVE: upper open (R = 2.8 x 10^6), lower flagged (R = 11.3 x 10^6). Positions are not affected.
+    >   Confidence: count high, identities low.
+  Reading 3, method.md, faired curve left end:
+    > **Left end (x/c 1.0).** The curve comes down steeply, enters the upper (open) symbol near its apex and runs
+    > through its right part (about 4 px right of its centre), shows again below that symbol's base (x 413.3 at
+    > row 1786, 411.8 at 1794, 410.2 at 1800) and meets the frame line, its ink fading out by row 1803
+    > (`scripts/17_leftend.py`, `.out`). Rows 1803 to 1804 are clean; below them is the lower symbol's flag.
+    > So the curve does not end at either symbol: it ends on the frame line between them. End read at row
+    > 1801.5 +- 2: P_B -0.0679 +- 0.0010 (rows 1799.5 and 1803.5 give -0.0685 and -0.0673). For comparison
+    > only, the mid point of the two symbol centres is -0.0682.
+  Reading 3, method.md, faired curve right end:
+    > **Right end.** The curve is last seen at column 1040.5, row 1495.6 (x/c 0.012, P_B -0.1647), where it enters
+    > the upper x/c 0 symbol at that symbol's left base corner. Columns 1058 to 1100 are clean: it does not go on
+    > past x/c 0. Where inside the symbols it stops cannot be seen. The x/c 0 value is the last 15 columns of ink
+    > extended 11 px (flagged).
+  Reading 3, method.md, every judgement call:
+    > ## 10. Every judgement call, in one list
+    >
+    > 1. Worked in the native 300 ppi pixels, not a 600 dpi render.
+    > 2. Calibration primary = least squares through the 13 labelled lines of each axis (coordinator's rule);
+    >    bracketing-line interpolation as the check and in the error.
+    > 3. Flag = stroke from an apex going up-right; identities decided only by strokes.
+    > 4. x/c 1.0 upper symbol called open because the clean paper where its flag would start shows nothing.
+    > 5. x/c 0.8 read as two symbols; lower symbol's apex not used; its centre from its base and h = 14 +- 3 px.
+    >    One-symbol alternative named.
+    > 6. x/c 0.0 identities ambiguous; upper taken as flagged; swap named as the alternative.
+    > 7. Hidden bases (S03, S05, S07, S09) taken from the band they must lie in, with that band in the error.
+    > 8. Curve values at the symbol stations bridged across the hidden span and flagged; x/c 0 extended 11 px.
+    > 9. Faired curve's left end placed where its ink meets the frame line, between the two x/c 1.0 symbols.
+    > 10. Reference 26 curves identified by their leaders; read only as a check.
+    > No value was smoothed or interpolated between symbols: each symbol is read alone, and each curve value is
+    > read from that curve's own ink at that column, with the bridged ones marked.
+  Reading 3, scripts/22_alternatives.out (values of its named alternatives):
+    > x/c 0.8 lower symbol, apex at the crossing of its fitted sides (row 1503.72, rejected) x/c 0.7981  P_B -0.1582
+    > x/c 0.8 lower symbol, h = 11 px                                                  x/c 0.7988  P_B -0.1576
+    > x/c 0.8 lower symbol, h = 17 px                                                  x/c 0.7988  P_B -0.1582
+    > x/c 0.8 single tall symbol only (apex 1502.0, base 1521.14)                      x/c 0.7984  P_B -0.1584
+    > faired curve left end, row 1799.5                                                x/c 1.0008  P_B -0.0685
+    > faired curve left end, row 1803.5                                                x/c 1.0008  P_B -0.0673
+    > mid point of the two x/c 1.0 symbol centroids                                    x/c 0.9995  P_B -0.0682
+  The full CSV notes of every reader for every value are in pairs_tn3819_fig32_three.csv (r1_note, r2_note,
+  r3_note), unedited.
+
+  Alternatives compared (values only; identities in the quotes above):
+    x/c 0.8 as ONE flagged symbol (R 11.3e6), named by readings 2 and 3: r1 -0.1604, r2 -0.1582, r3 -0.1584; 1-2 disagree (-0.0022/0.0011; x/c +0.0001/0.0047); 1-3 disagree (-0.0020/0.0017; x/c +0.0017/0.0057); 2-3 agree (+0.0002/0.0022; x/c +0.0016/0.0070); readings 2 and 3 agree; reading 1 differs from both
+      (reading 2: method.md call 1, 'one tall symbol at (538.0, 1516.0) px, x/c 0.800, P_B -0.158', 0.1 px from its S04 centre, so S04's value -0.1582 and errors are used (no error stated); reading 3: 22_alternatives.out 'single tall symbol only' x/c 0.7984, P_B -0.1584, its S04 errors used (no error stated; its centre is 1.7 px from S04's))
+    S09 by reading 2's joint template fit (not adopted by reading 2): r1 -0.1679, r2 -0.1676, r3 -0.1679; 1-2 agree (-0.0003/0.0039; x/c -0.0003/0.0045); 1-3 agree (+0.0000/0.0042; x/c +0.0011/0.0051); 2-3 agree (+0.0003/0.0021; x/c +0.0014/0.0062); all three agree
+      (reading 2: method.md call 5, 'joint template fit (1.9 px lower on the page, P_B about -0.1676)'; S09's errors used)
+    reading 2's hidden left end (about -0.0636): 1-2 disagree (-0.0101/0.0025); 2-3 disagree (+0.0043/0.0024). Reading 3
+      states the curve does not reach the lower symbol (rows 1803 to 1804 clean); reading 1 gives -0.0737.
+    Identity-only alternatives (no value changes): x/c 0.0 swap (upper open, lower flagged), named by readings 2
+      and 3; x/c 0.0 one symbol only (the lower, flagged), named by reading 2 only (reading 3: count high);
+      x/c 1.0 lower symbol open, named by reading 2 only (reading 3: identities high, flag 7.9 px).
+
+=== 8. Values given by fewer than three readers
+  faired curve M 2.41, reading 1 only (2): x/c +0.95, +0.85
+  faired curve M 2.41, right end: readings 2 and 3 only
+  ref. 26 M 1.50 (check), reading 1 only (15): x/c +0.90, +0.70, +0.50, +0.30, +0.10, -0.10, -0.20, -0.30, -0.40, -0.50, -0.60, -0.70, -0.80, -0.90, -1.00
+  ref. 26 M 2.00 (check), reading 1 only (15): x/c +0.90, +0.70, +0.50, +0.30, +0.10, -0.10, -0.20, -0.30, -0.40, -0.50, -0.60, -0.70, -0.80, -0.90, -1.00
+  legend keys: readings 2 and 3 (K01, K02 each); reading 1 lists none.
+
+Files: pairs_tn3819_fig32_three.csv (one row per symbol slot, alternative, curve station or legend key, with all
+three readers' values, the three pairwise verdicts and every reader's own notes), this file.
