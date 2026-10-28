@@ -1903,6 +1903,13 @@ line after it. No total moves at the audit's default size (209 of 8,000;
 something else as well; the rebuilt factor's sweep refusal goes from
 36.0% to 38.0% of cases.
 
+_2026-10-28, the counts on main with A5:_ after main's A5 (f88ecbe; (ad)
+below) the audit's default run serves 179 totals of 8,000 against main's
+155 (Mach 1.5 to 1.8: 53 to 73; 1.8 to 3.0: 102 to 106; none below 1.5),
+614 with the nose assumed served: A1's gain over main is 24, against 28
+before A5 (181 to 209), the 4 lost all at Mach 1.8 to 3.0. The earlier
+dated counts above stay as they were measured.
+
 Main's unswept plates (10.7 (i)), registered and reviewed earlier on a
 physical argument, are not changed by this ruling, and whether they stay
 served below Mach 1.62 is an open question for the owner. The review's

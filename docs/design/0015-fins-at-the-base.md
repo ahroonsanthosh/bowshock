@@ -1943,4 +1943,9 @@ agrees on 1,200 of 1,200. The second ruling (beyond 60 deg) moves no
 total: 209 served, 687 with the nose assumed served, the plates it
 reaches being refused for something else as well; the sweep refusal goes
 to 38.0% (55.0% below Mach 1.5, 30.7% at 1.5 to 1.8, 11.5% at 1.8 to
-3.0).
+3.0). On 2026-10-28, after main's A5 (f88ecbe; 0014 10.7 (ad)), the same
+run serves 179 totals of 8,000 against main's 155 (Mach 1.5 to 1.8: 53
+to 73; 1.8 to 3.0: 102 to 106; none below 1.5), 614 with the nose
+assumed served: A1's gain over main is 24, against 28 before A5 (181 to
+209), the 4 lost all at Mach 1.8 to 3.0; the cross-check agrees on 1,200
+of 1,200.

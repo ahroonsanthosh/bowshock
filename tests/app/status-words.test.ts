@@ -437,6 +437,34 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         );
         const words = refusalWords({ component: 'body base', reason: 'fins-near-base', message });
         expect(words.reason).toContain('flat fins are taken only unswept or swept 45 to 60 deg');
+        // The words are the plain position words with the sweep's clause, and 0017's row holds them.
+        const clause =
+          'below Mach 1.62, at or near the base, flat fins are taken only unswept or swept 45 to 60 deg';
+        const plain = refusalWords({
+          component: 'body base',
+          reason: 'fins-near-base',
+          message: '',
+        });
+        expect(words.reason).toBe(`${plain.reason}; and ${clause}`);
+        const row = readFileSync(
+          new URL('../../docs/design/0017-rocketeer-interface.md', import.meta.url),
+          'utf8',
+        )
+          .split('\n')
+          .filter((l) =>
+            l.startsWith("| `fins-near-base` (a flat plate's sweep refused too, below Mach 1.62)"),
+          )
+          .map((l) =>
+            l
+              .split('|')
+              .slice(1, -1)
+              .map((c) => c.trim()),
+          );
+        expect(row).toHaveLength(1);
+        expect(row[0]![1]).toBe(
+          `the reason of \`fins-near-base\`, and ${clause} (0014 10.7 (z), the note of 2026-10-27)`,
+        );
+        expect(row[0]![2]).toBe(words.change);
         // The advice: at the base and at a sweep served there, not "unswept ones" alone, nor the base alone.
         expect(words.change).toBe(
           "the fins' trailing edges at the base, the fins unswept or swept 45 to 60 deg at the leading edge",
