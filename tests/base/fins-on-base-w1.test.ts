@@ -1373,7 +1373,7 @@ describe('refusals', () => {
       );
       expect(served.label).toContain('served only where M cos L is at least 1, here 1.03');
     });
-    it("the step at 60 deg (the quick look of 2026-10-28): at M 1.7 a plate at 60.0 deg is served on the bracket's measured ends, at 60.1 deg refused past the last sweep measured", () => {
+    it("the step at 60 deg (the quick look of 2026-10-28): at M 1.7 a plate at 60.0 deg is served, its sweep inside the bracket's measured ends, at 60.1 deg refused past the last sweep measured", () => {
       const at = (le: number, xc = 0) =>
         fins({
           section: plate(0.024),
@@ -1383,9 +1383,14 @@ describe('refusals', () => {
         });
       for (const xc of [0, 0.5]) {
         const served = finsOnBaseFactorW1(1.7, at(60, xc));
-        // The RM-10's measured end of the bracket, not the margin.
+        // Its sweep inside the bracket's measured ends, not past them (in sweep only; the quick look of
+        // 1796dfe..95daded).
         expect(served.label).toContain(W1_PLATE_ON_MEASURED_ENDS);
         expect(served.label).not.toContain('margin is taken');
+        expect(served.label).toContain(
+          "its sweep inside the bracket's measured ends, not past them",
+        );
+        expect(served.label).not.toMatch(/not on (a|the) margin/);
         expect(served.sweepByArgument).toBe(false);
         let message = '';
         try {
@@ -1409,6 +1414,16 @@ describe('refusals', () => {
         [2.5, 61],
       ] as const) {
         expect(finsOnBaseFactorW1(mach, at(le)).label, `${le} deg`).not.toContain(
+          W1_PLATE_ON_MEASURED_ENDS,
+        );
+      }
+      // Just under 45 deg, at the base and within a chord, no clause either (the quick look of 1796dfe..95daded
+      // found a plant attaching it from about 39 deg missed).
+      for (const xc of [0, 0.5]) {
+        const label = finsOnBaseFactorW1(1.7, at(44.9, xc)).label;
+        expect(label, `44.9 deg, x/c ${xc}`).not.toContain(W1_PLATE_ON_MEASURED_ENDS);
+        expect(label, `44.9 deg, x/c ${xc}`).not.toContain("the bracket's measured ends");
+        expect(finsOnBaseFactorW1(1.7, at(45, xc)).label, `45 deg, x/c ${xc}`).toContain(
           W1_PLATE_ON_MEASURED_ENDS,
         );
       }

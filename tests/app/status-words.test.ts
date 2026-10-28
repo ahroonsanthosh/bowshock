@@ -398,8 +398,8 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     expect(f.message).toContain(W1_FLAT_FLOOR_UNSWEPT);
     expect(f.message).toContain(W1_RM10_TRAILING_EDGE);
     expect(f.message).not.toMatch(/bracket plates|not bracket/);
-    // The step at 60 deg, at Mach 1.7: 60.0 deg served on the bracket's measured ends, 60.1 deg refused past
-    // the last sweep measured, with the subsonic edge's words.
+    // The step at 60 deg, at Mach 1.7: 60.0 deg served, its sweep inside the bracket's measured ends, 60.1 deg
+    // refused past the last sweep measured, with the subsonic edge's words.
     expect(() => finsOnBaseFactorW1(1.7, plate(60, 0))).not.toThrow();
     const step = refused(1.7, 60.1, 0);
     expect(step.reason).toBe('fin-sweep');

@@ -859,13 +859,14 @@ export const W1_RM10_TRAILING_EDGE =
   "does not show that a plate's floor holds with a swept trailing edge";
 
 /**
- * The step at 60 deg (0015 section 12, the note of 2026-10-28): a plate swept 45 to 60 deg with the trailing edge
- * unswept is served on the bracket's measured ends, not on a margin; just beyond 60 deg it lies past the last
- * sweep measured, and from M 1.62 is refused where its edge is below sonic.
+ * The step at 60 deg (0015 section 12, its notes of 2026-10-28): a plate swept 45 to 60 deg with the trailing
+ * edge unswept has its sweep inside the bracket's measured ends, not past them; just beyond 60 deg it lies past the
+ * last sweep measured, and from M 1.62 is refused where its edge is below sonic. In sweep only: the ends are
+ * measured at M 1.06 to 1.10 and 1.49 to 1.98, and from M 1.62 the floor is carried in Mach number on a margin.
  */
 export const W1_PLATE_ON_MEASURED_ENDS =
   "the leading edge within the sweeps measured at the base, RM L52E06's plates at 45 deg and the RM-10's " +
-  "arcs at 60 deg: served on the bracket's measured ends, not on a margin";
+  "arcs at 60 deg: its sweep inside the bracket's measured ends, not past them";
 export const W1_PAST_LAST_SWEEP = "past the last sweep measured at the base, the RM-10's 60 deg";
 
 /** The Mach numbers at which RM L52J21a measures the relief with fins near the base (figs. 8, 31 to 33, 38(c)). */
@@ -1000,9 +1001,10 @@ export const W1_SWEEP_REFUSED_TOO = '; their sweep is refused at or near the bas
  *   1.70, not on a measurement at their conditions; an edge below sonic is RM L52E06's regime, where the relief
  *   measured was largest.
  *
- * Exactly 60 deg, and 45 to 60, stay as section 4 serves them with the trailing edge unswept: on the bracket's
- * measured ends, RM L52E06's 45 deg plates and the RM-10's 60 deg arcs, not on the margin; hence the step just
- * beyond 60 deg where the edge is below sonic.
+ * Exactly 60 deg, and 45 to 60, stay as section 4 serves them with the trailing edge unswept: their sweep lies
+ * inside the bracket's measured ends, RM L52E06's 45 deg plates and the RM-10's 60 deg arcs, not past them (in
+ * sweep only; from M 1.62 the floor is carried in Mach number on a margin); hence the step just beyond 60 deg where
+ * the edge is below sonic.
  */
 export function flatPlateSweepNarrowing(
   mach: number,
