@@ -1,0 +1,405 @@
+NACA TN 2360 figures 5 and 7: pairing of blind readings A and B
+==================================================================
+
+Inputs (read only; SHA-256 checked by this script before use):
+  A: /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/f5-readers/A/f5f7.csv  22d48e5592687e991c1d484bd1529088c30f7ef35910680699c23d8e2b86ea23
+  B: /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/f5-readers/B/f5f7.csv  a426b5ff4c0c83d6c4c0da3aae3c72558dc3e80c04636f3446e4cd5a46741f75
+Rows read: A 60, B 60. Matched symbols: 60.
+
+Conventions
+  dx, dy are A minus B. comb = A stated error + B stated error (each reader's own
+  one-standard-deviation reading error, as given on the row). A pair AGREES only if
+  |dx| <= comb x and |dy| <= comb y. 'beyond by' = |d| - comb where it exceeds.
+  All arithmetic is exact decimal arithmetic on the CSV strings: nothing is rounded,
+  averaged or corrected. Figure 5 x is Reynolds number R in units of 10^6 (both
+  readers); figure 7 x is Mach number M. y is the base-pressure coefficient P_b.
+  Every row of both CSVs states x_error and y_error, so the rule 5 fallback (largest
+  error stated in the reader's method.md) was not needed.
+  Reading labels: A0 / B0 = the reader's primary reading; A1, A2.. / B1, B2.. = the
+  reader's alternatives in the order written. Alternatives are tested with the row's
+  stated errors (no reader states a separate error for an alternative).
+  Nearest check: within the same identity set (figure, panel, Mach, configuration),
+  is the partner the other reader's nearest symbol in primary x, from A to B and from
+  B to A.
+
+Identity mapping (each reader's exact configuration string -> key)
+  A  x/c=1.0          <- cruciform tail t/c=0.10, tail location x/c=1.0
+  A  x/c=0.6          <- cruciform tail t/c=0.10, tail location x/c=0.6
+  A  x/c=0.2          <- cruciform tail t/c=0.10, tail location x/c=0.2
+  A  x/c=-0.2         <- cruciform tail t/c=0.10, tail location x/c=-0.2
+  A  x/c=-0.6         <- cruciform tail t/c=0.10, tail location x/c=-0.6
+  A  x/c=-1.0         <- cruciform tail t/c=0.10, tail location x/c=-1.0
+  A  tail off         <- tail off (body alone)
+  A  with tail x/c=0  <- with 10% thick cruciform tail surfaces, x/c=0; present tests
+  A  without tail     <- without tail surface; present tests
+  B  x/c=1.0          <- cruciform tail t/c=0.10, x/c=1.0; roughness added to body
+  B  x/c=0.6          <- cruciform tail t/c=0.10, x/c=0.6; roughness added to body
+  B  x/c=0.2          <- cruciform tail t/c=0.10, x/c=0.2; roughness added to body
+  B  x/c=-0.2         <- cruciform tail t/c=0.10, x/c=-0.2; roughness added to body
+  B  x/c=-0.6         <- cruciform tail t/c=0.10, x/c=-0.6; roughness added to body
+  B  x/c=-1.0         <- cruciform tail t/c=0.10, x/c=-1.0; roughness added to body
+  B  tail off         <- tail off (body alone); roughness added to body
+  B  with tail x/c=0  <- body with 10-percent-thick cruciform tail surfaces, x/c=0; present tests
+  B  without tail     <- body without tail surface (body alone); present tests
+Legend shape check: for every identity set both readers name the same shape:
+  fig 5(a) M=1.5 x/c=1.0             n=4 each  shape: circle                      min x gap A 1.188, B 1.190
+  fig 5(a) M=1.5 x/c=0.6             n=4 each  shape: square                      min x gap A 1.194, B 1.197
+  fig 5(a) M=1.5 x/c=0.2             n=4 each  shape: diamond                     min x gap A 1.177, B 1.178
+  fig 5(a) M=1.5 x/c=-0.2            n=4 each  shape: triangle apex up            min x gap A 1.285, B 1.286
+  fig 5(a) M=1.5 x/c=-0.6            n=4 each  shape: right triangle              min x gap A 1.159, B 1.159
+  fig 5(a) M=1.5 x/c=-1.0            n=4 each  shape: quarter-round               min x gap A 1.183, B 1.182
+  fig 5(a) M=1.5 tail off            n=4 each  shape: flat-bottomed round-topped  min x gap A 1.151, B 1.153
+  fig 5(b) M=2.0 x/c=1.0             n=4 each  shape: circle                      min x gap A 1.124, B 1.121
+  fig 5(b) M=2.0 x/c=0.6             n=4 each  shape: square                      min x gap A 1.139, B 1.138
+  fig 5(b) M=2.0 x/c=0.2             n=4 each  shape: diamond                     min x gap A 1.055, B 1.056
+  fig 5(b) M=2.0 x/c=-0.2            n=4 each  shape: triangle apex up            min x gap A 1.138, B 1.138
+  fig 5(b) M=2.0 x/c=-0.6            n=4 each  shape: right triangle              min x gap A 1.152, B 1.154
+  fig 5(b) M=2.0 x/c=-1.0            n=4 each  shape: quarter-round               min x gap A 1.086, B 1.085
+  fig 5(b) M=2.0 tail off            n=4 each  shape: flat-bottomed round-topped  min x gap A 1.123, B 1.121
+  fig 7(single) M=1.5 with tail x/c=0 n=1 each  shape: square                      min x gap A -, B -
+  fig 7(single) M=1.5 without tail   n=1 each  shape: circle                      min x gap A -, B -
+  fig 7(single) M=2.0 with tail x/c=0 n=1 each  shape: square                      min x gap A -, B -
+  fig 7(single) M=2.0 without tail   n=1 each  shape: circle                      min x gap A -, B -
+
+Pairing problems (count differences, shape differences, unclear order): none
+
+Matched symbols (primary readings)
+----------------------------------
+fig  M   config           # | A x    B x    A ex  B ex  dx     comb  in  | A y     B y     A ey   B ey   dy      comb   in  | primary verdict | nAB nBA
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+5(a) 1.5 x/c=1.0          1 | 0.770  0.770  0.004 0.005 0.000  0.009 yes | -0.2079 -0.2084 0.0004 0.0005 0.0005  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=1.0          2 | 1.978  1.977  0.004 0.005 0.001  0.009 yes | -0.1824 -0.1819 0.0005 0.0005 -0.0005 0.0010 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=1.0          3 | 3.242  3.241  0.004 0.005 0.001  0.009 yes | -0.1801 -0.1800 0.0004 0.0005 -0.0001 0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=1.0          4 | 4.430  4.431  0.004 0.005 -0.001 0.009 yes | -0.1817 -0.1819 0.0004 0.0005 0.0002  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=0.6          1 | 0.776  0.775  0.005 0.005 0.001  0.010 yes | -0.2146 -0.2149 0.0005 0.0005 0.0003  0.0010 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=0.6          2 | 1.970  1.972  0.004 0.005 -0.002 0.009 yes | -0.2070 -0.2064 0.0006 0.0005 -0.0006 0.0011 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=0.6          3 | 3.182  3.183  0.004 0.005 -0.001 0.009 yes | -0.2071 -0.2070 0.0004 0.0005 -0.0001 0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=0.6          4 | 4.434  4.437  0.004 0.005 -0.003 0.009 yes | -0.2088 -0.2090 0.0004 0.0005 0.0002  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=0.2          1 | 0.783  0.784  0.004 0.005 -0.001 0.009 yes | -0.2679 -0.2680 0.0004 0.0005 0.0001  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=0.2          2 | 1.964  1.963  0.004 0.005 0.001  0.009 yes | -0.2537 -0.2537 0.0006 0.0005 0.0000  0.0011 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=0.2          3 | 3.249  3.248  0.004 0.005 0.001  0.009 yes | -0.2578 -0.2576 0.0004 0.0005 -0.0002 0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=0.2          4 | 4.426  4.426  0.004 0.005 0.000  0.009 yes | -0.2617 -0.2618 0.0004 0.0005 0.0001  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=-0.2         1 | 0.557  0.557  0.004 0.005 0.000  0.009 yes | -0.3300 -0.3301 0.0004 0.0005 0.0001  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=-0.2         2 | 1.939  1.939  0.004 0.005 0.000  0.009 yes | -0.3316 -0.3315 0.0004 0.0005 -0.0001 0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=-0.2         3 | 3.250  3.248  0.004 0.005 0.002  0.009 yes | -0.3355 -0.3355 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=-0.2         4 | 4.535  4.534  0.004 0.005 0.001  0.009 yes | -0.3384 -0.3384 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=-0.6         1 | 0.771  0.771  0.004 0.005 0.000  0.009 yes | -0.2861 -0.2862 0.0004 0.0005 0.0001  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=-0.6         2 | 1.957  1.957  0.004 0.005 0.000  0.009 yes | -0.2860 -0.2860 0.0005 0.0005 0.0000  0.0010 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=-0.6         3 | 3.264  3.264  0.004 0.005 0.000  0.009 yes | -0.2873 -0.2873 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=-0.6         4 | 4.423  4.423  0.004 0.005 0.000  0.009 yes | -0.2880 -0.2881 0.0004 0.0005 0.0001  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=-1.0         1 | 0.805  0.805  0.004 0.005 0.000  0.009 yes | -0.0797 -0.0797 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=-1.0         2 | 2.013  2.013  0.004 0.005 0.000  0.009 yes | -0.0780 -0.0780 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=-1.0         3 | 3.282  3.281  0.004 0.005 0.001  0.009 yes | -0.0802 -0.0802 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 x/c=-1.0         4 | 4.465  4.463  0.004 0.005 0.002  0.009 yes | -0.0805 -0.0805 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 tail off         1 | 0.765  0.764  0.007 0.010 0.001  0.017 yes | -0.2021 -0.2026 0.0007 0.0010 0.0005  0.0017 yes | AGREES  AGREES | yes yes
+5(a) 1.5 tail off         2 | 1.954  1.951  0.004 0.005 0.003  0.009 yes | -0.1962 -0.1961 0.0006 0.0005 -0.0001 0.0011 yes | AGREES  AGREES | yes yes
+5(a) 1.5 tail off         3 | 3.263  3.262  0.004 0.005 0.001  0.009 yes | -0.1955 -0.1953 0.0004 0.0005 -0.0002 0.0009 yes | AGREES  AGREES | yes yes
+5(a) 1.5 tail off         4 | 4.414  4.415  0.004 0.005 -0.001 0.009 yes | -0.1966 -0.1968 0.0004 0.0005 0.0002  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=1.0          1 | 0.645  0.645  0.004 0.005 0.000  0.009 yes | -0.1877 -0.1878 0.0004 0.0005 0.0001  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=1.0          2 | 1.881  1.882  0.004 0.005 -0.001 0.009 yes | -0.1693 -0.1691 0.0004 0.0005 -0.0002 0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=1.0          3 | 3.309  3.310  0.004 0.005 -0.001 0.009 yes | -0.1620 -0.1620 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=1.0          4 | 4.433  4.431  0.004 0.005 0.002  0.009 yes | -0.1614 -0.1616 0.0004 0.0005 0.0002  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=0.6          1 | 0.584  0.585  0.004 0.005 -0.001 0.009 yes | -0.1700 -0.1700 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=0.6          2 | 1.876  1.876  0.005 0.005 0.000  0.010 yes | -0.1967 -0.1967 0.0005 0.0005 0.0000  0.0010 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=0.6          3 | 3.369  3.369  0.004 0.005 0.000  0.009 yes | -0.1875 -0.1876 0.0004 0.0005 0.0001  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=0.6          4 | 4.508  4.507  0.005 0.005 0.001  0.010 yes | -0.1834 -0.1833 0.0005 0.0005 -0.0001 0.0010 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=0.2          1 | 0.630  0.631  0.004 0.005 -0.001 0.009 yes | -0.2041 -0.2041 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=0.2          2 | 1.863  1.864  0.004 0.005 -0.001 0.009 yes | -0.2098 -0.2098 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=0.2          3 | 3.360  3.361  0.004 0.005 -0.001 0.009 yes | -0.2088 -0.2088 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=0.2          4 | 4.415  4.417  0.004 0.005 -0.002 0.009 yes | -0.2098 -0.2096 0.0004 0.0005 -0.0002 0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=-0.2         1 | 0.559  0.559  0.005 0.005 0.000  0.010 yes | -0.1561 -0.1561 0.0005 0.0005 0.0000  0.0010 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=-0.2         2 | 1.872  1.873  0.005 0.005 -0.001 0.010 yes | -0.1850 -0.1849 0.0005 0.0005 -0.0001 0.0010 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=-0.2         3 | 3.311  3.311  0.007 0.013 0.000  0.020 yes | -0.1863 -0.1868 0.0007 0.0010 0.0005  0.0017 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=-0.2         4 | 4.449  4.449  0.007 0.010 0.000  0.017 yes | -0.1876 -0.1871 0.0007 0.0010 -0.0005 0.0017 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=-0.6         1 | 0.552  0.550  0.008 0.010 0.002  0.018 yes | -0.1484 -0.1486 0.0008 0.0010 0.0002  0.0018 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=-0.6         2 | 1.844  1.843  0.007 0.010 0.001  0.017 yes | -0.1915 -0.1915 0.0007 0.0010 0.0000  0.0017 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=-0.6         3 | 3.316  3.316  0.005 0.005 0.000  0.010 yes | -0.1961 -0.1963 0.0005 0.0005 0.0002  0.0010 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=-0.6         4 | 4.468  4.470  0.004 0.005 -0.002 0.009 yes | -0.2013 -0.2010 0.0004 0.0005 -0.0003 0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=-1.0         1 | 0.657  0.655  0.004 0.005 0.002  0.009 yes | -0.0977 -0.0979 0.0004 0.0005 0.0002  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=-1.0         2 | 1.850  1.851  0.004 0.005 -0.001 0.009 yes | -0.0975 -0.0976 0.0004 0.0005 0.0001  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=-1.0         3 | 3.331  3.331  0.004 0.005 0.000  0.009 yes | -0.0995 -0.0995 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 x/c=-1.0         4 | 4.417  4.416  0.004 0.005 0.001  0.009 yes | -0.1011 -0.1012 0.0004 0.0005 0.0001  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 tail off         1 | 0.475  0.475  0.005 0.005 0.000  0.010 yes | -0.1486 -0.1487 0.0005 0.0005 0.0001  0.0010 yes | AGREES  AGREES | yes yes
+5(b) 2.0 tail off         2 | 1.832  1.833  0.004 0.005 -0.001 0.009 yes | -0.1475 -0.1473 0.0004 0.0005 -0.0002 0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 tail off         3 | 3.308  3.308  0.004 0.005 0.000  0.009 yes | -0.1492 -0.1493 0.0004 0.0005 0.0001  0.0009 yes | AGREES  AGREES | yes yes
+5(b) 2.0 tail off         4 | 4.431  4.429  0.004 0.005 0.002  0.009 yes | -0.1512 -0.1516 0.0004 0.0005 0.0004  0.0009 yes | AGREES  AGREES | yes yes
+7    1.5 with tail x/c=0  1 | 1.500  1.501  0.002 0.002 -0.001 0.004 yes | -0.3316 -0.3316 0.0004 0.0005 0.0000  0.0009 yes | AGREES  AGREES | yes yes
+7    1.5 without tail     1 | 1.500  1.499  0.002 0.002 0.001  0.004 yes | -0.1951 -0.1949 0.0004 0.0005 -0.0002 0.0009 yes | AGREES  AGREES | yes yes
+7    2.0 with tail x/c=0  1 | 2.001  2.001  0.002 0.002 0.000  0.004 yes | -0.2009 -0.2013 0.0004 0.0005 0.0004  0.0009 yes | AGREES  AGREES | yes yes
+7    2.0 without tail     1 | 2.002  2.002  0.002 0.002 0.000  0.004 yes | -0.1508 -0.1511 0.0004 0.0005 0.0003  0.0009 yes | AGREES  AGREES | yes yes
+
+  in = difference within combined error; primary = primary-vs-primary test;
+  verdict = rule 4 result over all reading combinations (same as primary where
+  neither reader gives alternatives); nAB / nBA = nearest check A->B / B->A.
+
+BEYOND pairs (rule 4 verdict): none
+Pairs whose primary readings alone fall BEYOND: none
+
+Symbols with alternatives in either reading (rule 4: every combination tested)
+------------------------------------------------------------------------------
+fig 5(a) M=1.5 tail off #1   verdict AGREES; agreeing combinations: A0-B0 A0-B1 A1-B0 A1-B1 A2-B0 A2-B1
+  A flags: partly-hidden;overlap;ambiguous | B flags: partly-hidden;overlap
+  A errors x 0.007 y 0.0007 | B errors x 0.010 y 0.0010
+  A0  x=0.765  y=-0.2021   primary
+  A1  x=0.766  y=-0.2023   dot blob fused to circle outline
+  A2  x=0.763  y=-0.2018   outline-based (bottom edge minus mean dot offset)
+  B0  x=0.764  y=-0.2026   primary
+  B1  x=0.763  y=-0.2023   template from bottom edge and sides
+    A0-B0  dx 0.001   (comb 0.017, in)  dy 0.0005   (comb 0.0017, in)  AGREES
+    A0-B1  dx 0.002   (comb 0.017, in)  dy 0.0002   (comb 0.0017, in)  AGREES
+    A1-B0  dx 0.002   (comb 0.017, in)  dy 0.0003   (comb 0.0017, in)  AGREES
+    A1-B1  dx 0.003   (comb 0.017, in)  dy 0.0000   (comb 0.0017, in)  AGREES
+    A2-B0  dx -0.001  (comb 0.017, in)  dy 0.0008   (comb 0.0017, in)  AGREES
+    A2-B1  dx 0.000   (comb 0.017, in)  dy 0.0005   (comb 0.0017, in)  AGREES
+
+fig 5(b) M=2.0 x/c=-0.2 #3   verdict AGREES; agreeing combinations: A0-B0 A0-B1 A1-B0 A1-B1 A2-B0 A2-B1
+  A flags: partly-hidden;overlap;ambiguous | B flags: partly-hidden;overlap
+  A errors x 0.007 y 0.0007 | B errors x 0.013 y 0.0010
+  A0  x=3.311  y=-0.1863   primary
+  A1  x=3.311  y=-0.1867   dot fragment fused to square edge
+  A2  x=3.311  y=-0.1860   geometric estimate from left side and base
+  B0  x=3.311  y=-0.1868   primary
+  B1  x=3.306  y=-0.1861   template from left base corner and base
+    A0-B0  dx 0.000   (comb 0.020, in)  dy 0.0005   (comb 0.0017, in)  AGREES
+    A0-B1  dx 0.005   (comb 0.020, in)  dy -0.0002  (comb 0.0017, in)  AGREES
+    A1-B0  dx 0.000   (comb 0.020, in)  dy 0.0001   (comb 0.0017, in)  AGREES
+    A1-B1  dx 0.005   (comb 0.020, in)  dy -0.0006  (comb 0.0017, in)  AGREES
+    A2-B0  dx 0.000   (comb 0.020, in)  dy 0.0008   (comb 0.0017, in)  AGREES
+    A2-B1  dx 0.005   (comb 0.020, in)  dy 0.0001   (comb 0.0017, in)  AGREES
+
+fig 5(b) M=2.0 x/c=-0.2 #4   verdict AGREES; agreeing combinations: A0-B0 A0-B1 A0-B2 A1-B0 A1-B1 A1-B2 A2-B0 A2-B1 A2-B2
+  A flags: partly-hidden;overlap | B flags: partly-hidden;overlap
+  A errors x 0.007 y 0.0007 | B errors x 0.010 y 0.0010
+  A0  x=4.449  y=-0.1876   primary
+  A1  x=4.449  y=-0.1876   geometric estimate from apex and base
+  A2  x=4.447  y=-0.1873   dot fragment fused to square corner
+  B0  x=4.449  y=-0.1871   primary
+  B1  x=4.438  y=-0.1878   template from left base corner and base
+  B2  x=4.446  y=-0.1871   template from apex
+    A0-B0  dx 0.000   (comb 0.017, in)  dy -0.0005  (comb 0.0017, in)  AGREES
+    A0-B1  dx 0.011   (comb 0.017, in)  dy 0.0002   (comb 0.0017, in)  AGREES
+    A0-B2  dx 0.003   (comb 0.017, in)  dy -0.0005  (comb 0.0017, in)  AGREES
+    A1-B0  dx 0.000   (comb 0.017, in)  dy -0.0005  (comb 0.0017, in)  AGREES
+    A1-B1  dx 0.011   (comb 0.017, in)  dy 0.0002   (comb 0.0017, in)  AGREES
+    A1-B2  dx 0.003   (comb 0.017, in)  dy -0.0005  (comb 0.0017, in)  AGREES
+    A2-B0  dx -0.002  (comb 0.017, in)  dy -0.0002  (comb 0.0017, in)  AGREES
+    A2-B1  dx 0.009   (comb 0.017, in)  dy 0.0005   (comb 0.0017, in)  AGREES
+    A2-B2  dx 0.001   (comb 0.017, in)  dy -0.0002  (comb 0.0017, in)  AGREES
+
+fig 5(b) M=2.0 x/c=-0.6 #1   verdict AGREES; agreeing combinations: A0-B0 A0-B1 A1-B0 A1-B1
+  A flags: partly-hidden;overlap;ambiguous | B flags: partly-hidden;overlap
+  A errors x 0.008 y 0.0008 | B errors x 0.010 y 0.0010
+  A0  x=0.552  y=-0.1484   primary
+  A1  x=0.552  y=-0.1475   geometric estimate from right side and bottom edge
+  B0  x=0.550  y=-0.1486   primary
+  B1  x=0.546  y=-0.1478   template from right side and bottom
+    A0-B0  dx 0.002   (comb 0.018, in)  dy 0.0002   (comb 0.0018, in)  AGREES
+    A0-B1  dx 0.006   (comb 0.018, in)  dy -0.0006  (comb 0.0018, in)  AGREES
+    A1-B0  dx 0.002   (comb 0.018, in)  dy 0.0011   (comb 0.0018, in)  AGREES
+    A1-B1  dx 0.006   (comb 0.018, in)  dy 0.0003   (comb 0.0018, in)  AGREES
+
+fig 5(b) M=2.0 x/c=-0.6 #2   verdict AGREES; agreeing combinations: A0-B0 A0-B1 A1-B0 A1-B1
+  A flags: partly-hidden;overlap | B flags: partly-hidden;overlap
+  A errors x 0.007 y 0.0007 | B errors x 0.010 y 0.0010
+  A0  x=1.844  y=-0.1915   primary
+  A1  x=1.846  y=-0.1914   geometric estimate from hypotenuse and bottom edge
+  B0  x=1.843  y=-0.1915   primary
+  B1  x=1.845  y=-0.1914   template from hypotenuse-bottom corner
+    A0-B0  dx 0.001   (comb 0.017, in)  dy 0.0000   (comb 0.0017, in)  AGREES
+    A0-B1  dx -0.001  (comb 0.017, in)  dy -0.0001  (comb 0.0017, in)  AGREES
+    A1-B0  dx 0.003   (comb 0.017, in)  dy 0.0001   (comb 0.0017, in)  AGREES
+    A1-B1  dx 0.001   (comb 0.017, in)  dy 0.0000   (comb 0.0017, in)  AGREES
+
+Flags and alternatives as written by each reader (carried through unchanged)
+----------------------------------------------------------------------------
+fig 5(a) M=1.5 x/c=1.0 #1
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(a) M=1.5 x/c=0.6 #1
+  A flags: partly-hidden;overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(a) M=1.5 x/c=0.6 #2
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(a) M=1.5 tail off #1
+  A flags: partly-hidden;overlap;ambiguous
+  A alternatives: dot blob fused to circle outline: x=0.766 y=-0.2023 | outline-based (bottom edge minus mean dot offset): x=0.763 y=-0.2018
+  B flags: partly-hidden;overlap
+  B alternatives: template from bottom edge and sides: x=0.763 y=-0.2023
+fig 5(a) M=1.5 tail off #2
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(b) M=2.0 x/c=1.0 #4
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(b) M=2.0 x/c=0.6 #2
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(b) M=2.0 x/c=0.6 #3
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(b) M=2.0 x/c=0.6 #4
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(b) M=2.0 x/c=0.2 #3
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(b) M=2.0 x/c=0.2 #4
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(b) M=2.0 x/c=-0.2 #1
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(b) M=2.0 x/c=-0.2 #2
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(b) M=2.0 x/c=-0.2 #3
+  A flags: partly-hidden;overlap;ambiguous
+  A alternatives: dot fragment fused to square edge: x=3.311 y=-0.1867 | geometric estimate from left side and base: x=3.311 y=-0.1860
+  B flags: partly-hidden;overlap
+  B alternatives: template from left base corner and base: x=3.306 y=-0.1861
+fig 5(b) M=2.0 x/c=-0.2 #4
+  A flags: partly-hidden;overlap
+  A alternatives: geometric estimate from apex and base: x=4.449 y=-0.1876 | dot fragment fused to square corner: x=4.447 y=-0.1873
+  B flags: partly-hidden;overlap
+  B alternatives: template from left base corner and base: x=4.438 y=-0.1878 | template from apex: x=4.446 y=-0.1871
+fig 5(b) M=2.0 x/c=-0.6 #1
+  A flags: partly-hidden;overlap;ambiguous
+  A alternatives: geometric estimate from right side and bottom edge: x=0.552 y=-0.1475
+  B flags: partly-hidden;overlap
+  B alternatives: template from right side and bottom: x=0.546 y=-0.1478
+fig 5(b) M=2.0 x/c=-0.6 #2
+  A flags: partly-hidden;overlap
+  A alternatives: geometric estimate from hypotenuse and bottom edge: x=1.846 y=-0.1914
+  B flags: partly-hidden;overlap
+  B alternatives: template from hypotenuse-bottom corner: x=1.845 y=-0.1914
+fig 5(b) M=2.0 x/c=-0.6 #3
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(b) M=2.0 x/c=-0.6 #4
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+fig 5(b) M=2.0 tail off #1
+  A flags: partly-hidden;overlap
+  A alternatives: -
+  B flags: partly-hidden;overlap
+  B alternatives: -
+fig 5(b) M=2.0 tail off #4
+  A flags: overlap
+  A alternatives: -
+  B flags: overlap
+  B alternatives: -
+
+Body without tail surfaces only
+===============================
+Figure 5 'Tail off' symbols in 5(a) (M=1.5) and 5(b) (M=2.0), and figure 7
+'without tail surface' points at M=1.5 and 2.0. Envelope = [min, max] of P_b over
+every reading of both readers (primary and alternatives). Widened envelope (for
+information only) = lower end minus the y error of the reader whose reading sets
+the lower end, upper end plus the y error of the reader whose reading sets the
+upper end (where both readers reach an end, the larger of their y errors is used
+and both are named).
+
+fig 5(a) M=1.5 tail off #1: AGREES (agreeing combinations: A0-B0 A0-B1 A1-B0 A1-B1 A2-B0 A2-B1)
+  R (x 10^6): A 0.765 +- 0.007, B 0.764 +- 0.010; alternatives' R: 0.763, 0.766
+  P_b readings: A0 -0.2021; A1 -0.2023; A2 -0.2018; B0 -0.2026; B1 -0.2023
+  envelope [-0.2026, -0.2018]  (low end B0, high end A2)
+  widened, information only: [-0.2036, -0.2011]  (low end - 0.0010 from B, high end + 0.0007 from A)
+  flags: A partly-hidden;overlap;ambiguous | B partly-hidden;overlap
+
+fig 5(a) M=1.5 tail off #2: AGREES
+  R (x 10^6): A 1.954 +- 0.004, B 1.951 +- 0.005
+  P_b readings: A0 -0.1962; B0 -0.1961
+  envelope [-0.1962, -0.1961]  (low end A0, high end B0)
+  widened, information only: [-0.1968, -0.1956]  (low end - 0.0006 from A, high end + 0.0005 from B)
+  flags: A overlap | B overlap
+
+fig 5(a) M=1.5 tail off #3: AGREES
+  R (x 10^6): A 3.263 +- 0.004, B 3.262 +- 0.005
+  P_b readings: A0 -0.1955; B0 -0.1953
+  envelope [-0.1955, -0.1953]  (low end A0, high end B0)
+  widened, information only: [-0.1959, -0.1948]  (low end - 0.0004 from A, high end + 0.0005 from B)
+  flags: A - | B -
+
+fig 5(a) M=1.5 tail off #4: AGREES
+  R (x 10^6): A 4.414 +- 0.004, B 4.415 +- 0.005
+  P_b readings: A0 -0.1966; B0 -0.1968
+  envelope [-0.1968, -0.1966]  (low end B0, high end A0)
+  widened, information only: [-0.1973, -0.1962]  (low end - 0.0005 from B, high end + 0.0004 from A)
+  flags: A - | B -
+
+fig 5(b) M=2.0 tail off #1: AGREES
+  R (x 10^6): A 0.475 +- 0.005, B 0.475 +- 0.005
+  P_b readings: A0 -0.1486; B0 -0.1487
+  envelope [-0.1487, -0.1486]  (low end B0, high end A0)
+  widened, information only: [-0.1492, -0.1481]  (low end - 0.0005 from B, high end + 0.0005 from A)
+  flags: A partly-hidden;overlap | B partly-hidden;overlap
+
+fig 5(b) M=2.0 tail off #2: AGREES
+  R (x 10^6): A 1.832 +- 0.004, B 1.833 +- 0.005
+  P_b readings: A0 -0.1475; B0 -0.1473
+  envelope [-0.1475, -0.1473]  (low end A0, high end B0)
+  widened, information only: [-0.1479, -0.1468]  (low end - 0.0004 from A, high end + 0.0005 from B)
+  flags: A - | B -
+
+fig 5(b) M=2.0 tail off #3: AGREES
+  R (x 10^6): A 3.308 +- 0.004, B 3.308 +- 0.005
+  P_b readings: A0 -0.1492; B0 -0.1493
+  envelope [-0.1493, -0.1492]  (low end B0, high end A0)
+  widened, information only: [-0.1498, -0.1488]  (low end - 0.0005 from B, high end + 0.0004 from A)
+  flags: A - | B -
+
+fig 5(b) M=2.0 tail off #4: AGREES
+  R (x 10^6): A 4.431 +- 0.004, B 4.429 +- 0.005
+  P_b readings: A0 -0.1512; B0 -0.1516
+  envelope [-0.1516, -0.1512]  (low end B0, high end A0)
+  widened, information only: [-0.1521, -0.1508]  (low end - 0.0005 from B, high end + 0.0004 from A)
+  flags: A overlap | B overlap
+
+fig 7(single) M=1.5 without tail #1: AGREES
+  Reynolds number: none in either CSV (figure 7 x axis is Mach number; M read: A 1.500, B 1.499)
+  P_b readings: A0 -0.1951; B0 -0.1949
+  envelope [-0.1951, -0.1949]  (low end A0, high end B0)
+  widened, information only: [-0.1955, -0.1944]  (low end - 0.0004 from A, high end + 0.0005 from B)
+  flags: A - | B -
+
+fig 7(single) M=2.0 without tail #1: AGREES
+  Reynolds number: none in either CSV (figure 7 x axis is Mach number; M read: A 2.002, B 2.002)
+  P_b readings: A0 -0.1508; B0 -0.1511
+  envelope [-0.1511, -0.1508]  (low end B0, high end A0)
+  widened, information only: [-0.1516, -0.1504]  (low end - 0.0005 from B, high end + 0.0004 from A)
+  flags: A - | B -
+
+Counts (rule 4 verdicts; primary-only test in brackets)
+=======================================================
+  all matched symbols: n=60  AGREES 60  BEYOND 0  [primary only: AGREES 60, BEYOND 0]
+  tailed configurations (fig 5 x/c = 1.0..-1.0, fig 7 with tail x/c=0): n=50  AGREES 50  BEYOND 0  [primary only: AGREES 50, BEYOND 0]
+  body without tail surfaces (fig 5 tail off, fig 7 without tail): n=10  AGREES 10  BEYOND 0  [primary only: AGREES 10, BEYOND 0]

@@ -488,7 +488,9 @@ export const VALIDATED_CLAIM =
   'flight, and passed (design records 0020 and 0014, section 10.7 (q)). Measured over modelled ' +
   'was +3.9% to +11.0%: the model reads low at every round (mean +7.3%), inside tolerances of ' +
   '+-25% to +-28%. That tolerance is wide, so the pass alone says little (design record 0008, ' +
-  'section 6.3).';
+  "section 6.3). The body base's band was widened after this test (design record 0014, section " +
+  '10.7 (ah)); the model and its residuals are unchanged, and its tolerances there would now be ' +
+  '-26.5% to -29.0% and +30.4% to +31.0%.';
 /** Stated beside it. */
 export const ASSUMED_CAVEAT =
   "The models' diameter, the range's air and the fins' trailing-edge area at that test were " +
@@ -919,6 +921,18 @@ export const W1_BOUNDED_REASON =
   `${FIG35_FREE_FLIGHT_END}, where the free-flight curve of TN 3819 fig. 35 ends; 0015)`;
 
 /**
+ * The same, for flat-faced fins with the trailing edge unswept whose leading edge is unswept or swept where no
+ * flat plate at the base is measured (short of 45 deg or beyond 60 deg), bracketed on the argument of 0015
+ * sections 4 and 12 that neither bound uses the leading edge (FinsOnBaseFactorW1.sweepByArgument).
+ */
+export const W1_BOUNDED_SWEPT_REASON =
+  "the body base's rebuilt fins-on-base factor is bounded, not measured (flat faces at a square " +
+  'trailing edge, or above Mach ' +
+  `${FIG35_FREE_FLIGHT_END}, where the free-flight curve of TN 3819 fig. 35 ends; and the leading edge ` +
+  'unswept or swept where no flat plate is measured at the base, short of 45 deg or beyond 60 deg, ' +
+  'bounded by the argument of 0015 sections 4 and 12)';
+
+/**
  * The bounded components a total contains, named in its claim (0014 section
  * 10.2): the body base's fins-on-base factor where it is bounded, and every
  * component the library marks bounded (the fins' square-cut leading edges, or
@@ -930,7 +944,14 @@ export function boundedReasons(
 ): string[] {
   const out: string[] = [];
   if (base?.finsOnBase?.bounded === true) {
-    out.push(base.finsOnBaseSource === 'rebuilt' ? W1_BOUNDED_REASON : BOUNDED_REASON);
+    const f = base.finsOnBase;
+    out.push(
+      base.finsOnBaseSource !== 'rebuilt'
+        ? BOUNDED_REASON
+        : 'sweepByArgument' in f && f.sweepByArgument
+          ? W1_BOUNDED_SWEPT_REASON
+          : W1_BOUNDED_REASON,
+    );
   }
   for (const c of components) {
     if (c.bounded !== undefined && !out.includes(c.bounded)) out.push(c.bounded);
@@ -1089,8 +1110,11 @@ export interface PublishedShot {
  * correction made after the residuals were known, not a validation: the modelled totals, bands,
  * residuals and tolerances (round 5's arithmetic, 0010 section 10) held to the library by the
  * tests, with the second run's residual beside each (0010 section 4.2). Each band is rounded
- * outward, as every band on the page is (./band.ts), so that the table and a total's headline
- * show the same interval for the same shot; the other values to the nearest last digit.
+ * outward, as every band on the page is (./band.ts); the other values to the nearest last digit.
+ * The bands and tolerances are the run's, formed with the compiled curve's band at the time, 0.82
+ * to 1.08, except at the Mach 1.799 shot, whose row carries F4's widening of the trailing edges'
+ * band (0019 section 3.4.1; below); the library's are wider still by 0014 section 10.7 (ah), which
+ * the table does not show and the tests take off.
  */
 export const PUBLISHED_GATE: readonly PublishedShot[] = [
   {
@@ -1242,7 +1266,8 @@ export interface PublishedRound {
  * present model at its seven rounds, sharp fin leading edges, every round
  * inside its tolerance. Held by the tests to the run's recorded output
  * (docs/research/base-and-total/runs/brl934-range-a.json) and to the
- * page's own total at each round; each band rounded outward, as every
+ * page's own total at each round, whose band is wider by 0014 section 10.7
+ * (ah), widened after the run; each band rounded outward, as every
  * band on the page is, the other values to the nearest last digit.
  */
 export const PUBLISHED_BRL934: readonly PublishedRound[] = [
