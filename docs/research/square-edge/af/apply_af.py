@@ -2,11 +2,14 @@
 
 Run from the repository root:
 
-    python3 -I docs/research/square-edge/af/apply_af.py
+    python3 -I docs/research/square-edge/af/apply_af.py            # check
+    python3 -I docs/research/square-edge/af/apply_af.py --write    # rewrite out/
 
 It reads only the neutral pairing (docs/research/square-edge/readers/pairing-2026-10-27/*_pairs.csv,
-which carry both readers' primaries) and writes out/verdict.txt, out/face_margins.csv and
-out/not_face.csv beside this file. Nothing here settles a reading: every rule below takes the lower or
+which carry both readers' primaries). With --write it writes out/verdict.txt, out/face_margins.csv and
+out/not_face.csv beside this file; without it, it checks a fresh run against those committed files.
+Either way it exits non-zero unless the verdict is PASS and, when checking, every file matches
+(added 2026-10-28, Fable's review: the outcome asserted, not only printed). Nothing here settles a reading: every rule below takes the lower or
 the higher of the two primaries, as (af) says.
 
 The rules, fixed in this header before the script was first run (the coordinator's notes of
@@ -81,6 +84,7 @@ Added after the first run (b0590ba), and kept apart from the rules above:
 """
 
 import csv
+import io
 import math
 import os
 import sys
@@ -274,11 +278,12 @@ for f in faces:
         f['p1_threshold'] = f['p1_margin'] = None
         f['p1_pass'] = None
 
-os.makedirs(OUT, exist_ok=True)
+WRITE = '--write' in sys.argv[1:]
+OUTPUTS = {}  # file name -> the text this run gives
 cols = ['pair', 'source', 'item', 'group', 'mach', 'orifice', 'position', 'status', 'readings',
         'value_A', 'value_B', 'quantity', 'lower_p_over_p02', 'higher_p_over_p02', 'a', 'a_how',
         'ii_threshold', 'ii_margin', 'ii', 'i_threshold', 'i_margin', 'i']
-with open(os.path.join(OUT, 'face_margins.csv'), 'w', newline='') as fh:
+with io.StringIO(newline='') as fh:
     w = csv.writer(fh)
     w.writerow(cols)
     for f in faces:
@@ -291,8 +296,9 @@ with open(os.path.join(OUT, 'face_margins.csv'), 'w', newline='') as fh:
                     '' if f['p1_threshold'] is None else f"{f['p1_threshold']:.4f}",
                     '' if f['p1_margin'] is None else f"{f['p1_margin']:+.4f}",
                     'not tested by this set' if f['p1_pass'] is None else ('pass' if f['p1_pass'] else 'FAIL')])
+    OUTPUTS['face_margins.csv'] = fh.getvalue()
 
-with open(os.path.join(OUT, 'not_face.csv'), 'w', newline='') as fh:
+with io.StringIO(newline='') as fh:
     w = csv.writer(fh)
     w.writerow(['pair', 'source', 'series_or_orifice', 'location_A', 'location_B', 'position_A',
                 'position_B', 'value_A', 'value_B', 'why not a face point'])
@@ -301,6 +307,7 @@ with open(os.path.join(OUT, 'not_face.csv'), 'w', newline='') as fh:
                if {'corner', 'unclear'} & {x['location_A'], x['location_B']} else 'afterbody (both)')
         w.writerow([x['pair'], x['source'], x['series'], x['location_A'], x['location_B'],
                     x['position_A'], x['position_B'], x['value_A'], x['value_B'], why])
+    OUTPUTS['not_face.csv'] = fh.getvalue()
 
 # ---- (iii), information only ----
 RML_RADII = {  # face radius, in.: A derived (diameter / 2), B scaled (diameter / 2)
@@ -485,5 +492,25 @@ say('')
 verdict = all_i and all_ii
 say(f'VERDICT: {"PASS" if verdict else "FAIL"} ((i) {"holds" if all_i else "fails"}; (ii) {"holds" if all_ii else "fails"})')
 text = '\n'.join(lines) + '\n'
-open(os.path.join(OUT, 'verdict.txt'), 'w').write(text)
+OUTPUTS['verdict.txt'] = text
 sys.stdout.write(text)
+differ = []
+if WRITE:
+    os.makedirs(OUT, exist_ok=True)
+    for name, out in OUTPUTS.items():
+        with open(os.path.join(OUT, name), 'w', newline='') as fh:
+            fh.write(out)
+else:
+    for name, out in OUTPUTS.items():
+        try:
+            with open(os.path.join(OUT, name), newline='') as fh:
+                committed = fh.read()
+        except FileNotFoundError:
+            committed = None
+        if committed != out:
+            differ.append(name)
+    for name in differ:
+        sys.stderr.write(f'out/{name} differs from this run (rerun with --write to update it)\n')
+if not verdict:
+    sys.stderr.write('the verdict is not PASS\n')
+sys.exit(0 if verdict and not differ else 1)

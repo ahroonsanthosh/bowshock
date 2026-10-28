@@ -891,6 +891,22 @@ sweep, nor below 45 deg of sweep at M_n under 3.37. Below M_n 1.96 the only
 yawed points are at sweeps of 70 and 75 deg (F 1.05 to 1.17 of modified
 Newtonian, 1.45 where the report flags the point), beyond the served 60.
 
+_Note, 2026-10-28 (Fable's review of 3e026a8; section 21.10):_ Lord and
+Ulmann's point's figures above (F 1.121 and 1.122 of modified Newtonian,
+1.078 and 1.079 of TN 2960's integrated front side, and so the "0.995 to
+1.079 of the unyawed") rest on fig. 17's reading of 2026-10-21, which
+the second (ab) addendum of 0014 section 10.7 ruled does not count. On
+the paired readings (section 21.8, where the point is P09) its F over
+modified Newtonian is 1.107 to 1.108 on the two readers' values: 1.055
+to 1.062 of TN 2960's integrated front side at M 1.98 on both readings
+of TN 2960 fig. 5(c), and 1.055 to 1.067 with the readers' other readings
+too. That is inside the served 0.95 to 1.22. The allowance is set by RM
+A55H31's checks, twice the measured allowance's deviation and the
+interim floor, not by this point, so nothing served changes. Since 60
+to 75.1 deg is served (section 21.8), "nothing yawed lies below M_n 1.96
+at a served sweep" holds at 60 deg of sweep or less only: the 70 and 75
+deg points above are served sweeps now.
+
 **(c) The allowance served.** Every swept edge served is at M_n 3.0 or
 less, below the checks' 3.37, so every one is labelled "the sweep
 allowance extrapolated in normal Mach number". The yawed data at served
@@ -1994,6 +2010,16 @@ range, so wiring is deferred and the term is not wired for zero
 coverage. `SQUARE_EDGE_REFUSAL` and the page's words now say so: the bounds' premises are borne out only on flat faces far larger than a model rocket fin's. Extending the range
 downward would be the owner's to agree, and nothing here proposes it.
 
+_Note, 2026-10-28 (Fable's review of 3e026a8; section 21.10):_ (af), as
+registered before any reading, says "_On a pass_, square-cut leading
+edges are wired" (0014 section 10.7). It passed, and they are not wired.
+That outcome is a deviation from (af) as registered, made by the
+coordinator's ruling of 2026-10-27, not by (af)'s own criteria. It is in
+the refusing direction: what (af) would have served stays refused. On
+the refusal audit's population the coverage is zero either way: none of
+its 1220 square-cut cases lies inside the range (af) would have wired
+on, 0.90e6 to 4.32e6, or inside the recomputed 3.85e6 to 4.32e6.
+
 ### 21.7 The re-review of 2026-10-27: past 60 deg refused again
 
 The re-review of 5e47532..ef7fc7d found both earlier blocking items and
@@ -2126,7 +2152,9 @@ the claim.
   which a swept cylinder has been measured", change "less sweep (75
   degrees or less), or a bevelled leading edge". From 60 to 75.1 deg, a
   case the bounded term refuses keeps "less sweep (60 degrees or less),
-  or a bevelled leading edge".
+  or a bevelled leading edge". (Note, 2026-10-28: the words now say 75.1
+  degrees, and less sweep is offered only where it can help; section
+  21.10.)
 - `evaluate.ts` mirrors the bounded edges again, with beyond 75.1 deg
   refused.
 - The tests go back to those of section 21.5 and the review fixes, with
@@ -2257,3 +2285,61 @@ main f88ecbe.
     primaries it was 0.0233.
   - The verdict does not change: the rule holds at all three points.
     0014 carries a dated note after the verdict entry.
+
+### 21.10 Fable's review of 3e026a8 (2026-10-28): the follow-up
+
+Fable's review of the leading-edge work as merged to main passed. It
+asked for seven small corrections, made on their own branch. Nothing
+served changes.
+
+- **The bounded label's ordering.** It said TN 3861's three crossflow
+  points past 60 deg are "every one above the principle". It now adds
+  that the report flags two of them: Lord and Ulmann's 75 deg point high
+  (p. 11), and Penland's 75.1 deg point for an end effect (p. 10). It
+  adds that RM A55H31 fig. 11 puts that 75.1 deg test's stagnation
+  pressure at 0.63 to 0.74 of Rayleigh's (section 21.2). And it says the
+  unflagged 70 deg point alone holds the ordering, by +0.173 (section
+  21.9). The label was shortened elsewhere to make room: the longest on
+  a grid of Mach 1.2 to 8, sweeps 60.1 to 75.1 deg and four Reynolds
+  numbers is 1,784 characters, under the test's 1,800.
+- **The rule's outcome asserted.**
+  - `docs/research/tn3861-fig17/rule/apply.test.ts` asserts that the
+    rule holds, and that the committed `out/verdict.txt` matches a fresh
+    run (with `UPDATE=1` it rewrites the file instead).
+  - `src/fins/rounded-leading-edge.ts` carries the three margins as
+    `TN3861_RULE_MARGINS`, and a test pins them to the committed verdict.
+  - The same for (af): `af/coverage.test.ts` asserts that no square-cut
+    case lies inside either range and that `af/out/coverage.out` matches
+    a fresh run. `apply_af.py` checks a fresh run against its committed
+    outputs (`--write` rewrites them), and exits non-zero unless the
+    verdict is PASS and they match.
+  - Planted: the rule's threshold raised to a margin of at least 1 (E13)
+    fails the rule script, both on the verdict's text and on the
+    assertion alone. (af)'s sonic threshold raised to 0.9 makes
+    `apply_af.py` exit non-zero. A coverage range widened down to
+    0.9e5 fails the coverage script.
+- **75.1, not 75.** The page's words for the refusal beyond 75.1 deg
+  (`status-words.ts`), the demo page and 0017 said "bounded only up to
+  75 degrees" while the code serves to 75.1. They now say 75.1.
+- **The square-cut refusal's Reynolds numbers.** `SQUARE_EDGE_REFUSAL`
+  read as if nothing near 1e6 had been tested. It now says that TM X-19
+  (0.90e6) and TN D-5392 (1.88e6), on their diameters, bore the premises
+  out too, but on a basis the readers did not record, so neither counts
+  (section 21.6).
+- **The fig. 17 reading that does not count.** Section 16's "0.995 to
+  1.079 of the unyawed", the `SWEEP_ALLOWANCE_SERVED` comment and the
+  served term's label rested on it. Dated notes are added to section 16
+  and the comment. The label now cites the paired value, 1.055 to 1.062
+  of the unyawed (P09). Its "no yawed datum below M_n 1.95 at a served
+  sweep" now says "at 60 deg of sweep or less", since the 70 and 75 deg
+  points lie below M_n 1.95 at sweeps served since section 21.8.
+- **Less sweep offered only where it can help.** Past 60 deg the page
+  offered "less sweep (60 degrees or less)" whenever the bounded term was
+  refused for its range, even where only the 60 deg term was refused for
+  a Reynolds number above 1e6 (Re_D/2). Less sweep only raises the
+  normal Mach and Reynolds numbers. So less sweep is now offered only
+  where the term at the sweep is refused and the term at 60 deg is not
+  refused above its range. A test covers five cases.
+- **(af)'s outcome a deviation.** 21.6 and 0014 now record that (af)
+  registered wiring on a pass. The unwired outcome is the coordinator's
+  ruling, in the refusing direction, with zero coverage either way.

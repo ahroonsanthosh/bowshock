@@ -10,6 +10,7 @@
  * refused beyond 75.1 deg at any Mach number.
  */
 
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { FinRefusal } from '../../src/fins/refusal';
 import { RM_A55H31_FIG12, RM_A55H31_FIG12_SECOND } from '../../src/fins/rm-a55h31';
@@ -20,6 +21,7 @@ import {
   ROUNDED_EDGE_BAND,
   roundedEdgeBandLow,
   sweepChecks,
+  TN3861_RULE_MARGINS,
   transonicFrontSide,
 } from '../../src/fins/rounded-leading-edge';
 
@@ -88,7 +90,9 @@ describe('the bounds', () => {
     const e = at(2.8, 63);
     const { lower, upper } = e.bounded!;
     expect(e.label.startsWith('bounded, not measured: swept 63.0 deg, past the 60 deg')).toBe(true);
-    expect(e.label).toMatch(/the band the whole gap between two terms, each an analogy/);
+    expect(e.label).toMatch(
+      /the band the whole gap between two terms, each a cylinder's front side carried to a fin edge, an analogy tested only in the total\. /,
+    );
     expect(e.label).toContain(
       `Lower: the term at 63.0 deg (M_n ${lower.normalMach.toFixed(3)}) at its band's low end, ` +
         `${lower.band.low.toFixed(3)} of it: the `,
@@ -117,15 +121,20 @@ describe('the bounds', () => {
     expect(upperPart).toMatch(
       /extrapolated in normal Mach number \(checked at M_n 3\.38 to 6\.65; no yawed datum below M_n 1\.95 at 60 deg of sweep or less\)\. $/,
     );
-    // The ordering names figs. 15 and 16 and fig. 17, each read twice.
+    // The ordering names figs. 15 to 17, each read twice; the two points the report flags,
+    // fig. 11's stagnation pressure for the 75.1 deg test, and the 70 deg point's margin
+    // (Fable's review, 2026-10-28).
     expect(e.label).toMatch(
-      /rests on the principle and on TN 3861's crossflow points at 70, 75 and 75\.1 deg, every one above the principle/,
+      /rests on the principle and on TN 3861's crossflow points at 70, 75 and 75\.1 deg \(figs\. 15 to 17, each read twice\), every one above the principle, /,
     );
     expect(e.label).toMatch(
-      /figs\. 15 and 16, read twice; their front sides estimated with fig\. 17/,
+      /but the report flags the 75 deg one high \(p\. 11\) and the 75\.1 deg one for an end effect \(p\. 10\), /,
     );
     expect(e.label).toMatch(
-      /their front sides estimated with fig\. 17, read twice\) \(0016 section 21\.2\)$/,
+      /and RM A55H31 fig\. 11 puts that test's stagnation pressure at 0\.63 to 0\.74 of Rayleigh's: /,
+    );
+    expect(e.label).toMatch(
+      /the unflagged 70 deg point alone holds it, by 0\.173 \(0016 section 21\.2\)$/,
     );
     expect(e.label).not.toMatch(/largest sweep checked on yawed cylinders|principle alone/);
     // Shorter than the about 2,800 characters the re-review found.
@@ -149,6 +158,23 @@ describe('the bounds', () => {
     expect(at(5.0, 75).bounded).toBeDefined();
   });
 
+  it("21.2's rule's three margins, pinned to the committed verdict: 70 deg +0.1734, 75 deg +0.6771, 75.1 deg +0.1756", () => {
+    // docs/research/tn3861-fig17/rule/out/verdict.txt, written by rule/apply.test.ts, which
+    // checks it against a fresh run (Fable's review, 2026-10-28).
+    const verdict = readFileSync(
+      new URL('../../docs/research/tn3861-fig17/rule/out/verdict.txt', import.meta.url),
+      'utf8',
+    );
+    const margins = [...verdict.matchAll(/least margin (\d\.\d{4}): holds/g)].map((m) => m[1]);
+    expect(margins).toEqual(['0.1734', '0.6771', '0.1756']);
+    expect(verdict).toMatch(
+      /Lord and Ulmann's 70 deg point: P03[\s\S]*least margin 0\.1734: holds/,
+    );
+    expect(verdict).toMatch(/VERDICT: the rule HOLDS at all three points\n?$/);
+    expect(TN3861_RULE_MARGINS).toEqual({ at70: 0.1734, at75: 0.6771, at751: 0.1756 });
+    for (const v of Object.values(TN3861_RULE_MARGINS)) expect(v).toBeGreaterThan(0);
+  });
+
   it("the review's case either side of 60 deg: M 2.2, a 3 mm plate, Re_D 2e5", () => {
     const below = at(2.2, 59.9);
     const beyond = at(2.2, 60.1);
@@ -162,8 +188,11 @@ describe('the bounds', () => {
       expect(below.label).toContain(q);
       expect(beyond.label).toContain(q);
     }
-    // At 59.9 deg the served term's own words; past 60 deg, the datum clause only for the 60 deg term.
-    expect(below.label).toContain('no yawed datum below M_n 1.95 at a served sweep');
+    // At 59.9 deg the served term's own words; past 60 deg, the datum clause only for the 60 deg
+    // term. Since 60 to 75.1 deg is served, the clause names 60 deg or less, not "a served sweep"
+    // (Fable's review, 2026-10-28).
+    expect(below.label).toContain('no yawed datum below M_n 1.95 at 60 deg of sweep or less');
+    expect(below.label).not.toMatch(/at a served sweep/);
     expect(beyond.label).toContain('no yawed datum below M_n 1.95 at 60 deg of sweep or less');
     expect(beyond.bounded!.lower.regime).toBe('extrapolated in Reynolds number');
     expect(beyond.bounded!.upper.regime).toBe('extrapolated in Reynolds number');

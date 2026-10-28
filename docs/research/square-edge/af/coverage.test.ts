@@ -10,12 +10,15 @@
  *
  *   ONLY=./af/coverage.test.ts nice -n 10 npx vitest run --config docs/research/square-edge/vitest.config.ts
  *
- * It writes af/out/coverage.out.
+ * It checks a fresh run against the committed af/out/coverage.out and that
+ * no square-cut case lies inside either range (the outcome the square edge's
+ * staying unwired rests on); with UPDATE=1 it rewrites af/out/coverage.out
+ * instead of checking it (added 2026-10-28, Fable's review).
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { it } from 'vitest';
+import { expect, it } from 'vitest';
 import {
   atmosphere,
   drawAltitude,
@@ -80,7 +83,16 @@ it('square-cut leading edges of the population inside the measured face Reynolds
     );
   });
   const text = lines.join('\n') + '\n';
-  mkdirSync(join(here, 'out'), { recursive: true });
-  writeFileSync(join(here, 'out', 'coverage.out'), text);
   console.log(text);
+  const file = join(here, 'out', 'coverage.out');
+  if (process.env.UPDATE === '1') {
+    mkdirSync(join(here, 'out'), { recursive: true });
+    writeFileSync(file, text);
+  } else {
+    expect(text).toBe(readFileSync(file, 'utf8'));
+  }
+  // The outcome: no square-cut case inside either range, in the domain or out of it.
+  expect(inside.map((x) => x.re)).toEqual([0, 0]);
+  expect(inside.map((x) => x.domain)).toEqual([0, 0]);
+  expect(largest).toBeLessThan(RANGES[0].low);
 });
