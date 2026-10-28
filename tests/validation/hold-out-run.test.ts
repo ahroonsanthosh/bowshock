@@ -13,6 +13,7 @@
 
 import { beforeAll, describe, expect, it } from 'vitest';
 import { bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
+import { COMPILED_CURVE_BAND } from '../../src/base/compiled-curve';
 import {
   bandHighAbove,
   bandLowAbove,
@@ -83,7 +84,10 @@ const spreads = BASIC_FINNER_CLUSTERS.map(([a, b]) =>
 /**
  * tests/validation/basic-finner.test.ts, as recorded there: the corrected run's total, band,
  * residual and tolerance (CORRECTED), and the second run's input bands and its components
- * other than the body base (RECORDED), with the corrected body base.
+ * other than the body base (RECORDED), with the corrected body base. The compiled curve's band was
+ * 0.82 to 1.08 at that run; 0014 10.7 (ah) widened it after, to 0.77 to 1.17 (1.18 until round 19's
+ * blind readings of TR 1051, 1.13 until round 20's of TN 2360 figs. 5 and 7), which moves the body
+ * base's band ends by the change times its term (`widenedBy`), and nothing else.
  */
 const DREV_RECORDED = [
   ['DA95021318', 0.61337, 0.52964, 0.72961, -0.0316, -0.2455, 0.2347, -0.04664, 0.01551],
@@ -113,6 +117,12 @@ const DREV_COMPONENTS = [
   [0.08781, 0.05801, 0.02615, 0.04764, 0.00953, 0.11514, 0.05078],
 ] as const;
 
+/** What 0014 10.7 (ah) adds to the body base's band ends, in C_D, for a body base term `cd`. */
+const widenedBy = (cd: number) => ({
+  low: (COMPILED_CURVE_BAND.low - 0.82) * cd,
+  high: (COMPILED_CURVE_BAND.high - 1.08) * cd,
+});
+
 let present: ModelledCase[] = [];
 let rebuilt: ModelledCase[] = [];
 
@@ -140,19 +150,21 @@ describe('the harness on the DREV gate', { timeout: 1_800_000 }, () => {
       expect(m.parts.base?.finsOnBaseSource).toBe('present');
       const t = m.total!;
       const v = verdictOf(t, gated[k]!.cx0, spreads[clusterOf(m.mach)]!);
-      // Since F4 (0019 section 3.4.1) and R1 the Mach 1.799 shot's trailing-edge low end lies
-      // below the record and its high end above it (basic-finner.test.ts states the same moves).
+      // 0014 10.7 (ah)'s widening of the body base's band, and, since F4 (0019 section 3.4.1) and R1, the
+      // Mach 1.799 shot's trailing-edge low end below the record and its high end above it
+      // (basic-finner.test.ts states the same moves).
+      const w = widenedBy(DREV_COMPONENTS[k]![5]);
       const te = t.components.find((c) => c.name === 'fin trailing-edge base')!;
       const f4 = te.low * (FIN_TRAILING_EDGE_BAND.low / bandLowAbove(m.mach) - 1);
       const f4High = te.high * (1 - FIN_TRAILING_EDGE_BAND.high / bandHighAbove(m.mach));
       expect(f4 > 0).toBe(m.mach < 1.8);
       expect(f4High > 0).toBe(m.mach < 1.8);
       expect(Math.abs(t.cd - r[1])).toBeLessThan(1e-5);
-      expect(Math.abs(t.low + f4 - r[2])).toBeLessThan(1e-5);
-      expect(Math.abs(t.high - f4High - r[3])).toBeLessThan(1e-5);
+      expect(Math.abs(t.low + f4 - (r[2] + w.low))).toBeLessThan(1e-5);
+      expect(Math.abs(t.high - f4High - (r[3] + w.high))).toBeLessThan(1e-5);
       expect(Math.abs(v.residual - r[4])).toBeLessThan(1e-4);
-      expect(Math.abs(v.tolerance[0] + f4 / t.cd - r[5])).toBeLessThan(1e-4);
-      expect(Math.abs(v.tolerance[1] - f4High / t.cd - r[6])).toBeLessThan(1e-4);
+      expect(Math.abs(v.tolerance[0] + f4 / t.cd - (r[5] + w.low / r[1]))).toBeLessThan(1e-4);
+      expect(Math.abs(v.tolerance[1] - f4High / t.cd - (r[6] + w.high / r[1]))).toBeLessThan(1e-4);
       expect(Math.abs(v.inputLow - r[7])).toBeLessThan(1e-5);
       expect(Math.abs(v.inputHigh - r[8])).toBeLessThan(1e-5);
       expect(v.inside).toBe(true);
@@ -163,15 +175,15 @@ describe('the harness on the DREV gate', { timeout: 1_800_000 }, () => {
     });
   });
 
-  it('the tolerances after the correction, as basic-finner.test.ts states them: -20.0% to -27.0%, +23.3% to +28.6% (+19.6% to +23.2% without the wall)', () => {
+  it('the tolerances after the correction, as basic-finner.test.ts states them with the band widened by 0014 10.7 (ah) and its addenda: -21.5% to -28.5%, +26.5% to +31.3% (+22.2% to +25.9% without the wall)', () => {
     const v = present.map((m, k) =>
       verdictOf(m.total!, gated[k]!.cx0, spreads[clusterOf(m.mach)]!),
     );
     const r = (x: number[]) =>
       [Math.min(...x), Math.max(...x)].map((y) => Math.round(1000 * y) / 10);
-    expect(r(v.map((x) => x.tolerance[0]))).toEqual([-27.0, -20.0]);
-    expect(r(v.map((x) => x.tolerance[1]))).toEqual([23.3, 28.6]);
-    expect(r(v.map((x) => x.highWithoutWall))).toEqual([19.6, 23.2]);
+    expect(r(v.map((x) => x.tolerance[0]))).toEqual([-28.5, -21.5]);
+    expect(r(v.map((x) => x.tolerance[1]))).toEqual([26.5, 31.3]);
+    expect(r(v.map((x) => x.highWithoutWall))).toEqual([22.2, 25.9]);
     expect(v.map((x) => Math.round(1000 * x.residual) / 10)).toEqual([
       -3.2, 0.5, -4.5, 3.9, -0.1, 0.7, 3.4, -5.1, 7.5, -2.6, -4.8,
     ]);
@@ -290,6 +302,7 @@ describe("the rebuilt body base equals the library's where the library routes to
     expect(() => rebuiltBodyBase(1.4, cases[0]![1])).toThrow(/W2/);
   });
 
+  // 30 s: it routes a full harness run, and it measured 3 to 7 s alone against vitest's 5 s default.
   it("through the harness: three fins routed to the rebuilt factor give the library's total; the present model is refused there", () => {
     const three: HoldOutConfiguration = {
       ...drev,
@@ -353,7 +366,7 @@ describe("the rebuilt body base equals the library's where the library routes to
     const pb = pm.total!.components.find((x) => x.name === 'body base')!;
     expect(Math.abs(rm.total!.cd - (pm.total!.cd - pb.cd + rb.component.cd))).toBeLessThan(1e-12);
     expect(rm.total!.inputs).toEqual(pm.total!.inputs);
-  });
+  }, 30_000);
 });
 
 describe('the corners and the trailing-edge scaling, on DREV shots', { timeout: 1_800_000 }, () => {

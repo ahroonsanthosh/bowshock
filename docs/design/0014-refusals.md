@@ -2660,7 +2660,7 @@ above stands as written, the runs it quotes being those at commits
   for its trailing edge in words that say near the base, not at it, with
   its position's reasons beside; and 0015 section 3.3's figure "on the
   curve itself" is corrected (on Love's curve the zero member is 0.8379
-  times 1.065, 0.892).
+  times 1.065, 0.892; times 1.04, 0.871, since (ah) was merged).
 
 What it costs and gains is recorded below from `docs/research/refusals/`
 run before (245a88e) and after, with the cross-check required to agree
@@ -2779,10 +2779,638 @@ that the increment is nearly zero a chord fore or aft.
   to 4.3%, in both runs on the merged head) because ahead of the base the
   position is now named first. The cross-check against
   `src/total` agrees on all 1200 cases checked, in each run.
+- _Noted 2026-10-28, after (ah) was merged (the coordinator's ruling):_
+  the reviewer's case rests partly on the plain curve's band missing TN
+  2360's measurement a chord ahead (0.1187 to 0.1563 against 0.1603 at
+  Mach 2.0). With the compiled curve's band since (ah), 0.77 to 1.13,
+  that band would be 0.1114 to 0.1635 and would hold 0.1603 (0.1114 to
+  0.1693 with 0.77 to 1.17, since round 20). The
+  withdrawal stands on section 10.2: nothing measures fins more than a
+  chord ahead, and at x/c 1.0 TN 2360's own increments are not zero (the
+  two-fin tail, 10% thick: -0.0101 on -0.1948 at Mach 1.5 and -0.0137 on
+  -0.1507 at 2.0, about +5% and +9% in base drag), so the plain curve's
+  assumption of no fin effect is not shown there.
+  `fins-on-base-routing.test.ts` holds the numbers, 0.1563, 0.1635 and
+  0.1693.
 
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that
 registry, its content unchanged by the relabelling.
+
+**2026-10-27 (ah): the compiled curve's band corrected, an omission found
+by review** (0008 section 3.3; 0010 section 1.2; 0015 section 11.1; the
+coordinator's decision of 2026-10-27; letter (ah) allocated by the
+coordinator). Widened only: the band of Love's basic curve, measured over
+curve, goes from 0.82 to 1.08 to **0.77 to 1.18** at Mach 1.5 to 3.0;
+**0.77 to 1.13** since the third addendum below (2026-10-28), and
+**0.77 to 1.17** since round 20 (the fourth addendum, applied), which puts
+TR 1051 in at its measured symbols.
+
+- _The omission._ 0008 section 3.3 sets the band by a rule: "every base
+  data set opened at these conditions is used to set this band". The rule
+  was not applied to body-alone base pressures opened inside the curve's
+  domain after the band was set, nor to one 0008 opened itself (fig. 35's
+  no-fin tunnel symbol at M 1.50, -0.194, in 0008 section 3.4's table). An
+  independent review noted that this point, TN 2360's body without fins,
+  lies at 1.124 times the curve, outside 0.82 to 1.08. The served band
+  missed a valid measurement of a configuration it claims.
+- _The domain, as stated before this entry_ (0008 section 3.3,
+  `src/base/compiled-curve.ts`): Mach 1.5 to 3.0, a cylindrical
+  afterbody, a turbulent layer at the base, no fins near it, power off.
+  No limit on Reynolds number, boundary-layer thickness, afterbody length
+  or nose shape is stated, and the band's tunnel evidence is all
+  sting-supported. Every set below lies inside it.
+- _The sets now used: every body-alone base pressure read twice inside
+  the domain, each paired reading, against both curves as 0008 forms the
+  band_ (`BODY_ALONE_IN_DOMAIN`); the sets opened there and read once are
+  named below and set nothing:
+  - TN 2360's body alone (TN 3819's ref. 26: a 10-calibre-radius tangent
+    ogive on a 1.250 in cylinder, turbulent, sting d/h 0.4 four diameters
+    long, Ames 1 by 3 ft tunnel, R 4.5e6) at M 1.5 and 2.0: TN 3819 fig. 33
+    at t/c 0 (W1's first reading, -0.1948 and -0.1507; round 6's, -0.1947
+    and -0.1505) and fig. 35's no-fin tunnel symbol (0008's first reading,
+    -0.194 and -0.150; round 3's, -0.1941 and -0.150; round 6's, -0.194 and
+    -0.1502). Over the curves 1.003 to 1.124.
+  - The Langley 9 in tunnel's body alone at M 2.41, the same figures (fig.
+    33: -0.1219, -0.1213; fig. 35: -0.120, -0.1202, -0.1202): 0.964 to
+    1.001.
+  - RM L52J21a figs. 31 to 33 panel (d): the unfinned bodies with
+    cylindrical bases, sting-supported, conical, ogive and radome noses at
+    M 1.62, 1.93 and 2.41, every symbol both W1's first reading and round
+    7's found at R 7.0e6 to 9.1e6: the 10 pairs within W1's window of 0.6e6
+    about R 8.06e6 (`L52J21A_FIG31_33D`) and the 14 outside it
+    (`L52J21A_FIG31_33D_OTHER_R`; the second addendum below), 48 values:
+    0.773 to 1.024. The
+    radome nose at M 1.62 (-0.1338, first; -0.1331, round 7) sets the low
+    end: round 7's value over the more negative curve, 0.7731 (0.7959
+    over the served curve alone).
+  - TR 1051 fig. 23(b), as first entered (superseded by the third
+    addendum below, which takes the thinnest measured symbol at each Mach
+    number): the faired curves read at d/h 0.35 (base_sources.md
+    section 2: the first reading, revised, and the round-1 audit's, which
+    had seen the draft's values, so independent but not blind): -0.174 and
+    -0.176 at M 1.5, -0.141 and -0.147 at 2.0, -0.115 and -0.118 at 2.9.
+    Over the curves 0.943 to 1.178; the audit's value at M 2.9 set the
+    high end. TR 1051's model description was read for this entry (PDF
+    pp. 12 and 21, its text and fig. 23(b)'s legend; SHA-256 of the copy
+    `7f1ef2fe...b5d4`): every body a cone-cylinder (10 deg semiangle) or an
+    ogive-cylinder (10-calibre ogival radius); the turbulent data on "the
+    same models with artificial roughness added in the form of a narrow
+    transition strip", which "may not bring about complete transition
+    ahead of the base at Reynolds numbers less than about 2 million"; a
+    rear sting more than 4 base diameters long; fig. 23(b)'s legend gives
+    R 4.0e6 and L/h 7.0 at M 1.5, 4.0e6 and 5.0 at 2.0, 7.5e6 and 5.0 at
+    2.9. Inside the domain by every stated limit, so used. Artificial
+    transition raises the base pressure 5 to 10% (TN 3819 p. 15; 0008
+    section 3.2), toward less base drag, so it does not explain a point
+    above the curve. Thicker stings of the same figure (to d/h 0.85, 1.31
+    to 1.43 times the curve) measure the sting effect itself, which 0008
+    section 3.3 lists apart and which no served rocket has; they are not
+    used.
+- _Opened in the domain and read once, so checked and not used to set
+  the band_ (against both curves, as the sets above; first stated against
+  the served curve only, corrected by the second addendum below): TN 2360
+  figs. 5 and 7 (the same body, round 6 only: fig. 5 1.100 to 1.133 at M
+  1.5 over R 1.95e6 to 4.42e6 and 1.144 to 1.172 at R 0.76e6 on a partly
+  hidden symbol, 0.987 to 1.044 at M 2.0; fig. 7's two symbols 1.007 to
+  1.123; rule 5 of 10.1 asks two readings); fig. 7's faired average of TN
+  2360's refs. 1 to 3 (a compilation, read once, 0.983 to 1.085 at M 1.5
+  to 3.0); NSWCDD/TR-92/509's configuration 1 (one transcription,
+  strut-supported: 0.886 to 0.954, 0.842 to 1.001 with its +-5%); RM
+  L52J21a's round 7 second square outline at M 1.93, R 7.33e6 (-0.1494,
+  1.003 against the served curve, 0.969 against the other). Every one lies
+  inside 0.77 to 1.18; against 0.77 to 1.13, TN 2360 fig. 5's body alone
+  at M 1.5 does not (the third addendum below). (Since 2026-10-28, round
+  20: TN 2360 figs. 5 and 7's body alone is read twice blind and enters
+  the band, and the round 6 values here are superseded; fig. 7's average
+  of refs. 1 to 3 is an average, not data, and is no longer checked: the
+  fourth addendum, applied below.)
+- _The band._ With fig. 18's tunnel symbols (0.856 to 1.078) and Herrin
+  and Dutton (0.824 to 0.885) the envelope is 0.7731 to 1.1782, rounded
+  outward as 0008 rounds it: 0.77 to 1.18 (0.7731 to 1.1253 and 0.77 to
+  1.13 since the third addendum below; 0.7731 to 1.1691 and 0.77 to 1.17
+  since round 20). TN 2360's body alone by itself
+  would give 1.13 at the high end. Every reading named above lies inside
+  the band `bodyBaseDrag` serves (`compiled-curve.test.ts`); on the code
+  before this entry the tests failed at TN 2360's M 1.5 point (0.1948
+  above the band's 0.1872), RM L52J21a's radome nose at M 1.62 (0.1338
+  below 0.1371) and TR 1051 at M 2.9 (0.115 above 0.1085).
+- _Below Mach 1.5_ (W2, 0015 section 11.1): the low end is this band's
+  carried down, 0.77 (0.82 before), and the nominal is the band's
+  midpoint, 1.04 (1.065 before), both by 0015's own rules; the high end,
+  1.31, is unchanged. No total is served below Mach 1.5.
+- _What was known when the band was widened._ Every value above was known:
+  TN 2360's and RM L52J21a's were read for W1 (0015 section 7), TR 1051's
+  for 0008's sting effect, and the review found the miss. No figure was
+  named before it was used, as 10.1 rule 2 asks; TR 1051 fig. 23(b) is
+  named here for the first time as band-setting. This is acceptable here
+  because the rule that takes these values is 0008 section 3.3's, written
+  before any of them was opened for this purpose and applying to them as
+  it stood; because the change only widens (no band end moves inward,
+  nothing is retuned, the served value from Mach 1.5, the curve itself,
+  is unchanged); and because no held-back value was opened, used or
+  looked at to make it.
+- _The hold-outs that used this band._ The DREV gate (0010 sections 4.2
+  and 11.6) and BRL 934's range A (0020) formed their tolerances with
+  0.82 to 1.08. This widens a band after both hold-outs were used. It
+  moves no modelled total and no residual, only the tolerances' ends,
+  each by the change in the body base's band end over the modelled total;
+  their records keep the values of the runs, and
+  `basic-finner.test.ts`, `hold-out-run.test.ts`, `brl934-range-a.test.ts`
+  and the page's tests check the widening against them exactly. The DREV
+  gate's tolerances go from -20.0% to -27.0% and +23.3% to +28.6% to
+  -21.5% to -28.5% and +26.8% to +31.6% (its model-form band from about
+  -13% and +19% to about -15% and +22%); BRL 934's range A's from -24.8%
+  to -27.1% and +27.0% to +28.0% to -26.5% to -29.0% and +30.7% to
+  +31.4%. (With 0.77 to 1.13, the third addendum below: the DREV gate's
+  -21.5% to -28.5% and +25.1% to +30.1%, BRL 934's -26.5% to -29.0% and
+  +28.9% to +29.7%. With 0.77 to 1.17, since round 20: +26.5% to +31.3%
+  and +30.4% to +31.0%.) No verdict changes: the DREV gate's eleven shots were inside and
+  stay inside; BRL 934's range A still passes at all seven rounds of the
+  present model and is still refused at all ten for the rebuilt factor. A
+  wider tolerance can only keep a pass a pass, so the pass says less than
+  it did: the page's validated claim and the two published tables say so
+  beside the run's values, which they keep.
+- _The population_ (`docs/research/refusals`, on main's audit at
+  5921198, which counts the Von Karman noses the page serves): served
+  totals are unchanged, 181 of 8000 cases before and after (68 at Mach 1.5
+  to 1.8, 113 at 1.8 to 3.0; `out/2026-10-27-base-band-before/` and
+  `out/impact.out`); on the audit before 5921198 also unchanged, 153. The
+  band refuses nothing.
+
+**2026-10-27 (ah), addendum: TR 1051 enters at its thinnest measured
+symbol** (the coordinator's ruling of 2026-10-27, after the independent
+review of 5921198..6f44814, which did not pass). Written before any new
+reading of TR 1051 fig. 23(b) is used, and before the band is changed for
+it.
+
+- _What the review found._ In fig. 23(b) the first measured symbols at
+  Mach 2.0 and 2.9 lie at d/h 0.30; the faired curves start at 0.27 and
+  0.26. Only at Mach 1.5 is the first symbol at d/h 0.35. So the values
+  (ah) used at Mach 2.0 and 2.9, both readings at d/h 0.35, are readings
+  of the fairing, not of the thinnest measured sting, and the band's high
+  end, 1.1782, rests on the audit's faired -0.118 at Mach 2.9.
+- _The ruling._ (ah)'s criterion, the thinnest sting, stands as written,
+  applied to measured symbols: a fairing is not data, here as everywhere
+  else in the band.
+- _How TR 1051 enters._ At each Mach number, at its thinnest measured
+  sting symbol, read twice blind (round 19: two fresh blind readers of
+  every symbol in fig. 23(b), started by the coordinator) and paired by a
+  neutral party. It enters as the envelope of the paired readings, against
+  both curves, rounded outward with the other sets.
+- _Where a symbol cannot be paired._ If the thinnest symbol at a Mach
+  number cannot be paired, the present faired d/h 0.35 values stay for
+  that Mach number, labelled as faired values: undecidable, so the wider
+  choice.
+- _Until the pairing._ The band stays 0.77 to 1.18, its high end on the
+  faired values, and is not changed for TR 1051 until the paired readings
+  are sent by the coordinator. (They were; the band was 0.77 to 1.13 from
+  the third addendum below, and is 0.77 to 1.17 since round 20.)
+- _Disclosed._ The reviewer scanned the figure (about -0.113 at d/h 0.30,
+  Mach 2.9), and the coordinator saw that value before this addendum. The
+  implementer of (ah) viewed fig. 23(b) at page resolution on 2026-10-27
+  to read its legend for (ah) and took no value from its symbols.
+
+**2026-10-27 (ah), second addendum: the review's other findings**
+(the independent review of 5921198..6f44814; the coordinator's rulings of
+2026-10-27). None of these moves the band.
+
+- _RM L52J21a, completeness._ (ah) took only the symbols of figs. 31 to
+  33 (d) within 0.6e6 of R 8.06e6. That window is W1's rule for pairing
+  the finned and unfinned bodies (0015 section 3.5), not a limit of the
+  compiled curve's domain. The 14 pairs outside it, at R 7.0e6 to 7.5e6
+  and 8.7e6 to 9.1e6, each within its combined reading error
+  (`w1_round7_pairing_output.txt`), now enter
+  (`L52J21A_FIG31_33D_OTHER_R`; W1's zero member is unchanged). They span
+  0.7766 to 1.0241 against both curves; the set's range becomes 0.7731 to
+  1.0241, and the band stays 0.77 to 1.18 (0.77 to 1.13 since the third
+  addendum below, 0.77 to 1.17 since round 20; each moves the high end
+  only). Round 7's second square at M
+  1.93, R 7.33e6, read once, stays out; so does the first reading's
+  "radome" at M 2.41, R 7.54e6, which round 7 shows to be the conical
+  square paired at R 7.52e6.
+- _Wording._ (ah) said the band takes "every body-alone base pressure
+  opened" in the domain. What is true: every one read twice there; the
+  sets opened there and read once are named in the entry and set nothing.
+  The label, 0010 section 1.2, `compiled-curve.ts` and this entry now say
+  so.
+- _The checked sets' ranges_ were stated against the served curve only;
+  they are now against both curves, as the band is formed (above).
+- _The served value_ is unchanged from Mach 1.5 (the curve itself).
+  Below Mach 1.5 W2's nominal, the band's midpoint, goes from 1.065 to
+  1.04 (0015 section 11.1), so the body base served there falls 2.3%; no
+  total is served there.
+- _Labels._ W2's label now says its low end is the band of Mach 1.5 to
+  3.0 carried down, set by a sting-supported tunnel body with a radome
+  nose at Mach 1.62. A test pins the body base's band text the page shows
+  (`total-drag-display.test.ts`).
+- _Stale numbers._ Statements of 1.065 and of W2's old values in 0015
+  sections 3.6, 5, 10 and 11.2, and of 0.82 to 1.08 in 0008 section 6.2's
+  table, now carry a dated note giving the new values.
+
+**2026-10-28 (ah), third addendum: TR 1051 at its thinnest measured
+symbols, from round 19** (the coordinator's instructions of 2026-10-28,
+after round 19's pairing; the first addendum's rule applied). The band
+becomes **0.77 to 1.13** at Mach 1.5 to 3.0. (0.77 to 1.17 since round
+20, the fourth addendum applied below; the numbers in this addendum are
+those of 0.77 to 1.13, and its finding on TN 2360 fig. 5(a) is settled
+there.)
+
+- _Round 19._ Two fresh blind readers read every symbol of TR 1051 fig.
+  23(b), and a neutral party paired them: 15 matched pairs, every one
+  within the summed stated errors on both d/h and P_B, none unpaired. The
+  readers' CSVs and methods, the brief, the pairing script, its CSV and
+  report, and the coordinator's hash files are committed verbatim in
+  `docs/research/total-drag/audit/round19/` (the readers' working images,
+  117 files and 93 MB, and their binary arrays are left out). The
+  committed files' SHA-256 match the hash files exactly (`A.sha256`,
+  `B.sha256`, `pairing/sha256.txt`):
+
+  | File                   | SHA-256                                                            |
+  | ---------------------- | ------------------------------------------------------------------ |
+  | `A/f23b.csv`           | `32ee1fcf39dcaf2d0afcfa9123230b45ec6b824b223c64940bf7f5770b2bff89` |
+  | `A/method.md`          | `1e2ee051bb591250ababdbf1108cdd6fb89d54f34e4e7d3430fb1c31f56afe58` |
+  | `B/f23b.csv`           | `86bb7d8c0d78b820438098d0d048aa6853eee3139144f2a74de2ccdedfe9c724` |
+  | `B/method.md`          | `20c62a4c132ff31e1a514543fc4fd6e2591e3c0c114b54377a1a7bb99a563b22` |
+  | `pairing/pair_f23b.py` | `673c1f0e13060b0811a4733d29edadebe49a19de7d5983b6c4bdc38ca9a4e8d7` |
+  | `pairing/pairing.csv`  | `2fcfd35194f361a2d9cfab48f92a79064ff344f1f3e3ad7e21dbac3f5d1c570b` |
+  | `pairing/pairing.txt`  | `7433f22712056f2eb5bcac5e0a25b60fa4f928b7bdbc9799b79ee5b1a152355a` |
+
+  Both readers worked from the PDF whose SHA-256 (`7f1ef2fe...b5d4`) is
+  the copy (ah) read for the legend.
+
+- _What the agreement tests (noted 2026-10-28, after the re-review of
+  6f44814..cbb42b2)._ As with round 20, the readers agree to within
+  0.0001 in P_B at the three symbols used (within 0.0002 at all 15), so
+  their agreement mostly tests their calibrations, not two independent
+  placements of each symbol. The reviewer's independent scan confirms
+  the first measured symbol at Mach 2.9 at d/h 0.30.
+
+- _TR 1051 enters at these three symbols only_, the thinnest measured
+  sting at each Mach number, as the plain envelope of the paired readings,
+  both readings' values, not widened by reading errors
+  (`TR1051_FIG23B_THINNEST`):
+
+  | M   | d/h (A, B)    | P_B A (err)      | P_B B (err)      | over the more negative curve | over the served curve |
+  | --- | ------------- | ---------------- | ---------------- | ---------------------------- | --------------------- |
+  | 1.5 | 0.3467, 0.347 | -0.1722 (0.0003) | -0.1723 (0.0005) | 0.9701, 0.9707               | 0.9937, 0.9942        |
+  | 2.0 | 0.2977, 0.298 | -0.1380 (0.0005) | -0.1379 (0.0008) | 0.9225, 0.9218               | 0.9537, 0.9530        |
+  | 2.9 | 0.2961, 0.296 | -0.1126 (0.0003) | -0.1127 (0.0005) | 1.1077, 1.1087               | 1.1243, 1.1253        |
+
+  The set spans 0.9218 (reader B at M 2.0 over the more negative curve)
+  to 1.1253 (reader B at M 2.9 over the served curve). Every one of the
+  three is AGREES in the pairing; the thicker stings of the figure are
+  not used, as before.
+
+- _The band, each set's minimum and maximum against both curves:_ TN
+  2360's body alone 1.0027 to 1.1241; the Langley 9 in tunnel's 0.9639 to
+  1.0006; RM L52J21a 0.7731 to 1.0241; TR 1051 0.9218 to 1.1253; fig.
+  18's tunnel symbols 0.8563 to 1.0783; Herrin and Dutton 0.8237 to
+  0.8849. Envelope 0.7731 (RM L52J21a's radome nose at M 1.62, round 7,
+  over the more negative curve) to 1.1253 (TR 1051 at M 2.9, round 19's
+  reader B, over the served curve); rounded outward, **0.77 to 1.13**.
+  The low end does not move, so W2's band below Mach 1.5 (0.77 to 1.31)
+  and its nominal (1.04) do not move either (0015 section 11.1).
+- _Superseded, kept as the record_ (`TR1051_FIG23B_FAIRED_SUPERSEDED`):
+  the faired d/h 0.35 values (ah) first used, -0.174 and -0.176 at M 1.5,
+  -0.141 and -0.147 at 2.0, -0.115 and -0.118 at 2.9, 0.9425 to 1.1782
+  against both curves. They set nothing; the tests hold TR 1051's band
+  data to the pairing, so none of them can come back unnoticed.
+- _Information only, not used:_ the pairer's widened envelope (each end
+  widened by its own reader's stated error) is -0.1728 to -0.1719 at M
+  1.5, -0.1385 to -0.1371 at 2.0 and -0.1132 to -0.1123 at 2.9. Over the
+  curves it would span 0.9164 to 1.1303, which rounded outward would put
+  the high end at 1.14; 0008's band is formed from the readings, not
+  widened by their errors, so it is not.
+- _The earlier readings at Mach 1.5 were not blind and differ._ At M 1.5
+  the symbol is at d/h 0.347, so the values first used there, -0.174
+  (0008's first reader) and -0.176 (the round-1 audit), are readings of
+  the same symbol. They lie 0.0017 to 0.0038 more negative than the blind
+  pair, beyond round 19's summed errors (0.0008). Other sets in the band
+  that came from the same readers: fig. 18's twelve tunnel symbols (the
+  first reading and the round-1 audit's, `TN3819_FIG18_TUNNEL`; they have
+  no blind reading), the curve table itself (the round-1 audit's), fig.
+  35's no-fin tunnel symbol in TN 2360's set (0008's first reading) and
+  Herrin and Dutton (0008's reading of Tucker's slides). What it bears on:
+  the tunnel symbols' values, which rest on these two readings alone.
+  Shifted by 0.004 in P_B either way, they span 0.8338 to 1.0329 or
+  0.8789 to 1.1237 over the curves (0.8563 to 1.0783 as read); neither
+  end of the band (0.7731, 1.1253) moves. Herrin and Dutton, shifted the
+  same way, span 0.791 to 0.918 (0.8237 to 0.8849 as read): no end moves.
+  The curve table was read again blind in round 7 and agrees within the
+  combined errors at M 1.5, 2.0, 2.5 and 3.0 (its one misread, at M 1.4,
+  below the band's range, was replaced then). Fig. 35's no-fin symbol
+  agrees with rounds 3's and 6's readings within 0.0002 at M 1.5 and 2.0;
+  by itself it is 1.1194 at M 1.5, and the set's high end, 1.1241, is W1's
+  reading of fig. 33. The same first reading and
+  audit also give 0008 section 3.2's sting-effect sizes (0.064, 0.049 and
+  0.027 from d/h 0.35 to 0.85); round 19's symbols give 0.058 at M 1.5
+  (d/h 0.347 to 0.897), 0.054 at 2.0 (0.298 to 0.898) and 0.030 at 2.9
+  (0.296 to 0.900). Those set no band and no code uses them; recorded,
+  not changed.
+- _Checked and not used, against the new band:_ TN 2360 fig. 5(a)'s body
+  alone at M 1.5 (round 6, read once) now lies above it: -0.1964 at R
+  1.95e6 and at 4.42e6, 1.1333 over the served curve (the served band's
+  end at M 1.5 is 0.1958 in -P_B; 0.0006 above it, against a reading
+  error of 0.0002), and -0.2031 at R 0.76e6 on a partly hidden symbol,
+  1.1720 (error 0.003). With 0.77 to 1.18 they lay inside. By 10.1 rule 5
+  a value read once sets nothing, so they do not move the band; whether
+  fig. 5(a) is read a second time, blind, is the coordinator's to rule.
+  Every other set checked and not used still lies inside: fig. 5 at M 2.0
+  (0.987 to 1.044), fig. 7's two symbols (1.007 to 1.123), fig. 7's
+  compilation (0.983 to 1.085), NSWCDD/TR-92/509 (0.842 to 1.001 with its
+  +-5%) and round 7's second square (0.969 to 1.003).
+- _What moves._ Only the band's high end, from 1.18 to 1.13: the body
+  base's band from Mach 1.5 is narrower than (ah) first made it and still
+  wider than 0.82 to 1.08. The served value does not move. The label,
+  the page's band text, `bodyBaseDrag`, W2 from Mach 1.5 (0015 section
+  11.2's steps: the wedges' high ends 0.2812 at M 1.5, 0.2779 at 1.6,
+  0.2746 and 0.2757 at 1.62), the vacuum fractions (0.9199 at M 3.0 with
+  fins at the base, 0.686 without) and the records follow. Every reading
+  in `BODY_ALONE_IN_DOMAIN` lies inside the served band
+  (`compiled-curve.test.ts`).
+- _The hold-outs._ The DREV gate's tolerances with this band are -21.5%
+  to -28.5% and +25.1% to +30.1% (+21.0% to +24.7% without the wall),
+  its model-form band -13.9% to -15.4% and +19.8% to +20.7%; BRL 934's
+  range A's -26.5% to -29.0% and +28.9% to +29.7%. The records keep the
+  runs' values; no total, residual or verdict changes: the DREV gate's
+  eleven shots are inside, BRL 934's range A passes at all seven rounds
+  for the present model and is refused at all ten for the rebuilt factor.
+  The page's validated claim and both published tables' captions state
+  these tolerances, and a test now computes them from the library and
+  holds the words to them.
+- _Checks_ (`docs/research/base-and-total/runs/2026-10-27-ah-checks.out`,
+  its 2026-10-28 section): every error planted before, and five new ones
+  (the faired value back for the M 2.9 symbol, TR 1051 widened by its
+  reading error, the claim's and both captions' tolerances left at 1.18's),
+  is caught. The refusal population (`docs/research/refusals`) is
+  unchanged, as the band refuses nothing (`out/impact.out`).
+- _Merged with (ad) (A5, main at f88ecbe, 2026-10-28)._ (ad) and 0015
+  sections 3.3 and 3.6 state factors on W2's term with its nominal 1.065
+  and bands from 0.82 to 1.08; on the merged code they are 1.04 and 0.77
+  to 1.13, and dated notes beside them give the merged values
+  (`base-w2.test.ts` holds them). One thing for the coordinator: (ad)
+  withdrew the plain curve a chord ahead because its band missed TN
+  2360's measurement there (the reviewer's case at M 2.0: band 0.1187 to
+  0.1563, measured 0.1603, at least 1.09 times the curve). With 0.77 to
+  1.13 that band would be 0.1114 to 0.1635, which holds the measurement.
+  Nothing is changed for it: A5's routing stands as merged, and
+  `fins-on-base-routing.test.ts` holds both numbers. (Ruled 2026-10-28:
+  the withdrawal stands on section 10.2; the note at the end of (ad)'s
+  entry of 2026-10-27.)
+- _Every TN 2360 base pressure against the band served_ (the review's
+  comparison, made permanent after the merge: `tn2360-served.test.ts`).
+  Each reading the library holds, at its own geometry (four or two
+  rectangular circular-arc fins, root chord 1.5 body diameters, the
+  trailing edge 0 to 1 chord ahead; fig. 6's increments on each of the
+  five body-alone readings), as read: 424 values at Mach 1.5 and 2.0,
+  none outside and none refused. The closest is the body alone at M 1.5,
+  0.1948 against the band's 0.1958 (0.6% of the term); before A5, the 30
+  readings at x/c 1.0 lay outside the plain curve's band. Errors planted
+  in the code are caught (the band's high end left at 1.08: 173 outside;
+  a trailing edge exactly a chord ahead refused); a misread of the data
+  themselves moves the bands built on them and is caught by the tests
+  that hold those data, not by this one.
+
+**2026-10-28 (ah), fourth addendum: TN 2360 figs. 5 and 7 read twice
+blind (round 20), and how they enter** (the coordinator's ruling of
+2026-10-28 on the third addendum's finding). Written before any round 20
+value is used or seen, and before the band is changed for it.
+
+- _The ruling._ A body-alone value inside the domain that lies above the
+  band served cannot stay out because it was read once. TN 2360 figs. 5
+  and 7 are read again, every symbol of every panel, by two fresh blind
+  readers (round 20, started by the coordinator), and the readings are
+  paired by a neutral party.
+- _What enters._ Paired symbols of figs. 5 and 7 inside the compiled
+  curve's domain, as 0008 section 3.3 stated it before this addendum,
+  enter the band as every other set does: the plain envelope of the
+  paired readings (both readers' values, not widened by their errors),
+  against both curves, rounded outward with the other sets. Inside the
+  domain means the body alone ("tail off" in fig. 5, "without tail" in
+  fig. 7) at Mach 1.5 or 2.0, at a Reynolds number judged inside below.
+  The symbols with a tail (fig. 5's x/c -1.0 to 1.0, fig. 7's cruciform
+  tail at x/c 0) have fins at, near or behind the base, outside this
+  domain; this addendum decides nothing about them for the fins-on-base
+  factors.
+- _Not data._ Fig. 5's faired lines, and fig. 7's dashed curve of ref. 4
+  and solid average of refs. 1 to 3, are fairings and averages, not
+  measurements. They are not used, as nowhere else in the band.
+- _A partly hidden or ambiguous symbol_ keeps every reading either reader
+  gives. If it pairs on any of its readings, the envelope over all its
+  readings enters.
+- _A symbol that cannot be paired_ stays checked and not used, and is
+  recorded with both readings.
+- _The Reynolds numbers, judged now, by the domain as stated._ 0008
+  section 3.3 states no Reynolds number limit; it requires a turbulent
+  layer at the base. TN 2360's own text says where its body had one. Its
+  models carried a 1/4 in salt band on the nose "to insure local
+  transition to a turbulent boundary layer", at R 0.5e6 to 4.5e6 on the
+  body length (p. 5). On p. 8: "with roughness added to the body near the
+  nose to achieve this condition [a fully developed turbulent boundary
+  layer] the base-pressure coefficient was essentially independent of
+  Reynolds number above about 2 million for the body alone and in
+  combination with the tail surfaces"; its runs with a smooth nose showed
+  a laminar layer, the base pressure falling as R rose (fig. 5 is
+  captioned "roughness added to body"). Its conclusion 3 puts the tails'
+  increment as independent of R "from a value of 2 million to 6 million".
+  On p. 8 it compares fig. 7's body alone with previous results "obtained
+  at Reynolds numbers from about 2 to 16 million", and on p. 11 finds them
+  in essential agreement. So, for every Reynolds number the record lists
+  for these figures (round 6's readings, `audit/round6/readings/`, and the
+  third addendum), on the body length:
+
+  | Figure | M        | Stations as the record lists them                       | Judged                                                                                                                                  |
+  | ------ | -------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+  | 5(a)   | 1.5      | the lowest, about 0.56e6 to 0.80e6 (tail off at 0.76e6) | outside: below about 2 million TN 2360 does not show the layer at the base turbulent                                                    |
+  | 5(a)   | 1.5      | 1.95e6, 3.26e6, 4.42e6                                  | inside: the station at about 2 million is the first of the range the source calls independent of R                                      |
+  | 5(b)   | 2.0      | the lowest, about 0.48e6 to 0.65e6 (tail off at 0.48e6) | outside, as at M 1.5                                                                                                                    |
+  | 5(b)   | 2.0      | 1.85e6, 3.31e6, 4.42e6                                  | inside, as at M 1.5                                                                                                                     |
+  | 7      | 1.5, 2.0 | none listed                                             | inside: no R is listed, and TN 2360 offers these as turbulent results; with no limit stated, the wider choice, as in the first addendum |
+
+  No station lies between about 0.8e6 and 1.8e6: a symbol round 20 places
+  below 1.0e6 belongs to the lowest station and is outside; one above it
+  belongs to the second station (about 1.8e6 to 1.95e6) or a higher one
+  and is inside. The line is the source's, not the values'.
+
+- _Disclosed._ Round 6's values for these figures are in the repository
+  and known to the coordinator and to the implementer, as are the ratios
+  the third addendum gives at M 1.5: 1.1333 (R 1.95e6 and 4.42e6) and
+  1.1720 (R 0.76e6, the partly hidden symbol). The judgement above puts
+  the symbol at R 0.76e6 outside, and so it matters: with round 6's
+  values the stations judged inside would put the band's high end at
+  1.14, and the lowest station would put it at 1.18. It rests on TN
+  2360's text, quoted above, which the implementer read on 2026-10-28
+  for this addendum (pp. 5 to 11, the conclusions and the figure
+  captions; NTRS 19930083086, PDF SHA-256
+  `95937173fa78bdd41e24a3caded6d06779df885263b66c23f13225a18d742a59`),
+  taking no value from any figure, as TR 1051's text was read for (ah).
+- _Until the pairing._ The band stays 0.77 to 1.13 and is not changed for
+  figs. 5 and 7 until the coordinator sends the paired readings. The
+  implementer does not open the readers' folder before then.
+
+**2026-10-28 (ah), fourth addendum, corrected: every tripped station of
+figs. 5 and 7 is inside** (the coordinator's correction, made before any
+round 20 value is used; the addendum above is kept as written).
+
+- _What was wrong._ 0008 section 3.3's domain requires a turbulent layer
+  at the base and states no Reynolds number limit. TN 2360 p. 5 says the
+  salt band was there "to insure local transition" on its runs at R 0.5e6
+  to 4.5e6. Its p. 8, "essentially independent of Reynolds number above
+  about 2 million", describes how P_B varies with R; it does not say the
+  layer is laminar or transitional below that. Putting the lowest station
+  outside added a limit the domain does not state, inferred with round
+  6's values known, and it narrowed. A case the stated domain does not
+  decide takes the wider choice.
+- _Corrected._ Every tripped (salt-band) station of figs. 5 and 7 is
+  inside the domain, the lowest included: fig. 5(a)'s at about 0.56e6 to
+  0.80e6 (the tail-off symbol at 0.76e6) and fig. 5(b)'s at about 0.48e6
+  to 0.65e6 (the tail-off symbol at 0.48e6), with every higher station
+  and fig. 7's symbols. Only runs the source itself says had a laminar or
+  transitional layer are outside: the smooth-nosed runs of p. 8, which
+  fig. 5, captioned "roughness added to body", does not plot. The table's
+  two "outside" rows and the line drawn at 1.0e6 no longer apply.
+- _It widens._ With round 6's values the band's high end would go to
+  about 1.18 (1.1720 at R 0.76e6, rounded outward), not 1.14.
+- _Information only._ Whether the station at 1.85e6 to 1.95e6 is TN
+  2360's "about 2 million" no longer decides anything, since every
+  tripped station is inside.
+- _Disclosed._ The correction was made by the coordinator with round 6's
+  values known, before the pairing; the implementer records it as given.
+
+**2026-10-28 (ah), a note on the correction: the evidence against it,
+and a question for the owner** (the coordinator's, after the re-review of
+6f44814..cbb42b2, which passed; recorded as given).
+
+- _What the correction left out._ TN 2360 p. 8 describes the signature of
+  transition: while the layer is laminar the base-pressure coefficient
+  grows more negative as R rises, and transition brings a positive
+  increment. Fig. 5(a)'s lowest station is the most negative point of its
+  run, -0.2026 (round 20, R 0.765e6) against about -0.196 above 2 million
+  (-0.1953 to -0.1968), which fits a station still in transition. TN
+  2360's ref. 1 is Chapman's TN 2137, published as TR 1051, which says
+  roughness "may not bring about complete transition ahead of the base at
+  Reynolds numbers less than about 2 million".
+- _So_ the source does not settle the layer's state at the lowest
+  station. The ruling stays "undecided, take the wider choice", as in the
+  first addendum, and the band's high end, 1.17, probably rests on a point
+  whose layer was not fully turbulent. Without it the high end would be
+  1.14 (fig. 5(a) at R 4.41e6, 1.1356).
+- _Open question for the owner:_ whether TN 2360 fig. 5's lowest station
+  (R about 0.48e6 to 0.80e6, tripped but below where its own text shows
+  the base pressure independent of R) belongs in the compiled curve's
+  domain. Until the owner decides, it is inside and the band is 0.77 to
+  1.17.
+- _Timing, disclosed (the re-review)._ Reader B's fig. 7 values in data
+  units existed 3 s before the correction (4d7d5c9) was committed. Fig. 7
+  lists no Reynolds number, so the correction does not bear on it: its
+  two body-alone symbols were inside under the fourth addendum as first
+  written too.
+
+**2026-10-28 (ah), the fourth addendum applied: TN 2360 figs. 5 and 7
+from round 20** (the coordinator's instructions of 2026-10-28, after
+round 20's pairing; the fourth addendum and its correction, 4d7d5c9,
+applied as registered). The band becomes **0.77 to 1.17** at Mach 1.5 to
+3.0.
+
+- _Round 20._ Two blind readers read every symbol of TN 2360 figs. 5
+  and 7, all panels, from the PDF whose SHA-256 the fourth addendum
+  records; a neutral party paired them. 60 of 60 symbols agree within
+  the summed stated errors, the ten body-alone symbols among them, and
+  testing every reader's alternatives changes no verdict. The readers'
+  CSVs and methods, the brief, the pairing script, its CSV and report,
+  and the hash files are committed verbatim in
+  `docs/research/total-drag/audit/round20/` (no images, renders or
+  working files). Each committed file hashes to the value its hash file
+  gives:
+
+  | File                   | SHA-256                                                            |
+  | ---------------------- | ------------------------------------------------------------------ |
+  | `A/f5f7.csv`           | `22d48e5592687e991c1d484bd1529088c30f7ef35910680699c23d8e2b86ea23` |
+  | `A/method.md`          | `29cd3bc375572de7c648c5ffaed375c14c267b140309af204bd4a3a3e5311265` |
+  | `B/f5f7.csv`           | `a426b5ff4c0c83d6c4c0da3aae3c72558dc3e80c04636f3446e4cd5a46741f75` |
+  | `B/method.md`          | `6b579c3c84bd809edbb054e1ea208fc356d0dc2715181760c251cc47cf3c3df1` |
+  | `pairing/pair_f5f7.py` | `78eb7754cbf7f98067ec533067cd667e18a82d98b37a0239452ca7027bee5292` |
+  | `pairing/pairing.csv`  | `19abec8cbfca03187a0c873da240a95a4cf1fb00c95d3efacfc823e6b76f2b60` |
+  | `pairing/pairing.txt`  | `9f9636a1e35012002101770fcf8b0848b0f46733a2571e12fd4c84b5296e2b64` |
+
+- _What the agreement tests._ The pairer notes (relayed by the
+  coordinator) that both readers took nearly the same pixel positions on
+  the same scan, so their agreement mostly tests their calibrations, not
+  two independent placements of each symbol.
+- _What enters_, by the fourth addendum as corrected: all ten body-alone
+  symbols, every station tripped, each as the plain envelope of every
+  reading of both readers, against both curves (`TN2360_FIG5_FIG7_BODY_ALONE`):
+
+  | Figure | M   | R (A)   | P_B, every reading | Over the more negative curve | Over the served curve |
+  | ------ | --- | ------- | ------------------ | ---------------------------- | --------------------- |
+  | 5(a)   | 1.5 | 0.765e6 | -0.2026 to -0.2018 | 1.1369 to 1.1414             | 1.1645 to 1.1691      |
+  | 5(a)   | 1.5 | 1.954e6 | -0.1962 to -0.1961 | 1.1048 to 1.1054             | 1.1316 to 1.1321      |
+  | 5(a)   | 1.5 | 3.263e6 | -0.1955 to -0.1953 | 1.1003 to 1.1014             | 1.1269 to 1.1281      |
+  | 5(a)   | 1.5 | 4.414e6 | -0.1968 to -0.1966 | 1.1076 to 1.1087             | 1.1344 to 1.1356      |
+  | 5(b)   | 2.0 | 0.475e6 | -0.1487 to -0.1486 | 0.9933 to 0.9940             | 1.0270 to 1.0276      |
+  | 5(b)   | 2.0 | 1.832e6 | -0.1475 to -0.1473 | 0.9846 to 0.9860             | 1.0180 to 1.0194      |
+  | 5(b)   | 2.0 | 3.308e6 | -0.1493 to -0.1492 | 0.9973 to 0.9980             | 1.0311 to 1.0318      |
+  | 5(b)   | 2.0 | 4.431e6 | -0.1516 to -0.1512 | 1.0107 to 1.0134             | 1.0449 to 1.0477      |
+  | 7      | 1.5 | none    | -0.1951 to -0.1949 | 1.0980 to 1.0992             | 1.1246 to 1.1258      |
+  | 7      | 2.0 | none    | -0.1511 to -0.1508 | 1.0080 to 1.0100             | 1.0422 to 1.0442      |
+
+  The symbol at R 0.765e6 is partly hidden; both readers give
+  alternatives (A three readings, B two), and all five enter. TN 2360's
+  set now spans 0.9846 (fig. 5(b) at R 1.83e6, reader B's -0.1473, over
+  the more negative curve) to 1.1691 (fig. 5(a) at R 0.765e6, reader B's
+  -0.2026, over the served curve); 1.0027 to 1.1241 with TN 3819 figs. 33
+  and 35 alone.
+
+- _The band, each set's minimum and maximum against both curves:_ TN
+  2360's body alone 0.9846 to 1.1691; the Langley 9 in tunnel's 0.9639 to
+  1.0006; RM L52J21a 0.7731 to 1.0241; TR 1051 0.9218 to 1.1253; fig.
+  18's tunnel symbols 0.8563 to 1.0783; Herrin and Dutton 0.8237 to
+  0.8849. Envelope 0.7731 (RM L52J21a's radome nose at M 1.62) to 1.1691
+  (TN 2360 fig. 5(a) at R 0.765e6); rounded outward, **0.77 to 1.17**.
+  Without the lowest station, which the correction of the fourth
+  addendum put inside, the high end would be 1.1356 (fig. 5(a) at R
+  4.41e6) and the band 0.77 to 1.14. The low end does not move, so W2's
+  band below Mach 1.5 (0.77 to 1.31) and its nominal (1.04) do not move.
+- _Superseded, kept as the record_ (`TN2360_FIG5_FIG7_ROUND6_SUPERSEDED`):
+  round 6's single readings of the same ten symbols, which (ah) listed as
+  checked and not used, 0.9873 to 1.1720 against both curves. They set
+  nothing. Round 20 reads the partly hidden symbol at R 0.765e6 at -0.2018
+  to -0.2026, where round 6 read -0.2031 (error 0.003). Fig. 7's average of
+  refs. 1 to 3 is an average, not data, and is no longer checked.
+- _What moves._ Only the band's high end, from 1.13 to 1.17. The served
+  value does not move. The label, the page's band text, `bodyBaseDrag`
+  (at M 1.5 without fins: 0.1733, band 0.1334 to 0.2028), 0015 section
+  11.2's steps (the wedges' high ends 0.2892 at M 1.5,
+  0.2857 at 1.6, 0.2824 and 0.2838 at 1.62), 0015 section 3.3's steps at
+  M 1.5 with fins ahead (high ends 0.2082, 0.2804 and 0.2271), the vacuum fractions
+  (0.9486 at M 3.0 with fins at the base, 0.711 without) and the records
+  follow. With 1.17 the plain curve's band a chord ahead at M 2.0 would
+  be 0.1114 to 0.1693; the withdrawal stands on section 10.2 (the note to
+  (ad)).
+- _The hold-outs._ The DREV gate's tolerances with this band are -21.5%
+  to -28.5% and +26.5% to +31.3% (+22.2% to +25.9% without the wall), its
+  model-form band -13.9% to -15.4% and +21.0% to +22.2%; BRL 934's range
+  A's -26.5% to -29.0% and +30.4% to +31.0%. The records keep the runs'
+  values; no total, residual or verdict changes: the DREV gate's eleven
+  shots are inside, BRL 934's range A passes at all seven rounds for the
+  present model and is refused at all ten for the rebuilt factor. The
+  page: the gate's shot DA95021308 0.5940 (0.5052 to 0.7234, -15.0% to
+  +21.8%); BRL 934's round at M 2.423 0.4314 (0.3652 to 0.5320, -15.4%
+  to +23.4%).
+- _Every TN 2360 base pressure against the band served_
+  (`tn2360-served.test.ts`), now with figs. 5 and 7's 23 readings: 447
+  values, none outside and none refused. The closest is the one that
+  sets the band's end: fig. 5(a) at R 0.765e6, reader B's 0.2026 against
+  0.2028.
+- _Merged with B1 (main at cdd26e6, 2026-10-28)._ 0019 section 3.4.1's
+  F4 widens the trailing edges' band at the DREV gate's Mach 1.799 shot,
+  also after the gate was used. With both widenings the gate's model-form
+  band is -13.9% to -15.6% and +21.0% to +22.2% (-15.4% without F4), and
+  its tolerances stay -21.5% to -28.5% and +26.5% to +31.3% (+22.2% to
+  +25.9% without the wall) at one decimal; recomputed by running
+  (`basic-finner.test.ts`, `hold-out-run.test.ts`). The gate table's
+  caption names both widenings.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to

@@ -1,0 +1,172 @@
+PAIRING OF TWO BLIND READINGS: NACA TR 1051, FIGURE 23(b)
+Base pressure coefficient P_b against sting diameter over base diameter d/h
+==============================================================================
+
+INPUTS (read by this script; nothing else is read)
+  Reader A: /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/f23b-readers/A/f23b.csv
+    SHA-256 32ee1fcf39dcaf2d0afcfa9123230b45ec6b824b223c64940bf7f5770b2bff89 (matches the expected hash)
+    15 data rows; line endings LF
+  Reader B: /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/f23b-readers/B/f23b.csv
+    SHA-256 86bb7d8c0d78b820438098d0d048aa6853eee3139144f2a74de2ccdedfe9c724 (matches the expected hash)
+    15 data rows; line endings CRLF
+
+CONVENTIONS
+  Difference = reader A minus reader B, exact decimal subtraction of the
+  values as written. Combined error = A's stated error + B's stated error.
+  A pair is within on an axis when |difference| <= combined error
+  (equality counts as within). AGREES = within on both d/h and p_b.
+  BEYOND amount = |difference| - combined error, for each axis that exceeds.
+  Nothing is rounded, averaged or corrected. Reader B writes d/h to three
+  decimals and reader A to four; each value is used exactly as written.
+  Error source: every row of both CSVs states both errors, so each row's own
+  errors are used. The method.md fallback (rule 5) was not needed.
+  Error standard, as stated in each reader's method.md (noted by the pairing
+  party; the script does not read method.md): both readers give one standard
+  deviation of their own reading error, excluding draftsman placement error.
+
+MATCHING (rule 1)
+  M=1.5 circle   : A 7, B 7 symbols; matched 1..7 by increasing d/h.
+  M=2.0 triangle : A 4, B 4 symbols; matched 1..4 by increasing d/h.
+  M=2.9 square   : A 4, B 4 symbols; matched 1..4 by increasing d/h.
+  Every matched partner is also the other reader's nearest symbol in d/h,
+  both ways, so no order match is unclear.
+  All sets have equal counts in both readers. No set was left unpaired.
+
+TABLE 1. d/h (rule 2)
+Mach symbol #         A d/h   A err    B d/h   B err      A-B    comb within beyond by
+--------------------------------------------------------------------------------------
+1.5 circle   1/7     0.3467  0.0006    0.347  0.0015  -0.0003  0.0021 yes    
+1.5 circle   2/7     0.4963  0.0006    0.496  0.0015  +0.0003  0.0021 yes    
+1.5 circle   3/7     0.5979  0.0006    0.598  0.0015  -0.0001  0.0021 yes    
+1.5 circle   4/7     0.6973  0.0006    0.697  0.0015  +0.0003  0.0021 yes    
+1.5 circle   5/7     0.7967  0.0006    0.797  0.0015  -0.0003  0.0021 yes    
+1.5 circle   6/7     0.8973  0.0006    0.897  0.0015  +0.0003  0.0021 yes    
+1.5 circle   7/7     0.9986  0.0006    0.999   0.002  -0.0004  0.0026 yes    
+2.0 triangle 1/4     0.2977  0.0006    0.298  0.0015  -0.0003  0.0021 yes    
+2.0 triangle 2/4     0.3900  0.0006    0.390   0.002   0.0000  0.0026 yes    
+2.0 triangle 3/4     0.5979  0.0006    0.598  0.0015  -0.0001  0.0021 yes    
+2.0 triangle 4/4     0.8976  0.0006    0.898  0.0015  -0.0004  0.0021 yes    
+2.9 square   1/4     0.2961  0.0006    0.296  0.0015  +0.0001  0.0021 yes    
+2.9 square   2/4     0.3974  0.0006    0.397  0.0015  +0.0004  0.0021 yes    
+2.9 square   3/4     0.5992  0.0006    0.599  0.0015  +0.0002  0.0021 yes    
+2.9 square   4/4     0.8996  0.0006    0.900  0.0015  -0.0004  0.0021 yes    
+
+TABLE 2. p_b (rule 2)
+Mach symbol #         A p_b   A err    B p_b   B err      A-B    comb within beyond by
+--------------------------------------------------------------------------------------
+1.5 circle   1/7    -0.1722  0.0003  -0.1723  0.0005  +0.0001  0.0008 yes    
+1.5 circle   2/7    -0.1820  0.0003  -0.1821  0.0005  +0.0001  0.0008 yes    
+1.5 circle   3/7    -0.1967  0.0003  -0.1967  0.0005   0.0000  0.0008 yes    
+1.5 circle   4/7    -0.2161  0.0003  -0.2161  0.0005   0.0000  0.0008 yes    
+1.5 circle   5/7    -0.2299  0.0003  -0.2300  0.0005  +0.0001  0.0008 yes    
+1.5 circle   6/7    -0.2306  0.0003  -0.2306  0.0005   0.0000  0.0008 yes    
+1.5 circle   7/7    -0.0070  0.0003  -0.0071  0.0005  +0.0001  0.0008 yes    
+2.0 triangle 1/4    -0.1380  0.0005  -0.1379  0.0008  -0.0001  0.0013 yes    
+2.0 triangle 2/4    -0.1393  0.0005  -0.1392   0.001  -0.0001  0.0015 yes    
+2.0 triangle 3/4    -0.1553  0.0005  -0.1553   0.001   0.0000  0.0015 yes    
+2.0 triangle 4/4    -0.1918  0.0005  -0.1916  0.0008  -0.0002  0.0013 yes    
+2.9 square   1/4    -0.1126  0.0003  -0.1127  0.0005  +0.0001  0.0008 yes    
+2.9 square   2/4    -0.1157  0.0003  -0.1157  0.0005   0.0000  0.0008 yes    
+2.9 square   3/4    -0.1278  0.0004  -0.1280  0.0005  +0.0002  0.0009 yes    
+2.9 square   4/4    -0.1428  0.0004  -0.1429  0.0005  +0.0001  0.0009 yes    
+
+TABLE 3. Verdict and flags (rules 3 and 4; flags exactly as each reader wrote them)
+Mach symbol #      verdict beyond by              A flags        B flags       
+-------------------------------------------------------------------------------
+1.5 circle   1/7   AGREES                         -              -             
+1.5 circle   2/7   AGREES                         -              -             
+1.5 circle   3/7   AGREES                         -              -             
+1.5 circle   4/7   AGREES                         -              -             
+1.5 circle   5/7   AGREES                         -              -             
+1.5 circle   6/7   AGREES                         -              out-of-line   
+1.5 circle   7/7   AGREES                         ambiguous      ambiguous     
+2.0 triangle 1/4   AGREES                         -              -             
+2.0 triangle 2/4   AGREES                         -              out-of-line   
+2.0 triangle 3/4   AGREES                         -              -             
+2.0 triangle 4/4   AGREES                         -              -             
+2.9 square   1/4   AGREES                         -              -             
+2.9 square   2/4   AGREES                         -              -             
+2.9 square   3/4   AGREES                         -              -             
+2.9 square   4/4   AGREES                         -              -             
+
+COUNT: 15 matched pairs; AGREES 15; BEYOND 0.
+
+FLAGS AND ALTERNATIVES CARRIED THROUGH (rule 4; text verbatim, not resolved)
+  M=1.5 circle 6/7  (A d/h 0.8973, p_b -0.2306; B d/h 0.897, p_b -0.2306)
+    A flags: (none)
+    B flags: out-of-line
+    A alternatives: (none)
+    B alternatives: (none)
+  M=1.5 circle 7/7  (A d/h 0.9986, p_b -0.0070; B d/h 0.999, p_b -0.0071)
+    A flags: ambiguous
+    B flags: ambiguous
+    A alternatives: mach=2.0 (all three fairings end at this one circle; no triangle is drawn here); mach=2.9 (same; no square is drawn here); possibly a common limiting point for all three Mach numbers rather than a measured M=1.5 point
+    B alternatives: mach=2.0 (same plotted point; the M=2.0 fairing ends on it); mach=2.9 (same plotted point; the M=2.9 fairing ends on it); a common end point for all three Mach numbers
+    Ambiguous in both readers. Primary reading as given by both readers: M=1.5 circle.
+    Paired here under that primary reading, by legend symbol and order.
+    The alternatives above are listed, not resolved.
+  M=2.0 triangle 2/4  (A d/h 0.3900, p_b -0.1393; B d/h 0.390, p_b -0.1392)
+    A flags: (none)
+    B flags: out-of-line
+    A alternatives: (none)
+    B alternatives: (none)
+
+==============================================================================
+SUMMARY: THINNEST MEASURED SYMBOL AT EACH MACH NUMBER
+==============================================================================
+
+M = 1.5
+  Thinnest measured symbol: circle 1 of 7 (smallest d/h in this set for both readers).
+    d/h: A 0.3467 (err 0.0006), B 0.347 (err 0.0015); A-B -0.0003, combined 0.0021
+    p_b: A -0.1722 (err 0.0003), B -0.1723 (err 0.0005); A-B +0.0001, combined 0.0008
+    Flags: A none; B none
+  Verdict: AGREES (d/h and p_b both within combined error).
+  Plain envelope of p_b (no widening):
+    most negative  -0.1723 (reader B)
+    least negative -0.1722 (reader A)
+  Widened envelope (each end widened by its own reader's stated error, outward):
+    most negative  -0.1728 = -0.1723 - 0.0005 (reader B)
+    least negative -0.1719 = -0.1722 + 0.0003 (reader A)
+  Envelope: plain [-0.1723, -0.1722]; widened [-0.1728, -0.1719].
+  Note: reader B's own band reaches -0.1718 on the less negative side, past the
+  widened end -0.1719. As specified, only the outer reading is widened.
+
+M = 2.0
+  Thinnest measured symbol: triangle 1 of 4 (smallest d/h in this set for both readers).
+    d/h: A 0.2977 (err 0.0006), B 0.298 (err 0.0015); A-B -0.0003, combined 0.0021
+    p_b: A -0.1380 (err 0.0005), B -0.1379 (err 0.0008); A-B -0.0001, combined 0.0013
+    Flags: A none; B none
+    The ambiguous M=1.5 circle 7/7 (d/h A 0.9986, B 0.999) lists M=2.0 as an
+    alternative. Its d/h is larger than this symbol's in both readings, so
+    it would not be the thinnest under that alternative. Not resolved here.
+  Verdict: AGREES (d/h and p_b both within combined error).
+  Plain envelope of p_b (no widening):
+    most negative  -0.1380 (reader A)
+    least negative -0.1379 (reader B)
+  Widened envelope (each end widened by its own reader's stated error, outward):
+    most negative  -0.1385 = -0.1380 - 0.0005 (reader A)
+    least negative -0.1371 = -0.1379 + 0.0008 (reader B)
+  Envelope: plain [-0.1380, -0.1379]; widened [-0.1385, -0.1371].
+  Note: reader B's own band reaches -0.1387 on the more negative side, past the
+  widened end -0.1385. As specified, only the outer reading is widened.
+
+M = 2.9
+  Thinnest measured symbol: square 1 of 4 (smallest d/h in this set for both readers).
+    d/h: A 0.2961 (err 0.0006), B 0.296 (err 0.0015); A-B +0.0001, combined 0.0021
+    p_b: A -0.1126 (err 0.0003), B -0.1127 (err 0.0005); A-B +0.0001, combined 0.0008
+    Flags: A none; B none
+    The ambiguous M=1.5 circle 7/7 (d/h A 0.9986, B 0.999) lists M=2.9 as an
+    alternative. Its d/h is larger than this symbol's in both readings, so
+    it would not be the thinnest under that alternative. Not resolved here.
+  Verdict: AGREES (d/h and p_b both within combined error).
+  Plain envelope of p_b (no widening):
+    most negative  -0.1127 (reader B)
+    least negative -0.1126 (reader A)
+  Widened envelope (each end widened by its own reader's stated error, outward):
+    most negative  -0.1132 = -0.1127 - 0.0005 (reader B)
+    least negative -0.1123 = -0.1126 + 0.0003 (reader A)
+  Envelope: plain [-0.1127, -0.1126]; widened [-0.1132, -0.1123].
+  Note: reader B's own band reaches -0.1122 on the less negative side, past the
+  widened end -0.1123. As specified, only the outer reading is widened.
+
+COUNT: AGREES 15, BEYOND 0, of 15 matched pairs. Unpaired sets: 0.
