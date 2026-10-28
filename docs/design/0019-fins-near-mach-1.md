@@ -1540,7 +1540,11 @@ formed on two of them, and the shape widening's size on two of them.
       run is the same line for line (totals 155 of 8000, the cross-check
       1200 of 1200): the extra reasons R2 gives are on edges already
       refused, and R1 moves no refusal. R1 raises the term's high end in
-      the same 23 totals, by up to 0.0041 in C_D, 5.1% of the term.
+      the same 23 totals, by up to 0.0041 in C_D, 5.1% of the term. On the
+      head merged with main at 3e026a8 (A3 and A4, the leading edges;
+      `out/impact.out`) the totals stay 155 of 8000 and the cross-check
+      1200 of 1200; the trailing edge's rows are as before the merge, and
+      F4 still changes 23 of the totals (`out/f4-probe.out`).
 
 ### 3.5 F5: thin sharp sections near Mach 1
 
