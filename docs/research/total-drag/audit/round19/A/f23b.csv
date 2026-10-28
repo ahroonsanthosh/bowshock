@@ -1,0 +1,16 @@
+mach,legend_symbol,d_over_h,p_b,d_over_h_error,p_b_error,flags,alternatives
+1.5,circle,0.3467,-0.1722,0.0006,0.0003,,
+1.5,circle,0.4963,-0.1820,0.0006,0.0003,,
+1.5,circle,0.5979,-0.1967,0.0006,0.0003,,
+1.5,circle,0.6973,-0.2161,0.0006,0.0003,,
+1.5,circle,0.7967,-0.2299,0.0006,0.0003,,
+1.5,circle,0.8973,-0.2306,0.0006,0.0003,,
+1.5,circle,0.9986,-0.0070,0.0006,0.0003,ambiguous,mach=2.0 (all three fairings end at this one circle; no triangle is drawn here); mach=2.9 (same; no square is drawn here); possibly a common limiting point for all three Mach numbers rather than a measured M=1.5 point
+2.0,triangle,0.2977,-0.1380,0.0006,0.0005,,
+2.0,triangle,0.3900,-0.1393,0.0006,0.0005,,
+2.0,triangle,0.5979,-0.1553,0.0006,0.0005,,
+2.0,triangle,0.8976,-0.1918,0.0006,0.0005,,
+2.9,square,0.2961,-0.1126,0.0006,0.0003,,
+2.9,square,0.3974,-0.1157,0.0006,0.0003,,
+2.9,square,0.5992,-0.1278,0.0006,0.0004,,
+2.9,square,0.8996,-0.1428,0.0006,0.0004,,

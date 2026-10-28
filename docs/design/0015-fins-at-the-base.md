@@ -540,8 +540,9 @@ becomes the envelope of both tunnel Mach numbers' (3.2); the reference
 served as itself (four unswept 10% arcs) carries +-6.3% to +-7.5% at M
 1.0 to 1.5, up to +-12.0% at M 2.56, and +-19.1% above it, where it is
 bounded (3.1). On the body base term these widths are the fins-on-base
-part of the band; the curve's 0.77 to 1.18 (0.82 to 1.08 before 0014
-section 10.7 (ah)) and the interpolation bound
+part of the band; the curve's 0.77 to 1.13 (0.82 to 1.08 before 0014
+section 10.7 (ah), 0.77 to 1.18 before its third addendum) and the
+interpolation bound
 add to them as in 0010 section 1.4. At these Mach numbers the body base
 is roughly 25% to 40% of a total (0014 section 6.2), so the factor's band
 alone is about +-4% to +-12% of the total.
@@ -1197,9 +1198,10 @@ would carry.
 ### 11.1 The body base, Mach 1.0 to 1.5
 
 **Moved on 2026-10-27 by 0014 section 10.7 (ah); the text below is kept
-as written.** The band of Mach 1.5 to 3.0 is now 0.77 to 1.18 (0008
+as written.** The band of Mach 1.5 to 3.0 is now 0.77 to 1.13 (0008
 section 3.3, corrected: RM L52J21a's unfinned radome nose at M 1.62 sets
-its low end). By this section's own rules the low end carried down is
+its low end; 0.77 to 1.18 before the third addendum to (ah), 2026-10-28,
+which moves its high end only). By this section's own rules the low end carried down is
 0.77, and the nominal, the band's midpoint, is **1.04** (1.065 before);
 the band below Mach 1.5 is **0.77 to 1.31**, about +-26% about the
 nominal. The term without fins falls 2.3% (M 1.0: 0.1923, band 0.1424 to
@@ -1210,8 +1212,10 @@ example give F on W2's term 0.838 to 1.778, nominal 1.308 (+-35.9%), the
 term 0.2516 (0.0958 to 0.4073) at M 1.0, and 0.838 to 1.660, nominal 1.249
 (+-32.9%), the term 0.2385 (0.0981 to 0.3789) at M 1.2. The steps of 11.2:
 the same wedges from 0.2283 (0.0918 to 0.3648) just below M 1.5 to 0.2002
-(0.0992 to 0.2912) at 1.5, -12.3%; at M 1.62 from 0.1947 (0.0953 to
-0.2843) to 0.2031 (0.1101 to 0.2858); M 1.6's 0.1967 (0.0958 to 0.2877);
+(0.0992 to 0.2812) at 1.5, -12.3%; at M 1.62 from 0.1947 (0.0953 to
+0.2746) to 0.2031 (0.1101 to 0.2757); M 1.6's 0.1967 (0.0958 to 0.2779)
+(the high ends from M 1.5 with 0.77 to 1.13, the third addendum; 0.2912,
+0.2843, 0.2858 and 0.2877 with 1.18 before it);
 four 10% arcs 0.2847 to 0.2817 at M 1.5, as before. On W2's term the
 factor's half-width is +-32.8% to +-35.9% (`base-w2.test.ts`). No total
 is served below Mach 1.5, so no served total moves. W2's label now names

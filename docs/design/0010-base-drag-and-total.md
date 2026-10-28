@@ -121,24 +121,26 @@ estimated on its tunnel points and Herrin and Dutton, tested only in the
 total".
 
 **Corrected 2026-10-27 (0014 section 10.7 (ah); 0008 section 3.3): 0.77
-to 1.18.** 0008's rule, every base data set opened at these conditions,
+to 1.13** (since 2026-10-28, the third addendum to (ah); 0.77 to 1.18
+before, on faired readings of TR 1051). 0008's rule, every base data set opened at these conditions,
 now takes every body-alone base pressure read twice in the domain: TN
 2360's body alone at M 1.5 and 2.0 and the Langley 9 in tunnel's at 2.41
 (TN 3819 figs. 33 and 35, every reading), RM L52J21a figs. 31 to 33 (d)
 (every symbol both readers found, R 7.0e6 to 9.1e6) and TR 1051 fig. 23(b)
-at its thinnest sting (both readings; at Mach 2.0 and 2.9 faired values
-until round 19's paired readings of its thinnest symbols, 0014 section
-10.7 (ah), addendum). The sets opened there and read once are named in
+at its thinnest measured sting symbol at each Mach number (d/h 0.347,
+0.298 and 0.296; round 19's two blind readings, the third addendum; the
+values at d/h 0.35 first used were read on the faired curves and are
+superseded). The sets opened there and read once are named in
 0014's entry and set nothing. Against both curves they
 span 0.7731 (RM L52J21a's radome nose at M 1.62, round 7, over the more
-negative curve) to 1.1782 (TR 1051 at M 2.9, the audit's reading, over the
+negative curve) to 1.1253 (TR 1051 at M 2.9, round 19's reader B, over the
 served curve); TN 2360 at M 1.5 is 1.1241, outside the band before. The
-envelope rounded outward is 0.77 to 1.18 (`compiledCurveBandEvidence`,
+envelope rounded outward is 0.77 to 1.13 (`compiledCurveBandEvidence`,
 `compiled-curve.test.ts`, which checks every one of these readings inside
 the band `bodyBaseDrag` serves). Below Mach 1.5, W2's low end is this
 band's carried down (0015 section 11.1), so 0.77, and its nominal, the
 band's midpoint, 1.04 (1.065 before). The label is now "correlation:
-compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.77 to 1.18
+compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.77 to 1.13
 measured over curve, set on every body-alone base pressure read twice in its
 domain (0008 section 3.3, 0014 section 10.7 (ah)), tested only in the
 total". This widens a band after the DREV gate and BRL 934's range A used
@@ -346,7 +348,7 @@ of fins, all on the cylinder's cross-section:
 | Fin friction           | van Driest II plates of the local chord, both faces                                                   | fins' own drag, 1.01 to 1.59 (0008 section 4.3)                          |
 | Fin leading edges      | rounded and unswept: the nose of the tangent geometry at modified-Newtonian pressure (section 5.2)    | 0.99 to 1.06 (TN 2960), widened by +-0.03 where extrapolated in Reynolds |
 | Fin wave drag          | exact section drag times the linear 3D ratio (0009); with a rounded edge, the faces on their own rise | the fins' own drag band, plus the quadrature error                       |
-| Body base              | compiled curve times the fins-on-base factor (section 1)                                              | 0.77 to 1.18 (0014 10.7 (ah)), interpolation, fins-on-base band          |
+| Body base              | compiled curve times the fins-on-base factor (section 1)                                              | 0.77 to 1.13 (0014 10.7 (ah)), interpolation, fins-on-base band          |
 | Fin trailing-edge base | blunt, unswept, turbulent: thin-layer two-dimensional base pressure at M_inf (section 5.1)            | 0.93 to 1.21                                                             |
 
 Fin friction carries B4's band only and body friction 0007's, so each is
@@ -1170,8 +1172,9 @@ clamped there (`src/base/vacuum.ts`, `fin-trailing-edge.ts`,
   end at 0.72 to 0.93 of the bound;
 - the body base never reaches it over M 1.5 to 3.0: its high end is at
   most 0.9535 of the bound (M 3.0, fins at the base), 0.656 without fins;
-  0.8840 at M 3.0 since the correction of section 11; 0.9557, and 0.717
-  without fins, since the band was widened (0014 section 10.7 (ah)).
+  0.8840 at M 3.0 since the correction of section 11; 0.9199, and 0.686
+  without fins, since the band was widened (0014 section 10.7 (ah) and its
+  third addendum; 0.9557 and 0.717 with 0.77 to 1.18 before it).
 
 The audit also found the term plus both bands' high ends beyond the bound
 from M 2.35 on, by +0.0039 to +0.0117 in C_D. That sum was the second
@@ -1495,9 +1498,11 @@ moves; every other component and every input band is the second run's
 and `.json`).
 
 After this re-run the compiled curve's band was widened from 0.82 to 1.08
-to 0.77 to 1.18 (2026-10-27, 0014 section 10.7 (ah); section 1.2). The
-table below keeps the re-run's bands and tolerances; with the widened band
-the tolerances are -21.5% to -28.5% and +26.8% to +31.6%, the totals and
+to 0.77 to 1.13 (2026-10-27 and 2026-10-28, 0014 section 10.7 (ah) and its
+third addendum; section 1.2). The table below keeps the re-run's bands and
+tolerances; with the widened band the tolerances are -21.5% to -28.5% and
++25.1% to +30.1% (-21.5% to -28.5% and +26.8% to +31.6% with 0.77 to 1.18
+before the third addendum), the totals and
 residuals are the same, and every shot stays inside.
 
 | Shot       | M     | CX0   | Second run C_D | Residual | Tolerance (round 5) | Corrected C_D (band)      | Residual | Tolerance        |
