@@ -1,0 +1,26 @@
+Trial solves of the flat face at M 2.0, coarsest grid (36 x 24), before the registered runs
+(design record 0016 section 21.3). The script appended to out/ and the first runs' files were
+deleted before later runs, so their lines are not here; their values, from the session's log:
+
+1. HLLC, block implicit, CFL to 20, radius 0.04, 30000 steps: not settled (residual 6.6e-3 of
+   the start, the face mean changing by 0.073 between checks 100 steps apart); at the end the
+   straight face's largest wall Mach number 0.69, least wall pressure 0.727 of p02, the sonic
+   point on the rounding, the face mean (gauge over the pitot's) 0.894.
+2. HLLC, block implicit, CFL to 5, radius 0.04, 8000 steps: the face mean at each 1000 steps
+   0.901, 0.806, 0.768, 0.942, 0.924, 0.915, 0.883, 0.788; the largest residual at the face's
+   cells next to the rounding.
+3. HLLC, explicit local steps, radius 0.04, 20000 steps: the face mean at each 1000 steps
+   between 0.796 and 0.934; the largest residual at the rounding and just behind it.
+4. HLL, block implicit, CFL to 5, radius 0.04: a non-physical state after 724 steps, in a cell
+   on the plate's side near the outflow.
+
+Kept here: trace-batch3 and result-batch3 (radius 0.04 with the second-order minmod and the
+first-order reconstructions; radii 0.06 and 0.08), trace-batch4 and result-batch4 (HLL and the
+rotated hybrid flux, explicit, radius 0.04),
+result-batch5 (HLL explicit, radius 0.04, with the Mach numbers along the grid line from the
+rounding's end). Deleted the same way, with only their first trace lines seen: one run with the
+side inclined after a 60 deg turn (radius 0.04, HLLC, block implicit), whose face mean swung
+between 0.74 and 0.96 and whose outflow line ran back into the subsonic region; and one each at
+radii 0.1 and 0.2 (HLLC, block implicit), each of which wrote only its 1000-step trace line
+(residual about 3e-6 of the start, face mean 0.880 and 0.836), so whether they settled or
+stopped on a non-physical state is not known.
