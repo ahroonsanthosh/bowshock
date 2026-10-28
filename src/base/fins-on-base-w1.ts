@@ -845,6 +845,29 @@ export const W1_FLAT_SUBSONIC_EDGE_MARK = 'beyond 60 deg with M cos L below 1';
  */
 export const W1_FLAT_SWEPT_TE_MARK = 'a swept trailing edge on flat faces';
 
+/**
+ * Why a plate's floor is taken only with the trailing edge unswept, and what the RM-10 does and does not show for
+ * plates (0015 section 12 and 0014 section 10.7 (z), the strict reading's ground as narrowed after the quick look
+ * of 2026-10-28): the RM-10 gives the bracket's 60 deg end in leading-edge sweep, not a swept trailing edge's.
+ */
+export const W1_FLAT_FLOOR_UNSWEPT =
+  "RM L52E06's plates, the only flat-faced set measured at the base, have the trailing edge unswept (its " +
+  'fig. 1(c))';
+export const W1_RM10_TRAILING_EDGE =
+  "the RM-10 (RM E50D28) gives the bracket's 60 deg end in leading-edge sweep, but its fins are circular " +
+  'arcs whose trailing edge is swept 60 deg aft and meets the stream below sonic at its Mach numbers, so it ' +
+  "does not show that a plate's floor holds with a swept trailing edge";
+
+/**
+ * The step at 60 deg (0015 section 12, the note of 2026-10-28): a plate swept 45 to 60 deg with the trailing edge
+ * unswept is served on the bracket's measured ends, not on a margin; just beyond 60 deg it lies past the last
+ * sweep measured, and from M 1.62 is refused where its edge is below sonic.
+ */
+export const W1_PLATE_ON_MEASURED_ENDS =
+  "the leading edge within the sweeps measured at the base, RM L52E06's plates at 45 deg and the RM-10's " +
+  "arcs at 60 deg: served on the bracket's measured ends, not on a margin";
+export const W1_PAST_LAST_SWEEP = "past the last sweep measured at the base, the RM-10's 60 deg";
+
 /** The Mach numbers at which RM L52J21a measures the relief with fins near the base (figs. 8, 31 to 33, 38(c)). */
 const L52J21A_MACH = [
   W1_RELIEF_MEASURED_FROM,
@@ -959,21 +982,27 @@ export const W1_SWEEP_REFUSED_TOO = '; their sweep is refused at or near the bas
  * Why flat-faced fins (a square trailing edge) are refused for their sweep at or near the base, or undefined (0015
  * section 12; 0014 section 10.7 (z), its notes of 2026-10-27 and 2026-10-28):
  *
- * - the trailing edge swept, aft or forward, at any Mach number and leading-edge sweep: the floor, RM L52E06's
- *   relief, is measured only with the trailing edge unswept (its fig. 1(c)); the RM-10's arcs, swept 60 deg aft,
- *   are a sharp section and do not bracket plates; and a swept edge carries the square edge out of one plane
- *   parallel to the base, which section 12's argument does not cover (with, where the same plate with the
- *   trailing edge unswept would be refused for its leading edge, that reason too);
+ * - the trailing edge swept, aft or forward, at any Mach number and leading-edge sweep: RM L52E06's plates, the
+ *   only flat-faced set measured at the base, have the trailing edge unswept (its fig. 1(c)), so the floor (F
+ *   0.838) is taken only with it unswept; the RM-10 (RM E50D28) gives the bracket's 60 deg end in leading-edge
+ *   sweep, but its fins are circular arcs whose trailing edge is swept 60 deg aft and meets the stream below
+ *   sonic at its Mach numbers, so it does not show that a plate's floor holds with a swept trailing edge; and a
+ *   swept edge carries the square edge out of one plane parallel to the base, which section 12's argument does
+ *   not cover (with, where the same plate with the trailing edge unswept would be refused for its leading edge,
+ *   that reason too; the ground as narrowed after the quick look of 2026-10-28);
  * - the trailing edge unswept, below M 1.62: the leading edge swept more than 0 and under 45 deg, or beyond 60
  *   deg. There the floor is RM L52E06's relief with plates swept 45 deg alone, measured at M 1.06 to 1.10, and
  *   which way the juncture vortex moves F is not shown: under 45 deg the plate is not shown to lie between the
  *   unswept plate and the 45 deg ones, beyond 60 deg it lies past the last sweep measured;
  * - the trailing edge unswept, from M 1.62: the leading edge swept beyond 60 deg where M cos L is below 1. There
- *   these plates rest on a margin of 2.6 times over the at most 6.2% relief RM L52J21a allows, measured on arcs
- *   whose edges see M cos L of 1.15 to 1.70, not on a measurement at their conditions; an edge below sonic is RM
- *   L52E06's regime, where the relief measured was largest.
+ *   these plates lie past the last sweep measured at the base, the RM-10's 60 deg, and rest on a margin of 2.6
+ *   times over the at most 6.2% relief RM L52J21a allows, measured on arcs whose edges see M cos L of 1.15 to
+ *   1.70, not on a measurement at their conditions; an edge below sonic is RM L52E06's regime, where the relief
+ *   measured was largest.
  *
- * Exactly 60 deg, and 45 to 60, stay as section 4 serves them with the trailing edge unswept.
+ * Exactly 60 deg, and 45 to 60, stay as section 4 serves them with the trailing edge unswept: on the bracket's
+ * measured ends, RM L52E06's 45 deg plates and the RM-10's 60 deg arcs, not on the margin; hence the step just
+ * beyond 60 deg where the edge is below sonic.
  */
 export function flatPlateSweepNarrowing(
   mach: number,
@@ -987,13 +1016,12 @@ export function flatPlateSweepNarrowing(
     const way = fins.tanTrailingEdgeSweep < 0 ? 'forward' : 'aft';
     return (
       `flat-faced fins with the leading edge swept ${sweepDegrees(le)} deg and the trailing edge ` +
-      `${sweepDegrees(tes)} deg ${way} at M ${mach}, ${W1_FLAT_SWEPT_TE_MARK}: the floor of their ` +
-      `bracket, RM L52E06's relief (F ${W1_FLAT_RELIEF_LOW.toFixed(3)}), is measured only with the ` +
-      "trailing edge unswept (its fig. 1(c)); the RM-10's fins, which sweep it 60 deg aft (RM E50D28), are " +
-      'circular arcs, a sharp section, and do not bracket plates; and a swept trailing edge carries the ' +
-      'square edge out of one plane parallel to the base, which the argument for plates does not cover, ' +
-      'so flat-faced fins are served with the trailing edge unswept only (0015 section 12; 0014 section ' +
-      '10.7 (z), the notes of 2026-10-28)' +
+      `${sweepDegrees(tes)} deg ${way} at M ${mach}, ${W1_FLAT_SWEPT_TE_MARK}: ${W1_FLAT_FLOOR_UNSWEPT}, ` +
+      `so the floor of their bracket (F ${W1_FLAT_RELIEF_LOW.toFixed(3)}) is taken only with it unswept; ` +
+      `${W1_RM10_TRAILING_EDGE}; and a swept trailing edge carries the square edge out of one plane ` +
+      'parallel to the base, which the argument for plates does not cover, so flat-faced fins are served ' +
+      'with the trailing edge unswept only (0015 section 12; 0014 section 10.7 (z), the notes of ' +
+      '2026-10-28)' +
       (unswept === undefined ? '' : `; and with the trailing edge unswept, ${unswept}`)
     );
   }
@@ -1007,7 +1035,7 @@ export function flatPlateSweepNarrowing(
     const pct = (f: number) => `${(100 * (1 - f)).toFixed(1)}%`;
     const edge = (m: number) => (m * Math.cos(W1_SWEPT_RANGE[0])).toFixed(2);
     return (
-      `${head}, ${W1_FLAT_SUBSONIC_EDGE_MARK} (${normalMachText(normal)}): from M ` +
+      `${head}, ${W1_FLAT_SUBSONIC_EDGE_MARK} (${normalMachText(normal)}), ${W1_PAST_LAST_SWEEP}: from M ` +
       `${W1_RELIEF_MEASURED_FROM} these plates rest on a margin, the floor's ${pct(W1_FLAT_RELIEF_LOW)} ` +
       `relief against the at most ${pct(W1_RELIEF_LOW)} RM L52J21a allows, measured on circular arcs ` +
       `swept 45 deg whose edges see M cos L of ${edge(L52J21A_MACH[0])} to ${edge(L52J21A_MACH[1])}, not ` +
@@ -1279,7 +1307,9 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
             `served only where M cos L is at least 1, here ${(mach * Math.cos(le)).toFixed(2)}: an edge ` +
             "at or above sonic, as RM L52J21a's are (1.15 to 1.70), over whose relief the floor's margin " +
             'is taken, not measured at this sweep (0015 section 12, the rulings of 2026-10-28)'
-          : ''),
+          : le >= W1_SWEPT_RANGE[0] - 1e-9
+            ? `; ${W1_PLATE_ON_MEASURED_ENDS} (0015 sections 4 and 12, the note of 2026-10-28)`
+            : ''),
     );
   } else if (moderate) {
     // (A plate with a swept trailing edge never reaches here: flatPlateSweepNarrowing refuses it, the rulings of

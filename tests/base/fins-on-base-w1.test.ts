@@ -26,6 +26,10 @@ import {
 import {
   W1_BOUNDED_PREFIX,
   W1_FLAT_BEYOND_60_MARK,
+  W1_FLAT_FLOOR_UNSWEPT,
+  W1_PAST_LAST_SWEEP,
+  W1_PLATE_ON_MEASURED_ENDS,
+  W1_RM10_TRAILING_EDGE,
   W1_FLAT_RELIEF_LOW,
   W1_FLAT_SUBSONIC_EDGE_MARK,
   W1_FLAT_SWEPT_TE_MARK,
@@ -1104,12 +1108,14 @@ describe('refusals', () => {
           const message = (e as Error).message;
           expect(message, where).toContain(W1_FLAT_SWEPT_TE_MARK);
           expect(message, where).toContain(te < 0 ? 'deg forward at M' : 'deg aft at M');
+          // The ground, narrowed to the trailing edge after the quick look of 2026-10-28: the RM-10 gives the
+          // bracket's 60 deg end in leading-edge sweep, but not a swept trailing edge's.
+          expect(message, where).toContain(W1_FLAT_FLOOR_UNSWEPT);
           expect(message, where).toContain(
-            "RM L52E06's relief (F 0.838), is measured only with the trailing edge unswept",
+            'so the floor of their bracket (F 0.838) is taken only with it unswept',
           );
-          expect(message, where).toContain(
-            'are circular arcs, a sharp section, and do not bracket plates',
-          );
+          expect(message, where).toContain(W1_RM10_TRAILING_EDGE);
+          expect(message, where).not.toMatch(/bracket plates|not bracket/);
           expect(message, where).toContain('served with the trailing edge unswept only');
           // Within a chord, where the position is refused too (below M 1.5 and above 2.0), both are named.
           const positionRefused = xc > 0 && (mach < 1.5 || mach > 2.0);
@@ -1366,6 +1372,46 @@ describe('refusals', () => {
         'no fin of any section is measured at the base swept beyond 60 deg',
       );
       expect(served.label).toContain('served only where M cos L is at least 1, here 1.03');
+    });
+    it("the step at 60 deg (the quick look of 2026-10-28): at M 1.7 a plate at 60.0 deg is served on the bracket's measured ends, at 60.1 deg refused past the last sweep measured", () => {
+      const at = (le: number, xc = 0) =>
+        fins({
+          section: plate(0.024),
+          tanLeadingEdgeSweep: tanDeg(le),
+          tanTrailingEdgeSweep: 0,
+          trailingEdgeAheadOfBase: xc,
+        });
+      for (const xc of [0, 0.5]) {
+        const served = finsOnBaseFactorW1(1.7, at(60, xc));
+        // The RM-10's measured end of the bracket, not the margin.
+        expect(served.label).toContain(W1_PLATE_ON_MEASURED_ENDS);
+        expect(served.label).not.toContain('margin is taken');
+        expect(served.sweepByArgument).toBe(false);
+        let message = '';
+        try {
+          finsOnBaseFactorW1(1.7, at(60.1, xc));
+        } catch (e) {
+          expect((e as BaseRefusal).reason).toBe('fin-sweep');
+          message = (e as Error).message;
+        }
+        expect(message).toContain(W1_FLAT_SUBSONIC_EDGE_MARK);
+        expect(message).toContain(W1_PAST_LAST_SWEEP);
+        expect(message).toContain('swept 60.1 deg');
+      }
+      // Every plate swept 45 to 60 deg carries the measured ends in its label; under 45 and beyond 60 deg none.
+      for (const le of [45, 50, 59.9, 60]) {
+        expect(finsOnBaseFactorW1(1.7, at(le)).label, `${le} deg`).toContain(
+          W1_PLATE_ON_MEASURED_ENDS,
+        );
+      }
+      for (const [mach, le] of [
+        [1.7, 20],
+        [2.5, 61],
+      ] as const) {
+        expect(finsOnBaseFactorW1(mach, at(le)).label, `${le} deg`).not.toContain(
+          W1_PLATE_ON_MEASURED_ENDS,
+        );
+      }
     });
     it('the rulings of 2026-10-28: from M 1.62 a plate swept beyond 60 deg is refused where M cos L is below 1, with the margin named; at and above 1 served', () => {
       const plateAt = (le: number, xc = 0, chord = 1.5) =>

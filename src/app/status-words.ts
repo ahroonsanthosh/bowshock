@@ -406,7 +406,8 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
         'the leading edge meets the air faster than sound',
       change:
         'flat fins with a square, unswept trailing edge (below Mach 1.62, unswept or swept 45 to ' +
-        '60 deg), or unswept fins of constant chord',
+        '60 deg; beyond 60 deg only where the leading edge meets the air faster than sound), or ' +
+        'unswept fins of constant chord',
     };
   },
   'fin-trailing-edge': (r) =>

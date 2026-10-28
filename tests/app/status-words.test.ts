@@ -40,6 +40,9 @@ import { SQUARE_EDGE_REFUSAL, SWEPT_EDGE_BOUNDED_REASON } from '../../src/total/
 import {
   finsOnBaseFactorW1,
   W1_FLAT_BEYOND_60_MARK,
+  W1_FLAT_FLOOR_UNSWEPT,
+  W1_PAST_LAST_SWEEP,
+  W1_RM10_TRAILING_EDGE,
   W1_FLAT_SUBSONIC_EDGE_MARK,
   W1_FLAT_SWEPT_TE_MARK,
   W1_FLAT_UNDER_45_MARK,
@@ -318,6 +321,12 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     expect(words.reason).toContain(
       'and beyond 60 deg only where the leading edge meets the air faster than sound',
     );
+    // Its advice is complete: the condition beyond 60 deg its reason states (the quick look of 2026-10-28).
+    expect(words.change).toBe(
+      'flat fins with a square, unswept trailing edge (below Mach 1.62, unswept or swept 45 to 60 deg; ' +
+        'beyond 60 deg only where the leading edge meets the air faster than sound), or unswept fins of ' +
+        'constant chord',
+    );
   });
 
   it("the rulings of 2026-10-28 in words, 0017's rows: a flat plate beyond 60 deg with its edge subsonic from Mach 1.62, and a plate's swept trailing edge, aft or forward (the strict reading), with every reason", () => {
@@ -384,6 +393,18 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     expect(fChange).toBe(fwd.change);
     expect(fwd.change).toBe('flat fins with an unswept trailing edge');
     expect(fwd.reason).toContain('the one measurement of such fins has it unswept');
+    // The logic's own text, shown in Details beside these words, gives the ground narrowed to the trailing edge
+    // (the quick look of 2026-10-28): the RM-10 gives the bracket's 60 deg end, not a swept trailing edge's.
+    expect(f.message).toContain(W1_FLAT_FLOOR_UNSWEPT);
+    expect(f.message).toContain(W1_RM10_TRAILING_EDGE);
+    expect(f.message).not.toMatch(/bracket plates|not bracket/);
+    // The step at 60 deg, at Mach 1.7: 60.0 deg served on the bracket's measured ends, 60.1 deg refused past
+    // the last sweep measured, with the subsonic edge's words.
+    expect(() => finsOnBaseFactorW1(1.7, plate(60, 0))).not.toThrow();
+    const step = refused(1.7, 60.1, 0);
+    expect(step.reason).toBe('fin-sweep');
+    expect(step.message).toContain(W1_PAST_LAST_SWEEP);
+    expect(refusalWords(step)).toEqual(sub);
     for (const [le, te] of [
       [50, 10],
       [45, 45],
