@@ -13,6 +13,7 @@
  * | fin friction | van Driest II flat plates of the local chord, both faces | fins' own drag, 1.01 to 1.59 (0008 section 4.3) | estimated on ARCAS, tested only in the total |
  * | fin wave drag | exact 2D section drag times the linear 3D ratio (src/fins, 0009); with a rounded leading edge, the faces of the tangent geometry on their own rise | the same, plus the quadrature error | as above |
  * | fin leading edges | rounded, unswept: modified-Newtonian front side (src/fins/rounded-leading-edge.ts) | 0.99 to 1.06 (TN 2960), +-3% more where extrapolated in Reynolds number | an analogy, not a measurement |
+ * | fin leading edges, rounded, swept 60 to 75.1 deg | the midpoint between the term at the sweep and at 60 deg (0016 sections 21.2 and 21.8; beyond 75.1 deg refused) | the whole gap between the bounds | bounded, not measured; the total's claim names it (`bounded`) |
  * | body base | compiled curve times the fins-on-base factor (src/base): the present factor wherever it serves (the Basic Finner's class keeps it), the rebuilt factor of 0015 only where the present one refuses | curve 0.82 to 1.08, interpolation, fins-on-base band | correlation; the present factor measured on circular-arc fins, an analogy for others; the rebuilt factor estimated on component data, bracketed |
  * | fin trailing-edge base | blunt, unswept, turbulent: two-dimensional base pressure at the free-stream Mach number (src/base/fin-trailing-edge.ts) | 0.93 to 1.21 | an analogy, not a measurement, for edges in the base plane |
  *
@@ -87,6 +88,7 @@ import { FinRefusal } from '../fins/refusal';
 import {
   roundedLeadingEdgeDrag,
   roundedWedge,
+  type RoundedLeadingEdge,
   type RoundedWedge,
 } from '../fins/rounded-leading-edge';
 import {
@@ -371,14 +373,18 @@ export function finnedBodyComponents(
         reynoldsOnDiameter: conditions.reynoldsPerLength * 2 * fins.leadingEdgeRadius,
       });
       const cd = (fins.count * nose.dragPerSpan * fins.planform.span) / area;
-      components.push({
-        name: 'fin leading edges',
-        cd,
-        low: nose.band.low * cd,
-        high: nose.band.high * cd,
-        label: nose.label,
-        band: `${nose.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified Newtonian, ${outward(nose.band)} (${nose.regime})`,
-      });
+      components.push(
+        nose.bounded === undefined
+          ? {
+              name: 'fin leading edges',
+              cd,
+              low: nose.band.low * cd,
+              high: nose.band.high * cd,
+              label: nose.label,
+              band: `${nose.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified Newtonian, ${outward(nose.band)} (${nose.regime})`,
+            }
+          : sweptBeyondLimitComponent(nose.label, cd, nose),
+      );
     } catch (e) {
       refusals.push(refusalOf('fin leading edges', e));
     }
@@ -609,12 +615,92 @@ export function finnedBodyComponents(
   return { components, inputs: inputBands, refusals, base, transitionStates };
 }
 
+/** The claim's words for a total with rounded leading edges swept beyond 60 deg (0016 section 21.2). */
+export const SWEPT_EDGE_BOUNDED_REASON =
+  "the fins' rounded leading edges, swept beyond 60 deg, are bounded, not measured: between " +
+  'the drag at their sweep and at 60 deg, the largest sweep the term is served at (0016 ' +
+  'section 21.2)';
+
+/** The gap of a bounded component in C_D, as 10.2 asks it shown beside the component. */
+function boundedBand(what: string, cd: number, band: { low: number; high: number }): string {
+  const low = band.low * cd;
+  const high = band.high * cd;
+  return (
+    `bounded, not measured: the whole gap between ${what}, C_D ${low.toFixed(4)} to ` +
+    `${high.toFixed(4)}, a gap of ${(high - low).toFixed(4)}`
+  );
+}
+
+/** Where a rounded edge's band comes from: its data, its band and its regime (0016 sections 4, 5, 11). */
+function roundedEdgeSource(t: RoundedLeadingEdge): string {
+  return (
+    `${t.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified ` +
+    `Newtonian, ${outward(t.band)} (${t.regime}` +
+    (t.sweepDegrees > 0 ? ", swept, with RM A55H31's sweep allowance" : '') +
+    ')'
+  );
+}
+
+/**
+ * The leading edges of a rounded edge swept beyond 60 deg (0016 section
+ * 21.2): the band text names each bound's own source, as 0014 section 10.2
+ * asks.
+ */
+function sweptBeyondLimitComponent(
+  label: string,
+  cd: number,
+  nose: RoundedLeadingEdge,
+): DragComponent {
+  const { band } = nose;
+  const b = nose.bounded!;
+  return {
+    name: 'fin leading edges',
+    cd,
+    low: band.low * cd,
+    high: band.high * cd,
+    label,
+    band: boundedBand(
+      `the term at ${nose.sweepDegrees.toFixed(1)} deg at its band's low end (` +
+        `${roundedEdgeSource(b.lower)}) and the term at 60 deg at its band's high end (` +
+        `${roundedEdgeSource(b.upper)})`,
+      cd,
+      band,
+    ),
+    bounded: SWEPT_EDGE_BOUNDED_REASON,
+  };
+}
+
+/**
+ * Why a square-cut leading edge is refused (0016 sections 21.1, 21.3 and
+ * 21.6): its bounded term (src/fins/square-leading-edge.ts) is kept
+ * unwired. Its computed check did not pass; measured flat faces then bore
+ * out the bounds' premises, but only at face Reynolds numbers far above a
+ * model rocket fin's, so wiring is deferred.
+ */
+export const SQUARE_EDGE_REFUSAL =
+  'a square-cut leading edge is refused: its drag is bounded between the sonic and the pitot ' +
+  'pressure on the whole face (0016 section 21.1), an argument that rests on the face staying ' +
+  'subsonic up to its corners. The computed check of that, registered before it was run ' +
+  '(0016 section 21.3), did not pass. On the finest grid the inviscid solution did not settle in ' +
+  "three cases, and in each the face's least pressure was not clear of the sonic pressure (0.528 " +
+  'of the pitot pressure) by its change between the two finest grids: at Mach 2.0 with the ' +
+  'corner rounded to 0.02 of the half-thickness, 0.553 against a change of 0.105; at Mach 3.0 ' +
+  'with 0.04, 0.531 against a change of 0.134; and at Mach 3.0 with 0.02, 0.445, below the ' +
+  'sonic pressure itself, the sonic point then on the face. Measured flat-faced cylinders, read ' +
+  "twice and paired, then bore out the bounds' premises, not the bounds (0014 section 10.7 " +
+  '(af)): on all four sets every face orifice that was given a value lay above the sonic ' +
+  "pressure (six marks on TN 4300's figures were given none), and on RM L57C18, the one set " +
+  'that tests it, below the pitot pressure. They did so only at Reynolds numbers on the ' +
+  "face's height of 3.85 to 4.32 million, under the definition pinned for them; a model rocket " +
+  "fin's, on its thickness, lies far below that (in the refusal audit's population, 290,000 at " +
+  'most), so the edge stays refused (0016 section 21.6)';
+
 /**
  * The leading edges and faces of a flat plate (0016, W4): a rounded edge's
  * nose, a radius of half the thickness, at face angle zero on any planform
- * and sweep; faces parallel to the stream, no wave drag. A square-cut edge
- * is refused: "bounded, not measured" needs its bounds' ordering shown, and
- * it is not.
+ * and sweep to 60 deg, bounded from 60 to 75.1 deg (0016 sections 21.2 and
+ * 21.8); faces parallel to
+ * the stream, no wave drag. A square-cut edge is refused (`SQUARE_EDGE_REFUSAL`).
  */
 function platePart(
   plate: FlatPlate,
@@ -627,34 +713,34 @@ function platePart(
   const { fins } = config;
   try {
     if (plate.leadingEdge === 'square') {
-      throw new FinRefusal(
-        'square-leading-edge',
-        'a square-cut leading edge is refused: "bounded, not measured" (0014 section 10.2) ' +
-          "needs it shown to carry at least a half-cylinder's front-side drag, and that is shown " +
-          'only where the half-cylinder is already supersonic, not over the inner part of the ' +
-          'face; no flat-face measurement is among the sources that set bands (0016)',
+      throw new FinRefusal('square-leading-edge', SQUARE_EDGE_REFUSAL);
+    } else {
+      const radius = plate.thickness / 2;
+      const nose = roundedLeadingEdgeDrag({
+        mach: conditions.mach,
+        radius,
+        faceAngle: 0,
+        tanLeadingEdgeSweep: fins.planform.tanLeadingEdge,
+        reynoldsOnDiameter: conditions.reynoldsPerLength * plate.thickness,
+      });
+      const cd = (fins.count * nose.dragPerSpan * fins.planform.span) / area;
+      const label = `${nose.label}; on a flat plate, a semicircular nose (0016)`;
+      components.push(
+        nose.bounded === undefined
+          ? {
+              name: 'fin leading edges',
+              cd,
+              low: nose.band.low * cd,
+              high: nose.band.high * cd,
+              label,
+              band:
+                `${nose.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified ` +
+                `Newtonian, ${outward(nose.band)} ` +
+                `(${nose.regime}${nose.sweepDegrees > 0 ? ', swept' : ''})`,
+            }
+          : sweptBeyondLimitComponent(label, cd, nose),
       );
     }
-    const radius = plate.thickness / 2;
-    const nose = roundedLeadingEdgeDrag({
-      mach: conditions.mach,
-      radius,
-      faceAngle: 0,
-      tanLeadingEdgeSweep: fins.planform.tanLeadingEdge,
-      reynoldsOnDiameter: conditions.reynoldsPerLength * plate.thickness,
-    });
-    const cd = (fins.count * nose.dragPerSpan * fins.planform.span) / area;
-    components.push({
-      name: 'fin leading edges',
-      cd,
-      low: nose.band.low * cd,
-      high: nose.band.high * cd,
-      label: `${nose.label}; on a flat plate, a semicircular nose (0016)`,
-      band:
-        `${nose.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified ` +
-        `Newtonian, ${outward(nose.band)} ` +
-        `(${nose.regime}${nose.sweepDegrees > 0 ? ', swept' : ''})`,
-    });
   } catch (e) {
     refusals.push(refusalOf('fin leading edges', e));
   }
