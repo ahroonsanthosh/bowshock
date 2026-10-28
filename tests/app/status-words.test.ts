@@ -146,14 +146,14 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     return view.kind === 'refused' ? view.refusals : [];
   };
 
-  it("the Basic Finner at Mach 1.4: the fins' own drag, the base and the trailing edges' base", () => {
+  it("the Basic Finner at Mach 1.3: the fins' own drag, the base and the trailing edges' base", () => {
     const own = {
       reason:
         "the fins' own drag (their friction, and a sharp section's wave drag) is checked " +
         'against flight measurements only from Mach 1.5 to 2.96, and its error grows below that',
       change: '',
     };
-    const plain = refusalsAt('basic-finner', 1.4).map((r) => [r.component, refusalWords(r)]);
+    const plain = refusalsAt('basic-finner', 1.3).map((r) => [r.component, refusalWords(r)]);
     expect(plain).toEqual([
       ['fin friction', own],
       ['fin wave drag', own],
@@ -171,13 +171,23 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
           change: 'flat fins with square trailing edges, or sharp trailing edges',
         },
       ],
+      // Below Mach 1.5 the square trailing edge is served where the sets near Mach 1 reach
+      // (0019 section 3.4.1); the Basic Finner's c/[h Re^(1/5)] (about 0.8) lies beyond them
+      // from Mach 1.15 to 1.5 (to 0.666; RM A52E01 counts toward no reach).
       [
         'fin trailing-edge base',
         {
-          reason: "a square trailing edge's drag is measured only at other speeds",
-          change: 'bevelled (sharp) trailing edges',
+          reason:
+            "the square trailing edge is thin against the air's boundary layer there; not measured",
+          change: 'thicker trailing edges, or bevelled ones',
         },
       ],
+    ]);
+    expect(refusalsAt('basic-finner', 1.4).map((r) => r.component)).toEqual([
+      'fin friction',
+      'fin wave drag',
+      'body base',
+      'fin trailing-edge base',
     ]);
   });
 
