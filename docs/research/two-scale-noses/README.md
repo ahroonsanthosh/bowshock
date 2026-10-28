@@ -216,3 +216,9 @@ Results so far, by the registered criteria:
   (4.91e-5 and 3.54e-5, against 3.5e-5; 2.26e-5 on nj = 80), and the line
   at x = 1.78 that change on every grid (8.7e-5 to 1.6e-4). Those two
   would miss by +3.51e-4 to +4.31e-4. The outline is not extended there.
+- 5 and 6 calibers at Mach 3: nj = 20 and 40 settled (6 calibers
+  0.0218239931 and 0.0217627111, 6000 and 8000 iterations; 5 calibers
+  0.0302101841 and 0.0301320717, 5500 and 8000, as W5's saved fits to
+  6.4e-12 and 4.8e-15), gates passed; nj = 80 running (on 2026-10-28 at
+  05:08, resumed at 8000 and 4500 iterations after a restart; the lanes'
+  stops and resumptions are in `fits/queue-log.txt` and `fits/log.txt`).
