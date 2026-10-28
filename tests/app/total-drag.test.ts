@@ -15,7 +15,11 @@ import { trapezoidalPlanform } from '../../src/fins/planform';
 import { roundedLeadingEdgeDrag, TN2960_RANGE } from '../../src/fins/rounded-leading-edge';
 import { doubleWedge, singleWedge } from '../../src/fins/section';
 import { BLUNT_AHEAD_OF_BASE, bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
-import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
+import {
+  finnedBodyComponents,
+  SWEPT_EDGE_BOUNDED_REASON,
+  type FinnedBody,
+} from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents, type TotalDrag } from '../../src/total/total-drag';
 import {
@@ -25,6 +29,7 @@ import {
 } from '../../src/validation/basic-finner';
 import { outward, outwardPercent } from '../../src/app/band';
 import { displayText, totalDragDisplay } from '../../src/app/total-drag-display';
+import { claimWords, SWEPT_EDGE_BOUNDED_WORDS } from '../../src/app/status-words';
 import {
   ABOVE_THE_CLASS,
   BASIC_FINNER_CLASS,
@@ -945,6 +950,23 @@ describe('a bounded fins-on-base factor is named in the claim (0014 section 10.2
     expect(boundedReasons(body(2.8, three))).toEqual([W1_BOUNDED_REASON]);
     expect(boundedReasons(body(2.4, three))).toEqual([]);
     expect(boundedReasons(undefined)).toEqual([]);
+    // Components the library marks bounded (0016 section 21.2), each named once, after the base's.
+    const edge = {
+      name: 'fin leading edges',
+      cd: 0.01,
+      low: 0.005,
+      high: 0.015,
+      label: 'x',
+      band: 'x',
+      bounded: SWEPT_EDGE_BOUNDED_REASON,
+    };
+    expect(boundedReasons(undefined, [edge, edge])).toEqual([SWEPT_EDGE_BOUNDED_REASON]);
+    expect(boundedReasons(body(2.8, four), [edge])).toEqual([
+      BOUNDED_REASON,
+      SWEPT_EDGE_BOUNDED_REASON,
+    ]);
+    const plain = { name: edge.name, cd: 0.01, low: 0.005, high: 0.015, label: 'x', band: 'x' };
+    expect(boundedReasons(undefined, [plain])).toEqual([]);
   });
 });
 
@@ -987,6 +1009,56 @@ describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
     if (v.kind !== 'total') throw new Error(JSON.stringify(v));
     expect(v.claim.kind).toBe('estimate');
     expect(v.total.components.find((c) => c.name === 'fin wave drag')!.cd).toBe(0);
+  });
+
+  it('rounded leading edges swept 66.4 deg at Mach 2.8: the bounded edge served among the parts, the total refused at the base', () => {
+    // On main (A4 with A5) the body base refused this plate for its sweep; with A1 (0015 section 12)
+    // flat plates with an unswept trailing edge are taken at the base at any leading-edge sweep from
+    // Mach 1.62, and this one is refused for its thickness over its short tip chord instead. The edge
+    // is served among the refused total's parts, bounded, and names it.
+    const form = {
+      ...plate('rounded', 'square'),
+      planform: { kind: 'clipped-delta' as const, taperRatio: 0.2 },
+      rootChord: 2,
+      span: 0.7,
+    };
+    const v = totalDragView(form, exactNose(form));
+    if (v.kind !== 'refused') throw new Error(`expected a refusal, got ${v.kind}`);
+    expect(reasons(v)).toEqual(['body base: fin-thickness']);
+    const le = v.parts!.served.find((c) => c.name === 'fin leading edges')!;
+    expect(le.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
+    expect(le.label.startsWith('bounded, not measured: swept 66.4 deg')).toBe(true);
+    // The claim's words for a total that holds it, should one be served (boundedReasons, above).
+    expect(
+      claimWords({
+        kind: 'estimate',
+        text: ESTIMATE_CLAIM,
+        reasons: boundedReasons(undefined, [le]),
+      }),
+    ).toBe(SWEPT_EDGE_BOUNDED_WORDS);
+  });
+
+  it('rounded leading edges swept 66.4 deg at Mach 2.8 on a longer tip: a total, both bounded parts named (A1 with A4)', () => {
+    // A1 (0015 section 12) takes the plate at the base at this sweep from Mach 1.62; A4 (0016 section
+    // 21.8) bounds the rounded edge to 75.1 deg. The total is served as an estimate whose reasons name
+    // the swept edge's bound; its body base is the flat plates' bounded value with the sweep named.
+    const rootChord = 3;
+    const span = 0.7;
+    const tip = rootChord - span * Math.tan((66.4 * Math.PI) / 180);
+    const form = {
+      ...plate('rounded', 'square'),
+      planform: { kind: 'clipped-delta' as const, taperRatio: tip / rootChord },
+      rootChord,
+      span,
+    };
+    const v = totalDragView(form, exactNose(form));
+    if (v.kind !== 'total') throw new Error(`expected a total, got ${JSON.stringify(reasons(v))}`);
+    expect(v.claim.kind).toBe('estimate');
+    const le = v.total.components.find((c) => c.name === 'fin leading edges')!;
+    expect(le.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
+    const base = v.total.components.find((c) => c.name === 'body base')!;
+    expect(base.label).toContain('the leading edge swept 66.4 deg with the trailing edge unswept');
+    expect(base.label).toContain('0015 section 12');
   });
 
   it('square-cut leading edges and rounded trailing edges: refused, with the reasons', () => {

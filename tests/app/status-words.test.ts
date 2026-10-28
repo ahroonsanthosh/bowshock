@@ -27,10 +27,15 @@ import {
   noseWords,
   provisionalWords,
   refusalWords,
+  SEVERAL_BOUNDED_WORDS,
   STOPPED,
+  SWEPT_EDGE_BOUNDED_WORDS,
   WAITING,
   type NoseEnd,
 } from '../../src/app/status-words';
+import type { FinRefusal } from '../../src/fins/refusal';
+import { roundedLeadingEdgeDrag } from '../../src/fins/rounded-leading-edge';
+import { SQUARE_EDGE_REFUSAL, SWEPT_EDGE_BOUNDED_REASON } from '../../src/total/finned-body';
 import {
   finsOnBaseFactorW1,
   W1_FLAT_BEYOND_60_MARK,
@@ -59,6 +64,8 @@ describe('the words', () => {
       CLASS_WORDS,
       BOUNDED_WORDS,
       W1_BOUNDED_WORDS,
+      SWEPT_EDGE_BOUNDED_WORDS,
+      SEVERAL_BOUNDED_WORDS,
       provisionalWords(2, 4),
       WAITING,
       STOPPED,
@@ -105,6 +112,18 @@ describe('the words', () => {
     expect(claimWords(claim(CLASS_CLAIM, [BOUNDED_REASON]))).toBe(BOUNDED_WORDS);
     // The rebuilt fins-on-base factor's bounded values (main's W1).
     expect(claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_REASON]))).toBe(W1_BOUNDED_WORDS);
+    // The fins' rounded leading edges swept beyond 60 deg, bounded (0016 section 21.2).
+    expect(claimWords(claim(CLASS_CLAIM, ['x', SWEPT_EDGE_BOUNDED_REASON]))).toBe(
+      SWEPT_EDGE_BOUNDED_WORDS,
+    );
+    // Two bounded parts: neither part's words alone.
+    expect(claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_REASON, SWEPT_EDGE_BOUNDED_REASON]))).toBe(
+      SEVERAL_BOUNDED_WORDS,
+    );
+    for (const w of [SWEPT_EDGE_BOUNDED_WORDS, SEVERAL_BOUNDED_WORDS]) {
+      expect(w.tone).toBe('bounded');
+      expect(w.mark).toBe('square');
+    }
   });
 
   it("the nose's ends; a finer grid suggested only where one is offered", () => {
@@ -257,6 +276,67 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     expect(beyond.reason).toContain('not measured with fins swept beyond 60 deg');
     expect(beyond.reason).toContain('flat fins at or near the base');
     expect(new Set([words.reason, under.reason, beyond.reason]).size).toBe(3);
+  });
+
+  it('a rounded edge refused past 60 deg: less sweep offered beside a bevelled edge', () => {
+    let message = '';
+    try {
+      roundedLeadingEdgeDrag({
+        mach: 2.0,
+        radius: 0.0015,
+        faceAngle: 0,
+        tanLeadingEdgeSweep: Math.tan((62 * Math.PI) / 180),
+        reynoldsOnDiameter: 2e5,
+      });
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    const w = refusalWords({
+      component: 'fin leading edges',
+      reason: 'leading-edge-range',
+      message,
+    });
+    expect(w.change).toBe('less sweep (60 degrees or less), or a bevelled leading edge');
+    // At 60 deg or less the change stays a bevelled edge.
+    expect(
+      refusalWords({
+        component: 'fin leading edges',
+        reason: 'leading-edge-range',
+        message: 'the Mach number 0.98 is below 1.0',
+      }).change,
+    ).toBe('bevelled leading edges');
+  });
+
+  it('a rounded edge refused beyond 75.1 deg: refused at any Mach number, less sweep offered', () => {
+    let e: FinRefusal | undefined;
+    try {
+      roundedLeadingEdgeDrag({
+        mach: 5.0,
+        radius: 0.0015,
+        faceAngle: 0,
+        tanLeadingEdgeSweep: Math.tan((78 * Math.PI) / 180),
+        reynoldsOnDiameter: 2e5,
+      });
+    } catch (x) {
+      e = x as FinRefusal;
+    }
+    expect(e!.reason).toBe('swept-leading-edge');
+    expect(
+      refusalWords({ component: 'fin leading edges', reason: e!.reason, message: e!.message }),
+    ).toEqual({
+      reason:
+        "a rounded leading edge's drag is bounded only up to 75 degrees of sweep, the most at " +
+        'which its bounds have been checked against a measured swept cylinder',
+      change: 'less sweep (75 degrees or less), or a bevelled leading edge',
+    });
+    // A sweep that is not a number keeps its own words.
+    expect(
+      refusalWords({
+        component: 'fin leading edges',
+        reason: 'swept-leading-edge',
+        message: 'bad leading-edge sweep (tan NaN)',
+      }).change,
+    ).toBe('a sweep of zero or more');
   });
 
   it('fins ending ahead of the base: where they are refused, said plainly', () => {
@@ -479,6 +559,23 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         ).not.toThrow();
       }
     }
+  });
+
+  it("a square-cut leading edge: the page's words, exactly (premises, not bounds; faces far larger)", () => {
+    // 0016 section 21.6 and the re-review of ef7fc7d..5159cac: measurements bore out what the
+    // bounds rest on, not the bounds, and only on faces far larger than a fin's.
+    expect(
+      refusalWords({
+        component: 'fin leading edges',
+        reason: 'square-leading-edge',
+        message: SQUARE_EDGE_REFUSAL,
+      }),
+    ).toEqual({
+      reason:
+        "a square-cut leading edge's drag has bounds, but measurements bear out what they rest on " +
+        "only on flat faces far larger than a model rocket fin's",
+      change: 'rounded or bevelled leading edges',
+    });
   });
 
   it('a reason the words do not know yet: its message, plainly', () => {
