@@ -7,6 +7,14 @@
 
 import { describe, expect, it } from 'vitest';
 import {
+  BLUNT_AHEAD_OF_BASE,
+  BLUNT_EDGE_NOTE,
+  MORE_THAN_A_CHORD_AHEAD,
+  ROUNDED_EDGE_NOTE,
+  ROUNDED_PLATE_AHEAD_OF_BASE,
+} from '../../src/base/base-drag';
+import type { BaseRefusalReason } from '../../src/base/refusal';
+import {
   BOUNDED_WORDS,
   changeText,
   claimWords,
@@ -139,9 +147,9 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
             'at this speed, the base drag with fins at the base is measured only for flat fins ' +
             'with square trailing edges or fins with sharp ones, not for this trailing edge (a ' +
             'wedge thickening to it, or a rounded one)',
-          change:
-            'flat fins with square trailing edges, sharp trailing edges, or fins a root chord or ' +
-            'more ahead of the base',
+          // No advice to move the fins a root chord or more ahead: refused there since 2026-10-27
+          // (0014 section 10.7 (ad)).
+          change: 'flat fins with square trailing edges, or sharp trailing edges',
         },
       ],
       [
@@ -172,6 +180,122 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         'is 1.0 to 3.0 and for edge sizes within its data',
       change: 'bevelled leading edges',
     });
+  });
+
+  it('fins ending ahead of the base: where they are refused, said plainly', () => {
+    // Refused below Mach 1.5, above 2.0, at Mach 1.5 to 2.0 with another root chord than TN 2360's,
+    // and more than a root chord ahead at any chord (0015 section 3.3): the words name what is
+    // measured, and so what is missing; the change is the base, never further ahead.
+    expect(refusalWords({ component: 'body base', reason: 'fins-near-base', message: '' })).toEqual(
+      {
+        reason:
+          'fins ending ahead of the base: the base drag with fins there is measured only up to one ' +
+          'root chord ahead, at Mach 1.5 to 2.0 (none is known below Mach 1.5), and only with a fin ' +
+          'root chord of 1.5 body diameters',
+        change: "the fins' trailing edges at the base",
+      },
+    );
+  });
+
+  it('a rounded plate within a chord ahead of the base: refused for its trailing edge, worded near the base', () => {
+    const near = refusalWords({
+      component: 'body base',
+      reason: 'fin-trailing-edge',
+      message: `${ROUNDED_PLATE_AHEAD_OF_BASE} 0.5 root chords ahead of the base: ...`,
+    });
+    expect(near).toEqual({
+      reason:
+        'with fins near the base, the base drag is measured only for fins with square or sharp ' +
+        'trailing edges, not for a rounded one',
+      // At the base, where square or sharp trailing edges are served; not a chord or more ahead,
+      // refused since 2026-10-27 (0014 section 10.7 (ad)).
+      change: 'square or sharp trailing edges, with the fins ending at the base',
+    });
+    expect(near.reason).not.toContain('at the base');
+    expect(near.reason).not.toContain('at this speed');
+    // At the base the words stay as they were.
+    expect(
+      refusalWords({ component: 'body base', reason: 'fin-trailing-edge', message: 'x' }).reason,
+    ).toMatch(/^at this speed, the base drag with fins at the base/);
+  });
+
+  it('fins ahead of the base whose trailing edge is refused there too: the change names one served at the base', () => {
+    // The Basic Finner's wedges ahead of the base (src/base/base-drag.ts): refused for the trailing
+    // edge, worded near the base, the change sharp edges at the base (served there at every speed).
+    const blunt = refusalWords({
+      component: 'body base',
+      reason: 'fin-trailing-edge',
+      message: `${BLUNT_AHEAD_OF_BASE} 0.5 root chords ahead of the base: ...`,
+    });
+    expect(blunt).toEqual({
+      reason:
+        'with fins near the base, the base drag is measured only for fins with square or sharp ' +
+        'trailing edges, not for a blunt one that the faces widen or narrow to (as the Basic ' +
+        "Finner's wedges)",
+      change: 'sharp trailing edges, with the fins ending at the base',
+    });
+    expect(blunt.reason).not.toContain('at this speed');
+    // More than a chord ahead: the position, and the trailing edge where it is refused too.
+    const far = (note: string) =>
+      refusalWords({
+        component: 'body base',
+        reason: 'fins-near-base',
+        message: `${MORE_THAN_A_CHORD_AHEAD} (2 root chords): ...${note}`,
+      });
+    expect(far('').change).toBe("the fins' trailing edges at the base");
+    expect(far(BLUNT_EDGE_NOTE).change).toBe(
+      'sharp trailing edges, with the fins ending at the base',
+    );
+    expect(far(ROUNDED_EDGE_NOTE).change).toBe(
+      'square or sharp trailing edges, with the fins ending at the base',
+    );
+    expect(far(BLUNT_EDGE_NOTE).reason).toMatch(/, and only for square or sharp trailing edges$/);
+    expect(far('').reason).not.toContain('trailing edges');
+  });
+
+  it('no advice moves the fins a chord or more ahead of the base (refused there since 2026-10-27)', () => {
+    // 0014 section 10.7 (ad), 2026-10-27: the plain curve a chord or more ahead is withdrawn, so no
+    // words may send the rocketeer there. Every base reason, at and near the base, for the base and
+    // for the fins' trailing-edge base, and the logic's own messages for the cases that used to.
+    const reasons: readonly BaseRefusalReason[] = [
+      'mach-range',
+      'afterbody',
+      'laminar-base',
+      'fins-near-base',
+      'fin-count',
+      'fin-thickness',
+      'fin-trailing-edge',
+      'fin-sweep',
+      'flat-plate-fins',
+      'swept-trailing-edge',
+      'laminar-trailing-edge',
+      'thick-layer',
+      'rounded-trailing-edge',
+      'beyond-read-range',
+      'input',
+    ];
+    const messages = [
+      '',
+      'x',
+      `${ROUNDED_PLATE_AHEAD_OF_BASE} 0.5 root chords ahead of the base: ...`,
+      `${MORE_THAN_A_CHORD_AHEAD} (2 root chords): ...`,
+      `${MORE_THAN_A_CHORD_AHEAD} (2 root chords): ...${BLUNT_EDGE_NOTE}`,
+      `${MORE_THAN_A_CHORD_AHEAD} (2 root chords): ...${ROUNDED_EDGE_NOTE}`,
+      `${BLUNT_AHEAD_OF_BASE} 0.5 root chords ahead of the base: ...`,
+    ];
+    for (const reason of reasons) {
+      for (const component of ['body base', 'fin trailing-edge base']) {
+        for (const message of messages) {
+          const { change } = refusalWords({ component, reason, message });
+          expect(change).not.toMatch(/chord or more ahead|more ahead|further ahead/);
+          expect(change).not.toMatch(/ahead of (the base|it)$/);
+        }
+      }
+    }
+    // The Basic Finner at Mach 1.4 and its wedges, refused at the base, as the logic gives them.
+    for (const r of refusalsAt('basic-finner', 1.4)) {
+      expect(refusalWords(r).change).not.toMatch(/ahead/);
+    }
   });
 
   it('a reason the words do not know yet: its message, plainly', () => {

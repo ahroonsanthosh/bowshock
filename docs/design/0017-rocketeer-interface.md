@@ -236,12 +236,12 @@ with and without WebGPU).
 | `mach-range` (fin trailing-edge base)             | a square trailing edge's drag is measured only at other speeds                                                | a bevelled (sharp) trailing edge                                                                              |
 | `afterbody`                                       | base drag is measured only for a straight body to a flat base                                                 | a body without a boat-tail or flare                                                                           |
 | `laminar-base`, `laminar-trailing-edge`           | the air would reach the base smooth (laminar); base drag is measured with turbulent air only                  | (only from an input of the advanced page)                                                                     |
-| `fins-near-base`                                  | fins ending less than a root chord ahead of the base: no measurement of the base drag with them there         | the fins' trailing edges at the base, or a root chord or more ahead of it                                     |
-| `fin-count`                                       | with fins at the base, the base drag is measured with four fins only                                          | four fins, or fins a root chord or more ahead of the base                                                     |
-| `fin-thickness`                                   | with fins at the base, the base drag is measured for fins 5% to 10% as thick as their root chord              | that thickness, or fins a root chord or more ahead of the base                                                |
-| `fin-sweep`                                       | with fins at the base, the base drag is measured with unswept fins only                                       | unswept fins of constant chord, or fins a root chord or more ahead                                            |
-| `flat-plate-fins` (main since `e42d5d4`)          | flat plates at the base lower the base drag by up to 15% in the one measurement of them, not covered          | fins a root chord or more ahead, or wedge or bevelled fins at the base                                        |
-| `fin-trailing-edge` (main since W1, `b86c308`)    | measured here only for flat fins with square trailing edges or sharp ones, not a wedge's thick end or a round | those trailing edges, or fins a root chord or more ahead of the base                                          |
+| `fins-near-base`                                  | fins ending ahead of the base: measured only within a root chord, at Mach 1.5 to 2.0, chord 1.5 diameters     | the fins' trailing edges at the base (with sharp or square edges where theirs is refused there too)           |
+| `fin-count`                                       | with fins at the base, the base drag is measured with four fins only                                          | four fins                                                                                                     |
+| `fin-thickness`                                   | with fins at the base, the base drag is measured for fins 5% to 10% as thick as their root chord              | fins of that thickness                                                                                        |
+| `fin-sweep`                                       | with fins at the base, the base drag is measured with unswept fins only                                       | unswept fins of constant chord                                                                                |
+| `flat-plate-fins` (main since `e42d5d4`)          | flat plates at the base lower the base drag by up to 15% in the one measurement of them, not covered          | wedge or bevelled fins of constant chord at the base                                                          |
+| `fin-trailing-edge` (main since W1, `b86c308`)    | measured here only for flat fins with square trailing edges or sharp ones, not a wedge's thick end or a round | those trailing edges (near the base: square or sharp ones, the fins ending at the base)                       |
 | `rounded-trailing-edge`                           | a rounded trailing edge's drag is not shown to be below a square edge's, so it cannot be bounded yet          | square or bevelled trailing edges                                                                             |
 | `square-leading-edge`                             | a square-cut leading edge's drag cannot yet be bounded from measurements                                      | rounded or bevelled leading edges                                                                             |
 | `swept-trailing-edge`                             | a swept square trailing edge's drag is not measured                                                           | an unswept trailing edge, or a bevelled one                                                                   |
@@ -263,6 +263,17 @@ with and without WebGPU).
 | no WebGPU; the GPU lost or failed                 | this browser cannot run the airflow solver; the GPU failed                                                    | another browser; reload                                                                                       |
 | the flight condition (altitude out of range)      | the condition's own reason                                                                                    | an altitude within the range                                                                                  |
 | the adapter (section 4.2): Not modelled           | the row's reason                                                                                              | the row's change                                                                                              |
+
+_Amended 2026-10-27 (0014 section 10.7 (ad), its amendment of that date):_
+no change offers fins "a root chord or more ahead of the base" any more,
+since that position is refused (the plain curve of 0010 section 1.4
+withdrawn); the rows above for `fins-near-base`, `fin-count`,
+`fin-thickness`, `fin-sweep`, `flat-plate-fins` and `fin-trailing-edge`
+give the words as `src/app/status-words.ts` now has them. Ahead of the
+base, a plate's rounded trailing edge is worded near the base, its
+change square or sharp edges with the fins at the base; a blunt one the
+faces widen or narrow to (the Basic Finner's wedges) likewise, its
+change sharp edges with the fins at the base.
 
 Below Mach 1.2 every point is computed as at any other Mach number and
 shows what the logic returns there (today: refused, with its reasons).

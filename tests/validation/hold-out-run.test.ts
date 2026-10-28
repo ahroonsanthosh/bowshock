@@ -254,6 +254,37 @@ describe("the rebuilt body base equals the library's where the library routes to
     }
   });
 
+  it("fins ahead of the base: the root chord passed on, so the library's served positions are served here too (0015 section 3.3)", () => {
+    // The review's N1 (2026-10-27): without the chord every position ahead was refused here, "not given".
+    const f: BaseFins = {
+      ...fins(4, 0.08, near(doubleWedge(0.08))),
+      trailingEdgeAheadOfBase: 0.5,
+      rootChordOverDiameter: 1.5,
+    };
+    for (const mach of [1.5, 1.8, 2.0]) {
+      const lib = bodyBaseDrag({
+        mach,
+        afterbody: 'cylinder',
+        boundaryLayerAtBase: 'turbulent',
+        baseAreaRatio: 1,
+        fins: f,
+      });
+      expect(lib.finsOnBaseSource).toBe('rebuilt');
+      const r = rebuiltBodyBase(mach, f);
+      expect([r.component.cd, r.component.low, r.component.high]).toEqual([
+        lib.cd,
+        lib.low,
+        lib.high,
+      ]);
+    }
+    const noChord = { ...f };
+    delete (noChord as { rootChordOverDiameter?: number }).rootChordOverDiameter;
+    expect(() => rebuiltBodyBase(1.8, noChord)).toThrow(/is not given/);
+    expect(() => rebuiltBodyBase(1.8, { ...f, rootChordOverDiameter: 1.0 })).toThrow(
+      /root chord is 1\.00 body diameters/,
+    );
+  });
+
   it('below Mach 1.5 (W2) it is not composed', () => {
     expect(() => rebuiltBodyBase(1.4, cases[0]![1])).toThrow(/W2/);
   });

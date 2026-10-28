@@ -239,7 +239,10 @@ describe('the term (bodyBaseDrag)', () => {
     });
     const arcs = finsOf(4, 0.1, arc10, 'circular-arc');
     const wedges = finsOf(3, 0.024, doubleWedge(0.024, 0.5), 'other');
-    const term = (fins: typeof arcs, mach: number) => {
+    const term = (
+      fins: typeof arcs & { readonly rootChordOverDiameter?: number },
+      mach: number,
+    ) => {
       const r = bodyBaseDrag({ ...base, mach, fins });
       return [r.cd, r.low, r.high].map((x) => Math.round(1e4 * x) / 1e4);
     };
@@ -253,6 +256,25 @@ describe('the term (bodyBaseDrag)', () => {
     expect(term(wedges, 1.62 - 1e-9)).toEqual([0.1947, 0.0953, 0.2746]);
     expect(term(wedges, 1.62)).toEqual([0.2031, 0.1101, 0.2757]);
     expect(term(arcs, 1.62 - 1e-9)[0]).toBeCloseTo(term(arcs, 1.62)[0]!, 3);
+    // Fins ahead of the base (0015 section 3.3): refused below M 1.5, and measured at M 1.5 with TN 2360's root
+    // chord of 1.5 body diameters, which these numbers need (any other chord refused).
+    const chord = { rootChordOverDiameter: 1.5 };
+    const w4 = { ...wedges, ...chord, trailingEdgeAheadOfBase: 0.4 };
+    const a2 = { ...arcs, ...chord, trailingEdgeAheadOfBase: 0.2 };
+    const a4 = { ...arcs, ...chord, trailingEdgeAheadOfBase: 0.4 };
+    for (const f of [w4, a2, a4]) {
+      expect(() => term(f, 1.5 - 1e-9)).toThrow(
+        /below Mach 1\.5 no measurement with fins ahead of the base is known/,
+      );
+      expect(() => term({ ...f, rootChordOverDiameter: 2.0 }, 1.5)).toThrow(
+        /root chord is 2\.00 body diameters/,
+      );
+    }
+    // With the compiled curve's band 0.77 to 1.13 (0014 10.7 (ah)); with 0.82 to 1.08 before it,
+    // [0.1629, 0.1159, 0.1935], [0.2262, 0.1698, 0.26] and [0.1894, 0.1497, 0.2101].
+    expect(term(w4, 1.5)).toEqual([0.1629, 0.1078, 0.2017]);
+    expect(term(a2, 1.5)).toEqual([0.2262, 0.1585, 0.2713]);
+    expect(term(a4, 1.5)).toEqual([0.1894, 0.1403, 0.2195]);
     // Below M 1.5, on W2's term, +-32.8% to +-35.9% on F (sharp sections and plates alike; +-31.7% to
     // +-34.9% before 0014 10.7 (ah) moved W2's midpoint from 1.065 to 1.04).
     const hw = Array.from({ length: 501 }, (_, k) => 1.0 + k * 0.000999).map((m) => {
@@ -290,7 +312,7 @@ describe('the term (bodyBaseDrag)', () => {
     expect(g.nominal).toBeCloseTo(0.5 * (f.lower.band.low + f.upper.band.high / 1.04), 12);
     expect(r.cd).toBeCloseTo(curve(1.3) * 1.04 * g.nominal, 12);
     expect(r.labels[1]).toContain("apply to Love's curve itself");
-    // Swept fins of a sharp section below M 1.5, and fins ahead of the base, are refused.
+    // Swept fins of a sharp section below M 1.5 are refused.
     const swept = {
       ...fins,
       tanLeadingEdge: 1,
@@ -298,15 +320,91 @@ describe('the term (bodyBaseDrag)', () => {
     };
     expect(() => bodyBaseDrag({ ...base, mach: 1.3, fins: swept })).toThrow(/below M 1.5/);
     expect(() =>
-      bodyBaseDrag({ ...base, mach: 1.3, fins: { ...fins, trailingEdgeAheadOfBase: 0.5 } }),
+      bodyBaseDrag({
+        ...base,
+        mach: 1.3,
+        fins: { ...swept, trailingEdgeAheadOfBase: 0.5 },
+      }),
     ).toThrow(BaseRefusal);
-    // Fins a chord or more ahead: the curve alone.
-    const ahead = bodyBaseDrag({
-      ...base,
-      mach: 1.3,
-      fins: { ...fins, trailingEdgeAheadOfBase: 1.2 },
+    // Fins within a chord ahead of the base, at any position, chord given or not: refused below M 1.5 (0015
+    // section 3.3; the bound built on 2026-10-26 was withdrawn after the review).
+    for (const xc of [0.2, 0.4, 0.5]) {
+      for (const c of [{}, { rootChordOverDiameter: 1.5 }]) {
+        expect(() =>
+          bodyBaseDrag({
+            ...base,
+            mach: 1.3,
+            fins: { ...fins, ...c, trailingEdgeAheadOfBase: xc },
+          }),
+        ).toThrow(/below Mach 1\.5 no measurement with fins ahead of the base is known/);
+      }
+    }
+    // Fins exactly a chord ahead: refused below M 1.5 like every position ahead. More than a chord
+    // ahead: refused at any chord (the curve alone served there until 2026-10-27; 0014 section 10.7 (ad)).
+    for (const c of [{}, { rootChordOverDiameter: 1.5 }]) {
+      expect(() =>
+        bodyBaseDrag({ ...base, mach: 1.3, fins: { ...fins, ...c, trailingEdgeAheadOfBase: 1 } }),
+      ).toThrow(/below Mach 1\.5 no measurement with fins ahead of the base is known/);
+      for (const x of [1.2, 3]) {
+        expect(() =>
+          bodyBaseDrag({ ...base, mach: 1.3, fins: { ...fins, ...c, trailingEdgeAheadOfBase: x } }),
+        ).toThrow(/^fins ending more than a root chord ahead of the base/);
+      }
+    }
+    // The body without fins keeps the curve alone (W2's term).
+    expect(bodyBaseDrag({ ...base, mach: 1.3 }).cd).toBeCloseTo(curve(1.3) * W2_BAND.nominal, 12);
+  });
+
+  it("0015 section 3.6's rows below M 1.5, on one basis: W2's term as served, and Love's curve", () => {
+    // The factor function's raw output below M 1.5 holds the zero member as a ratio to the body without fins
+    // (W2's term) and the reference over Love's curve: two bases. bodyBaseDrag serves both on W2's term.
+    const r4 = (x: number) => Math.round(1e4 * x) / 1e4;
+    const plate: SymmetricSection = {
+      x: [0, 0.1, 1],
+      halfThickness: [0, 0.012, 0.012],
+      bluntTrailingEdge: true,
+    };
+    const finsOf = (section: SymmetricSection, tanLe: number, flatFaced: boolean) => ({
+      count: 3,
+      thicknessRatio: 0.024,
+      section: 'other' as const,
+      tanLeadingEdge: tanLe,
+      tanTrailingEdge: 0,
+      trailingEdgeAheadOfBase: 0,
+      ...(flatFaced ? { flatFaced: true } : {}),
+      nearBase: {
+        section,
+        sectionFamily: 'other' as const,
+        tanLeadingEdgeSweep: tanLe,
+        tanTrailingEdgeSweep: 0,
+      },
     });
-    expect(ahead.finsOnBase).toBeUndefined();
-    expect(ahead.cd).toBeCloseTo(curve(1.3) * 1.04, 12);
+    const rows: [number, ReturnType<typeof finsOf>, number[], number[], number][] = [
+      // M, fins, on W2's term [low, nominal, high], on Love's curve [low, nominal, high], half-width %;
+      // with W2's nominal 1.04 since 0014 10.7 (ah) (with 1.065 before it: [0.8379, 1.2295, 1.6211] and
+      // [0.8924, 1.3095, 1.7265], 31.9, at M 1.2; [0.8379, 1.2873, 1.7367] and [0.8924, 1.371, 1.8496],
+      // 34.9, at M 1.0).
+      [
+        1.2,
+        finsOf(doubleWedge(0.024, 0.5), 0, false),
+        [0.8379, 1.249, 1.6601],
+        [0.8714, 1.299, 1.7265],
+        32.9,
+      ],
+      [1.2, finsOf(plate, 1, true), [0.8379, 1.249, 1.6601], [0.8714, 1.299, 1.7265], 32.9],
+      [
+        1.0,
+        finsOf(doubleWedge(0.024, 0.5), 0, false),
+        [0.8379, 1.3082, 1.7784],
+        [0.8714, 1.3605, 1.8496],
+        35.9,
+      ],
+    ];
+    for (const [m, fins, w2, love, hw] of rows) {
+      const f = bodyBaseDrag({ ...base, mach: m, fins }).finsOnBase!;
+      expect([f.low, f.nominal, f.high].map(r4)).toEqual(w2);
+      expect([f.low, f.nominal, f.high].map((x) => r4(W2_BAND.nominal * x))).toEqual(love);
+      expect(Math.round((1000 * (f.high - f.low)) / 2 / f.nominal) / 10).toBe(hw);
+    }
   });
 });

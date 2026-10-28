@@ -301,6 +301,16 @@ a message (`BaseRefusal`, with a reason): Mach numbers outside 1.0 to 3.0,
 afterbodies other than cylinders, a laminar layer at the base, and the
 fins' conditions of 1.3 and 0015.
 
+_Note, 2026-10-27 (0014 section 10.7 (ad), its amendment of that date;
+the text above stands as written):_ the plain curve for fins one root
+chord or more ahead of the base is withdrawn. The re-review of A5 found
+its band missing the measurement at TN 2360's own geometry: four 10%
+arcs one chord ahead at Mach 2.0 measure about 1.107 times the curve,
+outside the plain curve's band. Fins ahead of the base are now served
+only where TN 2360 measured them (a root chord of 1.5 body diameters, x/c
+0 to 1.0, Mach 1.5 to 2.0) through the rebuilt factor, and every
+position beyond one chord ahead is refused (0015 section 3.3).
+
 ### 1.5 The fins' trailing-edge base
 
 The two-dimensional base pressure of blunt trailing edges, 0008's method

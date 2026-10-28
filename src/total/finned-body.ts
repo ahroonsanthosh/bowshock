@@ -463,7 +463,7 @@ export function finnedBodyComponents(
       afterbody: config.afterbody,
       boundaryLayerAtBase: laminarBase ? 'laminar' : 'turbulent',
       baseAreaRatio: 1,
-      fins: baseFinsOf(fins),
+      fins: baseFinsOf(fins, 2 * config.body.nose.baseRadius),
     });
     components.push({
       name: 'body base',
@@ -691,9 +691,11 @@ export function finnedBodyTotalDrag(
  * (a plate: flat faces to a square trailing edge at that t/c; its thinner
  * stations follow from `thinnest`). A plate with a rounded trailing edge has
  * no section the rebuilt factor takes (0015 section 4), so it is not given
- * one, and the present factor's verdict stands.
+ * one, and the present factor's verdict stands. With the body's diameter,
+ * the root chord over it, without which fins ending ahead of the base are
+ * refused (0015 section 3.3).
  */
-export function baseFinsOf(fins: FinSet): BaseFins {
+export function baseFinsOf(fins: FinSet, bodyDiameter?: number): BaseFins {
   const plate = isFlatPlate(fins.section) ? fins.section : undefined;
   const thicknessRatio =
     plate === undefined
@@ -722,6 +724,9 @@ export function baseFinsOf(fins: FinSet): BaseFins {
     tanLeadingEdge: fins.planform.tanLeadingEdge,
     tanTrailingEdge: fins.planform.tanTrailingEdge,
     trailingEdgeAheadOfBase: fins.trailingEdgeAheadOfBase / fins.planform.rootChord,
+    ...(bodyDiameter === undefined
+      ? {}
+      : { rootChordOverDiameter: fins.planform.rootChord / bodyDiameter }),
     // For the rebuilt factor, used only where the present one refuses (0015 section 5).
     ...(section === undefined
       ? {}

@@ -167,7 +167,7 @@ describe("a refused point's parts and floor", { timeout: 600_000 }, () => {
     expect(at14.floor).toMatch(/; the body base is refused, and its sign/);
   });
 
-  it('flat plates a chord ahead of the base, square-cut at Mach 2: a floor', async () => {
+  it('flat plates at the base, square-cut at Mach 2: a floor', async () => {
     const b = preset('basic-finner').design;
     const d: RocketDesign = {
       ...fins(b, {
@@ -178,14 +178,10 @@ describe("a refused point's parts and floor", { timeout: 600_000 }, () => {
         },
       }),
     };
-    // The fins two root chords (30 mm each) ahead of the base.
-    const set = d.finSets[0]!;
-    const ahead: RocketDesign = {
-      ...d,
-      finSets: [{ ...set, rootLeadingEdge: set.rootLeadingEdge - 0.06 }],
-    };
-    const run = await curve(ahead, true, false);
-    expect(check(run, ahead, true, false)).toBeGreaterThan(0);
+    // At the base: two root chords ahead (this test's position until 2026-10-27) the body base
+    // is refused now, and with it the floor (0014 section 10.7 (ad)).
+    const run = await curve(d, true, false);
+    expect(check(run, d, true, false)).toBeGreaterThan(0);
     const v = pointView(
       run.points.find((q) => q.mach === 2)!,
       true,
