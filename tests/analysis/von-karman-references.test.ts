@@ -10,7 +10,11 @@
  * passing ones, nothing is added until the owner decides.
  */
 
-import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { insideOutline, VON_KARMAN_REFERENCES } from '../../src/analysis/fitted-flow';
 import { TWO_SCALE_DRAG_FLOOR } from '../../src/analysis/verified-drag';
@@ -23,12 +27,19 @@ interface Verdict {
   readonly containment: readonly number[];
 }
 
-const record = JSON.parse(
-  readFileSync(
-    new URL('../../docs/research/two-scale-noses/outline/analysis/judge.json', import.meta.url),
-    'utf8',
-  ),
-) as { allowance: number; largest: number; verdicts: readonly Verdict[] };
+const research = fileURLToPath(new URL('../../docs/research/two-scale-noses/', import.meta.url));
+const recordFile = join(research, 'outline/analysis/judge.json');
+const record = JSON.parse(readFileSync(recordFile, 'utf8')) as {
+  allowance: number;
+  largest: number;
+  verdicts: readonly Verdict[];
+};
+
+/** Rounded up to one significant figure, the registration's step for the allowance. */
+function roundedUp(v: number): number {
+  const e = Math.floor(Math.log10(v));
+  return Number(`${Math.ceil(v / 10 ** e - 1e-9)}e${e}`);
+}
 
 /** A case's nose length in calibers and its Mach number, from its name ("C0 L5 M2 cyl2"). */
 function point(name: string): [number, number] {
@@ -74,11 +85,35 @@ describe('the Von Karman references (0006, "Two-scale noses")', () => {
     }
   });
 
-  it('the allowance is twice the largest miss, rounded up, and every passing band contains its error against the lowest bound', () => {
+  it('the allowance is twice the largest miss counted, rounded up, and every passing band contains its error against the lowest bound', () => {
+    expect(roundedUp(7.28e-4)).toBe(8e-4);
+    expect(roundedUp(8e-4)).toBe(8e-4);
+    expect(record.allowance).toBe(roundedUp(2 * record.largest));
     expect(TWO_SCALE_DRAG_FLOOR).toBe(record.allowance);
-    expect(record.allowance).toBeGreaterThanOrEqual(2 * record.largest);
     for (const v of passed) {
       for (const ratio of v.containment) expect(ratio).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('judge.json is what judge.mjs gives now from the committed fits and marches', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'vk-judge-'));
+    try {
+      const out = join(dir, 'judge.json');
+      execFileSync(
+        process.execPath,
+        [
+          join(research, 'outline/analysis/judge.mjs'),
+          join(research, 'marches/moc.jsonl'),
+          join(research, 'outline/fits/saved'),
+          join(research, 'outline/marches'),
+          '--json',
+          out,
+        ],
+        { stdio: 'pipe' },
+      );
+      expect(JSON.parse(readFileSync(out, 'utf8')) as unknown).toEqual(record);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
     }
   });
 });

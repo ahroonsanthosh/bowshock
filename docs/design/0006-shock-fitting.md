@@ -1152,11 +1152,10 @@ the criterion on nj = 80's mass balance (4.6e-5 against 3.5e-5; the one
 at 0.18 also on the change from 1280 intervals on nj = 20 and 40, 6.7e-5
 and 4.1e-5 of the drag, corrected 2026-10-27; the line behind it, at
 0.64, fails that change on every grid, 3.5e-5 to 4.8e-5, and misses by
-+3.02e-4 to +3.32e-4) and give misses of +3.45e-4 to +3.64e-4 and +3.56e-4 to
-+3.57e-4; over the
-seven lines marched (x = 0.08 to 1.0) the march's orders scatter from
-0.53 to 1.92 and the references spread over 2.2e-4 of the drag
-(`marches/moc-L5c2M2.txt`, `analysis/moc3.mjs`).
++3.02e-4 to +3.32e-4) and give misses of +3.45e-4 to +3.64e-4 and
++3.56e-4 to +3.57e-4; over the seven lines marched (x = 0.08 to 1.0) the
+march's orders scatter from 0.53 to 1.92 and the references spread over
+2.2e-4 of the drag (`marches/moc-L5c2M2.txt`, `analysis/moc3.mjs`).
 
 What the line criterion checks, and what it does not. It checks the
 march's own convergence with the intervals and its mass balance, not
@@ -1174,7 +1173,12 @@ procedure's extrapolation over these references, and over the lines
 next to the one the 5-caliber nose at Mach 2 rests on, rounded up:
 8e-4, twice the 3.64e-4 of the line at x = 0.18 on that nose (the
 passing line's 3.33e-4 alone would give 7e-4; the 2.44e-4 of the
-5-caliber nose at Mach 1.5, before that reference, gave 5e-4), in place
+5-caliber nose at Mach 1.5, before that reference, gave 5e-4). Corrected
+2026-10-28: the marched lines next to the passing one are those at x =
+0.27 and 0.64, whose largest miss is 3.57e-4; the line at 0.18 is the
+second ahead. Twice either miss rounds up to 8e-4, so the allowance is
+unchanged (see "Widening the outline: results" for how the lines next
+to a passing line are counted). The allowance applies in place
 of `FITTED_DRAG_FLOOR` on any start with its own outer boundary
 (`fittedDragFloor`). With it every band above contains its error,
 against the lowest bound of the marches (the finest grid's march plus
@@ -1309,7 +1313,7 @@ to the registration's rule for adding them. Every fit settled (5500 to
 9000 iterations on nj = 20 and 40, 13000 to 15000 on nj = 80) and every
 fitted grid passed the gates (wall cells at 71.5 deg or more); the
 5-caliber nose at Mach 3 gives W5's saved nj = 20 and 40 drags within
-6.4e-12 and 4.8e-15.
+6.38e-12 and 4.84e-15 (relative, from the saved values).
 
 | Nose, Mach  | nj = 20      | nj = 40      | nj = 80      | Order | Band (no allowance) | Lines passing      | Verdict |
 | ----------- | ------------ | ------------ | ------------ | ----- | ------------------- | ------------------ | ------- |
@@ -1333,27 +1337,54 @@ both the mass balance (4.4e-5 to 8.6e-3 on nj = 80) and the change from
 two would miss by +3.51e-4 to +4.31e-4. On every case the lines nearer
 the tip fail the mass balance or the change from 1280 intervals, as on
 W5's 3- and 5-caliber noses. The largest miss counted stays 5 calibers
-at Mach 2's (3.57e-4 by the registered count of the lines next to its
-passing line), so the allowance by W5's rule stays 8e-4.
+at Mach 2's (3.57e-4 by `judge.mjs`'s count of the lines next to its
+passing line), so the allowance by W5's rule stays 8e-4 on that count.
+
+How the lines next to a passing line are counted (recorded 2026-10-28).
+The registration did not define "the marched lines next to it". W5's
+text named the two lines ahead of the passing line of 5 calibers at
+Mach 2 (x = 0.18 and 0.27). `judge.mjs` counts one line on each side; it
+fixed that after the registration but before any new data (the file was
+run on W5's marches before the lanes started at 08:47 on 2026-10-27, and
+committed in 3883113 at 08:48:30; the first new fit was saved at 08:56,
+the first new march ran at 21:12). Under W5's reading the Mach 3 cases
+change the allowance: the second line ahead of 5 calibers at Mach 3's
+passing line (x = 0.039, march order 0.23) misses by -4.48e-4, which
+gives 9e-4, and that of 6 calibers at Mach 3 (x = 0.032, march order
+0.10) by -8.85e-4, which gives 2e-3; both lines fail the line criterion
+on every grid, and their marches converge so slowly that the extrapolated
+references there are weak. At 6 calibers and Mach 1.5 the two lines
+ahead miss by up to 1.59e-4, so the allowance stays 8e-4 there on either
+reading. The reading decides the allowance if either Mach 3 case is
+added, so it goes to the owner with the choices below.
 
 The registration's rule then holds them all: the outline of the passing
 cases would have the corners (1, 1.5), (6, 1.5), (6, 3) and (1, 3), and
-the failed case (6, 2) lies on its edge, so nothing is added until the
-owner decides, and `VON_KARMAN_REFERENCES` keeps W5's seven. Choices for
-that decision, with the refusal audit's served totals (2000 rockets,
-8000 cases, on main at cdd26e6, 155 as they stand):
+the failed case (6, 2) lies on its edge, which counts as inside
+(`insideOutline` takes a point on the outline, within 1e-9 of the
+points' extent, as inside), so nothing is added until the owner decides,
+and `VON_KARMAN_REFERENCES` keeps W5's seven. Choices for that decision,
+with the refusal audit's served totals (2000 rockets, 8000 cases, on main
+at cdd26e6, 155 as they stand) and the allowance on each count of the
+lines next to a passing line (`judge.mjs`'s, W5's):
 
-- add 6 calibers at Mach 1.5 and 5 calibers at Mach 3 only: their
+- (a) add 6 calibers at Mach 1.5 and 5 calibers at Mach 3 only: their
   outline (corners (1, 1.5), (6, 1.5), (5, 3), (1, 3)) leaves (6, 2)
   outside, its edge passing 5.67 calibers at Mach 2. 213 served (Mach 1.5
-  to 1.8: 53 to 71; 1.8 to 3.0: 102 to 142). Near that edge the
-  allowance is less sure: the lines of 6 calibers at Mach 2 that do not
-  pass would miss by up to 4.31e-4, more than half of 8e-4;
-- add all three passing cases with an outline that leaves out a region
-  round (6, 2): a new rule, to be registered before use; with all three
-  and no region left out, 242 served (Mach 1.5 to 1.8: 73; 1.8 to 3.0:
-  169);
-- add none: 155.
+  to 1.8: 53 to 71; 1.8 to 3.0: 102 to 142); allowance 8e-4 or 9e-4.
+  Near that edge the allowance is less sure: the lines of 6 calibers at
+  Mach 2 that do not pass would miss by up to 4.31e-4, more than half of
+  8e-4;
+- (a') add 5 and 6 calibers at Mach 3 only (the independent reviewer's
+  option): their outline (corners (1, 1.5), (5, 1.5), (6, 3), (1, 3))
+  leaves (6, 2) outside, its edge passing 5.33 calibers at Mach 2, twice
+  as far from (6, 2) as (a)'s. 204 served (Mach 1.5 to 1.8: 55; 1.8 to
+  3.0: 149); allowance 8e-4 or 2e-3;
+- (b) add all three passing cases with an outline that leaves out a
+  region round (6, 2): a new rule, to be registered before use; with all
+  three and no region left out, 242 served (Mach 1.5 to 1.8: 73; 1.8 to
+  3.0: 169); allowance 8e-4 or 2e-3;
+- (c) add none: 155; allowance 8e-4.
 
 **Sharp tips whose bow shock detaches** stay refused (the sharp
 problem's message). On the same grids (0004), with 5 calibers of

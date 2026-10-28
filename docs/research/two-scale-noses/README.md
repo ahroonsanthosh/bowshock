@@ -171,8 +171,9 @@ passes. Branch `claude/wip/vk-outline`.
 - `fits/smoke/`: the runner checked before the lanes started, on W5's
   1-caliber nose at Mach 2, nj = 20: stopped 300 iterations into a chunk
   at 1300 iterations, resumed, settled at 5000 iterations with the drag
-  0.42909806331325262, against W5's 0.42909806331220435 (2.4e-11
-  relative); a checkpoint with another chunk size was refused
+  0.42909806331325262, against W5's 0.42909806331220435 (2.44e-12
+  relative; corrected 2026-10-28 from 2.4e-11, which the message of
+  3883113 also gives and which cannot be changed there); a checkpoint with another chunk size was refused
   (`log-mismatch.txt`). That save carries the runner hash from before the
   fingerprint check was moved ahead of the problem's construction, the
   only change made to the runner since.
@@ -219,8 +220,8 @@ Results, by the registered criteria (2026-10-28):
   that change on every grid (8.7e-5 to 1.6e-4). Those two would miss by
   +3.51e-4 to +4.31e-4.
 - 5 calibers at Mach 3 (iterations 5500, 8000, 13000; gates passed, wall
-  cells at 79.4 deg or more; nj = 20 and 40 as W5's saved fits to 6.4e-12
-  and 4.8e-15): the one passing line misses by -9.08e-5 and -6.29e-5, the
+  cells at 79.4 deg or more; nj = 20 and 40 as W5's saved fits to
+  6.38e-12 and 4.84e-15): the one passing line misses by -9.08e-5 and -6.29e-5, the
   lines next to it (x = 0.14 and 1.66) by up to 1.92e-4; containment 3.07.
 - 6 calibers at Mach 3 (iterations 6000, 8000, 14000; gates passed, wall
   cells at 79.3 deg or more): the one passing line misses by -5.85e-5 and
@@ -232,6 +233,20 @@ Results, by the registered criteria (2026-10-28):
   corners (1, 1.5), (6, 1.5), (6, 3) and (1, 3), and the failed (6, 2)
   lies on its edge, so nothing is added until the owner decides;
   `VON_KARMAN_REFERENCES` keeps W5's seven (0006 gives the choices).
+  `insideOutline` counts a point on the outline as inside, which is why
+  (6, 2) on the edge holds them.
+- The lines next to a passing line (recorded 2026-10-28): the
+  registration did not define them; W5's text named the two lines ahead
+  of 5 calibers at Mach 2's passing line, while `judge.mjs` counts one on
+  each side, a rule fixed before any new data (it ran on W5's marches
+  before the lanes started at 08:47 on 2026-10-27 and was committed in
+  3883113 at 08:48:30; the first new fit was saved at 08:56, the first
+  new march ran at 21:12). On W5's reading the allowance would be 9e-4
+  with 5 calibers at Mach 3 (the second line ahead, x = 0.039, march
+  order 0.23, misses by -4.48e-4) and 2e-3 with 6 calibers at Mach 3 (x =
+  0.032, march order 0.10, -8.85e-4); with 6 calibers at Mach 1.5 alone
+  it stays 8e-4. That reading decides the allowance if either Mach 3 case
+  is added, so it is the owner's, with the choices.
 - The lanes ran from 2026-10-27 08:47 to 2026-10-28 08:59 UTC, through
   four container restarts, each fit resuming from its last checkpoint
   (`fits/queue-log.txt`, `fits/log.txt`).
@@ -246,13 +261,15 @@ The refusal audit's population (`docs/research/refusals`, 2000 rockets,
 | main 3e026a8, W5's seven                       | 155       | 53              | 102             |
 | main 3e026a8, with 6 cal. Mach 1.5 (interim)   | 168       | 65              | 103             |
 | main cdd26e6, W5's seven (the branch, held)    | 155       | 53              | 102             |
-| main cdd26e6, with 6 cal. Mach 1.5, 5 cal. Mach 3 | 213    | 71              | 142             |
-| main cdd26e6, with all three passing cases     | 242       | 73              | 169             |
+| main cdd26e6, with 6 cal. Mach 1.5, 5 cal. Mach 3 (a) | 213 | 71              | 142             |
+| main cdd26e6, with 5 and 6 cal. Mach 3 (a')    | 204       | 55              | 149             |
+| main cdd26e6, with all three passing cases (b, nothing cut out) | 242 | 73              | 169             |
 
 None below Mach 1.5 in any run. Each run with W5's seven gave main's
 `impact.out` byte for byte, and every run's cross-check with `src/total`
 agreed on 1200 of 1200 cases. The runs with added cases are for the
-owner's decision only (`population/option-a` and `population/all-three`:
+owner's decision only (`population/option-a`, `population/option-a-prime`
+and `population/all-three`:
 the run of `docs/research/refusals` on the merged head with those points
 added to `VON_KARMAN_REFERENCES` for the run, then taken out); the
 branch's own outputs are the held run, which is main's.
