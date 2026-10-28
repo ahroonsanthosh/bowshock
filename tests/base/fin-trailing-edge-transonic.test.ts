@@ -898,10 +898,11 @@ describe('what is refused below Mach 1.5 (item 7), and the labels (item 8)', () 
   it('refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge', () => {
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 0.99 }))).toBe('mach-range');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 1.0 }))).toBe('none');
-    // What the sets are sure to reach, each counted at the least c/[h Re^(1/5)] of its test: RM
-    // A51J11's h/t 0.3 with roughness (4.49) to Mach 1.15 (its points to 1.10, +-0.02 in Mach);
-    // then TN 3548 at its highest Reynolds number (0.666). RM A52E01 counts toward no reach (its
-    // layer state is not stated, the decision of 2026-10-27).
+    // What the nodes' windows reach, each set counted at the least c/[h Re^(1/5)] of its test: RM
+    // A51J11's h/t 0.3 with roughness (4.49) to the node at 1.15 (its points to 1.10, +-0.02 in
+    // Mach); then TN 3548 at its highest Reynolds number (0.666). RM A52E01 counts toward no reach
+    // (its layer state is not stated, the decision of 2026-10-27). Since 2026-10-28 the reach
+    // served is also bounded by each series' own Mach intervals (the next test).
     const reach = transonicTrailingEdge().nodes.map((n) => +n.layerReached.toFixed(3));
     const tn = +(1 / (0.06 * 9.8e6 ** 0.2)).toFixed(3);
     const a51 = (hc: number) => +layerParameterRange(hc, 1.7e6, 2.2e6)[0].toFixed(3);
@@ -923,11 +924,13 @@ describe('what is refused below Mach 1.5 (item 7), and the labels (item 8)', () 
       reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 1.3, reynoldsPerLength: 4.2e6 })),
     ).toBe('thick-layer');
     // A hobby fin: 3 mm plate, 100 mm chord, Re' 1.2e7: c/[h Re^(1/5)] 2.03, h/c 0.03. Served from
-    // Mach 1.0 to 1.15 on RM A51J11's thick layers; refused above, where nothing reaches 2.03.
+    // Mach 1.0 to 1.10 on RM A51J11's thick layers (h/t 0.6's points, X 2.25, to Mach 1.103);
+    // refused above, where nothing measured reaches 2.03 (served to 1.15 before 2026-10-28).
     const hobby = { ...edge, thickness: 0.003, reynoldsPerLength: 1.2e7 };
     expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.0 }))).toBe('none');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.1 }))).toBe('none');
-    expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.15 }))).toBe('none');
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.11 }))).toBe('thick-layer');
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.15 }))).toBe('thick-layer');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.16 }))).toBe('thick-layer');
     expect(reason(() => finTrailingEdgeBaseDrag(hobby))).toBe('thick-layer');
     // At Re' 2.2e7 (1.80): RM A52E01 no longer reaches it, so it is refused at 1.2 to 1.47 too.
@@ -999,6 +1002,42 @@ describe('what is refused below Mach 1.5 (item 7), and the labels (item 8)', () 
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, tanSweep: 0.2 }))).toBe(
       'swept-trailing-edge',
     );
+  });
+
+  it('serves a layer only over the Mach range its own points measured (item 7, M3)', () => {
+    // The review of B1 on main (M3): the windows let RM A51J11's thick layers, whose points' Mach
+    // intervals end at 1.10 to 1.12, reach the node at 1.15. Now each series counts only over its
+    // own points' intervals, from its lowest point's to its highest point's.
+    const x2 = { ...edge, thickness: 0.003, reynoldsPerLength: (0.1 / (0.003 * 2.0)) ** 5 / 0.1 };
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...x2, mach: 1.13 }))).toBe('thick-layer');
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...x2, mach: 1.1 }))).toBe('none');
+    try {
+      finTrailingEdgeBaseDrag({ ...x2, mach: 1.13 });
+    } catch (e) {
+      expect((e as BaseRefusal).message).toMatch(/up to 0\.67 near Mach 1\.13/);
+    }
+    // The reach served: h/t 0.3 (4.49) to 1.10, h/t 0.6 (2.25) to 1.103, h/t 1.0 (1.35) to 1.121,
+    // then TN 3548 (0.666); the nodes' windows unchanged.
+    const t = transonicTrailingEdge();
+    const a51 = (hc: number) => layerParameterRange(hc, 1.7e6, 2.2e6)[0];
+    const tn = 1 / (0.06 * 9.8e6 ** 0.2);
+    const at: [number, number][] = [
+      [1.0, a51(0.012)],
+      [1.05, a51(0.012)],
+      [1.1, a51(0.012)],
+      [1.102, a51(0.024)],
+      [1.11, a51(0.04)],
+      [1.12, a51(0.04)],
+      [1.125, tn],
+      [1.15, tn],
+      [1.3, tn],
+      [1.5, tn],
+    ];
+    for (const [m, x] of at) expect(t.layerReach(m), `${m}`).toBeCloseTo(x, 3);
+    expect(t.bracket(1.13).map((n) => +n.layerReached.toFixed(3))).toEqual([
+      +a51(0.012).toFixed(3),
+      +a51(0.012).toFixed(3),
+    ]);
   });
 
   it('gives every reason that applies, each once (review R2)', () => {

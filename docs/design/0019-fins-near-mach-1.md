@@ -1339,6 +1339,22 @@ formed on two of them, and the shape widening's size on two of them.
       served at 1.00 to 1.15, refused at 1.175 to 1.475, and served again
       from 1.50 (above 1.5 X is served to 4.5).
 
+      _The reach served, after the review's M3 (2026-10-28; item 7's
+      note, written before the code)._ The nodes' reaches above are
+      unchanged; between them the reach served is now also bounded by
+      each series' own Mach intervals: X 4.49 (RM A51J11 h/t 0.3 with
+      roughness) to Mach 1.100, 2.25 (h/t 0.6) to 1.103, 1.35 (h/t 1.0) to
+      1.121, then 0.666 (TN 3548), where 4.49 was served to 1.15 before.
+      Nothing else moves at Mach 1.0 to 1.5, and the band is unchanged.
+      An edge at Mach 1.13 with X 2.0 is refused for its layer; at 1.10 it
+      is served. The 3 mm plate above (X 1.64 to 1.78) is served at Mach
+      1.00 to 1.10 and refused from 1.103. A plant that restores the old
+      window (the nodes' reaches alone) fails three tests. In the
+      population (`docs/research/refusals/out/impact.out`) the coverage
+      refusal at Mach 1.0 to 1.2 rises from 10.8% to 21.9% of cases (13.8%
+      to 16.5% over all bands); the totals stay 155 of 8000, as no total is
+      served below Mach 1.5, and the cross-check agrees on 1200 of 1200.
+
     - _The band served (thin layer), measured over modelled, at the
       nodes:_
 
@@ -1363,7 +1379,7 @@ formed on two of them, and the shape widening's size on two of them.
       without the library's builder (equal to 1e-9). The review's three
       plants that passed before now fail: the window by each point's
       nominal Mach number, K dropped below 1.5, and K read at Mach 2.0.
-      Planted errors, `audit/te-below-1.5/planted-errors.out`: 34 of 34
+      Planted errors, `audit/te-below-1.5/planted-errors.out`: 35 of 35
       caught (the review's three, and plants for F1, F2, F4 with #10 and
       #7 as any wing, and F10; since the re-review, R1's three: the high
       end not widened, 8(a) #9 left out, #9 taken as wing 4; R2's three:
@@ -1371,7 +1387,8 @@ formed on two of them, and the shape widening's size on two of them.
       reason; R3's: the total's band text without the widening; and, after
       the quick look on ae4d478..1994584, the thick-layer reason dropped
       above 1.5, on a constant chord, which passed every test before, and
-      on a varying one). The
+      on a varying one; after the review of B1 on main, M3's: the layer
+      reach by the nodes' windows alone). The
       independent test recomputes the band above 1.5 at both ends from the
       four-way and three-way identity maps (each line's ratios, then the
       band at 81 Mach numbers from 1.5 to 1.9; R1).
