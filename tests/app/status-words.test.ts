@@ -40,8 +40,8 @@ import { SQUARE_EDGE_REFUSAL, SWEPT_EDGE_BOUNDED_REASON } from '../../src/total/
 import {
   finsOnBaseFactorW1,
   W1_FLAT_BEYOND_60_MARK,
-  W1_FLAT_FORWARD_TE_MARK,
   W1_FLAT_SUBSONIC_EDGE_MARK,
+  W1_FLAT_SWEPT_TE_MARK,
   W1_FLAT_UNDER_45_MARK,
   W1_SWEEP_REFUSED_TOO,
 } from '../../src/base/fins-on-base-w1';
@@ -320,7 +320,7 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     );
   });
 
-  it("the rulings of 2026-10-28 in words, 0017's rows: a flat plate beyond 60 deg with its edge subsonic from Mach 1.62, and a plate's forward-swept trailing edge, with every reason", () => {
+  it("the rulings of 2026-10-28 in words, 0017's rows: a flat plate beyond 60 deg with its edge subsonic from Mach 1.62, and a plate's swept trailing edge, aft or forward (the strict reading), with every reason", () => {
     const rows = readFileSync(
       new URL('../../docs/design/0017-rocketeer-interface.md', import.meta.url),
       'utf8',
@@ -361,6 +361,7 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
       throw new Error(`served: M ${mach}, ${le} deg, ${te} deg`);
     };
     const NOTE = '(0014 10.7 (z), the note of 2026-10-28)';
+    const NOTES = '(0014 10.7 (z), the notes of 2026-10-28)';
     // Beyond 60 deg with the edge subsonic, from Mach 1.62.
     const s = refused(1.8, 70, 0);
     expect(s.reason).toBe('fin-sweep');
@@ -374,15 +375,26 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     expect(sub.reason).toContain(
       'rests on a margin over fins whose leading edges meet the air faster than sound, not on a measurement',
     );
-    // A forward-swept trailing edge.
+    // A swept trailing edge, aft or forward: the same words, naming why (the floor is measured only unswept).
     const f = refused(1.8, 50, -10);
-    expect(f.message).toContain(W1_FLAT_FORWARD_TE_MARK);
+    expect(f.message).toContain(W1_FLAT_SWEPT_TE_MARK);
     const fwd = refusalWords(f);
-    const [, fReason, fChange] = row('`fin-sweep` (flat fins with a forward-swept trailing edge)');
-    expect(fReason).toBe(`${fwd.reason} ${NOTE}`);
+    const [, fReason, fChange] = row('`fin-sweep` (flat fins with a swept trailing edge)');
+    expect(fReason).toBe(`${fwd.reason} ${NOTES}`);
     expect(fChange).toBe(fwd.change);
     expect(fwd.change).toBe('flat fins with an unswept trailing edge');
-    // Forward, and its leading edge refused too with the edge unswept: both clauses, and the change asks for both;
+    expect(fwd.reason).toContain('the one measurement of such fins has it unswept');
+    for (const [le, te] of [
+      [50, 10],
+      [45, 45],
+      [60, 30],
+    ] as const) {
+      const aft = refused(1.8, le, te);
+      expect(aft.reason, `${le}/${te}`).toBe('fin-sweep');
+      expect(aft.message, `${le}/${te}`).toContain(W1_FLAT_SWEPT_TE_MARK);
+      expect(refusalWords(aft), `${le}/${te}`).toEqual(fwd);
+    }
+    // Swept, and its leading edge refused too with the edge unswept: both clauses, and the change asks for both;
     // below Mach 1.62 (20 deg) and from it beyond 60 deg with the edge subsonic (70 deg).
     const both = refusalWords(refused(1.55, 20, -10));
     expect(both.reason).toBe(
@@ -415,8 +427,15 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
       [
         50,
         -10,
-        "`fins-near-base` (a flat plate's forward-swept trailing edge refused too)",
-        'at or near the base, flat fins are taken only with the trailing edge unswept or swept back',
+        "`fins-near-base` (a flat plate's swept trailing edge refused too)",
+        'at or near the base, flat fins are taken only with the trailing edge unswept',
+        "the fins' trailing edges at the base, unswept",
+      ],
+      [
+        50,
+        10,
+        "`fins-near-base` (a flat plate's swept trailing edge refused too)",
+        'at or near the base, flat fins are taken only with the trailing edge unswept',
         "the fins' trailing edges at the base, unswept",
       ],
     ] as const) {
@@ -427,7 +446,9 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
       expect(w.reason).toBe(`${plain.reason}; and ${clause}`);
       expect(w.change).toBe(change);
       const [, rReason, rChange] = row(key);
-      expect(rReason).toBe(`the reason of \`fins-near-base\`, and ${clause} ${NOTE}`);
+      expect(rReason).toBe(
+        `the reason of \`fins-near-base\`, and ${clause} ${te === 0 ? NOTE : NOTES}`,
+      );
       expect(rChange).toBe(change);
     }
     expect(new Set([sub.reason, fwd.reason]).size).toBe(2);

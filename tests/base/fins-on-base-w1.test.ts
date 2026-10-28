@@ -26,9 +26,9 @@ import {
 import {
   W1_BOUNDED_PREFIX,
   W1_FLAT_BEYOND_60_MARK,
-  W1_FLAT_FORWARD_TE_MARK,
   W1_FLAT_RELIEF_LOW,
   W1_FLAT_SUBSONIC_EDGE_MARK,
+  W1_FLAT_SWEPT_TE_MARK,
   W1_FLAT_UNDER_45_MARK,
   W1_SWEEP_REFUSED_TOO,
   flatPlateSweepNarrowing,
@@ -1067,29 +1067,21 @@ describe('refusals', () => {
     }
   });
 
-  it("swept flat plates: bounded from RM L52E06's relief with the trailing edge unswept or swept aft, named in the label; swept forward, refused (the rulings of 2026-10-28)", () => {
-    for (const te of [tan(45), tan(10), 0]) {
-      for (const xc of [0, 0.5]) {
-        const r = finsOnBaseFactorW1(
-          1.8,
-          fins({ section: plate(0.024), tanTrailingEdgeSweep: te, trailingEdgeAheadOfBase: xc }),
-        );
-        expect(r.low).toBe(W1_FLAT_RELIEF_LOW);
-        expect(r.label).toContain(
-          "bracketed between RM L52E06's relief with flat plates at the base",
-        );
-        expect(r.label).not.toContain('bracketed between the zero member');
-        if (te !== 0) {
-          // The label says the edge is swept aft, what each source has, and that no such plate is measured.
-          expect(r.label).toContain('deg aft, with flat faces');
-          expect(r.label).toContain('its plates swept 45 deg with the trailing edge unswept');
-          expect(r.label).toContain("the RM-10's arcs at the base, inside the bracket, sweep the");
-          expect(r.label).toContain('no plate with a swept trailing edge is measured at the base');
-        }
-      }
+  it("flat plates: bounded from RM L52E06's relief with the trailing edge unswept; swept aft or forward, refused, the floor being measured only unswept (the rulings of 2026-10-28)", () => {
+    for (const xc of [0, 0.5]) {
+      const r = finsOnBaseFactorW1(
+        1.8,
+        fins({ section: plate(0.024), tanTrailingEdgeSweep: 0, trailingEdgeAheadOfBase: xc }),
+      );
+      expect(r.low).toBe(W1_FLAT_RELIEF_LOW);
+      expect(r.label).toContain(
+        "bracketed between RM L52E06's relief with flat plates at the base",
+      );
+      expect(r.label).not.toContain('bracketed between the zero member');
     }
-    // Swept forward: refused at the base and within a chord, at any Mach number, by its own reason.
-    for (const te of [-tan(45), -tan(10), -tan(0.5)]) {
+    // Swept, aft or forward: refused at the base and within a chord, at any Mach number, by its own reason
+    // (until the strict reading of 2026-10-28 a plate swept aft no more than a 45 to 60 deg leading edge was served).
+    for (const te of [tan(45), tan(10), tan(0.5), -tan(45), -tan(10), -tan(0.5)]) {
       for (const xc of [0, 0.5]) {
         for (const mach of [1.2, 1.8, 2.5]) {
           const at = () =>
@@ -1110,9 +1102,15 @@ describe('refusals', () => {
           }
           expect(e, where).toBeInstanceOf(BaseRefusal);
           const message = (e as Error).message;
-          expect(message, where).toContain(W1_FLAT_FORWARD_TE_MARK);
-          expect(message, where).toContain("RM L52E06's, have the trailing edge unswept");
-          expect(message, where).toContain('sweep it 60 deg aft (RM E50D28');
+          expect(message, where).toContain(W1_FLAT_SWEPT_TE_MARK);
+          expect(message, where).toContain(te < 0 ? 'deg forward at M' : 'deg aft at M');
+          expect(message, where).toContain(
+            "RM L52E06's relief (F 0.838), is measured only with the trailing edge unswept",
+          );
+          expect(message, where).toContain(
+            'are circular arcs, a sharp section, and do not bracket plates',
+          );
+          expect(message, where).toContain('served with the trailing edge unswept only');
           // Within a chord, where the position is refused too (below M 1.5 and above 2.0), both are named.
           const positionRefused = xc > 0 && (mach < 1.5 || mach > 2.0);
           expect((e as BaseRefusal).reason, where).toBe(
@@ -1122,13 +1120,13 @@ describe('refusals', () => {
         }
       }
     }
-    // Every reason: a forward-swept plate whose leading edge would be refused with the edge unswept names that too.
+    // Every reason: a swept plate whose leading edge would be refused with the edge unswept names that too.
     const both = flatPlateSweepNarrowing(1.55, {
       section: plate(0.024),
       tanLeadingEdgeSweep: tan(20),
       tanTrailingEdgeSweep: -tan(10),
     });
-    expect(both).toContain(W1_FLAT_FORWARD_TE_MARK);
+    expect(both).toContain(W1_FLAT_SWEPT_TE_MARK);
     expect(both).toContain(
       '; and with the trailing edge unswept, flat-faced fins with the leading',
     );
@@ -1463,16 +1461,12 @@ describe('refusals', () => {
       expect(flagAt(2.0, 0, 0.5)).toBe(true);
       // Below Mach 1.62 an unswept plate is still served, and flagged.
       expect(flagAt(1.2, 0)).toBe(true);
-      // A sharp section is never flagged; a plate with a swept trailing edge at 45 to 60 deg is not either.
+      // A sharp section is never flagged (a plate with a swept trailing edge is refused since 2026-10-28).
       expect(flagAt(2.0, 0, 0, doubleWedge(0.024, 0.5))).toBe(false);
       expect(
         finsOnBaseFactorW1(
           2.0,
-          fins({
-            section: plate(0.024),
-            tanLeadingEdgeSweep: tanDeg(50),
-            tanTrailingEdgeSweep: tanDeg(30),
-          }),
+          fins({ section: doubleWedge(0.024, 0.5), tanLeadingEdgeSweep: tanDeg(50) }),
         ).sweepByArgument,
       ).toBe(false);
     });
@@ -1628,7 +1622,7 @@ describe('refusals', () => {
         'served',
       );
     });
-    it("a plate with a swept trailing edge keeps section 4's sweeps: refused outside 45 to 60 deg of leading edge, or beyond it, or swept forward (the rulings of 2026-10-28)", () => {
+    it('a plate with a swept trailing edge is refused at every sweep, aft or forward (the strict reading of 2026-10-28)', () => {
       const p = (le: number, te: number) =>
         reason(() =>
           finsOnBaseFactorW1(
@@ -1644,13 +1638,16 @@ describe('refusals', () => {
       expect(p(0, 10)).toBe('fin-sweep');
       expect(p(50, 52)).toBe('fin-sweep');
       expect(p(70, 30)).toBe('fin-sweep');
-      expect(p(45, 45)).toBe('served');
-      expect(p(60, 30)).toBe('served');
-      // Swept forward: RM L52E06's plates have the trailing edge unswept and the RM-10's arcs sweep it aft, so a
-      // forward-swept edge is refused, whatever its size (until 2026-10-28 this test held p(45, -45) served).
+      // RM L52E06's plates, which set the floor, have the trailing edge unswept, so a swept one is refused either
+      // way, whatever its size (until 2026-10-28 this test held p(45, 45), p(60, 30) and p(45, -45) served).
+      expect(p(45, 45)).toBe('fin-sweep');
+      expect(p(60, 30)).toBe('fin-sweep');
+      expect(p(50, 1)).toBe('fin-sweep');
       expect(p(45, -45)).toBe('fin-sweep');
       expect(p(60, -30)).toBe('fin-sweep');
       expect(p(50, -1)).toBe('fin-sweep');
+      // The same plates with the trailing edge unswept are served.
+      for (const le of [45, 50, 60]) expect(p(le, 0), `${le} deg`).toBe('served');
     });
     it('the present factor is not reached: a plate goes to the rebuilt factor whatever its sweep (0014 10.7 (i))', () => {
       // `baseFinsOf` marks every flat-faced fin `flatFaced`; the routing is held by fins-on-base-routing.test.ts

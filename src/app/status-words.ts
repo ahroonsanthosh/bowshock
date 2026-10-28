@@ -21,8 +21,8 @@ import {
 import type { BaseRefusalReason } from '../base/refusal';
 import {
   W1_FLAT_BEYOND_60_MARK,
-  W1_FLAT_FORWARD_TE_MARK,
   W1_FLAT_SUBSONIC_EDGE_MARK,
+  W1_FLAT_SWEPT_TE_MARK,
   W1_FLAT_UNDER_45_MARK,
   W1_SWEEP_REFUSED_TOO,
 } from '../base/fins-on-base-w1';
@@ -276,12 +276,12 @@ type Worded = (r: ComponentRefusal) => PlainReason;
  * section 10.7 (z), its notes of 2026-10-27 and 2026-10-28), each worded below where it joins another reason.
  */
 const plateSweep = (message: string) => ({
-  forward: message.includes(W1_FLAT_FORWARD_TE_MARK),
+  sweptTrailingEdge: message.includes(W1_FLAT_SWEPT_TE_MARK),
   belowMach162: message.includes(W1_FLAT_UNDER_45_MARK) || message.includes(W1_FLAT_BEYOND_60_MARK),
   subsonic: message.includes(W1_FLAT_SUBSONIC_EDGE_MARK),
 });
-const PLATE_FORWARD_CLAUSE =
-  'at or near the base, flat fins are taken only with the trailing edge unswept or swept back';
+const PLATE_SWEPT_TE_CLAUSE =
+  'at or near the base, flat fins are taken only with the trailing edge unswept';
 const PLATE_BELOW_162_CLAUSE =
   'below Mach 1.62, at or near the base, flat fins are taken only unswept or swept 45 to 60 deg';
 const PLATE_SUBSONIC_CLAUSE =
@@ -317,7 +317,7 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
     const sweep = r.message.includes(W1_SWEEP_REFUSED_TOO);
     const s = plateSweep(r.message);
     const clauses = [
-      ...(s.forward ? [PLATE_FORWARD_CLAUSE] : []),
+      ...(s.sweptTrailingEdge ? [PLATE_SWEPT_TE_CLAUSE] : []),
       ...(s.belowMach162 ? [PLATE_BELOW_162_CLAUSE] : []),
       ...(s.subsonic ? [PLATE_SUBSONIC_CLAUSE] : []),
     ];
@@ -338,8 +338,8 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
           ? 'sharp trailing edges, with the fins ending at the base'
           : sweep
             ? "the fins' trailing edges at the base" +
-              (s.forward ? ', unswept' : '') +
-              (s.belowMach162 || s.subsonic || !s.forward
+              (s.sweptTrailingEdge ? ', unswept' : '') +
+              (s.belowMach162 || s.subsonic || !s.sweptTrailingEdge
                 ? ', the fins unswept or swept 45 to 60 deg at the leading edge'
                 : '')
             : "the fins' trailing edges at the base",
@@ -350,18 +350,18 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
     change: 'four fins',
   }),
   'fin-sweep': (r) => {
-    // Flat fins: a forward-swept trailing edge (0014 section 10.7 (z), the note of 2026-10-28), with the leading
-    // edge's reason too where the same fins with the edge unswept would be refused for it; swept more than 0 and
-    // under 45 deg, or beyond 60 deg, below Mach 1.62 (the note of 2026-10-27); beyond 60 deg from Mach 1.62 with
-    // the edge subsonic (the note of 2026-10-28): the missing measurement, named.
+    // Flat fins: a swept trailing edge, aft or forward (0014 section 10.7 (z), the notes of 2026-10-28), with the
+    // leading edge's reason too where the same fins with the edge unswept would be refused for it; swept more than
+    // 0 and under 45 deg, or beyond 60 deg, below Mach 1.62 (the note of 2026-10-27); beyond 60 deg from Mach 1.62
+    // with the edge subsonic (the note of 2026-10-28): the missing measurement, named.
     const s = plateSweep(r.message);
-    if (s.forward) {
+    if (s.sweptTrailingEdge) {
       const le = s.belowMach162 || s.subsonic;
       return {
         reason:
           'the base drag behind flat fins at or near the base is taken only with the trailing edge ' +
-          'unswept, as in the one measurement of such fins, or swept back, as in a measurement of other ' +
-          'fins; nothing measured has it swept forward' +
+          'unswept: the one measurement of such fins has it unswept, and nothing measured shows a swept ' +
+          'one gives the same' +
           (s.belowMach162 ? `; and ${PLATE_BELOW_162_CLAUSE}` : '') +
           (s.subsonic ? `; and ${PLATE_SUBSONIC_CLAUSE}` : ''),
         change:
