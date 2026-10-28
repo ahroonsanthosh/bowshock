@@ -3,5 +3,5 @@
 - cases (rockets x Mach bands, seed 7, as impact.test.ts): 8000
 - served a total: 181; at Mach 1.5 and above: 181; with a square trailing edge: 100
 - changed by F4 (the band's low end below 0.93 there, Mach 1.60 to 1.80): 29, at Mach 1.627 to 1.796
-- the largest fall of the trailing-edge term's low end: 0.0415 in C_D, 51.9% of the term
+- the largest fall of the trailing-edge term's low end: 0.0463 in C_D, 57.9% of the term
 - nothing else changes: the term, its high end and every refusal are as before

@@ -275,7 +275,8 @@ describe('the band above Mach 1.5 near 1.7, recomputed from the four-way pairing
       return c[3]!.includes('bound') ? [v - e, v + e] : [v];
     });
   };
-  // #10, wing 2 as F4 takes it: C, D and D's alternative end as a value; K from 1.
+  // #10, any wing (B and C flag their calls): C, D and D's alternative end as a value; K from
+  // 1; the shape allowance at 6.88 deg.
   const alt = /lowest end at alpha 0\.343 \+-0\.068, (-0\.\d+) \+-/.exec(text('pairing.txt'))!;
   const ten = [...valuesOf('#10'), Number(alt[1])];
   // #7, any wing: C and D; the shape allowance at 6.88 deg.
@@ -293,9 +294,9 @@ describe('the band above Mach 1.5 near 1.7, recomputed from the four-way pairing
   it("gives the library's low end at every Mach number from 1.5 to 1.9", () => {
     expect(ten.length).toBe(4);
     expect(seven.length).toBe(3);
-    const r10 = least(ten, 0);
+    const r10 = least(ten, s);
     const r7 = least(seven, s);
-    expect([r10, r7]).toEqual([0.41, 0.51]);
+    expect([r10, r7]).toEqual([0.35, 0.51]);
     // Item 5's windows: the nodes 1.65, 1.70 and 1.75 take the least ratio, 0.93 elsewhere.
     const node = (m: number) =>
       m >= 1.65 - 1e-9 && m <= 1.75 + 1e-9 ? Math.min(0.93, r10, r7) : 0.93;

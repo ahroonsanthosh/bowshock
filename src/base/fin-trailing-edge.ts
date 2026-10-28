@@ -399,23 +399,27 @@ export const FIN_TRAILING_EDGE_BAND = (() => {
 /**
  * RM A52E01 fig. 8(a) line #10 at Mach 1.7 near zero lift (0019 section 3.4.1 item 6, F4, and
  * item 11; the four-way pairing, audit/pairing-2026-10-27-a52e01-m17-four/): wing 2 by every
- * reader naming a wing (B, C and D), h/c 0.030, Re 1.5e6 on the mean aerodynamic chord, its
- * layer state not stated ("polished smooth", no trip). The band's own sets cannot all be put on
- * a common Reynolds-number basis (RM A51J25 fig. 7's Langley and NPL symbols state none), so by
- * the coordinator's rule it enters the band above Mach 1.5: every reading's value (C -0.1310
- * +-0.0103, a bound; D's first reading -0.1318; D's alternative end, -0.1469, taken as a
- * value), its Mach number +-0.01 (the report states no accuracy), its ratio over K(M, X) from 1
- * (a thin layer) to its turbulent X, the wider choice, and at every layer parameter served.
+ * reader naming a wing (B, C and D), but B and C flag their calls uncertain, so by the
+ * three-reading rule as written it is any of wings 2, 3 and 4 (the coordinator's ruling of
+ * 2026-10-27: that rule governs the wing; F4's governs how the value enters). Re 1.5e6 on the
+ * mean aerodynamic chord, its layer state not stated ("polished smooth", no trip). The band's
+ * own sets cannot all be put on a common Reynolds-number basis (RM A51J25 fig. 7's Langley and
+ * NPL symbols state none), so by the coordinator's rule it enters the band above Mach 1.5:
+ * every reading's value (C -0.1310 +-0.0103, a bound; D's first reading -0.1318; D's
+ * alternative end, -0.1469, taken as a value), its Mach number +-0.01 (the report states no
+ * accuracy), its ratio over K(M, X) from 1 (a thin layer) to the turbulent value of each wing
+ * it may be (wings 3 and 4's X, h/c 0.015, the largest), widened both ways by the shape
+ * allowance at 6.88 deg (item 6), at every layer parameter served.
  */
-export const RM_A52E01_WING2_M17 = {
+export const RM_A52E01_M17_LINE10 = {
   id: '#10',
   mach: 1.7,
   machErr: 0.01,
   cpLow: -0.1469,
   cpHigh: -0.131 + 0.0103,
-  hOverC: 0.03,
+  hOverC: 0.015,
   reynolds: 1.5e6,
-  faceAngleDeg: 0,
+  faceAngleDeg: 6.88,
 } as const;
 
 /**
@@ -426,9 +430,9 @@ export const RM_A52E01_WING2_M17 = {
  * 1.5e6), widened both ways by the shape allowance at 6.88 deg (item 6). Its alpha 0 value is
  * C and D's agreeing pair, entered as the envelope of every reading (C -0.1824 +-0.0078, a
  * bound; D -0.1832); Mach +-0.01. It sets the band only, not the reach (F2). Its least ratio,
- * 0.51, lies above #10's 0.41 in the same windows, so it moves nothing.
+ * 0.51, lies above #10's 0.35 in the same windows, so it moves nothing.
  */
-export const RM_A52E01_ANY_WING_M17 = {
+export const RM_A52E01_M17_LINE7 = {
   id: '#7',
   mach: 1.7,
   machErr: 0.01,
@@ -440,7 +444,7 @@ export const RM_A52E01_ANY_WING_M17 = {
 } as const;
 
 /** The points that set the band above Mach 1.5 near 1.7 (F4). */
-export const ABOVE_BAND_POINTS = [RM_A52E01_WING2_M17, RM_A52E01_ANY_WING_M17] as const;
+export const ABOVE_BAND_POINTS = [RM_A52E01_M17_LINE10, RM_A52E01_M17_LINE7] as const;
 
 /** The band's nodes above Mach 1.5 for these points: every 0.05, as below 1.5 (item 5). */
 const ABOVE_NODES = Array.from({ length: 35 }, (_, k) => Math.round(150 + 5 * k) / 100);
@@ -497,7 +501,7 @@ export function bandLowAbove(mach: number): number {
 /** The label's note where RM A52E01's wing 2 widens the band above 1.5. */
 const widenedAboveLabel = (basis: TermBasis) =>
   !basis.belowBand && basis.band.low < FIN_TRAILING_EDGE_BAND.low
-    ? `; band widened to ${basis.band.low.toFixed(3)} near Mach 1.7 on RM A52E01's wing 2 at ` +
+    ? `; band widened to ${basis.band.low.toFixed(3)} near Mach 1.7 on RM A52E01's wings at ` +
       'Re 1.5e6, whose layer state is not stated (0019 section 3.4.1)'
     : '';
 

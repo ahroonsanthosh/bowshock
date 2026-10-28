@@ -644,11 +644,13 @@ row used.
   19). Domain M 1.5 to 3.2.
 
 - **Widened near Mach 1.7 (2026-10-27; 0019 section 3.4.1 item 6, F4,
-  and item 11).** RM A52E01 fig. 8(a)'s line #10, wing 2 (h/c 0.030,
-  faces parallel at the base) by every reader naming a wing, at Mach 1.7
-  near zero lift, at Re 1.5e6 on the mean aerodynamic chord with its
-  layer state not stated (the wings "polished smooth", no trip), lies at
-  0.42 to 0.55 of the term served (four-way pairing,
+  and item 11).** RM A52E01 fig. 8(a)'s line #10, called wing 2 by every
+  reader naming a wing but flagged uncertain by B and C, so any of wings
+  2, 3 and 4 by the three-reading rule as written (the coordinator's
+  ruling of 2026-10-27; the first application took it as wing 2), at
+  Mach 1.7 near zero lift, at Re 1.5e6 on the mean aerodynamic chord with
+  its layer state not stated (the wings "polished smooth", no trip), lies
+  at 0.42 to 0.55 of the term served (four-way pairing,
   `audit/pairing-2026-10-27-a52e01-m17-four/`). The band's own sets
   cannot all be put on a common Reynolds-number basis: TR 1109's are at
   1.7e6 to 3.5e6 on the chord (tripped, turbulent) and the X-15 fin's at
@@ -657,17 +659,20 @@ row used.
   coordinator's rule (its step 4, then step 2, the wider choice), the
   point enters the band: every reading's value (C -0.1310 +-0.0103, a
   bound; D -0.1318; D's alternative end -0.1469 taken as a value), Mach
-  +-0.01, its ratio over K from 1 to its turbulent value. Its least
-  ratio, 0.418, rounded outward, gives a low end of **0.41** at the nodes
-  whose window meets its Mach interval (1.65, 1.70 and 1.75, nodes every
-  0.05 as 0019 item 5's), linear to 0.93 at 1.60 and 1.80, at every layer
-  parameter served; the high end, 1.21, and the band elsewhere are
-  unchanged. The label says so where it applies. In the refusal
-  population it changes 29 of the 181 served totals (Mach 1.627 to
-  1.796), lowering the trailing-edge term's low end by up to 0.0415 in
-  C_D, 52% of the term (`docs/research/refusals/out/f4-probe.out`); it
-  changes no refusal. It reaches the Basic Finner gate's shot at Mach
-  1.799, whose low end there is 0.920: its band and tolerance move
+  +-0.01, its ratio over K from 1 to the turbulent value of each wing it
+  may be, widened by the shape allowance at 6.88 deg (0019 item 6). Its
+  least ratio, 0.418 before the shape allowance and 0.353 after, rounded
+  outward, gives a low end of **0.35** at the nodes whose window meets its
+  Mach interval (1.65, 1.70 and 1.75, nodes every 0.05 as 0019 item 5's),
+  linear to 0.93 at 1.60 and 1.80, at every layer parameter served; the
+  high end, 1.21, and the band elsewhere are unchanged. (The first
+  application, wing 2 without the allowance, gave 0.41.) The label says
+  so where it applies. In the refusal population it changes 29 of the 181
+  served totals (Mach 1.627 to 1.796), lowering the trailing-edge term's
+  low end by up to 0.0463 in C_D, 58% of the term
+  (`docs/research/refusals/out/f4-probe.out`); it changes no refusal. It
+  reaches the Basic Finner gate's shot at Mach 1.799, whose low end there
+  is 0.918: its band and tolerance move
   slightly (section 11.6's note), no verdict changes. **This widening was
   made after the gate was used**, with its residuals known: a recorded
   change to a tested term, not a new test, and the gate does not test it
@@ -677,7 +682,7 @@ row used.
   to -0.1746; the shape allowance at 6.88 deg) also enters, band only:
   at 0.62 to 0.74 of the term served it would have lain outside 0.93 to
   1.21 too, the same finding as #10's, and its least ratio, 0.51, lies
-  above #10's 0.41 in the same windows, so it moves nothing.
+  above #10's 0.35 in the same windows, so it moves nothing.
 
 - **Label.** For edges in the body's base plane, as on fins at the base:
   "an analogy, not a measurement", since no opened source measures such
@@ -1520,11 +1525,12 @@ and `.json`).
 _A widening made after the gate was used (F4, 2026-10-27; 0019 section
 3.4.1, and section 5.1 here), with the residuals known; like the
 correction above, a recorded change, not a new test:_ at DA95021318 (Mach
-1.799) the trailing edges' band low end is 0.920 of the term, not 0.93
-(RM A52E01's wing 2 at Mach 1.7 widens it at Mach 1.60 to 1.80), so its
-total is 0.6134 (0.5285 to 0.7297), its model-form low end
--13.8% (-13.7% as recorded), and its tolerance -24.7% to +23.5% (-24.6%
-as recorded); the page's table shows these. Every other value, and every
+1.799) the trailing edges' band low end is 0.918 of the term, not 0.93
+(RM A52E01's lines at Mach 1.7 widen it at Mach 1.60 to 1.80), so its
+total is 0.6134 (0.5283 to 0.7297), its model-form low end -13.9% (-13.7%
+as recorded), and its tolerance -24.8% to +23.5% (-24.6% as recorded; the
+first application, with #10 as wing 2, gave 0.5285 and -24.7%); the
+page's table shows these. Every other value, and every
 verdict, is as recorded.
 
 (Tolerances by round 5's arithmetic, section 10.3; the second run's own

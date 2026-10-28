@@ -591,9 +591,9 @@ describe('the display', { timeout: 60_000 }, () => {
       'DA95021318',
       '1.799',
       '0.594',
-      '0.6134 (0.5285 to 0.7297)',
+      '0.6134 (0.5283 to 0.7297)',
       '-3.2%',
-      '-24.7% to +23.5%',
+      '-24.8% to +23.5%',
       '-3.0%',
     ]);
     expect(gate!.rows.map((r) => r[0])).toEqual(PUBLISHED_GATE.map((s) => s.shot));

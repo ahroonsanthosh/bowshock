@@ -51,7 +51,7 @@ MUTATIONS = [
     ('RM A51J11 without its +-0.02 Mach margin, every point at +-0 (review F1)', 'src/base/fin-te-transonic-data.ts',
      None, None),
     # F4: RM A52E01's wing 2 at Mach 1.7 in the band above 1.5.
-    ("F4: wing 2 at Mach 1.7 left out of the band above 1.5", 'src/base/fin-trailing-edge.ts',
+    ("F4: RM A52E01's lines at Mach 1.7 left out of the band above 1.5", 'src/base/fin-trailing-edge.ts',
      'band: { low: bandLowAbove(mach), high: FIN_TRAILING_EDGE_BAND.high },', 'band: FIN_TRAILING_EDGE_BAND,'),
     ("F4: C's bound taken as its value", 'src/base/fin-trailing-edge.ts',
      'cpHigh: -0.131 + 0.0103,', 'cpHigh: -0.131,'),
@@ -61,10 +61,15 @@ MUTATIONS = [
      'const meets = p.mach + p.machErr >= a && p.mach - p.machErr <= b;', 'const meets = true;'),
     ('F4: the ratio at the turbulent K only, not from a thin layer', 'src/base/fin-trailing-edge.ts',
      'for (const kk of [1, k])', 'for (const kk of [k])'),
-    ("F4: #7's shape widening dropped (any wing, 6.88 deg)", 'src/base/fin-trailing-edge.ts',
+    ("F4: the shape widening dropped above 1.5 (any wing, 6.88 deg; #10 and #7)", 'src/base/fin-trailing-edge.ts',
      '  const s = (transonicTrailingEdge().shapeAllowance * p.faceAngleDeg) / 4;', '  const s = 0;'),
     ("F4: #7 taken as wing 2 (no shape widening, wing 2's layer)", 'src/base/fin-trailing-edge.ts',
-     '  hOverC: 0.015,\n  reynolds: 1.5e6,\n  faceAngleDeg: 6.88,', '  hOverC: 0.03,\n  reynolds: 1.5e6,\n  faceAngleDeg: 0,'),
+     '  cpHigh: -0.1824 + 0.0078,\n  hOverC: 0.015,\n  reynolds: 1.5e6,\n  faceAngleDeg: 6.88,',
+     '  cpHigh: -0.1824 + 0.0078,\n  hOverC: 0.03,\n  reynolds: 1.5e6,\n  faceAngleDeg: 0,'),
+    ("F4: #10 taken as wing 2, as the first application did (the rule as written makes it any wing)",
+     'src/base/fin-trailing-edge.ts',
+     '  cpHigh: -0.131 + 0.0103,\n  hOverC: 0.015,\n  reynolds: 1.5e6,\n  faceAngleDeg: 6.88,',
+     '  cpHigh: -0.131 + 0.0103,\n  hOverC: 0.03,\n  reynolds: 1.5e6,\n  faceAngleDeg: 0,'),
 ]
 
 def f1_plant(src):

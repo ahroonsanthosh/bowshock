@@ -1344,9 +1344,9 @@ formed on two of them, and the shape widening's size on two of them.
       without the library's builder (equal to 1e-9). The review's three
       plants that passed before now fail: the window by each point's
       nominal Mach number, K dropped below 1.5, and K read at Mach 2.0.
-      Planted errors, `audit/te-below-1.5/planted-errors.out`: 24 of 24
-      caught (the review's three, and plants for F1, F2, F4 with #7, and
-      F10).
+      Planted errors, `audit/te-below-1.5/planted-errors.out`: 25 of 25
+      caught (the review's three, and plants for F1, F2, F4 with #10 and
+      #7 as any wing, and F10).
     - _Every reason (F10)._ An edge below 1.5 both beyond the reach and
       left laminar by the transition input is refused with both reasons
       (the Basic Finner's reported shots at 1.254 and 1.332 among them).
@@ -1369,30 +1369,43 @@ formed on two of them, and the shape widening's size on two of them.
       band's sets cannot be put on a common basis: step 4, so step 2, the
       wider choice. Line #10 enters the band above 1.5 as every reading's
       value (C -0.1310 +-0.0103, a bound; D -0.1318; D's alternative end
-      -0.1469 taken as a value), Mach +-0.01, its ratio over K(M, X) from 1
-      to its turbulent value (`RM_A52E01_WING2_M17`). Its least ratio, the
-      least drag (C's bound, 0.1207) over the curve at Mach 1.69 with K 1,
-      is 0.418, rounded outward to 0.41. Where it applies: in Mach, item
-      5's rule (nodes every 0.05, each node's window from the node before
-      to the node after), so 0.41 at 1.65, 1.70 and 1.75, linear to 0.93
-      at 1.60 and 1.80; in layer parameter, every X served (its layer is
-      not established), the wider choice. The band above 1.5 is otherwise
-      0.93 to 1.21 as before; nothing changes at Mach 1.5. In the
-      population this changes 29 of the 181 served totals (Mach 1.627 to
-      1.796), the trailing-edge term's low end falling by up to 0.0415 in
-      C_D, 52% of the term (`docs/research/refusals/out/f4-probe.out`); no
-      refusal changes. It reaches the Basic Finner gate's shot at Mach
-      1.799 (low end 0.920 there): its total's band becomes 0.5285 to
-      0.7297 and its tolerance -24.7% to +23.5% (0.5296 and -24.6%
-      recorded), no verdict changes (0010 section 11.6's note; the page's
-      table and its tolerance text follow). Confined to the point's own
-      Mach interval instead, the widening would leave the gate untouched;
-      item 5's windows are the recorded rule and the wider choice, and the
-      coordinator kept them (ruling of 2026-10-27). **This widening was
-      made after the gate was used**, with its residuals known: a recorded
-      change to a tested term, not a new test, disclosed so in 0010
-      sections 5.1 and 11.6, in 0011 and in the gate table's caption on
-      the page.
+      -0.1469 taken as a value), Mach +-0.01 (`RM_A52E01_M17_LINE10`).
+      Its wing: B, C and D call it wing 2, but B and C flag their calls
+      uncertain, so by the three-reading rule as written it is any of
+      wings 2, 3 and 4. _Corrected 2026-10-27, before any re-review
+      verdict:_ the first application of F4 took #10 as wing 2, on the
+      coordinator's instruction ("wing 2" there was shorthand for D's
+      call); the coordinator then ruled that the three-reading rule
+      governs the wing call and F4's rule only how the alpha 0 value
+      enters. So its ratio is taken over K(M, X) from 1 to the turbulent
+      value of each wing it may be (wings 3 and 4's X, the largest) and
+      widened both ways by the shape allowance at 6.88 deg (item 6), as
+      every other RM A52E01 line. Its least ratio, the least drag (C's
+      bound, 0.1207) over the curve at Mach 1.69 with K 1, is 0.418, and
+      0.353 after the shape allowance, rounded outward to **0.35** (the
+      first application gave 0.41). Where it applies: in Mach, item 5's
+      rule (nodes every 0.05, each node's window from the node before to
+      the node after), so 0.35 at 1.65, 1.70 and 1.75, linear to 0.93 at
+      1.60 and 1.80; in layer parameter, every X served (its layer is not
+      established), the wider choice. The band above 1.5 is otherwise 0.93
+      to 1.21 as before; nothing changes at Mach 1.5. In the population
+      this changes 29 of the 181 served totals (Mach 1.627 to 1.796), the
+      trailing-edge term's low end falling by up to 0.0463 in C_D, 58% of
+      the term (`docs/research/refusals/out/f4-probe.out`; 0.0415 and 52%
+      at the first application); no refusal changes, and the totals
+      served stay 181. It reaches the Basic Finner gate's shot at Mach
+      1.799 (low end 0.918 there): its total's band becomes 0.5283 to
+      0.7297, its model-form low end -13.9% and its tolerance -24.8% to
+      +23.5% (0.5296, -13.7% and -24.6% recorded; 0.5285 and -24.7% at
+      the first application), no verdict changes (0010 section 11.6's
+      note; the page's table and its tolerance text follow). Confined to
+      the point's own Mach interval instead, the widening would leave the
+      gate untouched; item 5's windows are the recorded rule and the
+      wider choice, and the coordinator kept them (ruling of 2026-10-27).
+      **This widening was made after the gate was used**, with its
+      residuals known: a recorded change to a tested term, not a new test,
+      disclosed so in 0010 sections 5.1 and 11.6, in 0011 and in the gate
+      table's caption on the page.
 
       Fig. 8(a)'s #7 (the coordinator's ruling of 2026-10-27): wing 3 by
       every reader naming one (B, C, D), but B flags its call uncertain,
@@ -1400,16 +1413,13 @@ formed on two of them, and the shape widening's size on two of them.
       a bound; D -0.1832), entered as the envelope of every reading,
       -0.1902 to -0.1746, Mach +-0.01; band only, not reach (F2); its ratio
       over K from 1 to wings 3 and 4's turbulent X, widened by the shape
-      allowance at 6.88 deg (`RM_A52E01_ANY_WING_M17`). At -0.18 it lies
-      at 0.62 to 0.74 of the term served at Mach 1.7: it would have been
+      allowance at 6.88 deg (`RM_A52E01_M17_LINE7`). At -0.18 it lies at
+      0.62 to 0.74 of the term served at Mach 1.7: it would have been
       outside 0.93 to 1.21, the same finding as #10, and it is covered by
-      F4's widening. Its least ratio, 0.60 before the shape widening and
-      0.51 after, lies above #10's 0.41 in the same windows, so it moves
-      nothing (the band's low end at every Mach number is as before; the
-      tests hold it, and recompute it from the pairing independently).
-      Under the rule as written #10 too is any wing (B and C flag their
-      calls); F4's rule takes it as wing 2, without a shape widening, as
-      the coordinator stated it.
+      F4's widening. Its least ratio, 0.60 before the shape allowance and
+      0.51 after, lies above #10's 0.35 in the same windows, so it moves
+      nothing (the tests hold the band's low end at every Mach number, and
+      recompute it from the pairing independently).
 
     - _The check above Mach 1.5_ (`audit/te-below-1.5/check-above-1.5.out`):
       every point inside the band as now served there, TN 3548 and RM

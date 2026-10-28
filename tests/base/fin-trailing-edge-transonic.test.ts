@@ -37,8 +37,8 @@ import {
   ABOVE_BAND_POINTS,
   aboveLeastRatio,
   bandLowAbove,
-  RM_A52E01_ANY_WING_M17,
-  RM_A52E01_WING2_M17,
+  RM_A52E01_M17_LINE7,
+  RM_A52E01_M17_LINE10,
   TrailingEdgeRefusals,
   trailingEdgeBasis,
   transonicTrailingEdge,
@@ -705,16 +705,21 @@ describe('the band below Mach 1.5 (items 5 and 6)', () => {
   });
 });
 
-describe("the band above Mach 1.5 near 1.7: RM A52E01's wing 2 (0019 3.4.1 item 6, F4)", () => {
+describe("the band above Mach 1.5 near 1.7: RM A52E01's lines at Re 1.5e6 (0019 3.4.1 item 6, F4)", () => {
   const four = 'pairing-2026-10-27-a52e01-m17-four';
   const row = records(`${four}/identity_map.csv`).find(
     (r) => r.drawn_curve === 'M=1.2, 1.4, 1.7 #10',
   )!;
 
   it("takes every reading of line #10 from the four-way pairing, D's alternative end as a value", () => {
-    // Wing 2 by every reader naming a wing (B, C, D); A names none.
+    // Wing 2 by every reader naming a wing (B, C, D); A names none. B and C flag their calls
+    // uncertain, so by the three-reading rule as written it is any wing (the coordinator's ruling
+    // of 2026-10-27; the first F4 application took it as wing 2).
     for (const k of ['B', 'C', 'D']) expect(row[`${k}_wing_call`]).toMatch(/^wing 2,/);
     expect(row.A_wing_call).toMatch(/^names no wing/);
+    expect(row.B_wing_call).toMatch(/flagged uncertain/);
+    expect(row.C_wing_call).toMatch(/confidence medium/);
+    expect(wingOfFour(row)).toBe('any wing');
     expect(row.alpha0_status).toMatch(/^TWO OR MORE AGREEING READINGS \(C-D\)/);
     const c = alpha0Of(row.alpha0_C!)!;
     const d = alpha0Of(row.alpha0_D!)!;
@@ -725,49 +730,63 @@ describe("the band above Mach 1.5 near 1.7: RM A52E01's wing 2 (0019 3.4.1 item 
     );
     const alt = /lowest end at alpha 0\.343 \+-0\.068, (-0\.\d+) \+-/.exec(text)!;
     const values = [...c, ...d, Number(alt[1])];
-    expect(RM_A52E01_WING2_M17.cpLow).toBeCloseTo(Math.min(...values), 12);
-    expect(RM_A52E01_WING2_M17.cpHigh).toBeCloseTo(Math.max(...values), 12);
-    expect([RM_A52E01_WING2_M17.mach, RM_A52E01_WING2_M17.machErr]).toEqual([1.7, 0.01]);
-    expect([RM_A52E01_WING2_M17.hOverC, RM_A52E01_WING2_M17.reynolds]).toEqual([0.03, 1.5e6]);
+    expect(RM_A52E01_M17_LINE10.cpLow).toBeCloseTo(Math.min(...values), 12);
+    expect(RM_A52E01_M17_LINE10.cpHigh).toBeCloseTo(Math.max(...values), 12);
+    expect([RM_A52E01_M17_LINE10.mach, RM_A52E01_M17_LINE10.machErr]).toEqual([1.7, 0.01]);
+    // Any wing: wings 3 and 4's layer (h/c 0.015, the largest X) for K, the 6.88 deg widening.
+    expect([
+      RM_A52E01_M17_LINE10.hOverC,
+      RM_A52E01_M17_LINE10.reynolds,
+      RM_A52E01_M17_LINE10.faceAngleDeg,
+    ]).toEqual([0.015, 1.5e6, 6.88]);
   });
 
   it("widens the low end at Mach 1.60 to 1.80, by item 5's windows, to the point's least ratio", () => {
     const low = (m: number) => +bandLowAbove(m).toFixed(4);
     for (const m of [1.5, 1.55, 1.6, 1.8, 1.9, 2.0, 2.5, 3.2]) expect(low(m), `${m}`).toBe(0.93);
-    for (const m of [1.65, 1.69, 1.7, 1.71, 1.75]) expect(low(m), `${m}`).toBe(0.41);
-    expect(low(1.625)).toBe(0.67);
-    expect(low(1.775)).toBe(0.67);
-    // 0.41: the least drag, -C's bound end -0.1207, over the curve at Mach 1.69 (K = 1, a thin
-    // layer, the wider choice), rounded outward.
-    expect(0.1207 / -thinLayerBasePressure(1.69)).toBeGreaterThan(0.41);
-    expect(0.1207 / -thinLayerBasePressure(1.69)).toBeLessThan(0.42);
+    for (const m of [1.65, 1.69, 1.7, 1.71, 1.75]) expect(low(m), `${m}`).toBe(0.35);
+    expect(low(1.625)).toBe(0.64);
+    expect(low(1.775)).toBe(0.64);
+    expect(low(1.799)).toBe(0.9184);
+    // 0.35: the least drag, -C's bound end -0.1207, over the curve at Mach 1.69 (K = 1, a thin
+    // layer, the wider choice), 0.418, less the shape allowance at 6.88 deg (any wing), 0.353,
+    // rounded outward.
+    const s = (transonicTrailingEdge().shapeAllowance * 6.88) / 4;
+    expect(0.1207 / -thinLayerBasePressure(1.69)).toBeCloseTo(0.418, 3);
+    expect(((1 - s) * 0.1207) / -thinLayerBasePressure(1.69)).toBeGreaterThan(0.35);
+    expect(((1 - s) * 0.1207) / -thinLayerBasePressure(1.69)).toBeLessThan(0.36);
     // The high end and the band at Mach 1.5 are unchanged: no step there.
     expect(trailingEdgeBasis(1.7).band.high).toBe(FIN_TRAILING_EDGE_BAND.high);
     expect(trailingEdgeBasis(1.5).band).toEqual(FIN_TRAILING_EDGE_BAND);
   });
 
-  it('holds every reading of #10 inside the term served, over its Mach interval and layer', () => {
-    const xTurbulent = layerParameterRange(0.03, 1.5e6, 1.5e6)[1];
-    for (let i = 0; i <= 10; i++) {
-      const m = 1.69 + 0.002 * i;
-      for (let j = 0; j <= 8; j++) {
-        const x = 0.5 + ((xTurbulent - 0.5) * j) / 8;
-        const h = 0.003;
-        const r = finTrailingEdgeBaseDrag({
-          mach: m,
-          count: 1,
-          thickness: h,
-          span: 1,
-          chord: 0.1,
-          tanSweep: 0,
-          inBasePlane: false,
-          layer: 'turbulent',
-          reynoldsPerLength: (1 / (0.03 * x)) ** 5 / 0.1,
-          referenceArea: h,
-        });
-        expect(r.low, `M ${m} X ${x}`).toBeLessThanOrEqual(-RM_A52E01_WING2_M17.cpHigh);
-        expect(r.high, `M ${m} X ${x}`).toBeGreaterThanOrEqual(-RM_A52E01_WING2_M17.cpLow);
-        expect(r.label).toMatch(/band widened to 0\.410 near Mach 1\.7 on RM A52E01/);
+  it('holds every reading of #10 and #7 inside the term served, as every wing they may be', () => {
+    for (const p of [RM_A52E01_M17_LINE10, RM_A52E01_M17_LINE7]) {
+      for (const hc of [0.03, 0.015]) {
+        const xTurbulent = layerParameterRange(hc, 1.5e6, 1.5e6)[1];
+        for (let i = 0; i <= 10; i++) {
+          const m = 1.69 + 0.002 * i;
+          for (let j = 0; j <= 8; j++) {
+            const x = 0.5 + ((xTurbulent - 0.5) * j) / 8;
+            const h = hc * 0.1;
+            const r = finTrailingEdgeBaseDrag({
+              mach: m,
+              count: 1,
+              thickness: h,
+              span: 1,
+              chord: 0.1,
+              tanSweep: 0,
+              inBasePlane: false,
+              layer: 'turbulent',
+              reynoldsPerLength: (1 / (hc * x)) ** 5 / 0.1,
+              referenceArea: h,
+            });
+            const at = `${p.id} h/c ${hc} M ${m} X ${x}`;
+            expect(r.low, at).toBeLessThanOrEqual(-p.cpHigh);
+            expect(r.high, at).toBeGreaterThanOrEqual(-p.cpLow);
+            expect(r.label).toMatch(/band widened to 0\.350 near Mach 1\.7 on RM A52E01's wings/);
+          }
+        }
       }
     }
   });
@@ -781,20 +800,18 @@ describe("the band above Mach 1.5 near 1.7: RM A52E01's wing 2 (0019 3.4.1 item 
     expect(wingOfFour(r7)).toBe('any wing');
     expect(r7.alpha0_status).toMatch(/^TWO OR MORE AGREEING READINGS \(C-D\)/);
     const values = [...alpha0Of(r7.alpha0_C!)!, ...alpha0Of(r7.alpha0_D!)!];
-    expect(RM_A52E01_ANY_WING_M17.cpLow).toBeCloseTo(Math.min(...values), 12);
-    expect(RM_A52E01_ANY_WING_M17.cpHigh).toBeCloseTo(Math.max(...values), 12);
+    expect(RM_A52E01_M17_LINE7.cpLow).toBeCloseTo(Math.min(...values), 12);
+    expect(RM_A52E01_M17_LINE7.cpHigh).toBeCloseTo(Math.max(...values), 12);
     // Any wing: wings 3 and 4's layer (h/c 0.015) for the ratio's K, the 6.88 deg widening.
-    expect([RM_A52E01_ANY_WING_M17.hOverC, RM_A52E01_ANY_WING_M17.faceAngleDeg]).toEqual([
-      0.015, 6.88,
-    ]);
-    expect(ABOVE_BAND_POINTS).toEqual([RM_A52E01_WING2_M17, RM_A52E01_ANY_WING_M17]);
-    // Its least ratio, 0.51 (0.60 before the shape widening), lies above #10's 0.41 in the same
+    expect([RM_A52E01_M17_LINE7.hOverC, RM_A52E01_M17_LINE7.faceAngleDeg]).toEqual([0.015, 6.88]);
+    expect(ABOVE_BAND_POINTS).toEqual([RM_A52E01_M17_LINE10, RM_A52E01_M17_LINE7]);
+    // Its least ratio, 0.51 (0.60 before the shape widening), lies above #10's 0.35 in the same
     // windows: the band is #10's alone.
-    expect(aboveLeastRatio(RM_A52E01_ANY_WING_M17)).toBe(0.51);
-    expect(aboveLeastRatio(RM_A52E01_WING2_M17)).toBe(0.41);
-    expect(-RM_A52E01_ANY_WING_M17.cpHigh / -thinLayerBasePressure(1.69)).toBeCloseTo(0.6046, 3);
+    expect(aboveLeastRatio(RM_A52E01_M17_LINE7)).toBe(0.51);
+    expect(aboveLeastRatio(RM_A52E01_M17_LINE10)).toBe(0.35);
+    expect(-RM_A52E01_M17_LINE7.cpHigh / -thinLayerBasePressure(1.69)).toBeCloseTo(0.6046, 3);
     // Outside the band served before F4 (0.93): 0.62 to 0.74 of the term served at Mach 1.7.
-    expect(-RM_A52E01_ANY_WING_M17.cpHigh / -thinLayerBasePressure(1.7)).toBeLessThan(0.93);
+    expect(-RM_A52E01_M17_LINE7.cpHigh / -thinLayerBasePressure(1.7)).toBeLessThan(0.93);
   });
 });
 

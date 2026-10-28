@@ -1,6 +1,6 @@
 /**
- * The served totals that 0019 section 3.4.1's F4 changes (RM A52E01's wing 2 at Mach 1.7
- * widening the trailing-edge band's low end above Mach 1.5, from 0.93 to as low as 0.41 at
+ * The served totals that 0019 section 3.4.1's F4 changes (RM A52E01's lines at Mach 1.7
+ * widening the trailing-edge band's low end above Mach 1.5, from 0.93 to as low as 0.35 at
  * Mach 1.65 to 1.75, linear to 0.93 at 1.60 and 1.80): the same cases as impact.test.ts (the
  * baseline population, seed 7), those served a total, with a square trailing edge, at a Mach
  * number where the band's low end is below 0.93. F4 changes no refusal, so impact.test.ts's
