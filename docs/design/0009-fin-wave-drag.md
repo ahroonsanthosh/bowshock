@@ -510,4 +510,8 @@ Mach 1.2 still refused); totals unchanged by this section. As re-made on
 offered too 619 without this section and 797 with it (on 2026-10-26,
 before A5 and the narrowing, these read 190, 743, and 748 to 966); the
 reflected-wave figures above hold; the cross-check agreeing on all 1,200
-cases checked.
+cases checked. Later on 2026-10-28, after main's A3 and A4 (3e026a8, the
+leading edges), the run on this branch serves 184 totals of 8,000, 628
+with the nose assumed served, and with the page's section offered too
+633 without this section and 811 with it; the reflected-wave figures
+above still hold.
