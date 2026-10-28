@@ -3061,6 +3061,19 @@ argument is cited for it or it is refused under section 10.2.
   76899f1 (184 of 8000 totals; cross-check 1200 of 1200): the words and
   the changes move no count.
 
+**2026-10-28, the re-check of 174490b (PASS), its three small items.** A
+double wedge or a circular arc thicker than 10%, whose faces are no
+steeper than an arc of its own thickness, is refused for its thickness
+alone and worded so ("fins of that thickness", the change 10%); the
+shape's words name bevels only where the section has them (a flat middle
+between bevels, `hasBevels`), so a double wedge with its ridge off the
+middle is told a thickness, not longer bevels. The advice replay is a
+guard: it fails if any chain ends with a reason met again or its steps run
+out, and if the committed `out/advice-replay.out` differs from a fresh run.
+The shape's stated limit is rounded down, tested where it is not a round
+number (bevels over 17% of the chord, 8% thick: 0.056, served at it,
+refused 0.001 above), with rounding up planted.
+
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that
 registry, its content unchanged by the relabelling.

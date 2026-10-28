@@ -22,7 +22,10 @@ import { COMPILED_CURVE_BAND, compiledCurveBasePressure } from '../../src/base/c
 import { finsOnBaseFactor } from '../../src/base/fins-on-base';
 import {
   aheadText,
+  hasBevels,
+  shapeLimit,
   W1_FLAT_RELIEF_LOW,
+  W1_LONGER_BEVELS,
   W1_SECTION_SHAPE_LIMIT,
   W1_SECTION_SHAPE_MARK,
   finsOnBaseFactorW1,
@@ -818,12 +821,12 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
     expect(r.message).toContain('; with four fins, they are refused too: ');
     expect(r.message).toContain('; with the fins unswept, they are refused too: ');
     const words = refusalWords(r);
-    // Each change one item, between semicolons (the review of 55a76d2); the 12% double wedge is refused for
-    // its shape against the 10% arc, so the last change names the thickness at which it is served.
+    // Each change one item, between semicolons (the review of 55a76d2); the 12% double wedge, no steeper than
+    // an arc of its own thickness, is refused for its thickness alone (the re-check of 174490b).
     expect(words.change).toBe(
       "the fins' trailing edges at the base; four fins; flat fins with a square, unswept trailing " +
         'edge (below Mach 1.62, unswept or swept 45 to 60 deg), or unswept fins of constant chord; and ' +
-        'fins at most 10% thick with this section, or longer bevels',
+        'fins of that thickness',
     );
     // A further refusal's message is the one-step message, never one carrying a chain of its own (N6).
     for (const f of r.further ?? []) expect(f.message).not.toContain('they are refused too');
@@ -835,8 +838,7 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
       '; and with four fins, the base drag behind wedge or bevelled fins',
     );
     expect(words.reason).toContain(
-      '; and with the fins unswept, the base drag is measured only for sections whose faces near the edges ' +
-        "are no steeper than a 10%-thick circular arc's",
+      '; and with the fins unswept, the base drag is measured for fins 5% to 10% as thick as their chord',
     );
     // And the last change is served: four unswept 10% double wedges at the base.
     expect(parts(rocket(4, doubleWedge(0.1), 0, 2, 0), 1.8).base).toBeDefined();
@@ -872,6 +874,64 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
     expect(refusalWords(three).change).toBe(
       "the fins' trailing edges at the base; and fins at most 6.4% thick with this section, or longer bevels",
     );
+  });
+
+  it('a double wedge or an arc thicker than 10%: refused for its thickness, worded so, no bevels named (the re-check of 174490b)', () => {
+    const arc = (tau: number): SymmetricSection => {
+      const x = Array.from({ length: 201 }, (_, k) => k / 200);
+      return { x, halfThickness: x.map((v) => 2 * tau * v * (1 - v)) };
+    };
+    for (const [name, section] of [
+      ['a 12% double wedge', doubleWedge(0.12)],
+      ['a 12% arc', arc(0.12)],
+    ] as const) {
+      const r = baseRefusalAt(rocket(4, section, 0, 2, 0), 2.0);
+      expect(r.reason, name).toBe('fin-thickness');
+      expect(r.message, name).not.toContain(W1_SECTION_SHAPE_MARK);
+      expect(r.message, name).not.toContain('bevels');
+      expect(refusalWords(r), name).toEqual({
+        reason:
+          'with fins at the base, the base drag is measured for fins 5% to 10% as thick as their chord',
+        change: 'fins of that thickness',
+      });
+      // The change, 10%, is served.
+      expect(r.endedBy, name).toBe('served');
+    }
+    expect(hasBevels(doubleWedge(0.12))).toBe(false);
+    expect(hasBevels(arc(0.12))).toBe(false);
+    expect(hasBevels(hexagonal(0.08, 0.2, 0.2))).toBe(true);
+    // A double wedge with its ridge off the middle is steeper than an arc of its own thickness: refused for its
+    // shape, its change a thickness, no bevels named (three fins, which the rebuilt factor takes; the present
+    // factor, which takes four, serves such a wedge at the base from Mach 1.8).
+    const offset = baseRefusalAt(rocket(3, doubleWedge(0.09, 0.3), 0, 2, 0), 2.0);
+    expect(offset.message).toContain(W1_SECTION_SHAPE_MARK);
+    expect(offset.message).not.toContain(W1_LONGER_BEVELS);
+    expect(refusalWords(offset).change).toMatch(/^fins at most [\d.]+% thick with this section$/);
+    expect(offset.endedBy).toBe('served');
+  });
+
+  it('the limit stated for a shape is rounded down: at it served, 0.1% of the chord above it refused (the re-check of 174490b)', () => {
+    // Bevels over 17% of the chord, 8% thick: the limit is not a round number.
+    const at = (t: number) =>
+      finsOnBaseFactorW1(2.0, {
+        count: 4,
+        section: hexagonal(t, 0.17, 0.17),
+        sectionFamily: 'other',
+        tanLeadingEdgeSweep: 0,
+        tanTrailingEdgeSweep: 0,
+        trailingEdgeAheadOfBase: 0,
+      });
+    let message = '';
+    try {
+      at(0.08);
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    const stated = Number(new RegExp(`${W1_SECTION_SHAPE_LIMIT} (\\d+\\.\\d+)`).exec(message)![1]);
+    expect(stated).toBe(0.056);
+    expect(() => at(stated)).not.toThrow();
+    expect(() => at(stated + 0.001)).toThrow(/is not inside the 10%-thick circular arc/);
+    expect(shapeLimit(0.08, 0.08 / (4 * 0.17 * 0.83))).toBe(0.056);
   });
 
   it('the chain ends where a reason comes again, or after its steps (followAdvice)', () => {

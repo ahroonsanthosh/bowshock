@@ -705,6 +705,23 @@ export function sectionBracket(section: SymmetricSection): { tauLow: number; tau
  */
 export const W1_SECTION_SHAPE_MARK = 'is not inside the 10%-thick circular arc near its edges';
 
+/** In that refusal, where the section has bevels (a flat middle between them): their change, named. */
+export const W1_LONGER_BEVELS = 'or with longer bevels';
+
+/**
+ * Whether a section has separate bevels: its greatest half-thickness held over a stretch of the chord (a flat
+ * middle, as a hexagonal section's), not reached at one point (a double wedge's ridge, an arc's crown).
+ */
+export function hasBevels(section: SymmetricSection): boolean {
+  const h = section.halfThickness;
+  const top = Math.max(...h);
+  for (let k = 0; k + 1 < h.length; k++) {
+    const flat = (v: number) => Math.abs(v - top) <= 1e-12 * Math.max(1, top);
+    if (flat(h[k]!) && flat(h[k + 1]!) && section.x[k + 1]! - section.x[k]! > 1e-9) return true;
+  }
+  return false;
+}
+
 /** The words before the largest t/c at which a section of the same shape is served, in that refusal. */
 export const W1_SECTION_SHAPE_LIMIT = 'with its shape it is served up to t/c';
 
@@ -1142,10 +1159,18 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
       bounded
         ? `flat-faced fins ${tcText(thickness)}: the circular-arc members that bound them reach ` +
             't/c 0.10 (TN 2360, TN 3819 fig. 33)'
-        : `this section, ${tcText(thickness)}, ${W1_SECTION_SHAPE_MARK} (it would need an arc of t/c ` +
+        : // A section no steeper than a circular arc of its own thickness (a double wedge, an arc) is refused for its
+          // thickness alone; a steeper one for its shape, its bevels named only where it has them (the re-check of
+          // 174490b).
+          tr.tauEq <= thickness * (1 + 1e-9)
+          ? `this section, ${tcText(thickness)}, is thicker than the members, which reach t/c 0.10; its ` +
+            'faces are no steeper than a circular arc of its own thickness, and thicker fins at or near the base ' +
+            'are not measured (TN 2360, TN 3819 fig. 33)'
+          : `this section, ${tcText(thickness)}, ${W1_SECTION_SHAPE_MARK} (it would need an arc of t/c ` +
             `${tr.tauEq.toFixed(3)}): its faces there are steeper than the arc's, so ${W1_SECTION_SHAPE_LIMIT} ` +
-            `${shapeLimit(thickness, tr.tauEq).toFixed(3)}, thinner in proportion, or with longer bevels; ` +
-            'steeper fins at or near the base are not measured (TN 2360, TN 3819 fig. 33)',
+            `${shapeLimit(thickness, tr.tauEq).toFixed(3)}, thinner in proportion` +
+            (stations.some(hasBevels) ? `, ${W1_LONGER_BEVELS}` : '') +
+            '; steeper fins at or near the base are not measured (TN 2360, TN 3819 fig. 33)',
     );
   }
   const taus: Thickness[] = [0, 0.05, 0.1];

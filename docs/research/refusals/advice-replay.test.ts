@@ -5,12 +5,16 @@
  * how the chain of the words' changes ended (src/base/base-drag.ts, followAdvice): the last change
  * served, no mechanical change advised (the last reason named), a reason met again, or the steps
  * run out. A case whose advised end state is not served must be named here with its reason.
- * Writes ./out/advice-replay.out. Run:
+ * A guard (the re-check of 174490b): every chain must end served or with no mechanical change
+ * advised (its last reason then named in the table), none by a reason met again or by its steps; and
+ * the committed ./out/advice-replay.out must equal a fresh run. Run:
  *
  *   ONLY=./advice-replay.test.ts nice -n 15 npx vitest run --config docs/research/refusals/vitest.config.ts
+ *
+ * and, to write ./out/advice-replay.out after a change that moves it, with WRITE_OUT=1.
  */
 
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, test } from 'vitest';
@@ -99,7 +103,17 @@ test('every advised end state: served, or named', () => {
     ...(short.length === 0 ? ['none'] : short.map((s) => `- ${s}`)),
     '',
   ];
-  mkdirSync(join(here, 'out'), { recursive: true });
-  writeFileSync(join(here, 'out', 'advice-replay.out'), lines.join('\n'));
+  const text = lines.join('\n');
+  const file = join(here, 'out', 'advice-replay.out');
+  if (process.env.WRITE_OUT === '1') {
+    mkdirSync(join(here, 'out'), { recursive: true });
+    writeFileSync(file, text);
+  }
   expect(asked).toBeGreaterThan(0);
+  // Every chain ends served or with no mechanical change advised; none falls short.
+  expect(short).toEqual([]);
+  expect([...ends.keys()].every((k) => k === 'served' || k === 'no-change')).toBe(true);
+  // The committed table is this run's.
+  expect(existsSync(file)).toBe(true);
+  expect(readFileSync(file, 'utf8')).toBe(text);
 });

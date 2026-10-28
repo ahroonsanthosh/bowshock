@@ -41,6 +41,7 @@ import {
   finsOnBaseFactorW1,
   W1_FLAT_BEYOND_60_MARK,
   W1_FLAT_UNDER_45_MARK,
+  W1_LONGER_BEVELS,
   W1_SECTION_SHAPE_LIMIT,
   W1_SECTION_SHAPE_MARK,
   W1_SWEEP_REFUSED_TOO,
@@ -522,12 +523,13 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     const shape = words(
       'fin-thickness',
       `this section, t/c 0.080, ${W1_SECTION_SHAPE_MARK} (it would need an arc of t/c 0.125): its faces ` +
-        `there are steeper than the arc's, so ${W1_SECTION_SHAPE_LIMIT} 0.064, thinner in proportion`,
+        `there are steeper than the arc's, so ${W1_SECTION_SHAPE_LIMIT} 0.064, thinner in proportion, ` +
+        W1_LONGER_BEVELS,
     );
     expect(shape).toBe('fins at most 6.4% thick with this section, or longer bevels');
     expect(change("`fin-thickness` (the section's shape)")).toBe(
       'fins at most N% thick with this section (N from the message: 6.4% for bevels over a fifth of the ' +
-        'chord), or longer bevels',
+        'chord), or longer bevels where it has them',
     );
     // A trailing edge refused near the base: square or sharp for a plate's rounded one, sharp for a wedge's
     // blunt one, the fins at the base, as the page words them.
