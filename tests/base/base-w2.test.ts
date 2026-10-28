@@ -179,7 +179,7 @@ describe('the term (bodyBaseDrag)', () => {
     const below = bodyBaseDrag({ ...base, mach: 1.4999 });
     const at = bodyBaseDrag({ ...base, mach: 1.5 });
     expect(below.cd / at.cd).toBeCloseTo(1.04, 3);
-    expect(at.curveBand).toMatchObject({ low: 0.77, high: 1.18, nominal: 1, source: 'compiled' });
+    expect(at.curveBand).toMatchObject({ low: 0.77, high: 1.13, nominal: 1, source: 'compiled' });
   });
 
   it('refused below Mach 1.0', () => {
@@ -247,11 +247,11 @@ describe('the term (bodyBaseDrag)', () => {
     expect(term(arcs, 1.5 - 1e-9)[0]).toBe(0.2847);
     expect(term(arcs, 1.5)[0]).toBe(0.2817);
     expect(term(wedges, 1.5 - 1e-9)).toEqual([0.2283, 0.0918, 0.3648]);
-    expect(term(wedges, 1.5)).toEqual([0.2002, 0.0992, 0.2912]);
+    expect(term(wedges, 1.5)).toEqual([0.2002, 0.0992, 0.2812]);
     // M 1.62, where the zero member goes from RM L52E06's 0.838 to RM L52J21a's 0.938.
-    expect(term(wedges, 1.6)).toEqual([0.1967, 0.0958, 0.2877]);
-    expect(term(wedges, 1.62 - 1e-9)).toEqual([0.1947, 0.0953, 0.2843]);
-    expect(term(wedges, 1.62)).toEqual([0.2031, 0.1101, 0.2858]);
+    expect(term(wedges, 1.6)).toEqual([0.1967, 0.0958, 0.2779]);
+    expect(term(wedges, 1.62 - 1e-9)).toEqual([0.1947, 0.0953, 0.2746]);
+    expect(term(wedges, 1.62)).toEqual([0.2031, 0.1101, 0.2757]);
     expect(term(arcs, 1.62 - 1e-9)[0]).toBeCloseTo(term(arcs, 1.62)[0]!, 3);
     // Below M 1.5, on W2's term, +-32.8% to +-35.9% on F (sharp sections and plates alike; +-31.7% to
     // +-34.9% before 0014 10.7 (ah) moved W2's midpoint from 1.065 to 1.04).

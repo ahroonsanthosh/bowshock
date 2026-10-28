@@ -35,6 +35,8 @@ import {
   TN3819_FIG18_MISREADS,
   TN3819_FIG18_ROUND7,
   TN3819_FIG18_TUNNEL,
+  TR1051_FIG23B_FAIRED_SUPERSEDED,
+  TR1051_FIG23B_THINNEST,
 } from '../../src/base/tn3819-fig18';
 
 const csv = (path: string) =>
@@ -283,17 +285,19 @@ describe('the band, recomputed from the data', () => {
     );
     expect(Math.min(...outside)).toBeCloseTo(0.7766, 4);
     expect(Math.max(...outside)).toBeCloseTo(1.0241, 4);
-    // TR 1051 at M 2.9, the audit's -0.118, over the served curve.
-    expect(b['TR 1051'].min).toBeCloseTo(0.9425, 4);
-    expect(b['TR 1051'].max).toBeCloseTo(-0.118 / compiledCurveValue(2.9, 'lessNegative'), 12);
-    expect(b['TR 1051'].max).toBeCloseTo(1.1782, 4);
+    // TR 1051 at its thinnest measured symbols (round 19): the low end reader B's -0.1379 at M 2.0 over the
+    // more negative curve, the high end reader B's -0.1127 at M 2.9 over the served curve.
+    expect(b['TR 1051'].min).toBeCloseTo(-0.1379 / compiledCurveValue(2.0, 'moreNegative'), 12);
+    expect(b['TR 1051'].min).toBeCloseTo(0.9218, 4);
+    expect(b['TR 1051'].max).toBeCloseTo(-0.1127 / compiledCurveValue(2.9, 'lessNegative'), 12);
+    expect(b['TR 1051'].max).toBeCloseTo(1.1253, 4);
   });
 
-  it('rounded outward: 0.77 to 1.18 (0014 10.7 (ah)); the tunnel symbols and Herrin and Dutton alone gave 0.82 to 1.08', () => {
-    expect(COMPILED_CURVE_BAND).toEqual({ low: 0.77, high: 1.18 });
+  it('rounded outward: 0.77 to 1.13 (0014 10.7 (ah) with round 19); the tunnel symbols and Herrin and Dutton alone gave 0.82 to 1.08', () => {
+    expect(COMPILED_CURVE_BAND).toEqual({ low: 0.77, high: 1.13 });
     const e = compiledCurveBandEvidence();
     expect(e.min).toBeCloseTo(0.7731, 4);
-    expect(e.max).toBeCloseTo(1.1782, 4);
+    expect(e.max).toBeCloseTo(1.1253, 4);
     expect(COMPILED_CURVE_BAND.low).toBeLessThanOrEqual(e.min);
     expect(COMPILED_CURVE_BAND.high).toBeGreaterThanOrEqual(e.max);
     const before = {
@@ -317,9 +321,9 @@ describe('the band, recomputed from the data', () => {
  * 0008 section 3.3's rule, "every base data set opened at these conditions is used to set this band", applied
  * by 0014 section 10.7 (ah): every body-alone base pressure read twice in the curve's domain (Mach 1.5 to 3.0,
  * cylindrical afterbody, turbulent, no fins, power off), each paired reading, lies inside the band served
- * on the curve. The readings are taken from the data modules where main holds them, and typed here from
- * docs/research/total-drag/data/base_sources.md for TR 1051, so that these tests ran, and failed, on the
- * code before (ah).
+ * on the curve. The readings are taken from the data modules where main holds them, and typed here for
+ * TR 1051 (first from docs/research/total-drag/data/base_sources.md, so that these tests ran, and failed, on
+ * the code before (ah); since round 19 from its pairing, audit/round19/pairing/pairing.csv).
  */
 describe('every body-alone base pressure read twice in the domain lies inside the served band (0014 10.7 (ah))', () => {
   const served = (mach: number) =>
@@ -429,17 +433,63 @@ describe('every body-alone base pressure read twice in the domain lies inside th
     expect(all.some((x) => x.pB === -0.1494)).toBe(false);
   });
 
-  it('TR 1051 fig. 23(b), the thinnest sting (d/h 0.35), both readings, at M 1.5, 2.0 and 2.9', () => {
-    // base_sources.md section 2: first reading and the audit's. At M 2.9 they are 1.148 and 1.178 times the curve.
+  it('TR 1051 fig. 23(b), the thinnest measured sting symbol at M 1.5, 2.0 and 2.9, both blind readings (round 19)', () => {
+    // audit/round19/pairing/pairing.csv, the first symbol of each Mach number, readers A and B. At M 2.9 they
+    // are 1.124 and 1.125 times the curve.
     const readings: readonly [number, number][] = [
-      [1.5, -0.174],
-      [1.5, -0.176],
-      [2.0, -0.141],
-      [2.0, -0.147],
-      [2.9, -0.115],
-      [2.9, -0.118],
+      [1.5, -0.1722],
+      [1.5, -0.1723],
+      [2.0, -0.138],
+      [2.0, -0.1379],
+      [2.9, -0.1126],
+      [2.9, -0.1127],
     ];
     for (const [mach, pB] of readings) expectInside('TR 1051 fig. 23(b)', mach, pB);
+  });
+
+  it("TR 1051's data held to round 19's pairing; the faired values (ah) first used kept, superseded, as the record", () => {
+    const rows = csv('docs/research/total-drag/audit/round19/pairing/pairing.csv').slice(1);
+    const thinnest = rows
+      .map((l) => l.split(','))
+      .filter((c) => c[2] === '1')
+      .map((c) => ({
+        mach: Number(c[0]),
+        dOverH: [Number(c[4]), Number(c[6])],
+        a: Number(c[12]),
+        aErr: Number(c[13]),
+        b: Number(c[14]),
+        bErr: Number(c[15]),
+        verdict: c[20],
+      }));
+    expect(thinnest.map((t) => t.mach)).toEqual([1.5, 2.0, 2.9]);
+    TR1051_FIG23B_THINNEST.forEach((p, k) => {
+      const t = thinnest[k]!;
+      expect(p.mach).toBe(t.mach);
+      expect([...p.dOverH]).toEqual(t.dOverH);
+      expect([p.readerA, p.errorA, p.readerB, p.errorB]).toEqual([t.a, t.aErr, t.b, t.bErr]);
+      expect(t.verdict).toBe('AGREES');
+    });
+    // Each Mach number's first symbol lies at d/h 0.30 or above: at 0.35 for M 1.5, 0.30 for M 2.0 and 2.9.
+    expect(TR1051_FIG23B_THINNEST.map((p) => Math.round(100 * p.dOverH[1]) / 100)).toEqual([
+      0.35, 0.3, 0.3,
+    ]);
+    // Superseded: the readings at d/h 0.35 on the faired curves. At M 1.5, the same symbol, they lie 0.0017 to
+    // 0.0038 more negative than the blind pair, beyond its summed errors (0.0008).
+    expect(TR1051_FIG23B_FAIRED_SUPERSEDED.map((p) => [p.mach, p.first, p.audit])).toEqual([
+      [1.5, -0.174, -0.176],
+      [2.0, -0.141, -0.147],
+      [2.9, -0.115, -0.118],
+    ]);
+    const m15 = TR1051_FIG23B_THINNEST[0]!;
+    for (const v of [
+      TR1051_FIG23B_FAIRED_SUPERSEDED[0]!.first,
+      TR1051_FIG23B_FAIRED_SUPERSEDED[0]!.audit,
+    ]) {
+      expect(Math.min(...[m15.readerA, m15.readerB].map((x) => x - v))).toBeGreaterThan(
+        m15.errorA + m15.errorB,
+      );
+    }
+    expect(BODY_ALONE_IN_DOMAIN.some((r) => r.pB === -0.118 || r.pB === -0.115)).toBe(false);
   });
 
   it("TN 3819 fig. 18's tunnel symbols at M 1.5 to 3.0 and Herrin and Dutton, as before", () => {
@@ -468,7 +518,7 @@ describe('body base drag: the arithmetic', () => {
       const e = p.interpolationError * area;
       expect(r.cd).toBeCloseTo(cd, 15);
       expect(r.low).toBeCloseTo(0.77 * cd - e, 15);
-      expect(r.high).toBeCloseTo(1.18 * cd + e, 15);
+      expect(r.high).toBeCloseTo(1.13 * cd + e, 15);
       expect(r.labels).toEqual([COMPILED_CURVE_LABEL]);
       expect(r.finsOnBase).toBeUndefined();
     }
@@ -493,11 +543,11 @@ describe('body base drag: the arithmetic', () => {
     const q = -compiledCurveValue(2.4, 'lessNegative');
     expect(r.cd).toBeCloseTo(q * f.nominal, 15);
     expect(r.low).toBeCloseTo(r.cd - 0.23 * r.cd + (f.low - f.nominal) * q, 15);
-    expect(r.high).toBeCloseTo(r.cd + 0.18 * r.cd + (f.high - f.nominal) * q, 15);
+    expect(r.high).toBeCloseTo(r.cd + 0.13 * r.cd + (f.high - f.nominal) * q, 15);
     expect(r.labels[1]).toMatch(/^an analogy, not a measurement/);
   });
 
-  it('never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9557 of it (M 3.0, fins at the base; 0.8840 before 0014 10.7 (ah), 0.9535 before the correction of 0010 section 11), 0.717 without fins (0.656 before (ah))', () => {
+  it('never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9199 of it (M 3.0, fins at the base; 0.8840 before 0014 10.7 (ah), 0.9535 before the correction of 0010 section 11), 0.686 without fins (0.656 before (ah))', () => {
     const fins = {
       count: 4,
       thicknessRatio: 0.08,
@@ -528,9 +578,9 @@ describe('body base drag: the arithmetic', () => {
       }
     }
     withFins = Math.max(withFins, at(3.0, true).high / at(3.0, true).vacuum);
-    expect(withFins).toBeCloseTo(0.9557, 4);
+    expect(withFins).toBeCloseTo(0.9199, 4);
     expect(at(3.0, true).high / at(3.0, true).vacuum).toBe(withFins);
-    expect(Math.round(1000 * without) / 1000).toBe(0.717);
+    expect(Math.round(1000 * without) / 1000).toBe(0.686);
   });
 
   it('fins a chord or more ahead: the plain curve, labelled not validated with fins', () => {

@@ -388,7 +388,7 @@ describe('the page against the run: the seven rounds', { timeout: 120_000 }, () 
       const t = v.total;
       expect(r.outcome.refused).toBe(false);
       // The run's values, plus what 0014 10.7 (ah) added after it to the body base's band ends: the
-      // change in the compiled curve's band (0.82 to 1.08 at the run, 0.77 to 1.18 now) times its term.
+      // change in the compiled curve's band (0.82 to 1.08 at the run, 0.77 to 1.13 now) times its term.
       const bodyBase = r.components.find((c) => c.name === 'body base')!;
       const w = {
         low: (COMPILED_CURVE_BAND.low - 0.82) * bodyBase.cd,
@@ -449,6 +449,27 @@ describe('the page against the run: the seven rounds', { timeout: 120_000 }, () 
     const mean = RUN.reduce((a, r) => a + r.outcome.residual, 0) / RUN.length;
     expect(Math.round(1000 * mean) / 10).toBe(7.3);
   });
+
+  it('the tolerances with the band the library carries now, as the claim and the table state them', () => {
+    // The run's, plus the body base's band ends moved by the change in the compiled curve's band since it
+    // (0.82 to 1.08 at the run; 0014 10.7 (ah) and its third addendum), over the modelled total.
+    const now = RUN.map((r) => {
+      const base = r.components.find((c) => c.name === 'body base')!.cd;
+      return [
+        r.outcome.tolerance[0] + ((COMPILED_CURVE_BAND.low - 0.82) * base) / r.outcome.cd,
+        r.outcome.tolerance[1] + ((COMPILED_CURVE_BAND.high - 1.08) * base) / r.outcome.cd,
+      ] as const;
+    });
+    const pc = (x: number) => `${x > 0 ? '+' : ''}${(Math.round(1000 * x) / 10).toFixed(1)}%`;
+    const lo = now.map((x) => x[0]);
+    const hi = now.map((x) => x[1]);
+    const stated = `${pc(Math.max(...lo))} to ${pc(Math.min(...lo))} and ${pc(Math.min(...hi))} to ${pc(Math.max(...hi))}`;
+    expect(stated).toBe('-26.5% to -29.0% and +28.9% to +29.7%');
+    expect(VALIDATED_CLAIM).toContain(`its tolerances there would now be ${stated}.`);
+    expect(displayText(gateDisplay())).toContain(
+      `a wider band and the tolerances would be ${stated}; no residual and no verdict changes`,
+    );
+  });
 });
 
 describe('the display', { timeout: 60_000 }, () => {
@@ -460,7 +481,7 @@ describe('the display', { timeout: 60_000 }, () => {
     if (head.kind !== 'paragraph' || box.kind !== 'box') throw new Error('expected a total');
     expect(head.tone).toBe('ok');
     expect(head.text).toBe(
-      `Total C_D = 0.4314, model-form band 0.3652 to 0.5335 (-15.4% to +23.7%): ${VALIDATED_HEADLINE}`,
+      `Total C_D = 0.4314, model-form band 0.3652 to 0.5262 (-15.4% to +22.0%): ${VALIDATED_HEADLINE}`,
     );
     expect(box.tone).toBe('ok');
     expect(box.blocks.map((b) => (b.kind === 'paragraph' ? b.text : b.kind))).toEqual([

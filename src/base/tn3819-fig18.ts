@@ -354,30 +354,79 @@ export const HERRIN_DUTTON = {
   readingError: 0.01,
 } as const;
 
-/** TR 1051 fig. 23(b) at one Mach number: the turbulent base pressure at the thinnest sting, both readings. */
-export interface Tr1051Fig23bRow {
+/** TR 1051 fig. 23(b) at one Mach number: its thinnest measured sting symbol, both blind readings. */
+export interface Tr1051Fig23bSymbol {
   readonly mach: number;
   /** Reynolds number on the body length and that length over the base diameter, from the figure's legend. */
   readonly reynolds: number;
   readonly lengthOverBase: number;
-  readonly first: number;
-  readonly audit: number;
+  /** The symbol's d/h, readers A and B. */
+  readonly dOverH: readonly [number, number];
+  /** P_B, readers A and B, and each reader's stated error (one standard deviation). */
+  readonly readerA: number;
+  readonly readerB: number;
+  readonly errorA: number;
+  readonly errorB: number;
 }
 
 /**
  * D. R. Chapman, NACA TR 1051 (1951), appendix B, fig. 23(b): turbulent base pressure against the sting's
- * diameter over the base diameter, d/h, read at the faired curves' start, d/h 0.35, the thinnest sting.
- * Two readings (docs/research/total-drag/data/base_sources.md section 2): the first, revised on a local grid
- * (`scripts/chap23b_read.py`, `chap23b_output.txt`), and the round-1 audit's (`audit/audit.md` M3), which
- * had seen the draft's values, so the pair is independent but not blind. The models (TR 1051, PDF pp. 12 and
- * 21, its text and fig. 23(b)'s legend, read for 0014 section 10.7 (ah)): every body a cone-cylinder (10 deg
- * semiangle) or an ogive-cylinder (10-calibre ogival radius), turbulent by a narrow transition strip, on a
- * rear sting more than 4 base diameters long. Inside the compiled curve's domain, so band evidence (0008
- * section 3.3's rule, 0014 section 10.7 (ah)); the thicker stings of the figure measure the sting effect
- * itself (0008 section 3.3's last item) and are not used.
+ * diameter over the base diameter, d/h, at each Mach number's thinnest measured sting symbol. Round 19
+ * (docs/research/total-drag/audit/round19/): two blind readers of every symbol of the figure, paired by a
+ * neutral party (15 of 15 symbols within the summed stated errors); the symbol, not the faired curve,
+ * as the addendum to 0014 section 10.7 (ah) registers and its third addendum applies. The models (TR 1051, PDF pp. 12 and 21; its text and
+ * fig. 23(b)'s legend, which both readers quote): every body a cone-cylinder (10 deg semiangle) or an
+ * ogive-cylinder (10-calibre ogival radius), turbulent by a narrow transition strip, on a rear sting more
+ * than 4 base diameters long. Inside the compiled curve's domain, so band evidence (0008 section 3.3's rule,
+ * 0014 section 10.7 (ah)) as the plain envelope of the two readings; the thicker stings of the figure
+ * measure the sting effect itself (0008 section 3.3's last item) and are not used.
  */
-export const TR1051_FIG23B_THINNEST: readonly Tr1051Fig23bRow[] = [
-  { mach: 1.5, reynolds: 4.0e6, lengthOverBase: 7.0, first: -0.174, audit: -0.176 },
-  { mach: 2.0, reynolds: 4.0e6, lengthOverBase: 5.0, first: -0.141, audit: -0.147 },
-  { mach: 2.9, reynolds: 7.5e6, lengthOverBase: 5.0, first: -0.115, audit: -0.118 },
+export const TR1051_FIG23B_THINNEST: readonly Tr1051Fig23bSymbol[] = [
+  {
+    mach: 1.5,
+    reynolds: 4.0e6,
+    lengthOverBase: 7.0,
+    dOverH: [0.3467, 0.347],
+    readerA: -0.1722,
+    readerB: -0.1723,
+    errorA: 0.0003,
+    errorB: 0.0005,
+  },
+  {
+    mach: 2.0,
+    reynolds: 4.0e6,
+    lengthOverBase: 5.0,
+    dOverH: [0.2977, 0.298],
+    readerA: -0.138,
+    readerB: -0.1379,
+    errorA: 0.0005,
+    errorB: 0.0008,
+  },
+  {
+    mach: 2.9,
+    reynolds: 7.5e6,
+    lengthOverBase: 5.0,
+    dOverH: [0.2961, 0.296],
+    readerA: -0.1126,
+    readerB: -0.1127,
+    errorA: 0.0003,
+    errorB: 0.0005,
+  },
+];
+
+/**
+ * Superseded (the third addendum to 0014 section 10.7 (ah)), kept as the record: the values (ah) first used, read
+ * at d/h 0.35 on the faired curves (docs/research/total-drag/data/base_sources.md section 2: the first
+ * reading, revised, and the round-1 audit's, which had seen the draft's values). At Mach 2.0 and 2.9 the first
+ * measured symbols lie at d/h 0.30, so these are fairings, not data; at Mach 1.5 the symbol is at d/h 0.347,
+ * and round 19's blind pair reads it 0.002 to 0.004 less negative than these.
+ */
+export const TR1051_FIG23B_FAIRED_SUPERSEDED: readonly {
+  readonly mach: number;
+  readonly first: number;
+  readonly audit: number;
+}[] = [
+  { mach: 1.5, first: -0.174, audit: -0.176 },
+  { mach: 2.0, first: -0.141, audit: -0.147 },
+  { mach: 2.9, first: -0.115, audit: -0.118 },
 ];

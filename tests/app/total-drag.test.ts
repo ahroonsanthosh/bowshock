@@ -25,7 +25,7 @@ import {
   BASIC_FINNER_SHOTS,
 } from '../../src/validation/basic-finner';
 import { outward, outwardPercent } from '../../src/app/band';
-import { displayText, totalDragDisplay } from '../../src/app/total-drag-display';
+import { displayText, gateDisplay, totalDragDisplay } from '../../src/app/total-drag-display';
 import {
   ABOVE_THE_CLASS,
   BASIC_FINNER_CLASS,
@@ -396,17 +396,19 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
     });
     // With the corrected fins-on-base factor (0010 section 11); before it, at the same Mach
     // numbers: 0.6121, 0.5501, 0.5188, 0.4768, 0.4320, 0.4072, 0.4040. The bands with the compiled
-    // curve's band 0.77 to 1.18 (0014 10.7 (ah)); with 0.82 to 1.08 before it: -13.7% to +19.0%,
+    // curve's band 0.77 to 1.13 (0014 10.7 (ah) and its third addendum; with 0.77 to 1.18 before round 19
+    // the high ends were +22.6%, +21.6%, +21.9%, +21.9%, +21.7%, +21.3%, +21.2%); with 0.82 to 1.08 before
+    // (ah): -13.7% to +19.0%,
     // -12.5% to +18.2%, -12.9% to +18.7%, -12.9% to +18.8%, -12.7% to +18.7%, -12.5% to +18.4%,
     // -12.4% to +18.3%.
     expect(shown).toEqual([
-      ['0.6131', '0.5184 to 0.7512', '-15.5% to +22.6%'],
-      ['0.5493', '0.4717 to 0.6675', '-14.2% to +21.6%'],
-      ['0.5176', '0.4428 to 0.6309', '-14.5% to +21.9%'],
-      ['0.4725', '0.4041 to 0.5760', '-14.5% to +21.9%'],
-      ['0.4203', '0.3606 to 0.5112', '-14.2% to +21.7%'],
-      ['0.3951', '0.3401 to 0.4793', '-14.0% to +21.3%'],
-      ['0.3919', '0.3377 to 0.4750', '-13.9% to +21.2%'],
+      ['0.6131', '0.5184 to 0.7403', '-15.5% to +20.8%'],
+      ['0.5493', '0.4717 to 0.6584', '-14.2% to +19.9%'],
+      ['0.5176', '0.4428 to 0.6225', '-14.5% to +20.3%'],
+      ['0.4725', '0.4041 to 0.5686', '-14.5% to +20.4%'],
+      ['0.4203', '0.3606 to 0.5050', '-14.2% to +20.2%'],
+      ['0.3951', '0.3401 to 0.4735', '-14.0% to +19.9%'],
+      ['0.3919', '0.3377 to 0.4693', '-13.9% to +19.8%'],
     ]);
   });
 
@@ -456,14 +458,14 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
         outwardPercent(t.low / t.cd - 1, t.high / t.cd - 1),
       ];
     });
-    // The compiled curve's band 0.77 to 1.18 (0014 10.7 (ah)).
+    // The compiled curve's band 0.77 to 1.13 (0014 10.7 (ah) and its third addendum).
     expect(shown).toEqual([
-      ['0.6131', '0.5184 to 0.7512', '-15.5% to +22.6%'],
-      ['0.5493', '0.4717 to 0.6675', '-14.2% to +21.6%'],
-      ['0.5176', '0.4428 to 0.6309', '-14.5% to +21.9%'],
-      ['0.4896', '0.4182 to 0.5973', '-14.6% to +22.1%'],
-      ['0.4564', '0.3926 to 0.5543', '-14.0% to +21.5%'],
-      ['0.4028', '0.3462 to 0.4893', '-14.1% to +21.5%'],
+      ['0.6131', '0.5184 to 0.7403', '-15.5% to +20.8%'],
+      ['0.5493', '0.4717 to 0.6584', '-14.2% to +19.9%'],
+      ['0.5176', '0.4428 to 0.6225', '-14.5% to +20.3%'],
+      ['0.4896', '0.4182 to 0.5895', '-14.6% to +20.5%'],
+      ['0.4564', '0.3926 to 0.5472', '-14.0% to +19.9%'],
+      ['0.4028', '0.3462 to 0.4834', '-14.1% to +20.0%'],
     ]);
   });
 
@@ -568,7 +570,8 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
     });
     expect(PUBLISHED_GATE.map((p) => p.shot)).toEqual(gated.map((s) => s.shot));
     // The table is the corrected run's: its bands and tolerances were formed with the compiled
-    // curve's band at the run, 0.82 to 1.08. The library's carry 0.77 to 1.18 since 0014 10.7 (ah),
+    // curve's band at the run, 0.82 to 1.08. The library's carry 0.77 to 1.13 since 0014 10.7 (ah) and its
+    // third addendum,
     // so the table is held to the library less that widening of the body base's band ends (the
     // change in the band's end times the body base term); the totals and residuals are the same.
     const atTheRun = (t: TotalDrag) => {
@@ -601,6 +604,23 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
         ),
       );
     });
+    // The tolerances with the band the library carries now (0014 10.7 (ah) and its third addendum), as the
+    // table's caption states them.
+    const now = PUBLISHED_GATE.map((p, k) => {
+      const t = totalOf(views[k]!);
+      const inLow = t.inputs.reduce((a, i) => a + i.low, 0);
+      const inHigh = t.inputs.reduce((a, i) => a + i.high, 0);
+      const s = spread[BASIC_FINNER_CLUSTERS.findIndex(([a, b]) => p.mach >= a && p.mach <= b)]!;
+      return [(t.low + inLow) / t.cd - 1 + s.lo, (t.high + inHigh) / t.cd - 1 + s.hi] as const;
+    });
+    const pc = (x: number) => `${x > 0 ? '+' : ''}${(Math.round(1000 * x) / 10).toFixed(1)}%`;
+    const lo = now.map((x) => x[0]);
+    const hi = now.map((x) => x[1]);
+    const stated = `${pc(Math.max(...lo))} to ${pc(Math.min(...lo))} and ${pc(Math.min(...hi))} to ${pc(Math.max(...hi))}`;
+    expect(stated).toBe('-21.5% to -28.5% and +25.1% to +30.1%');
+    expect(displayText(gateDisplay())).toContain(
+      `the tolerances would be ${stated}; no residual and no verdict changes`,
+    );
   });
 
   it('every shot is an estimate: the three at Mach 1.80 to 1.85, inside the class, with the suspension as the reason; the eight above Mach 2.15 outside it', () => {

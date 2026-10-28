@@ -106,4 +106,6 @@ tests/tmp-total/vitest.config.ts` from the repository root; it writes its
   `tests/base/compiled-curve.test.ts` failing on the code before it (TN
   2360 at M 1.5, RM L52J21a's radome nose at M 1.62, TR 1051 at M 2.9),
   and seven errors planted one at a time in the corrected code, each
-  caught by the tests named.
+  caught by the tests named; after the review, five more; on 2026-10-28,
+  with round 19 applied (the third addendum to (ah), band 0.77 to 1.13),
+  all of them again and five new ones, each caught.

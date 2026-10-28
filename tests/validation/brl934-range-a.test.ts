@@ -40,7 +40,8 @@
  * not on BRL. The run writes its output when BRL934_RUN_OUT names a folder.
  *
  * After the run (2026-10-27, 0014 section 10.7 (ah)) the compiled curve's band widened from 0.82 to 1.08,
- * which the run used, to 0.77 to 1.18, by 0008 section 3.3's rule applied to body-alone base pressures it had
+ * which the run used, to 0.77 to 1.13 (1.18 until round 19's blind readings of TR 1051, the third addendum to
+ * (ah)), by 0008 section 3.3's rule applied to body-alone base pressures it had
  * left out: a band widened after this hold-out was used. It moves no total and no residual, only the body
  * base's band ends (by the change in the band's end times the body base term) and with them each tolerance.
  * RECORDED keeps what the run gave; the tests check the model against it plus that widening (`widenedBy`). The
@@ -754,8 +755,8 @@ describe('BRL Report 934, range A, run once as registered', { timeout: 3_600_000
       expect(x.library).toBe('served, the body base on the present factor');
     });
     // Residuals +3.9, +6.0, +11.0, +8.4, +7.3, +8.9, +5.8 % (mean +7.3%); tolerances at the run -24.8%
-    // to -27.1% and +27.0% to +28.0%, and with the band widened after it (0014 10.7 (ah)) -26.5% to
-    // -29.0% and +30.7% to +31.4%: every round still inside.
+    // to -27.1% and +27.0% to +28.0%, and with the band widened after it (0014 10.7 (ah) and its third
+    // addendum) -26.5% to -29.0% and +28.9% to +29.7%: every round still inside.
     const outcomes = rounds.map((x) => x.outcome as Served);
     const pct = (v: number[]) => v.map((y) => Math.round(1000 * y) / 10);
     expect(pct(outcomes.map((o) => o.residual))).toEqual([3.9, 6.0, 11.0, 8.4, 7.3, 8.9, 5.8]);
@@ -764,7 +765,7 @@ describe('BRL Report 934, range A, run once as registered', { timeout: 3_600_000
     const lo = outcomes.map((o) => o.tolerance[0]);
     const hi = outcomes.map((o) => o.tolerance[1]);
     expect(pct([Math.min(...lo), Math.max(...lo), Math.min(...hi), Math.max(...hi)])).toEqual([
-      -29.0, -26.5, 30.7, 31.4,
+      -29.0, -26.5, 28.9, 29.7,
     ]);
     const tol = RECORDED.present.map((r) => r.tolerance);
     expect(

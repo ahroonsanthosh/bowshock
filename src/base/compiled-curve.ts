@@ -44,13 +44,13 @@
  * each paired reading, the same way (`BODY_ALONE_IN_DOMAIN`): TN 2360's body
  * alone and the Langley 9 in tunnel's (TN 3819 figs. 33 and 35), RM
  * L52J21a's unfinned bodies (figs. 31 to 33 (d), every paired symbol) and TR
- * 1051 fig. 23(b) at its thinnest sting. The sets opened in the domain and
- * read once are named in that entry and set nothing. The envelope becomes
- * 0.7731 to 1.1782, rounded outward 0.77 to 1.18: the low end RM L52J21a's
- * radome nose at M 1.62 over the more negative curve, the high end TR 1051
- * at M 2.9 (on the faired curve; its thinnest measured symbols wait for
- * round 19, the addendum to (ah)); TN 2360 at M 1.5, 1.124 times the curve,
- * lay outside the band before.
+ * 1051 fig. 23(b) at its thinnest measured sting symbols (round 19's blind
+ * pair; the addendum and the third addendum to (ah)). The sets opened in the domain and read once
+ * are named in that entry and set nothing. The envelope becomes 0.7731 to
+ * 1.1253, rounded outward 0.77 to 1.13: the low end RM L52J21a's radome nose
+ * at M 1.62 over the more negative curve, the high end TR 1051 at M 2.9
+ * (round 19's reader B, over the served curve), with TN 2360 at M 1.5,
+ * 1.1241, outside the band before, just below it.
  *
  * Refused (0008 sections 3.3, 6.2 B3 and 6.4): Mach numbers outside 1.5
  * to 3.0 (below 1.5 the data opened are not claimable; the band is stated
@@ -189,9 +189,9 @@ const reading = (
  * - RM L52J21a figs. 31 to 33 panel (d): the unfinned bodies with cylindrical bases, sting-supported,
  *   three noses, every symbol W1's first reading and round 7's both read, at R 7.0e6 to 9.1e6 (W1's
  *   window about R 8.06e6 and the fourteen pairs outside it, `L52J21A_FIG31_33D_OTHER_R`);
- * - TR 1051 fig. 23(b) at its thinnest sting, both readings (./tn3819-fig18.ts); at Mach 2.0 and 2.9
- *   these are faired values, read at d/h 0.35 where the first symbols lie at 0.30 (the addendum to
- *   (ah): they stay until round 19's paired readings of the symbols).
+ * - TR 1051 fig. 23(b) at its thinnest measured sting symbol at each Mach number (d/h 0.347, 0.298
+ *   and 0.296), round 19's two blind readings (./tn3819-fig18.ts); the faired values at d/h 0.35 that
+ *   (ah) first used are superseded and set nothing (the third addendum to (ah)).
  */
 export const BODY_ALONE_IN_DOMAIN: readonly BodyAloneReading[] = [
   ...TN3819_FIG33.filter((p) => p.thicknessRatio === 0).map((p) =>
@@ -219,8 +219,8 @@ export const BODY_ALONE_IN_DOMAIN: readonly BodyAloneReading[] = [
     ),
   ),
   ...TR1051_FIG23B_THINNEST.flatMap((p) => [
-    reading('TR 1051', 'TR 1051 fig. 23(b), first', p.mach, p.first),
-    reading('TR 1051', 'TR 1051 fig. 23(b), audit', p.mach, p.audit),
+    reading('TR 1051', `TR 1051 fig. 23(b), d/h ${p.dOverH[1]}, round 19 A`, p.mach, p.readerA),
+    reading('TR 1051', `TR 1051 fig. 23(b), d/h ${p.dOverH[1]}, round 19 B`, p.mach, p.readerB),
   ]),
 ];
 
