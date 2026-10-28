@@ -2766,7 +2766,8 @@ above stands as written, the runs it quotes being those at commits
   chord. So the served domain for fins ahead of the base is no wider than
   what TN 2360 measured in chord over diameter at each Mach number: a
   root chord of 1.5 body diameters, within 0.5% (the precedent of 0011
-  section 3, each dimension within 0.5% of the configuration measured),
+  section 3, each dimension within 0.5% of the configuration measured;
+  that reason corrected 2026-10-28, the entry of that date below),
   at Mach 1.5 to 2.0. Every other chord is refused there, at every
   position 0 < x/c < 1 (the swept fins served from 0.9 root chords ahead
   among them, whose members there are TN 2360's), in plain words; so is a
@@ -2903,9 +2904,10 @@ that the increment is nearly zero a chord fore or aft.
   1.0 to 1.8 (for sweep) and 6 of 36 at 1.8 to 3.0; the fins as the change
   makes them are run since. Still not checked: a sharp section other
   than that double wedge, which may meet a refusal of its own shape
-  (steep bevels, say); and the changes that the refusal at the base names
-  in turn, so a chain of more than two reasons is not followed. A change
-  named never moves the fins further ahead.
+  (steep bevels, say); and, until 2026-10-28, the changes that the
+  refusal at the base names in turn, so a chain of more than two reasons
+  was not followed (followed since: the entry of 2026-10-28 below). A
+  change named never moves the fins further ahead.
 - _What it cost (the same 2000 rockets, `docs/research/refusals/`):_ on
   the merged head (main at 5921198 merged at 1ec9df1, whose audit counts
   the Von Karman noses the page serves), 155 of 8000 cases serve a total
@@ -2942,6 +2944,81 @@ that the increment is nearly zero a chord fore or aft.
   assumption of no fin effect is not shown there.
   `fins-on-base-routing.test.ts` holds the numbers, 0.1563, 0.1635 and
   0.1693.
+
+**2026-10-28, the review of 86bcf73 (PASS, with minor items) and the
+merge with main's A1.** The review (Fable's, on A5 as main holds it,
+f88ecbe, and on this branch's follow-ups) asked that code and record
+match: where the record does not name a served case, either a registered
+argument is cited for it or it is refused under section 10.2.
+
+- _Sharp fins swept ahead of the base (its items 1 and 2):_ refused under
+  section 10.2. A sharp section with the leading edge swept and the
+  trailing edge unswept was served at every measured position ahead of
+  the base, though 0015 section 3.4 names it at the base and, as a
+  trailing edge swept no more than the leading edge, from 0.9 root
+  chords (RM L52J21a's position); no measurement or registered argument
+  covers it between. It is now served ahead of the base only from 0.9
+  root chords. W1b's moderate sweeps, argued at the base only, were
+  served ahead of it at exactly Mach 2.0; they are refused ahead of it.
+  0015 section 3.4 has a note of this date.
+- _Flat plates ahead of the base (item 3):_ the argument cited, nothing
+  refused. 0015 section 4's "counts and positions of section 3" covers
+  the measured positions ahead of the base (x/c 1.0 among them since
+  2026-10-27), with the lower end the at-base relief, 0.838, taken by
+  reference to section 4's argument (amendment i); the relief measured
+  ahead of the base, RM L52J21a's, is at most 5%, inside it. 0015 section
+  4 now says so in a paragraph of this date.
+- _The chord rule's 0.5% (item 4):_ 0011 section 3's tolerance is for the
+  Basic Finner's own inputs, "not for other rockets", so it was no
+  precedent. The 0.5% stands on TN 2360's resolution in position: 0.5% of
+  the 1.5-diameter chord is 0.0075 diameters, moving a position given in
+  chords by at most 0.005 chords, a fortieth of the 0.2 chords between
+  TN 2360's stations (0015 section 3.3, a correction of this date).
+- _Words and messages (items 5 to 10):_ the withdrawal says "no
+  band-setting source measures" fins more than a chord ahead, naming
+  NSWCDD/TR-92/509's configurations 11 to 16, one and two chords ahead at
+  Mach 2.0 to 3.0, as the check that sets nothing (above); a position is
+  printed with digits enough to show which side of one chord it lies
+  (1.000000002, not 1); 0015's list of figures not read is corrected for
+  TN 3819 fig. 32, read three times since; the position's words say that
+  one reading at Mach 2.41 is not yet settled and that the chord counts
+  within 0.5%; the sweep's words for a sharp section ahead of the base
+  are worded for fins ahead of it (0017's rows follow, a new one for it);
+  and the hold-out run's rebuilt model is routed as the library routes
+  fins (`rebuiltFinsOnBase`), so a trailing edge within 1e-9 of a chord is
+  one chord there too, and a blunt edge ahead of the base has the
+  library's words.
+- _Every reason (item 11):_ only the first refusal at the base was named,
+  so a rocket with three reasons still got advice that fell short. The
+  review's probe, five 12% double wedges with the leading edge swept 34
+  deg, a root chord of 2 diameters, x/c 0.5, Mach 1.8, was told "the
+  fins' trailing edges at the base, and four fins", then refused for its
+  sweep, then its thickness. Now, where a refusal's words advise a
+  mechanical change of the fins (the position, the edge, the count, the
+  sweep, a thickness of 5% to 10%), the change is made and the body base
+  asked again, until it is served, a reason comes again, no such change
+  is advised, or six changes are made; every reason met is carried with
+  the change that met it, in the message and in the words, which give
+  every change. The probe is now refused for its position, its count,
+  its sweep and its thickness, its change "the fins' trailing edges at
+  the base, four fins, ..., and fins of that thickness". This applies at
+  the base as well as ahead of it. Still not followed: a change the words
+  do not make mechanically (a section's shape, a speed, an afterbody),
+  and a sharp section other than the double wedge that stands for "sharp
+  trailing edges".
+- _Merged with A1 (main 76899f1):_ A1 named a flat plate's sweep refused
+  below Mach 1.62 inside a refusal of its position; this branch's chain
+  carries the same sweep as the refusal at the base. In `bodyBaseDrag`
+  the chain alone names it now, once; the factor called directly keeps
+  A1's single combined refusal (0015 section 12, a note of this date).
+- _Population (the same 2000 rockets):_ main's run at 76899f1 serves 184
+  of 8000 cases a total (73 at Mach 1.5 to 1.8, 111 at 1.8 to 3.0); this
+  branch after these items gives `out/impact.out` and `.json` byte for
+  byte as main's: no case moves, no total is lost or gained, and the
+  cross-check agrees on all 1200 cases. No case of the population changes
+  its outcome or the first reason the audit records for it: the new sweep
+  refusals meet no case it serves, and the words and the chain of
+  reasons change no count.
 
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that

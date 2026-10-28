@@ -124,7 +124,7 @@ describe('a clipped delta in sheet stock, rounded leading edge, square trailing 
     expect(r.base).toBeUndefined();
     expect(r.components.find((c) => c.name === 'body base')).toBeUndefined();
     expect(r.refusals[0]!.message).toMatch(
-      /^fins ending more than a root chord ahead of the base \(1\.33 root chords\): nothing measures/,
+      /^fins ending more than a root chord ahead of the base \(1\.33 root chords\): no band-setting source measures/,
     );
   });
 });

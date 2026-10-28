@@ -40,25 +40,29 @@ export type BaseRefusalReason =
   /** A geometric input out of range. */
   | 'input';
 
-/** The refusal of the same fins at the base, carried by a refusal of their position ahead of it. */
-export interface AtBaseRefusal {
+/**
+ * A further refusal the fins meet once a refusal's advised change is made (src/base/base-drag.ts, everyReason):
+ * its reason and message, and the changes made to reach it, in words ("with the fins at the base").
+ */
+export interface FurtherRefusal {
   readonly reason: BaseRefusalReason;
   readonly message: string;
+  readonly after: string;
 }
 
 export class BaseRefusal extends RangeError {
   readonly reason: BaseRefusalReason;
   /**
-   * Where the fins' position ahead of the base is refused: the same fins at the base, refused too for another
-   * reason, so that the words carry every reason and never send the rocketeer to a refusal unnamed (the
-   * review of b323511, its finding 1). Undefined where the same fins are served at the base.
+   * Every further reason the fins meet as the words' changes are made in turn, in order (the reviews of b323511
+   * and 86bcf73), so that the words name every reason and every change; undefined where the first change is
+   * served or none is a change of the fins.
    */
-  readonly atBase: AtBaseRefusal | undefined;
+  readonly further: readonly FurtherRefusal[] | undefined;
 
-  constructor(reason: BaseRefusalReason, message: string, atBase?: AtBaseRefusal) {
+  constructor(reason: BaseRefusalReason, message: string, further?: readonly FurtherRefusal[]) {
     super(message);
     this.name = 'BaseRefusal';
     this.reason = reason;
-    this.atBase = atBase;
+    this.further = further;
   }
 }

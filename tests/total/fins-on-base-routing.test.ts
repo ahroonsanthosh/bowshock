@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest';
 import {
   BLUNT_AHEAD_OF_BASE,
   BLUNT_EDGE_NOTE,
+  EVERY_REASON_STEPS,
   FINS_ON_BASE_ROUTING_LABEL,
   MORE_THAN_A_CHORD_AHEAD,
   ROUNDED_EDGE_NOTE,
@@ -19,6 +20,7 @@ import {
 import { COMPILED_CURVE_BAND, compiledCurveBasePressure } from '../../src/base/compiled-curve';
 import { finsOnBaseFactor } from '../../src/base/fins-on-base';
 import {
+  aheadText,
   W1_FLAT_RELIEF_LOW,
   finsOnBaseFactorW1,
   type FinsOnBaseFactorW1,
@@ -30,6 +32,7 @@ import { baseFinsOf, finnedBodyComponents, type FinnedBody } from '../../src/tot
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents } from '../../src/total/total-drag';
 import { refusalWords } from '../../src/app/status-words';
+import { rebuiltBodyBase } from '../../src/validation/hold-out-run';
 import { BASIC_FINNER_GEOMETRY as G, BASIC_FINNER_SHOTS } from '../../src/validation/basic-finner';
 
 const near = (section: SymmetricSection, tanLe = 0, tanTe = 0) => ({
@@ -520,7 +523,7 @@ describe('fins a root chord or more ahead of the base: the plain curve withdrawn
             expect(e.reason, what).toBe('fins-near-base');
             expect(e.message.startsWith(`${MORE_THAN_A_CHORD_AHEAD} (`), what).toBe(true);
             expect(e.message, what).toContain(
-              'nothing measures the base drag with fins that far ahead',
+              'no band-setting source measures the base drag with fins that far ahead',
             );
             expect(e.message, what).toContain('until 2026-10-27 they took the plain curve');
           }
@@ -634,8 +637,8 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
     const r = baseRefusal(rocket(3, doubleWedge(0.05), 34.2));
     expect(r.reason).toBe('fins-near-base');
     expect(r.message).toContain("the fins' root chord is 2.00 body diameters");
-    expect(r.atBase?.reason).toBe('fin-sweep');
-    expect(r.message).toContain('; at the base the same fins are refused too: ');
+    expect(r.further?.[0]?.reason).toBe('fin-sweep');
+    expect(r.message).toContain('; with the fins at the base, they are refused too: ');
     const words = refusalWords(r);
     expect(words.reason).toMatch(/^fins ending ahead of the base: /);
     expect(words.reason).toContain(
@@ -662,9 +665,9 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
     ).toBe('present');
     const r = baseRefusal(served);
     expect(r.reason).toBe('fins-near-base');
-    expect(r.atBase).toBeUndefined();
-    expect('atBase' in r).toBe(false);
-    expect(r.message).not.toContain('at the base the same fins are refused too');
+    expect(r.further).toBeUndefined();
+    expect('further' in r).toBe(false);
+    expect(r.message).not.toContain('they are refused too');
     expect(refusalWords(r).change).toBe("the fins' trailing edges at the base");
   });
 
@@ -673,14 +676,14 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
     const farther: FinnedBody = { ...far, fins: { ...far.fins, trailingEdgeAheadOfBase: 3 } };
     const r = baseRefusal(farther);
     expect(r.message.startsWith(MORE_THAN_A_CHORD_AHEAD)).toBe(true);
-    expect(r.atBase?.reason).toBe('fin-sweep');
+    expect(r.further?.[0]?.reason).toBe('fin-sweep');
     // Five wedges thickening to a blunt trailing edge: refused for the trailing edge, and at the base for
     // their count, which comes first there.
     const five = rocket(5, singleWedge(0.08), 0);
     const b = baseRefusal(five);
     expect(b.reason).toBe('fin-trailing-edge');
     expect(b.message.startsWith(BLUNT_AHEAD_OF_BASE)).toBe(true);
-    expect(b.atBase?.reason).toBe('fin-count');
+    expect(b.further?.[0]?.reason).toBe('fin-count');
     expect(refusalWords(b).change).toBe(
       'sharp trailing edges, with the fins ending at the base, and four fins',
     );
@@ -709,9 +712,9 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
     const r = refusalAt(rounded, 1.55);
     expect(r.reason).toBe('fin-trailing-edge');
     expect(r.message.startsWith(ROUNDED_PLATE_AHEAD_OF_BASE)).toBe(true);
-    expect(r.atBase?.reason).toBe('fin-sweep');
+    expect(r.further?.[0]?.reason).toBe('fin-sweep');
     expect(r.message).toContain(
-      '; at the base the same plates with square trailing edges are refused too: ',
+      '; with the fins at the base and square trailing edges, they are refused too: ',
     );
     expect(refusalWords(r).change).toBe(
       'square or sharp trailing edges, with the fins ending at the base, and flat fins swept 45 to 60 ' +
@@ -730,20 +733,20 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
       at(withSection(rocket(4, doubleWedge(0.05), 0), flatPlate(0.03, 'rounded', 'square'), 0))
         .base,
     ).toBeDefined();
-    expect(baseRefusal(unswept).atBase).toBeUndefined();
+    expect(baseRefusal(unswept).further).toBeUndefined();
     // More than a chord ahead, the same.
     const far = refusalAt(withSection(swept, flatPlate(0.03, 'rounded', 'rounded'), 6), 1.55);
     expect(far.message.startsWith(MORE_THAN_A_CHORD_AHEAD)).toBe(true);
-    expect(far.atBase?.reason).toBe('fin-sweep');
+    expect(far.further?.[0]?.reason).toBe('fin-sweep');
     // Blunt wedges, leading edge 30 deg: sharp edges at the base (a double wedge of the same thickness) are
     // refused there for the sweep; the same wedges at the base only for their edge.
     const blunt = withSection(swept, singleWedge(0.08));
     const b = baseRefusal(blunt);
     expect(b.reason).toBe('fin-trailing-edge');
-    expect(b.atBase?.reason).toBe('fin-sweep');
+    expect(b.further?.[0]?.reason).toBe('fin-sweep');
     expect(b.message).toContain(
-      '; at the base the same fins with sharp trailing edges (a symmetric double wedge of the same ' +
-        'thickness) are refused too: ',
+      '; with the fins at the base and sharp trailing edges (a symmetric double wedge of the same ' +
+        'thickness), they are refused too: ',
     );
     expect(
       at(withSection(swept, singleWedge(0.08), 0)).refusals.find((x) => x.component === 'body base')
@@ -751,8 +754,169 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
     ).toBe('fin-trailing-edge');
     // Unswept, sharp edges are served at the base: the edge alone is named.
     expect(
-      baseRefusal(withSection(rocket(4, doubleWedge(0.05), 0), singleWedge(0.08))).atBase,
+      baseRefusal(withSection(rocket(4, doubleWedge(0.05), 0), singleWedge(0.08))).further,
     ).toBe(undefined);
+  });
+});
+
+describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base, positions printed, the hold-out route', () => {
+  const body = {
+    nose: { shape: { kind: 'conical' as const }, length: 2, baseRadius: 0.5 },
+    cylinderLength: 8,
+  };
+  // Root chord 2 body diameters (diameter 1), x/c 0.5 ahead of the base unless given.
+  const rocket = (
+    count: number,
+    section: FinnedBody['fins']['section'],
+    leadingEdgeSweepDeg: number,
+    rootChord = 2,
+    xc = 0.5,
+  ): FinnedBody => ({
+    body,
+    afterbody: 'cylinder',
+    fins: {
+      count,
+      planform: trapezoidalPlanform({
+        rootChord,
+        span: 1,
+        leadingEdgeSweep: (leadingEdgeSweepDeg * Math.PI) / 180,
+        trailingEdgeSweep: 0,
+      }),
+      section,
+      sectionFamily: 'other',
+      leadingEdgeRadius: 0,
+      trailingEdgeAheadOfBase: xc * rootChord,
+    },
+  });
+  const parts = (c: FinnedBody, mach: number) =>
+    finnedBodyComponents(
+      c,
+      { mach, temperature: 290, reynoldsPerLength: 1.5e6 },
+      exactConeNoseWaveDrag(mach, Math.atan(0.25)),
+    );
+  const baseRefusalAt = (c: FinnedBody, mach: number) =>
+    parts(c, mach).refusals.find((r) => r.component === 'body base')!;
+
+  it("Fable's probe: five 12% double wedges, leading edge 34 deg, chord 2, x/c 0.5, M 1.8: every reason, every change", () => {
+    const r = baseRefusalAt(rocket(5, doubleWedge(0.12), 34), 1.8);
+    expect(r.reason).toBe('fins-near-base');
+    expect(r.further?.map((f) => [f.reason, f.after])).toEqual([
+      ['fin-count', 'with the fins at the base'],
+      ['fin-sweep', 'with four fins'],
+      ['fin-thickness', 'with the fins unswept'],
+    ]);
+    expect(r.message).toContain('; with the fins at the base, they are refused too: ');
+    expect(r.message).toContain('; with four fins, they are refused too: ');
+    expect(r.message).toContain('; with the fins unswept, they are refused too: ');
+    const words = refusalWords(r);
+    expect(words.change).toBe(
+      "the fins' trailing edges at the base, four fins, flat fins with a square, unswept trailing " +
+        'edge (below Mach 1.62, unswept or swept 45 to 60 deg), or unswept fins of constant chord, and ' +
+        'fins of that thickness',
+    );
+    expect(words.reason).toContain(
+      '; and with the fins at the base, the base drag is measured with four fins only',
+    );
+    expect(words.reason).toContain(
+      '; and with four fins, the base drag behind wedge or bevelled fins',
+    );
+    expect(words.reason).toContain(
+      '; and with the fins unswept, the base drag is measured for fins 5% to 10% as thick as their chord',
+    );
+    // And the last change is served: four unswept 10% double wedges at the base.
+    expect(parts(rocket(4, doubleWedge(0.1), 0, 2, 0), 1.8).base).toBeDefined();
+    // At most EVERY_REASON_STEPS changes are followed.
+    expect(EVERY_REASON_STEPS).toBe(6);
+  });
+
+  it('a reason that comes again ends the chain; a change the words do not make ends it too', () => {
+    // A boat-tail: refused for the afterbody, which no change of the fins clears.
+    const tail: FinnedBody = { ...rocket(4, doubleWedge(0.08), 0), afterbody: 'boat-tail' };
+    expect(baseRefusalAt(tail, 1.8).further).toBeUndefined();
+    // Four unswept 8% double wedges half a chord ahead with a chord of 2 diameters: the base serves them.
+    expect(baseRefusalAt(rocket(4, doubleWedge(0.08), 0), 1.8).further).toBeUndefined();
+  });
+
+  it('sharp fins swept at the leading edge ahead of the base: refused closer than 0.9 root chords, and W1b sweeps anywhere ahead (items 1 and 2)', () => {
+    const tan = (d: number) => Math.tan((d * Math.PI) / 180);
+    const at = (mach: number, le: number, xc: number) =>
+      base(
+        mach,
+        fins({
+          nearBase: near(doubleWedge(0.08), tan(le), 0),
+          rootChordOverDiameter: 1.5,
+          trailingEdgeAheadOfBase: xc,
+        }),
+      );
+    // Fable's example: 50 deg, x/c 0.5, M 1.8.
+    let e: unknown;
+    try {
+      at(1.8, 50, 0.5);
+    } catch (err) {
+      e = err;
+    }
+    expect(e).toBeInstanceOf(BaseRefusal);
+    expect((e as BaseRefusal).reason).toBe('fin-sweep');
+    expect((e as BaseRefusal).message).toMatch(
+      /^fins of a sharp section ending 0\.5 root chords ahead of the base with the leading edge swept 50\.0 deg/,
+    );
+    expect(
+      refusalWords({ component: 'body base', reason: 'fin-sweep', message: (e as Error).message })
+        .reason,
+    ).toMatch(/^with fins ahead of the base, the base drag behind swept fins of a sharp section/);
+    // Served at the base and from 0.9 root chords ahead.
+    expect(at(1.8, 50, 0).finsOnBase).toBeDefined();
+    expect(at(1.8, 50, 0.9).finsOnBase).toBeDefined();
+    // W1b: 30 deg at exactly M 2.0, ahead of the base: refused at x/c 0.5 and 0.95; at the base served.
+    for (const xc of [0.5, 0.95]) {
+      expect(() => at(2.0, 30, xc)).toThrow(
+        /such sweeps \(up to 45 deg, from M 2\.0\) are argued at the base only/,
+      );
+    }
+    expect(at(2.0, 30, 0).finsOnBase).toBeDefined();
+  });
+
+  it('a position past one chord is printed so: 1 + 2e-9 is not "1" (item 6)', () => {
+    const msg = (x: number) => {
+      try {
+        base(1.8, fins({ trailingEdgeAheadOfBase: x }));
+      } catch (e) {
+        return (e as Error).message;
+      }
+      return 'served';
+    };
+    expect(msg(1 + 2e-9)).toContain('(1.000000002 root chords)');
+    expect(msg(1.004)).toContain('(1.004 root chords)');
+    expect(msg(1.5)).toContain('(1.5 root chords)');
+    expect(aheadText(0.99999)).toBe('0.99999');
+    expect(aheadText(0.5)).toBe('0.5');
+  });
+
+  it('the hold-out run routes the rebuilt factor like the library (item 10)', () => {
+    const f = fins({
+      nearBase: near(doubleWedge(0.08)),
+      rootChordOverDiameter: 1.5,
+      trailingEdgeAheadOfBase: 1 + 5e-10,
+    });
+    // Within 1e-9 of a chord: one chord, served as the library serves it.
+    expect(rebuiltBodyBase(1.8, f).factor.nominal).toBe(base(1.8, f).finsOnBase!.nominal);
+    // A blunt edge ahead of the base: the library's words, near the base, not at it.
+    let e: unknown;
+    try {
+      rebuiltBodyBase(1.8, {
+        ...f,
+        trailingEdgeAheadOfBase: 0.5,
+        nearBase: near(singleWedge(0.08)),
+      });
+    } catch (err) {
+      e = err;
+    }
+    expect((e as BaseRefusal).reason).toBe('fin-trailing-edge');
+    expect((e as Error).message.startsWith(BLUNT_AHEAD_OF_BASE)).toBe(true);
+    // Beyond a chord: refused as the library refuses.
+    expect(() => rebuiltBodyBase(1.8, { ...f, trailingEdgeAheadOfBase: 1.2 })).toThrow(
+      /^fins ending more than a root chord ahead of the base \(1\.2 root chords\)/,
+    );
   });
 });
 

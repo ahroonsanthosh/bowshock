@@ -269,6 +269,12 @@ const asMessage = (r: ComponentRefusal): PlainReason => ({
 
 type Worded = (r: ComponentRefusal) => PlainReason;
 
+/**
+ * The rebuilt factor's refusals of a sharp section's sweep ahead of the base (src/base/fins-on-base-w1.ts): each
+ * names the fins "ending ... root chords ahead of the base"; at the base they say "at the base".
+ */
+const SHARP_SWEPT_AHEAD = /^fins of a sharp section ending [\d.e+-]+ root chords ahead of the base/;
+
 /** Every reason src/base gives. */
 const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
   'mach-range': (r) =>
@@ -299,8 +305,8 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
     return {
       reason:
         'fins ending ahead of the base: the base drag with fins there is measured only up to one ' +
-        'root chord ahead, at Mach 1.5 to 2.0 (none is known below Mach 1.5), and only with a fin ' +
-        'root chord of 1.5 body diameters' +
+        'root chord ahead, at Mach 1.5 to 2.0 (none is known below Mach 1.5; one at Mach 2.41 is read ' +
+        'but not yet settled), and only with a fin root chord of 1.5 body diameters, within 0.5%' +
         (r.message.includes(ROUNDED_EDGE_NOTE) || r.message.includes(BLUNT_EDGE_NOTE)
           ? ', and only for square or sharp trailing edges'
           : '') +
@@ -340,16 +346,27 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
               'with fins swept beyond 60 deg, and nothing measured shows a sharper sweep gives the same',
             change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
           }
-        : {
-            reason:
-              'with fins at the base, the base drag behind wedge or bevelled fins is measured only ' +
-              'unswept or at a few sweeps (a tapered fin has a swept edge); flat fins with a square, ' +
-              'unswept trailing edge are taken at any leading-edge sweep, but below Mach 1.62 only ' +
-              'unswept or swept 45 to 60 deg',
-            change:
-              'flat fins with a square, unswept trailing edge (below Mach 1.62, unswept or swept 45 to ' +
-              '60 deg), or unswept fins of constant chord',
-          },
+        : // Sharp fins ending ahead of the base swept other than as RM L52J21a's (the review of 86bcf73, its
+          // item 9): worded for fins ahead of the base, not at it.
+          SHARP_SWEPT_AHEAD.test(r.message)
+          ? {
+              reason:
+                'with fins ahead of the base, the base drag behind swept fins of a sharp section is ' +
+                'measured only with the leading edge swept 45 to 60 deg, the trailing edge swept no more, ' +
+                "and the fins ending 0.9 to 1 root chord ahead (RM L52J21a's), not swept like these at " +
+                'this position',
+              change: 'unswept fins of constant chord',
+            }
+          : {
+              reason:
+                'with fins at the base, the base drag behind wedge or bevelled fins is measured only ' +
+                'unswept or at a few sweeps (a tapered fin has a swept edge); flat fins with a square, ' +
+                'unswept trailing edge are taken at any leading-edge sweep, but below Mach 1.62 only ' +
+                'unswept or swept 45 to 60 deg',
+              change:
+                'flat fins with a square, unswept trailing edge (below Mach 1.62, unswept or swept 45 to ' +
+                '60 deg), or unswept fins of constant chord',
+            },
   'fin-trailing-edge': (r) =>
     // A rounded plate ending ahead of the base (src/base/base-drag.ts): refused at every speed, near the base.
     r.message.startsWith(ROUNDED_PLATE_AHEAD_OF_BASE)
@@ -533,26 +550,37 @@ const isKey = <K extends string>(table: Readonly<Record<K, unknown>>, key: strin
   Object.prototype.hasOwnProperty.call(table, key);
 
 /**
- * A refusal of the logic in plain words (any reason it does not know: its message). A body base refused for
- * the fins' place ahead of it that carries the same fins' refusal at the base names both, and its change is
- * both changes, or nothing where nothing about the rocket changes the second (the review of b323511).
+ * A refusal of the logic in plain words (any reason it does not know: its message). A body base refused for its
+ * fins that carries further refusals, met as its words' changes are made in turn (src/base/base-drag.ts,
+ * everyReason), names every reason, each after the change that met it, and gives every change, or none where
+ * nothing about the rocket changes one of them (the reviews of b323511 and 86bcf73).
  */
 export function refusalWords(r: ComponentRefusal): PlainReason {
   const own = ownWords(r);
-  if (r.atBase === undefined) return own;
-  const at = ownWords({
-    component: r.component,
-    reason: r.atBase.reason,
-    message: r.atBase.message,
-  });
-  // The words at the base say "with fins at the base" themselves; said once here (the review of e232dca).
-  const atReason = at.reason
-    .replace(/^with fins at the base, /, '')
-    .replace('the base drag with fins at the base', 'the base drag');
+  // The factor called directly names a plate's sweep inside the position's refusal (A1's own form); the
+  // library carries it as a further refusal instead. Never both: named once (merged 2026-10-28).
+  const further = (r.further ?? []).filter(
+    (f) => !(f.reason === 'fin-sweep' && r.message.includes(W1_SWEEP_REFUSED_TOO)),
+  );
+  if (further.length === 0) return own;
+  const words = further.map((f) => ({
+    after: f.after,
+    plain: ownWords({ component: r.component, reason: f.reason, message: f.message }),
+  }));
+  // Each further reason's words say "with fins at the base" themselves; said once (the review of e232dca).
+  const said = (reason: string) =>
+    reason
+      .replace(/^with fins at the base, /, '')
+      .replace('the base drag with fins at the base', 'the base drag');
+  const changes = [own.change, ...words.map((w) => w.plain.change)];
+  const distinct = changes.filter((c, k) => changes.indexOf(c) === k);
   return {
-    reason: `${own.reason}; and with the fins at the base, ${atReason}`,
-    change:
-      own.change === NOTHING || at.change === NOTHING ? NOTHING : `${own.change}, and ${at.change}`,
+    reason: own.reason + words.map((w) => `; and ${w.after}, ${said(w.plain.reason)}`).join(''),
+    change: changes.includes(NOTHING)
+      ? NOTHING
+      : distinct.length === 1
+        ? distinct[0]!
+        : `${distinct.slice(0, -1).join(', ')}, and ${distinct[distinct.length - 1]!}`,
   };
 }
 

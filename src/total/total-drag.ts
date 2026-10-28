@@ -59,10 +59,14 @@ export interface ComponentRefusal {
   readonly reason: string;
   readonly message: string;
   /**
-   * A body base refused for the fins' position ahead of it: the same fins at the base, refused there too for
-   * another reason (src/base/refusal.ts), so the words name both. Absent where they are served at the base.
+   * A body base refused for its fins: every further reason the fins meet as the words' changes are made in turn
+   * (src/base/refusal.ts, FurtherRefusal), so the words name every reason. Absent where there is none.
    */
-  readonly atBase?: { readonly reason: string; readonly message: string };
+  readonly further?: readonly {
+    readonly reason: string;
+    readonly message: string;
+    readonly after: string;
+  }[];
 }
 
 /** Thrown when any component of a total is refused; lists every refusal. */
