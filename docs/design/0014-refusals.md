@@ -1820,6 +1820,130 @@ range A has been run; it depends on no result of that range. The rest of
 (u) stays recorded as written, and applies again only if a later record
 resumes Stage A, which would then need a held-back test of its own.
 
+**2026-10-26 (z): flat-faced fins at the base served at every
+leading-edge sweep with the trailing edge unswept (A1 of the refusal
+plan)** (the owner's decision of 2026-10-26 to lift refusals by verified
+work only; the coordinator's allocation of this letter). Written before
+the code, with no new data: the bounds are section 4's of design record
+0015 as they stand (RM L52E06 fig. 7's relief and the unswept circular-arc
+member at least as thick), and the ordering, in 0015 section 12, is that
+neither bound uses the leading edge: the upper rests on TN 2360's
+mechanism (the increment follows the faces' slope near the trailing edge,
+zero on a flat face at any sweep) and the lower on a relief Hart traces to
+the fin-body junctures and the square edge, which lies in one plane
+parallel to the base (the base plane itself for fins at the base; this
+entry said "in the base plane" until A1's review of 2026-10-26), and
+which the leading-edge sweep does not move when the trailing edge is
+unswept. 0015
+section 3.4's refusal of leading-edge sweeps 0 to 45 deg below Mach 2.0
+and above 60 deg was written for sharp sections, whose face pressures the
+sweep moves through a swept edge; it is kept for them and no longer
+applied to flat faces. A plate with a swept trailing edge keeps section
+4's sweeps (45 to 60 deg, the trailing edge swept no more than the leading
+edge); sharp sections, rounded and diverging trailing edges and the
+present factor are untouched. The label stays "bounded, not measured",
+and names the sweep. No held-back set is opened or run. What it costs and
+gains is recorded below this entry from `docs/research/refusals/` run
+before and after (400 rockets, 1,600 cases), with the cross-check
+against `src/total` required to agree.
+
+What it costs and gains (0015 section 12;
+`docs/research/refusals/out/2026-10-26-a1-plates-any-sweep/`): the
+rebuilt factor's sweep refusal falls from 43.6% of cases to 22.4%;
+totals of all bands 2.6% to 2.9% (Mach 1.5 to 1.8: 3.8% to 5.0%; 1.8 to
+3.0: 6.5%, unchanged; below 1.5: 0%, amendment (f)); with the nose
+assumed served, 123 to 144 of 1,600, read from each run's greedy table
+(the row after its first two steps, W5 and W6, which lift every nose
+refusal at Mach 1.5 and above: 7.7% and 9.0% of all bands; since the
+review of 2026-10-26 the audit prints these counts, and the after run,
+re-made with that table alone added, prints 144). Both runs
+were made with `N_ROCKETS=400 CROSS_CHECK=100`, so the cross-check
+covers the first 100 rockets' 400 cases, and agrees on all 400 in each
+run. No case is newly refused; no served number
+moves: a swept plate at the base takes the unswept plate's bracket
+exactly (its test holds the three band values to 1e-12). What still
+refuses most of the plates reached is listed in 0015 section 12.
+At the audit's default size (2,000 rockets, 8,000 cases,
+`out/impact.out`, the run 0014 quotes): totals of all bands 1.9% to 2.4%
+(Mach 1.5 to 1.8: 2.5% to 4.1%; 1.8 to 3.0: 5.2% to 5.4%), the cross-check
+agreeing on all 1,200 cases checked.
+
+_2026-10-27, a note under (z): the ruling after the review of A1's
+fixes, which narrows A1._ The review asked 0015 section 12 to say which
+way each driver the sweep moves acts on F, and the record now says the
+juncture vortex's direction is not shown. Under section 10.2 ("without
+the ordering shown, the case stays refused") the coordinator ruled:
+flat-faced fins with the trailing edge unswept and the leading edge
+swept more than 0 and under 45 deg are not shown to lie between the
+unswept plate and RM L52E06's 45 deg plates below Mach 1.62, where the
+floor is those plates' relief alone, and are refused there, at the base
+term, the page's words naming the missing measurement (base pressures
+with such plates at the base below Mach 1.62). From Mach 1.62 they stay
+served: there RM L52J21a measures at most 5% relief with fins near the
+base, against a floor 16% down (F 0.838). Plates swept 45 deg or more,
+and the unswept plate, are not changed. The code went in first (ad7b970)
+and this note the same day, the ruling having come after the code was
+reviewed; no data enter and no band moves. At the audit's default size,
+after main's audit fix (5921198): totals served 228 of 8,000 without the
+ruling and 209 with it (Mach 1.5 to 1.8: 111 to 92; 1.8 to 3.0: 117
+either way), against main's 181; with the nose assumed served 743 and 687.
+
+_2026-10-27, the second ruling under this note:_ flat-faced fins with
+the trailing edge unswept and the leading edge swept beyond 60 deg are
+refused below Mach 1.62 as well, on the same rule: the juncture vortex's
+direction is not shown, and beyond 60 deg the plate is not even between
+two measured ends, it lies past the last one, so its ordering is not
+shown. The page's words name the missing measurement (base pressures
+with plates swept beyond 60 deg at the base below Mach 1.62). Exactly 60
+deg, and 45 to 60, stay as 0015 section 4 serves them; from Mach 1.62
+these plates stay served on the same ground as those under 45 deg (RM
+L52J21a's at most 5% relief). The code went in first (b3308ed), this
+line after it. No total moves at the audit's default size (209 of 8,000;
+687 with the nose assumed served): the plates it reaches are refused for
+something else as well; the rebuilt factor's sweep refusal goes from
+36.0% to 38.0% of cases.
+
+_2026-10-28, the counts on main with A5:_ after main's A5 (f88ecbe; (ad)
+below) the audit's default run serves 179 totals of 8,000 against main's
+155 (Mach 1.5 to 1.8: 53 to 73; 1.8 to 3.0: 102 to 106; none below 1.5),
+614 with the nose assumed served: A1's gain over main is 24, against 28
+before A5 (181 to 209), the 4 lost all at Mach 1.8 to 3.0. The earlier
+dated counts above stay as they were measured.
+
+_2026-10-28, after main's A3 and A4 (3e026a8; (aa) and (ab)):_ 184
+totals of 8,000 against main's 155 (Mach 1.5 to 1.8: 53 to 73; 1.8 to
+3.0: 102 to 111), 628 with the nose assumed served; A1's gain is 29, 5
+more than before A3 and A4, all at Mach 1.8 to 3.0, where a rounded
+leading edge that (ab) bounds past 60 deg can now meet A1's plates at
+the base.
+
+_2026-10-28, after main's B1 and the body base band (cdd26e6 and
+0b2def5; (ac) and (ah)):_ unchanged, 184 totals of 8,000 against main's
+155 (Mach 1.5 to 1.8: 53 to 73; 1.8 to 3.0: 102 to 111), 628 with the
+nose assumed served (633 with the page's section offered); A1's gain
+stays 29, and the cross-check agrees on 1,200 of 1,200. Neither moves a
+total here: B1 newly serves square trailing edges below Mach 1.5, where the
+fins' own-drag guard still refuses every total, and widens a band near
+Mach 1.7; (ah) widens the body base's band and leaves its served value
+unchanged from Mach 1.5.
+
+Main's unswept plates (10.7 (i)), registered and reviewed earlier on a
+physical argument, are not changed by this ruling, and whether they stay
+served below Mach 1.62 is an open question for the owner. The review's
+reasoning: below Mach 1.62 the floor of the flat-plate bracket is RM
+L52E06's relief with plates swept 45 deg alone, measured at Mach 1.06 to
+1.10, F 0.852 at 1.06 against the floor's 0.838, a margin of 0.014; Hart
+traces that relief to the fin-body junctures' low-momentum air, and the
+unswept plate stands the strongest juncture vortex of any sweep; nothing
+measured says whether a stronger vortex adds relief or takes it away, so
+an unswept plate could relieve more than the floor allows there, and no
+base pressure with unswept plates at the base below Mach 1.62 says it
+does not. By the rule applied above it would be refused; it was
+registered and reviewed under (i) as an argument from the slope
+mechanism and the measured relief, so the owner decides. (Plates swept
+beyond 60 deg below Mach 1.62, which 0015 section 12 named with the same
+open direction, are refused by the second ruling above.)
+
 **2026-10-26 (ac): RM A51J11 and RM A52E01, named before they are opened,
 for F4's thin trailing edges and thick layers below Mach 1.5** (rule 2 of
 10.1, as (k); 0019 section 3.4, "Layers and h/c"). Neither has been
@@ -1957,7 +2081,9 @@ figures, as said above.
 Letters are allocated by the coordinator; (w) to (ab) are held by other
 branches. _(Corrected 2026-10-28, on merging main at 3e026a8 into the
 trailing-edge branch: (aa), (ab) and (af) are main's entries below; (w)
-to (z) remain the other branches'.)_
+to (z) remain the other branches'. And on merging main at 76899f1, the
+same day: (z) is main's A1 entry, above; (w) to (y) remain the other
+branches'.)_
 
 **2026-10-28 (ac), addendum: what RM A52E01 sets above Mach 1.5, and the
 band served there** (written after the review of B1 on main, cdd26e6, its

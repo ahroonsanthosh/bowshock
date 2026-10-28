@@ -2186,6 +2186,30 @@ band and label, and enters no claim. The page test that checked the
 claim through a served total now checks the edge among the refused
 total's parts, and the claim's words through `boundedReasons` directly.
 
+**Merged with lift-a1 (A1, 0015 section 12), 2026-10-28.** With A1 the
+rebuilt fins-on-base factor takes flat plates with a square, unswept
+trailing edge at the base at any leading-edge sweep from Mach 1.62
+(below it only unswept or swept 45 to 60 deg, 0014 10.7 (z)'s notes), so
+the first point above no longer holds there: a plate with a rounded
+leading edge swept past 60 deg, at the base, can be served in a total,
+the edge bounded as this section says and the body base the flat plates'
+bounded value. The edge needs a normal Mach number M cos(sweep) of at
+least 1.0, so the lowest Mach number served is 1/cos(sweep), 2.0 at 60
+deg and 3.0 at 70.5 deg: such totals lie at about Mach 2.0 to 3.0 for
+sweeps of 60 to 70.5 deg, and past 70.5 deg none within Mach 3.0. The
+estimate's claim names both bounded parts, the base's reason with the
+sweep argument of 0015 sections 4 and 12
+(`tests/app/total-drag.test.ts`: a plate swept 66.4 deg at Mach 2.8 on a
+3-calibre root chord; in the audit's population, five rockets, 112, 629,
+1159, 1317 and 1986, each with three plate fins at the base swept 60.6
+to 63.6 deg, at Mach 2.44 to 2.87, as the review of 2026-10-28 traced
+them). The page test of the paragraph above, on a plate whose tip chord
+is short, is refused at the base for its thickness over the tip chord,
+not for its sweep. The other two points stand. (Corrected 2026-10-28:
+this note first said "three such plates", miscounting the five rockets,
+whose fins number three each; the message of commit eb0a646 has the same
+slip and cannot be changed.)
+
 ### 21.9 Corrections after the re-review of ef7fc7d..5159cac (2026-10-28)
 
 The re-review passed. It found three statements to correct and one

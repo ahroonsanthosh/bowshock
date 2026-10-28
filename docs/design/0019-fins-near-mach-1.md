@@ -1354,6 +1354,12 @@ formed on two of them, and the shape widening's size on two of them.
       refusal at Mach 1.0 to 1.2 rises from 10.8% to 21.9% of cases (13.8%
       to 16.5% over all bands); the totals stay 155 of 8000, as no total is
       served below Mach 1.5, and the cross-check agrees on 1200 of 1200.
+      On the head merged with main at 76899f1 (A1, flat fins at the base
+      at more sweeps) the totals are main's 184 of 8000 and the cross-check
+      agrees on 1200 of 1200; the run differs from main's only in the
+      coverage refusal's rows above. F4 changes 43 of the 184 totals (Mach
+      1.624 to 1.796), the term's low end falling by up to 0.0463 in C_D
+      and its high end rising by up to 0.0041 (`out/f4-probe.out`).
 
     - _The band served (thin layer), measured over modelled, at the
       nodes:_
