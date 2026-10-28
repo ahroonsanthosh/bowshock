@@ -3090,6 +3090,35 @@ value is used or seen, and before the band is changed for it.
   figs. 5 and 7 until the coordinator sends the paired readings. The
   implementer does not open the readers' folder before then.
 
+**2026-10-28 (ah), fourth addendum, corrected: every tripped station of
+figs. 5 and 7 is inside** (the coordinator's correction, made before any
+round 20 value is used; the addendum above is kept as written).
+
+- _What was wrong._ 0008 section 3.3's domain requires a turbulent layer
+  at the base and states no Reynolds number limit. TN 2360 p. 5 says the
+  salt band was there "to insure local transition" on its runs at R 0.5e6
+  to 4.5e6. Its p. 8, "essentially independent of Reynolds number above
+  about 2 million", describes how P_B varies with R; it does not say the
+  layer is laminar or transitional below that. Putting the lowest station
+  outside added a limit the domain does not state, inferred with round
+  6's values known, and it narrowed. A case the stated domain does not
+  decide takes the wider choice.
+- _Corrected._ Every tripped (salt-band) station of figs. 5 and 7 is
+  inside the domain, the lowest included: fig. 5(a)'s at about 0.56e6 to
+  0.80e6 (the tail-off symbol at 0.76e6) and fig. 5(b)'s at about 0.48e6
+  to 0.65e6 (the tail-off symbol at 0.48e6), with every higher station
+  and fig. 7's symbols. Only runs the source itself says had a laminar or
+  transitional layer are outside: the smooth-nosed runs of p. 8, which
+  fig. 5, captioned "roughness added to body", does not plot. The table's
+  two "outside" rows and the line drawn at 1.0e6 no longer apply.
+- _It widens._ With round 6's values the band's high end would go to
+  about 1.18 (1.1720 at R 0.76e6, rounded outward), not 1.14.
+- _Information only._ Whether the station at 1.85e6 to 1.95e6 is TN
+  2360's "about 2 million" no longer decides anything, since every
+  tripped station is inside.
+- _Disclosed._ The correction was made by the coordinator with round 6's
+  values known, before the pairing; the implementer records it as given.
+
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
 allocate.
