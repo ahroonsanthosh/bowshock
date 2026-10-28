@@ -204,3 +204,41 @@ brl-caption-stale: BRL 934's table caption left at +30.7% to +31.4%.
         × the table the page publishes is the corrected gate (0010 section 11), held to the library, with the second run beside it (section 4.2) 84ms
 == brl-caption-stale:       Tests  1 failed | 17 passed (18)
         × the tolerances with the band the library carries now, as the claim and the table state them 154ms
+
+## 2026-10-28, after the merge with main (f88ecbe, A5): tests/base/tn2360-served.test.ts, every TN 2360 base pressure against the band served
+
+On the merged head: 424 values at Mach 1.5 and 2.0, none outside, none refused; the closest the body alone
+at M 1.5, 0.1948 against the band's 0.1958. Errors planted one at a time (restored after each):
+tn2360-band-stale: bodyBaseDrag's high end at 1.08; tn2360-chord-station: a trailing edge exactly a chord
+ahead no longer at TN 2360's x/c 1.0 station; tn2360-misread: fig. 33's W1 first reading at M 1.5 typed
+-0.1998 for -0.1948, and tn2360-fig6-misread: fig. 6's first run of four 10% arcs at x/c 0, M 1.5, typed
+-0.1691 for -0.1391. The two code errors are caught by this test. The two misreads are not: they move the
+bands built on those data with them (the band to 1.16; the factor's members); the tests that hold the data
+catch them (compiled-curve.test.ts below; fins-on-base-w1.test.ts and fins-on-base.test.ts for
+the second).
+
+== tn2360-band-stale:       Tests  1 failed | 1 passed (2)
+        × each one, as read, inside the served band at its own geometry, none refused 381ms
+      AssertionError: expected [ …(173) ] to deeply equal []
+      +   "M 1.5, body alone, fig. 33 w1 first: 0.1948 against 0.1334 to 0.1872",
+      +   "M 1.5, body alone, fig. 33 w1 second: 0.1947 against 0.1334 to 0.1872",
+      +   "M 1.5, body alone, fig. 35 first: 0.1940 against 0.1334 to 0.1872",
+      +   "M 1.5, body alone, fig. 35 round 3: 0.1941 against 0.1334 to 0.1872",
+      +   "M 1.5, body alone, fig. 35 w1 second: 0.1940 against 0.1334 to 0.1872",
+== tn2360-misread:       Tests  2 passed (2)
+== tn2360-misread:       Tests  5 failed | 24 passed (29)
+        × the body-alone sets of 0014 10.7 (ah), every reading, against both curves 8ms
+        × rounded outward: 0.77 to 1.13 (0014 10.7 (ah) with round 19); the tunnel symbols and Herrin and Dutton alone gave 0.82 to 1.08 4ms
+        × without fins: -P_B times the area ratio, the curve band and the interpolation bound 0ms
+        × fins at the base: the factor on the term, its band added linearly 1ms
+        × never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9199 of it (M 3.0, fins at the base; 0.8840 before 0014 10.7 (ah), 0.9535 before the correction of 0010 section 11), 0.686 without fins (0.656 before (ah)) 83ms
+      AssertionError: expected 1.1529140219272938 to be close to 1.1240623196768609, received difference is 0.028851702250432876, but expected 5e-13
+      AssertionError: expected { low: 0.77, high: 1.16 } to deeply equal { low: 0.77, high: 1.13 }
+      AssertionError: expected 0.1608224 to be close to 0.1566632, received difference is 0.004159200000000002, but expected 5e-16
+      AssertionError: expected 0.19156951907211553 to be close to 0.18712341464055837, received difference is 0.004446104431557157, but expected 5e-16
+      AssertionError: expected 0.941385252454768 to be close to 0.9199, received difference is 0.021485252454767956, but expected 0.000049999999999999996
+== tn2360-fig6-misread:       Tests  2 passed (2)
+== tn2360-chord-station:       Tests  1 failed | 1 passed (2)
+        × each one, as read, inside the served band at its own geometry, none refused 32ms
+      BaseRefusal: fins ending more than a root chord ahead of the base (1 root chords): nothing measures the base drag with fins that far ahead (TN 2360 measures up to one chord ahead, with a root chord of 1.5 body diameters, at Mach 1.5 and 2.0), so they are refused; until 2026-10-27 they took the plain curve, whose band missed TN 2360's measurement a chord ahead (0015 section 3.3)
+          439|       throw new BaseRefusal(

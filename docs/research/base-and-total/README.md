@@ -108,4 +108,6 @@ tests/tmp-total/vitest.config.ts` from the repository root; it writes its
   and seven errors planted one at a time in the corrected code, each
   caught by the tests named; after the review, five more; on 2026-10-28,
   with round 19 applied (the third addendum to (ah), band 0.77 to 1.13),
-  all of them again and five new ones, each caught.
+  all of them again and five new ones, each caught; after the merge with
+  A5, `tests/base/tn2360-served.test.ts` on the merged head and the errors
+  planted for it.

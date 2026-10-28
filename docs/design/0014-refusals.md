@@ -2494,6 +2494,19 @@ becomes **0.77 to 1.13** at Mach 1.5 to 3.0.
   1.13 that band would be 0.1114 to 0.1635, which holds the measurement.
   Nothing is changed for it: A5's routing stands as merged, and
   `fins-on-base-routing.test.ts` holds both numbers.
+- _Every TN 2360 base pressure against the band served_ (the review's
+  comparison, made permanent after the merge: `tn2360-served.test.ts`).
+  Each reading the library holds, at its own geometry (four or two
+  rectangular circular-arc fins, root chord 1.5 body diameters, the
+  trailing edge 0 to 1 chord ahead; fig. 6's increments on each of the
+  five body-alone readings), as read: 424 values at Mach 1.5 and 2.0,
+  none outside and none refused. The closest is the body alone at M 1.5,
+  0.1948 against the band's 0.1958 (0.6% of the term); before A5, the 30
+  readings at x/c 1.0 lay outside the plain curve's band. Errors planted
+  in the code are caught (the band's high end left at 1.08: 173 outside;
+  a trailing edge exactly a chord ahead refused); a misread of the data
+  themselves moves the bands built on them and is caught by the tests
+  that hold those data, not by this one.
 
 Letters (w) to (ac) are allocated by the coordinator on other branches
 (the registry in the coordinator's letters file); the next free letter is
