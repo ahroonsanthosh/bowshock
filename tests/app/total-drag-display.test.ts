@@ -582,10 +582,11 @@ describe('the display', { timeout: 60_000 }, () => {
     expect(displayText(blocks)).toContain(CLASS_DESCRIPTION);
     const [gate] = tables(blocks);
     expect(gate!.caption).toContain('a recorded correction made after the residuals were known');
-    // F4's widening at the Mach 1.799 shot, disclosed as made after the gate was used.
+    // F4's widening at the Mach 1.799 shot, both ends since R1, disclosed as made after the gate
+    // was used.
     expect(gate!.caption).toContain(
-      "the trailing edges' band at the Mach 1.799 shot widened since (design record 0019 " +
-        'section 3.4.1, F4), also after the gate was used',
+      "the trailing edges' band at the Mach 1.799 shot widened at both ends since (design " +
+        'record 0019 section 3.4.1, F4), also after the gate was used',
     );
     expect(gate!.head.at(-1)).toBe('Second run');
     expect(gate!.rows.length).toBe(11);
@@ -593,7 +594,7 @@ describe('the display', { timeout: 60_000 }, () => {
       'DA95021318',
       '1.799',
       '0.594',
-      '0.6134 (0.5283 to 0.7297)',
+      '0.6134 (0.5283 to 0.7298)',
       '-3.2%',
       '-24.8% to +23.5%',
       '-3.0%',

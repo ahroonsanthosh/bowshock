@@ -79,6 +79,7 @@ import {
   FIN_TRAILING_EDGE_MACH_RANGE,
   finTrailingEdgeBaseDrag,
   TrailingEdgeRefusals,
+  widenedAbove,
   trailingEdgeBasis,
   type FinTrailingEdgeBase,
 } from '../base/fin-trailing-edge';
@@ -539,8 +540,8 @@ export function finnedBodyComponents(
         band:
           conditions.mach < FIN_TRAILING_EDGE_MACH_RANGE[0]
             ? `two-dimensional base pressure near Mach 1, ${trailingEdgeBasis(conditions.mach).band.low.toFixed(3)} to ${trailingEdgeBasis(conditions.mach).band.high.toFixed(3)} (0019 section 3.4.1)`
-            : trailingEdgeBasis(conditions.mach).band.low < FIN_TRAILING_EDGE_BAND.low
-              ? `two-dimensional base pressure, ${trailingEdgeBasis(conditions.mach).band.low.toFixed(3)} to ${FIN_TRAILING_EDGE_BAND.high} (0008 section 3.4, 0010 section 5; widened near Mach 1.7 on RM A52E01, 0019 section 3.4.1)`
+            : widenedAbove(trailingEdgeBasis(conditions.mach).band)
+              ? `two-dimensional base pressure, ${trailingEdgeBasis(conditions.mach).band.low.toFixed(3)} to ${trailingEdgeBasis(conditions.mach).band.high.toFixed(3)} (0008 section 3.4, 0010 section 5; widened near Mach 1.7 on RM A52E01, 0019 section 3.4.1)`
               : `two-dimensional base pressure, ${FIN_TRAILING_EDGE_BAND.low} to ${FIN_TRAILING_EDGE_BAND.high} (0008 section 3.4, 0010 section 5)`,
       });
     } catch (e) {

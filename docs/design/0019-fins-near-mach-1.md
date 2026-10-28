@@ -1344,14 +1344,38 @@ formed on two of them, and the shape widening's size on two of them.
       without the library's builder (equal to 1e-9). The review's three
       plants that passed before now fail: the window by each point's
       nominal Mach number, K dropped below 1.5, and K read at Mach 2.0.
-      Planted errors, `audit/te-below-1.5/planted-errors.out`: 25 of 25
+      Planted errors, `audit/te-below-1.5/planted-errors.out`: 32 of 32
       caught (the review's three, and plants for F1, F2, F4 with #10 and
-      #7 as any wing, and F10).
+      #7 as any wing, and F10; since the re-review, R1's three: the high
+      end not widened, 8(a) #9 left out, #9 taken as wing 4; R2's three:
+      the coverage, the stations and the sweep each stopping at the first
+      reason; and R3's: the total's band text without the widening). The
+      independent test recomputes the band above 1.5 at both ends from the
+      four-way and three-way identity maps (each line's ratios, then the
+      band at 81 Mach numbers from 1.5 to 1.9; R1).
     - _Every reason (F10)._ An edge below 1.5 both beyond the reach and
       left laminar by the transition input is refused with both reasons
       (the Basic Finner's reported shots at 1.254 and 1.332 among them).
       `evaluate.ts` counts an edge beyond X 4.5 as the thick layer only,
-      not as the coverage refusal below 1.5 too (F9).
+      not as the coverage refusal below 1.5 too (F9). _Since the
+      re-review (R2, 2026-10-28):_ three places still stopped at the first
+      reason: the coverage below 1.5 (the layer's reach or the h/c), the
+      stations of a fin of varying chord (the first station refused), and
+      the sweep (refused before a laminar layer or the coverage). Each now
+      carries every reason that applies, each once by what it is about:
+      h/c 0.25 with X 0.8 at Mach 1.3 is refused for the layer and the
+      h/c; a tapered plate with root X 1.7 and tip h/c 0.3 for the root's
+      layer and the tip's h/c, once each over every station; a swept
+      laminar edge for the sweep and the layer, above 1.5 and below
+      (`fin-trailing-edge-transonic.test.ts`, the reviewer's three
+      examples). `finned-body.ts` lists each.
+    - _The total's band text (R3)._ `tests/total/refused-floor.test.ts`
+      pins `finned-body.ts`'s band text above 1.5: "0.350 to 1.260 ...
+      widened near Mach 1.7 on RM A52E01, 0019 section 3.4.1" at Mach 1.7,
+      0.640 to 1.235 at 1.625, and the plain 0.93 to 1.21 at 1.5, 1.6, 1.8
+      and 2.4.
+    - _0014's letters (R4)._ 0014's note that (w) to (ac) were the other
+      branches' is corrected there, dated: (ac) is this branch's F4 entry.
     - _RM A52E01 above Mach 1.5 (F4), step 1 of the rule: Reynolds numbers
       on the chord, free stream, and stated layer states._
 
@@ -1388,7 +1412,8 @@ formed on two of them, and the shape widening's size on two of them.
       the node after), so 0.35 at 1.65, 1.70 and 1.75, linear to 0.93 at
       1.60 and 1.80; in layer parameter, every X served (its layer is not
       established), the wider choice. The band above 1.5 is otherwise 0.93
-      to 1.21 as before; nothing changes at Mach 1.5. In the population
+      to 1.21 as before (its high end widened too since R1, below); nothing
+      changes at Mach 1.5. In the population
       this changes 29 of the 181 served totals (Mach 1.627 to 1.796), the
       trailing-edge term's low end falling by up to 0.0463 in C_D, 58% of
       the term (`docs/research/refusals/out/f4-probe.out`; 0.0415 and 52%
@@ -1421,9 +1446,58 @@ formed on two of them, and the shape widening's size on two of them.
       nothing (the tests hold the band's low end at every Mach number, and
       recompute it from the pairing independently).
 
+      _The coordinator's ruling after the re-review of 5ec61dd..ae4d478
+      (R1, 2026-10-28)._ Fig. 8(a)'s #9 at Mach 1.7 has the same standing
+      as #7: every RM A52E01 line at Mach 1.7 with an agreeing alpha 0
+      pair enters the band above 1.5 at both ends, with the same treatment
+      as #7 and #10 (the wing by the three-reading rule as written; K from
+      1 to each wing's turbulent X; the shape allowance at 6.88 deg both
+      ways; Mach +-0.01; band only, not reach). Lines read once or with no
+      agreeing pair stay checks only. Of the lines the ruling names, 8(a)
+      #2 and #3 are at Mach 1.2 and #6 at 1.4, below 1.5, where they
+      already set the band (item 6); those at Mach 1.7 are 8(a) #7, #9 and
+      #10 (four-way pairing) and 8(b) #6 (three-way pairing), and no other
+      line at 1.7 qualifies (8(a) #8 is not read; 8(b) #7, #8 and #9 are
+      read once). Each is any wing (a reader naming a wing flags the call
+      in each), so its K runs from 1 to K at wings 3 and 4's turbulent X
+      (3.88 at Re 1.5e6, 3.22 at 3.8e6). Each line's ratios, over its Mach
+      interval and that K, before and after the shape allowance (rounded
+      outward to 0.01; `ABOVE_BAND_LINES`, `aboveRatios`):
+
+      | Line     | Readings, alpha 0 (envelope)                  | Ratio          | With the allowance |
+      | -------- | --------------------------------------------- | -------------- | ------------------ |
+      | 8(a) #7  | C, D: -0.1902 to -0.1746                      | 0.605 to 0.741 | 0.51 to 0.86       |
+      | 8(a) #9  | B, C, D: -0.2782 to -0.2565                   | 0.888 to 1.084 | 0.75 to 1.26       |
+      | 8(a) #10 | C, D, D's alternative end: -0.1469 to -0.1207 | 0.418 to 0.572 | 0.35 to 0.67       |
+      | 8(b) #6  | B, C: -0.2681 to -0.2515                      | 0.871 to 1.012 | 0.73 to 1.17       |
+
+      (B's and C's values are bounds, entered as their ranges.) So the
+      band above 1.5 is **0.35 to 1.26** at the nodes 1.65, 1.70 and 1.75
+      (item 5's windows), linear to 0.93 to 1.21 at 1.60 and 1.80 (0.64 to
+      1.235 at 1.625 and 1.775), and 0.93 to 1.21 elsewhere: the low end
+      set by #10 as before, the high end by #9 (C's bound's far end,
+      -0.2782, at Mach 1.71 with K 0.904: 1.084, and 1.252 with the
+      allowance), as the reviewer estimated (about 1.26). Nothing changes
+      at Mach 1.5. `bandAbove` serves both ends; the label and the total's
+      band text name them (`finned-body.ts`).
+
+      The gate, re-checked at both ends (DA95021318, Mach 1.799): the band
+      there is 0.918 to 1.211 (the high end was 1.21), so the term's high
+      end rises by 0.0001 in C_D and its high end over the vacuum value
+      becomes 0.722 (0.721). The total is 0.6134 (0.5283 to 0.7298), the
+      high end 0.7297 before R1 and as recorded; its model-form high end
+      +19.0% (+18.97%; +18.95% before R1); its tolerance -24.8% to +23.5%
+      (the high end +23.49%, +23.47% before R1, the same to one decimal).
+      No verdict changes. **This widening too was made after the gate was
+      used**, with its residuals known, and is disclosed so in 0010
+      sections 5.1 and 11.6, in 0011 and in the gate table's caption
+      (which now says the band was widened at both ends). In the
+      population: as below.
+
     - _The check above Mach 1.5_ (`audit/te-below-1.5/check-above-1.5.out`):
-      every point inside the band as now served there, TN 3548 and RM
-      A51J25's symbols as before, RM A52E01 at Mach 1.7 taken as any wing.
+      every point inside the band as now served there, both ends since R1,
+      TN 3548 and RM A51J25's symbols as before, RM A52E01 at Mach 1.7
+      taken as any wing.
     - _The thick-layer step at exactly Mach 1.5 (F5)._ Below 1.5 an edge
       with X above 0.666 is refused (its two nodes' lesser reach); at 1.5
       it is served (TR 1109 fig. 29(a) to X 4.5). And just above 1.5 K's
@@ -1462,7 +1536,11 @@ formed on two of them, and the shape widening's size on two of them.
       and to W3, and the totals stay main's 155 of 8000 (1.9%); F4 changes
       23 of them (Mach 1.647 to 1.796), the term's low end falling by up
       to 0.0463 in C_D, 58% of the term (`out/f4-probe.out`). The library
-      cross-check agrees on 1200 of 1200.
+      cross-check agrees on 1200 of 1200. After R1 and R2 (2026-10-28) the
+      run is the same line for line (totals 155 of 8000, the cross-check
+      1200 of 1200): the extra reasons R2 gives are on edges already
+      refused, and R1 moves no refusal. R1 raises the term's high end in
+      the same 23 totals, by up to 0.0041 in C_D, 5.1% of the term.
 
 ### 3.5 F5: thin sharp sections near Mach 1
 

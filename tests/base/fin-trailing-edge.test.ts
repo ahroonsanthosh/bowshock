@@ -344,13 +344,15 @@ describe("the vacuum bound at the Basic Finner's 11 gated shots (round 5)", () =
   }));
 
   it('the term and its band lie inside the bound: the high end at 0.72 to 0.93 of it', () => {
+    // 0.722 at the Mach 1.799 shot since R1 (0019 section 3.4.1) widened the high end there to
+    // 1.211, a widening made after the gate was used; 0.721 before.
     for (const { mach, t } of shots) {
       expect(t.vacuum).toBeCloseTo((2 / (1.4 * mach * mach)) * (0.32 / (Math.PI / 4)), 12);
       expect(t.cd).toBeLessThan(t.vacuum);
       expect(t.high).toBeLessThan(t.vacuum);
     }
     const r = shots.map(({ t }) => t.high / t.vacuum);
-    expect(Math.round(1000 * Math.min(...r)) / 1000).toBe(0.721);
+    expect(Math.round(1000 * Math.min(...r)) / 1000).toBe(0.722);
     expect(Math.round(1000 * Math.max(...r)) / 1000).toBe(0.931);
   });
 

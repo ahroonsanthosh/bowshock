@@ -14,7 +14,7 @@ import {
   type TransonicEvidencePoint,
 } from '../../src/base/fin-te-transonic';
 import {
-  bandLowAbove,
+  bandAbove,
   FIN_TRAILING_EDGE_BAND,
   finTrailingEdgeBaseDrag,
   thickLayerFactor,
@@ -262,50 +262,73 @@ describe('the nodes and the served term, recomputed from the record (item 3 to 7
   });
 });
 
-describe('the band above Mach 1.5 near 1.7, recomputed from the four-way pairing (F4)', () => {
-  const dir = '../../docs/research/total-drag/audit/pairing-2026-10-27-a52e01-m17-four';
-  const text = (f: string) => readFileSync(new URL(`${dir}/${f}`, import.meta.url), 'utf8');
-  const rows = text('identity_map.csv').trim().split('\n');
-  // The CSV's quoted fields hold commas: take each curve's alpha 0 cells by their pattern.
-  const valuesOf = (curve: string) => {
-    const row = rows.find((r) => r.includes(`"M=1.2, 1.4, 1.7 ${curve}"`))!;
+describe('the band above Mach 1.5 near 1.7, recomputed from the pairings (F4, R1)', () => {
+  const audit = '../../docs/research/total-drag/audit';
+  const text = (f: string) => readFileSync(new URL(`${audit}/${f}`, import.meta.url), 'utf8');
+  const four = text('pairing-2026-10-27-a52e01-m17-four/identity_map.csv').trim().split('\n');
+  const three = text('pairing-2026-10-26-a52e01-three/identity_map.csv').trim().split('\n');
+  // The CSV's quoted fields hold commas: take each curve's alpha 0 cells by their pattern, a
+  // bound as its range, any other value as itself.
+  const valuesOf = (rows: string[], figure: string, curve: string) => {
+    const row = rows.find((r) => r.startsWith(figure) && r.includes(`"M=1.2, 1.4, 1.7 ${curve}"`))!;
     const cells = [...row.matchAll(/"?(-0\.\d+) \+-(0\.\d+) \(([^)]*)\)"?/g)];
     return cells.flatMap((c) => {
       const [v, e] = [Number(c[1]), Number(c[2])];
       return c[3]!.includes('bound') ? [v - e, v + e] : [v];
     });
   };
-  // #10, any wing (B and C flag their calls): C, D and D's alternative end as a value; K from
-  // 1; the shape allowance at 6.88 deg.
-  const alt = /lowest end at alpha 0\.343 \+-0\.068, (-0\.\d+) \+-/.exec(text('pairing.txt'))!;
-  const ten = [...valuesOf('#10'), Number(alt[1])];
-  // #7, any wing: C and D; the shape allowance at 6.88 deg.
-  const seven = valuesOf('#7');
+  const alt = /lowest end at alpha 0\.343 \+-0\.068, (-0\.\d+) \+-/.exec(
+    text('pairing-2026-10-27-a52e01-m17-four/pairing.txt'),
+  )!;
+  // Every line at Mach 1.7 with an agreeing pair, any wing each: 8(a) #7, #9, #10 (Re 1.5e6),
+  // 8(b) #6 (Re 3.8e6); #10 with D's alternative end as a value.
+  const lines = [
+    { values: valuesOf(four, 'a52e01_fig8a', '#7'), re: 1.5e6 },
+    { values: valuesOf(four, 'a52e01_fig8a', '#9'), re: 1.5e6 },
+    { values: [...valuesOf(four, 'a52e01_fig8a', '#10'), Number(alt[1])], re: 1.5e6 },
+    { values: valuesOf(three, 'a52e01_fig8b', '#6'), re: 3.8e6 },
+  ];
   const s = (transonicTrailingEdge().shapeAllowance * 6.88) / 4;
-  const least = (values: number[], widening: number) => {
-    let r = Infinity;
+  // K from 1 to K at wings 3 and 4's turbulent X (h/c 0.015), over Mach 1.69 to 1.71.
+  const ratios = (values: number[], re: number) => {
+    const x = 1 / (0.015 * re ** 0.2);
+    let [lo, hi] = [Infinity, -Infinity];
     for (let i = 0; i <= 200; i++) {
       const m = 1.69 + (0.02 * i) / 200;
-      r = Math.min(r, Math.min(...values.map((v) => v / thinLayerBasePressure(m))));
+      for (const k of [1, thickLayerFactor(m, x).nominal]) {
+        for (const v of values) {
+          const r = v / (thinLayerBasePressure(m) * k);
+          [lo, hi] = [Math.min(lo, r), Math.max(hi, r)];
+        }
+      }
     }
-    return Math.floor(r * (1 - widening) * 100 + 1e-9) / 100;
+    return [
+      Math.floor(lo * (1 - s) * 100 + 1e-9) / 100,
+      Math.ceil(hi * (1 + s) * 100 - 1e-9) / 100,
+    ];
   };
 
-  it("gives the library's low end at every Mach number from 1.5 to 1.9", () => {
-    expect(ten.length).toBe(4);
-    expect(seven.length).toBe(3);
-    const r10 = least(ten, s);
-    const r7 = least(seven, s);
-    expect([r10, r7]).toEqual([0.35, 0.51]);
-    // Item 5's windows: the nodes 1.65, 1.70 and 1.75 take the least ratio, 0.93 elsewhere.
-    const node = (m: number) =>
-      m >= 1.65 - 1e-9 && m <= 1.75 + 1e-9 ? Math.min(0.93, r10, r7) : 0.93;
+  it("gives the library's band at every Mach number from 1.5 to 1.9, both ends", () => {
+    expect(lines.map((l) => l.values.length)).toEqual([3, 5, 4, 4]);
+    const r = lines.map((l) => ratios(l.values, l.re));
+    expect(r).toEqual([
+      [0.51, 0.86],
+      [0.75, 1.26],
+      [0.35, 0.67],
+      [0.73, 1.17],
+    ]);
+    // Item 5's windows: the nodes 1.65, 1.70 and 1.75 take the lines' ratios, 0.93 to 1.21
+    // elsewhere.
+    const inside = (m: number) => m >= 1.65 - 1e-9 && m <= 1.75 + 1e-9;
+    const low = (m: number) => (inside(m) ? Math.min(0.93, ...r.map((x) => x[0]!)) : 0.93);
+    const high = (m: number) => (inside(m) ? Math.max(1.21, ...r.map((x) => x[1]!)) : 1.21);
     for (let i = 0; i <= 80; i++) {
       const m = 1.5 + (0.4 * i) / 80;
       const k = Math.floor((m - 1.5) / 0.05 + 1e-9);
       const [a, b] = [1.5 + 0.05 * k, 1.5 + 0.05 * (k + 1)];
-      const expected = node(a) + ((m - a) / (b - a)) * (node(b) - node(a));
-      expect(bandLowAbove(m), `M ${m}`).toBeCloseTo(expected, 9);
+      const t = (m - a) / (b - a);
+      expect(bandAbove(m).low, `M ${m}`).toBeCloseTo(low(a) + t * (low(b) - low(a)), 9);
+      expect(bandAbove(m).high, `M ${m}`).toBeCloseTo(high(a) + t * (high(b) - high(a)), 9);
     }
   });
 });

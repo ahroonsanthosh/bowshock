@@ -1,11 +1,12 @@
 /**
  * The served totals that 0019 section 3.4.1's F4 changes (RM A52E01's lines at Mach 1.7
- * widening the trailing-edge band's low end above Mach 1.5, from 0.93 to as low as 0.35 at
- * Mach 1.65 to 1.75, linear to 0.93 at 1.60 and 1.80): the same cases as impact.test.ts (the
- * baseline population, seed 7), those served a total, with a square trailing edge, at a Mach
- * number where the band's low end is below 0.93. F4 changes no refusal, so impact.test.ts's
- * counts are the same before and after it; this counts what it does change. The term is asked
- * of the library with the edge as src/total builds it. Writes ./out/f4-probe.out. Run:
+ * widening the trailing-edge band above Mach 1.5 at both ends, R1: the low end from 0.93 to as
+ * low as 0.35 and the high end from 1.21 to as high as 1.26 at Mach 1.65 to 1.75, each linear
+ * back at 1.60 and 1.80): the same cases as impact.test.ts (the baseline population, seed 7),
+ * those served a total, with a square trailing edge, at a Mach number where the band is wider
+ * than 0.93 to 1.21. F4 changes no refusal, so impact.test.ts's counts are the same before and
+ * after it; this counts what it does change. The term is asked of the library with the edge as
+ * src/total builds it. Writes ./out/f4-probe.out. Run:
  *
  *   ONLY=./f4-probe.test.ts nice -n 15 npx vitest run --config docs/research/refusals/vitest.config.ts
  */
@@ -15,9 +16,10 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'vitest';
 import {
-  bandLowAbove,
+  bandAbove,
   FIN_TRAILING_EDGE_BAND,
   finTrailingEdgeBaseDrag,
+  widenedAbove,
 } from '../../../src/base/fin-trailing-edge';
 import { noseReasons, totalReasons } from './evaluate';
 import { MACH_BANDS, atmosphere, drawAltitude, mulberry32, population, type Rocket } from './population';
@@ -63,6 +65,8 @@ test('the served totals F4 changes', () => {
   let changed = 0;
   let largestDrop = 0;
   let largestShare = 0;
+  let largestRise = 0;
+  let largestRiseShare = 0;
   const machs: number[] = [];
   for (const rocket of rockets) {
     for (const [lo, hi] of MACH_BANDS) {
@@ -76,15 +80,19 @@ test('the served totals F4 changes', () => {
       servedAbove++;
       if (!square(rocket)) continue;
       servedSquare++;
-      const low = bandLowAbove(mach);
-      if (!(low < FIN_TRAILING_EDGE_BAND.low)) continue;
+      const band = bandAbove(mach);
+      if (!widenedAbove(band)) continue;
       changed++;
       machs.push(mach);
       const te = term(rocket, mach, altitudeKm);
-      // The low end enters linearly: before F4 it was 0.93 where it is `low` now.
-      const before = (te.low * FIN_TRAILING_EDGE_BAND.low) / low;
+      // Each end enters linearly: before F4 the low end was 0.93 where it is `band.low` now, and
+      // the high end 1.21 where it is `band.high`.
+      const before = (te.low * FIN_TRAILING_EDGE_BAND.low) / band.low;
       largestDrop = Math.max(largestDrop, before - te.low);
       largestShare = Math.max(largestShare, (before - te.low) / te.cd);
+      const beforeHigh = (te.high * FIN_TRAILING_EDGE_BAND.high) / band.high;
+      largestRise = Math.max(largestRise, te.high - beforeHigh);
+      largestRiseShare = Math.max(largestRiseShare, (te.high - beforeHigh) / te.cd);
     }
   }
   const lines = [
@@ -92,12 +100,13 @@ test('the served totals F4 changes', () => {
     '',
     `- cases (rockets x Mach bands, seed 7, as impact.test.ts): ${cases}`,
     `- served a total: ${served}; at Mach 1.5 and above: ${servedAbove}; with a square trailing edge: ${servedSquare}`,
-    `- changed by F4 (the band's low end below 0.93 there, Mach 1.60 to 1.80): ${changed}` +
+    `- changed by F4 (the band wider than 0.93 to 1.21 there, Mach 1.60 to 1.80): ${changed}` +
       (machs.length > 0
         ? `, at Mach ${Math.min(...machs).toFixed(3)} to ${Math.max(...machs).toFixed(3)}`
         : ''),
     `- the largest fall of the trailing-edge term's low end: ${largestDrop.toFixed(4)} in C_D, ${(100 * largestShare).toFixed(1)}% of the term`,
-    '- nothing else changes: the term, its high end and every refusal are as before',
+    `- the largest rise of its high end: ${largestRise.toFixed(4)} in C_D, ${(100 * largestRiseShare).toFixed(1)}% of the term`,
+    '- nothing else changes: the term and every refusal are as before',
     '',
   ];
   const outDir = process.env.OUT_DIR === undefined ? join(here, 'out') : process.env.OUT_DIR;

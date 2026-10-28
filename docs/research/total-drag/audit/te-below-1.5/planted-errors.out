@@ -1,111 +1,152 @@
-CAUGHT: window cut to the node and the next one: Tests  10 failed | 43 passed (53)
-     × lies inside the served band, or the term is refused there, over its whole Mach interval 693ms
-     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 10ms
+CAUGHT: window cut to the node and the next one: Tests  10 failed | 45 passed (55)
+     × holds every band-setting point of every reading at its own Mach number 32ms
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 12ms
+     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 10ms
+     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 59ms
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 13ms
+     × a misread point (moved 15% up) falls outside the band 16ms
+     × a window that leaves out the neighbouring nodes leaves points outside 97ms
+     × lies inside the served band, or the term is refused there, over its whole Mach interval 624ms
+     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 2ms
      × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 1ms
-     × holds every band-setting point of every reading at its own Mach number 24ms
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 11ms
-     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 2ms
-     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 24ms
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 2ms
-     × a misread point (moved 15% up) falls outside the band 5ms
-     × a window that leaves out the neighbouring nodes leaves points outside 23ms
-CAUGHT: the two-sided fallback ignored after the contradiction: Tests  5 failed | 48 passed (53)
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 14ms
-     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 20ms
-     × the fallback ignored (one-sided after the contradiction) leaves inclined points unwidened 18ms
-     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 10ms
+CAUGHT: the two-sided fallback ignored after the contradiction: Tests  5 failed | 50 passed (55)
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 47ms
+     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 13ms
+     × the fallback ignored (one-sided after the contradiction) leaves inclined points unwidened 26ms
+     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 11ms
      × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 1ms
-CAUGHT: the shape allowance halved: Tests  4 failed | 49 passed (53)
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 76ms
-     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 29ms
-     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 16ms
+CAUGHT: the shape allowance halved: Tests  4 failed | 51 passed (55)
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 108ms
+     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 47ms
+     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 11ms
      × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 1ms
-CAUGHT: a Johnston reading misread by 0.05 in Cp_b: Tests  1 failed | 52 passed (53)
-     × holds each point as read (to 1e-6), both readings of each set 44ms
-CAUGHT: the floor 0.93 to 1.21 dropped below 1.5: Tests  3 failed | 50 passed (53)
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 100ms
+CAUGHT: a Johnston reading misread by 0.05 in Cp_b: Tests  1 failed | 54 passed (55)
+     × holds each point as read (to 1e-6), both readings of each set 19ms
+CAUGHT: the floor 0.93 to 1.21 dropped below 1.5: Tests  3 failed | 52 passed (55)
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 42ms
      × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 1ms
-     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 19ms
-CAUGHT: the nominal not joined to the curve at 1.5: Tests  6 failed | 47 passed (53)
-     × has its nodes every 0.05 from 1.00, from the flat-faced sets, joined to the curve at 1.5 10ms
-     × serves the curve at and above 1.5, and its own nominal below, with no step 5ms
+     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 10ms
+CAUGHT: the nominal not joined to the curve at 1.5: Tests  6 failed | 49 passed (55)
+     × has its nodes every 0.05 from 1.00, from the flat-faced sets, joined to the curve at 1.5 65ms
+     × serves the curve at and above 1.5, and its own nominal below, with no step 19ms
      × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 1ms
      × a nominal not joined to the curve at 1.5 shows a step 6ms
-     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 9ms
-     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 2ms
-CAUGHT: the Mach floor moved to 0.95: Tests  2 failed | 51 passed (53)
-     × refuses Mach numbers outside 1.0 to 3.2, swept and laminar edges, thick layers 13ms
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 11ms
-CAUGHT: the laminar refusal below 1.5 removed: Tests  2 failed | 51 passed (53)
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 52ms
-     × checks every station on fins of varying chord 63ms
-CAUGHT: only the first reason given for an edge beyond the reach and laminar (review F10): Tests  1 failed | 52 passed (53)
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 129ms
-CAUGHT: the layer reach taken at each set's greatest X: Tests  2 failed | 51 passed (53)
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 16ms
-     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 9ms
-CAUGHT: a layer without roughness counted toward the reach (item 6): Tests  1 failed | 52 passed (53)
-     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 34ms
-CAUGHT: a disputed wing taken as a flat wing 2 (item 6): Tests  3 failed | 50 passed (53)
-     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 45ms
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 6ms
-     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 71ms
-CAUGHT: the window by each point's nominal Mach number, its interval ignored (review P1): Tests  5 failed | 48 passed (53)
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 19ms
+     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 16ms
+     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 3ms
+CAUGHT: the Mach floor moved to 0.95: Tests  2 failed | 53 passed (55)
+     × refuses Mach numbers outside 1.0 to 3.2, swept and laminar edges, thick layers 86ms
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 176ms
+CAUGHT: the laminar refusal below 1.5 removed: Tests  3 failed | 52 passed (55)
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 20ms
+     × gives every reason that applies, each once (review R2) 5ms
+     × checks every station on fins of varying chord 6ms
+CAUGHT: only the first reason given for an edge beyond the reach and laminar (review F10): Tests  2 failed | 53 passed (55)
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 19ms
+     × gives every reason that applies, each once (review R2) 6ms
+CAUGHT: the layer reach taken at each set's greatest X: Tests  3 failed | 52 passed (55)
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 24ms
+     × gives every reason that applies, each once (review R2) 2ms
+     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 8ms
+CAUGHT: a layer without roughness counted toward the reach (item 6): Tests  1 failed | 54 passed (55)
+     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 16ms
+CAUGHT: a disputed wing taken as a flat wing 2 (item 6): Tests  9 failed | 46 passed (55)
+     × the term and its band lie inside the bound: the high end at 0.72 to 0.93 of it 20ms
+     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 32ms
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 5ms
+     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 19ms
+     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 17ms
+     × holds every RM A52E01 line at Mach 1.7 with an agreeing pair at alpha 0, and no other 12ms
+     × widens both ends at Mach 1.60 to 1.80, by item 5's windows, to the lines' ratios 5ms
+     × holds every reading of every line inside the term served, as every wing it may be 1ms
+     × gives the library's band at every Mach number from 1.5 to 1.9, both ends 21ms
+CAUGHT: the window by each point's nominal Mach number, its interval ignored (review P1): Tests  5 failed | 50 passed (55)
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 45ms
      × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 2ms
-     × lies inside the served band, or the term is refused there, over its whole Mach interval 887ms
+     × lies inside the served band, or the term is refused there, over its whole Mach interval 902ms
      × gives the library's nodes: nominal, band ends, layer reach and the points in each window 1ms
      × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 1ms
-CAUGHT: K dropped from the served term below 1.5 (review P2): Tests  1 failed | 52 passed (53)
-     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 20ms
-CAUGHT: K read at Mach 2.0 below 1.5 (review P2b): Tests  2 failed | 51 passed (53)
-     × lies inside the served band, or the term is refused there, over its whole Mach interval 662ms
-     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 1ms
-CAUGHT: RM A52E01 counted toward the layer reach (review F2): Tests  2 failed | 51 passed (53)
-     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 67ms
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 15ms
-CAUGHT: RM A51J11 without its +-0.02 Mach margin, every point at +-0 (review F1): Tests  4 failed | 49 passed (53)
-     × holds each point as read (to 1e-6), both readings of each set 23ms
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 18ms
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 2ms
-     × lies inside the served band, or the term is refused there, over its whole Mach interval 493ms
-CAUGHT: F4: RM A52E01's lines at Mach 1.7 left out of the band above 1.5: Tests  2 failed | 51 passed (53)
-     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 122ms
-     × holds every reading of #10 and #7 inside the term served, as every wing they may be 1ms
-CAUGHT: F4: C's bound taken as its value: Tests  6 failed | 47 passed (53)
-     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 93ms
-     × takes every reading of line #10 from the four-way pairing, D's alternative end as a value 1ms
-     × widens the low end at Mach 1.60 to 1.80, by item 5's windows, to the point's least ratio 55ms
-     × holds every reading of #10 and #7 inside the term served, as every wing they may be 1ms
-     × takes #7 in too: any wing (B flags its call), C and D's envelope, band only; it moves nothing 9ms
-     × gives the library's low end at every Mach number from 1.5 to 1.9 16ms
-CAUGHT: F4: D's alternative end left out: Tests  1 failed | 52 passed (53)
-     × takes every reading of line #10 from the four-way pairing, D's alternative end as a value 31ms
-CAUGHT: F4: the widening at every Mach number above 1.5: Tests  6 failed | 47 passed (53)
+CAUGHT: K dropped from the served term below 1.5 (review P2): Tests  1 failed | 54 passed (55)
+     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 11ms
+CAUGHT: K read at Mach 2.0 below 1.5 (review P2b): Tests  2 failed | 53 passed (55)
+     × lies inside the served band, or the term is refused there, over its whole Mach interval 591ms
+     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 6ms
+CAUGHT: RM A52E01 counted toward the layer reach (review F2): Tests  2 failed | 53 passed (55)
+     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 11ms
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 3ms
+CAUGHT: RM A51J11 without its +-0.02 Mach margin, every point at +-0 (review F1): Tests  4 failed | 51 passed (55)
+     × lies inside the served band, or the term is refused there, over its whole Mach interval 412ms
+     × holds each point as read (to 1e-6), both readings of each set 49ms
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 36ms
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 10ms
+CAUGHT: F4: RM A52E01's lines at Mach 1.7 left out of the band above 1.5: Tests  4 failed | 51 passed (55)
+     × the term and its band lie inside the bound: the high end at 0.72 to 0.93 of it 53ms
+     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 50ms
+     × widens both ends at Mach 1.60 to 1.80, by item 5's windows, to the lines' ratios 6ms
+     × holds every reading of every line inside the term served, as every wing it may be 1ms
+CAUGHT: F4: C's bound on #10 taken as its value: Tests  6 failed | 49 passed (55)
+     × holds each point as read (to 1e-6), both readings of each set 134ms
+     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 20ms
+     × holds every RM A52E01 line at Mach 1.7 with an agreeing pair at alpha 0, and no other 14ms
+     × widens both ends at Mach 1.60 to 1.80, by item 5's windows, to the lines' ratios 3ms
+     × holds every reading of every line inside the term served, as every wing it may be 5ms
+     × gives the library's band at every Mach number from 1.5 to 1.9, both ends 21ms
+CAUGHT: F4: D's alternative end left out: Tests  2 failed | 53 passed (55)
+     × holds every RM A52E01 line at Mach 1.7 with an agreeing pair at alpha 0, and no other 18ms
+     × widens both ends at Mach 1.60 to 1.80, by item 5's windows, to the lines' ratios 8ms
+CAUGHT: F4: the widening at every Mach number above 1.5: Tests  7 failed | 48 passed (55)
      × is -P_B n h s / A_ref with the band 0.93 to 1.21, an analogy in the base plane 35ms
-     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 59ms
-     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 56ms
-     × widens the low end at Mach 1.60 to 1.80, by item 5's windows, to the point's least ratio 2ms
-     × serves a thin-layer edge inside the sets, with the band of its Mach number 3ms
-     × gives the library's low end at every Mach number from 1.5 to 1.9 15ms
-CAUGHT: F4: the ratio at the turbulent K only, not from a thin layer: Tests  5 failed | 48 passed (53)
-     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 46ms
-     × widens the low end at Mach 1.60 to 1.80, by item 5's windows, to the point's least ratio 2ms
-     × holds every reading of #10 and #7 inside the term served, as every wing they may be 9ms
-     × takes #7 in too: any wing (B flags its call), C and D's envelope, band only; it moves nothing 1ms
-     × gives the library's low end at every Mach number from 1.5 to 1.9 27ms
-CAUGHT: F4: the shape widening dropped above 1.5 (any wing, 6.88 deg; #10 and #7): Tests  5 failed | 48 passed (53)
-     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 75ms
-     × widens the low end at Mach 1.60 to 1.80, by item 5's windows, to the point's least ratio 14ms
-     × holds every reading of #10 and #7 inside the term served, as every wing they may be 1ms
-     × takes #7 in too: any wing (B flags its call), C and D's envelope, band only; it moves nothing 5ms
-     × gives the library's low end at every Mach number from 1.5 to 1.9 35ms
-CAUGHT: F4: #7 taken as wing 2 (no shape widening, wing 2's layer): Tests  1 failed | 52 passed (53)
-     × takes #7 in too: any wing (B flags its call), C and D's envelope, band only; it moves nothing 103ms
-CAUGHT: F4: #10 taken as wing 2, as the first application did (the rule as written makes it any wing): Tests  6 failed | 47 passed (53)
-     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 47ms
-     × takes every reading of line #10 from the four-way pairing, D's alternative end as a value 3ms
-     × widens the low end at Mach 1.60 to 1.80, by item 5's windows, to the point's least ratio 1ms
-     × holds every reading of #10 and #7 inside the term served, as every wing they may be 9ms
-     × takes #7 in too: any wing (B flags its call), C and D's envelope, band only; it moves nothing 2ms
-     × gives the library's low end at every Mach number from 1.5 to 1.9 23ms
+     × the term and its band lie inside the bound: the high end at 0.72 to 0.93 of it 8ms
+     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 22ms
+     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 15ms
+     × widens both ends at Mach 1.60 to 1.80, by item 5's windows, to the lines' ratios 1ms
+     × serves a thin-layer edge inside the sets, with the band of its Mach number 1ms
+     × gives the library's band at every Mach number from 1.5 to 1.9, both ends 19ms
+CAUGHT: F4: the ratio at the turbulent K only, not from a thin layer: Tests  4 failed | 51 passed (55)
+     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 25ms
+     × widens both ends at Mach 1.60 to 1.80, by item 5's windows, to the lines' ratios 3ms
+     × holds every reading of every line inside the term served, as every wing it may be 1ms
+     × gives the library's band at every Mach number from 1.5 to 1.9, both ends 34ms
+CAUGHT: F4: the shape widening dropped above 1.5 (any wing, 6.88 deg): Tests  5 failed | 50 passed (55)
+     × the term and its band lie inside the bound: the high end at 0.72 to 0.93 of it 11ms
+     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 40ms
+     × widens both ends at Mach 1.60 to 1.80, by item 5's windows, to the lines' ratios 6ms
+     × holds every reading of every line inside the term served, as every wing it may be 1ms
+     × gives the library's band at every Mach number from 1.5 to 1.9, both ends 25ms
+CAUGHT: F4: #7 taken as wing 3, the readers' call (the rule as written makes it any wing): Tests  2 failed | 53 passed (55)
+     × holds each point as read (to 1e-6), both readings of each set 68ms
+     × holds every RM A52E01 line at Mach 1.7 with an agreeing pair at alpha 0, and no other 14ms
+CAUGHT: F4: #10 taken as wing 2, as the first application did (the rule as written makes it any wing): Tests  6 failed | 49 passed (55)
+     × holds each point as read (to 1e-6), both readings of each set 51ms
+     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 12ms
+     × holds every RM A52E01 line at Mach 1.7 with an agreeing pair at alpha 0, and no other 15ms
+     × widens both ends at Mach 1.60 to 1.80, by item 5's windows, to the lines' ratios 1ms
+     × holds every reading of every line inside the term served, as every wing it may be 4ms
+     × gives the library's band at every Mach number from 1.5 to 1.9, both ends 21ms
+CAUGHT: R1: the high end not widened (the low end only, as F4 first did): Tests  5 failed | 50 passed (55)
+     × the term and its band lie inside the bound: the high end at 0.72 to 0.93 of it 31ms
+     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 25ms
+     × widens both ends at Mach 1.60 to 1.80, by item 5's windows, to the lines' ratios 3ms
+     × holds every reading of every line inside the term served, as every wing it may be 5ms
+     × gives the library's band at every Mach number from 1.5 to 1.9, both ends 19ms
+CAUGHT: R1: fig. 8(a) #9 left out of the band: Tests  5 failed | 50 passed (55)
+     × the term and its band lie inside the bound: the high end at 0.72 to 0.93 of it 50ms
+     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 68ms
+     × widens both ends at Mach 1.60 to 1.80, by item 5's windows, to the lines' ratios 5ms
+     × holds every reading of every line inside the term served, as every wing it may be 1ms
+     × gives the library's band at every Mach number from 1.5 to 1.9, both ends 21ms
+CAUGHT: R1: #9 taken as wing 4, the readers' call (the rule as written makes it any wing): Tests  7 failed | 48 passed (55)
+     × the term and its band lie inside the bound: the high end at 0.72 to 0.93 of it 65ms
+     × holds each point as read (to 1e-6), both readings of each set 131ms
+     × the check above Mach 1.5, with the band widened near 1.7 (F4): check-above-1.5.out 36ms
+     × holds every RM A52E01 line at Mach 1.7 with an agreeing pair at alpha 0, and no other 24ms
+     × widens both ends at Mach 1.60 to 1.80, by item 5's windows, to the lines' ratios 1ms
+     × holds every reading of every line inside the term served, as every wing it may be 9ms
+     × gives the library's band at every Mach number from 1.5 to 1.9, both ends 25ms
+CAUGHT: R2: the coverage below 1.5 stops at its first reason (h/c 0.25 with X 0.8 at M 1.3): Tests  1 failed | 54 passed (55)
+     × gives every reason that applies, each once (review R2) 25ms
+CAUGHT: R2: the stations stop at the first one refused (a tapered plate, root X 1.7, tip h/c 0.3): Tests  1 failed | 54 passed (55)
+     × gives every reason that applies, each once (review R2) 32ms
+CAUGHT: R2: a swept edge refused before anything else (a swept laminar edge): Tests  1 failed | 54 passed (55)
+     × gives every reason that applies, each once (review R2) 29ms
+CAUGHT: R3: the total's band text above 1.5 without the widening: Tests  1 failed | 73 passed (74)
+     × names the widening near Mach 1.7 above 1.5, both ends, and nothing else elsewhere 16ms

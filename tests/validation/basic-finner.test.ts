@@ -64,6 +64,7 @@
 
 import { beforeAll, describe, expect, it } from 'vitest';
 import {
+  bandHighAbove,
   bandLowAbove,
   FIN_TRAILING_EDGE_BAND,
   finTrailingEdgeBaseDrag,
@@ -396,13 +397,17 @@ const clusterSpread = BASIC_FINNER_CLUSTERS.map(([a, b]) => {
 const clusterOf = (m: number) => BASIC_FINNER_CLUSTERS.findIndex(([a, b]) => m >= a && m <= b);
 
 /**
- * F4's move of a shot's trailing-edge low end (0019 section 3.4.1): the term's low end with the
- * band's low end 0.93, as the correction ran, less its low end now. Zero outside Mach 1.60 to
+ * F4's move of a shot's trailing-edge ends (0019 section 3.4.1, F4 and R1): at the low end, the
+ * term's low end with the band's low end 0.93, as the correction ran, less its low end now; at
+ * the high end, its high end now less the high end with 1.21. Each zero outside Mach 1.60 to
  * 1.80.
  */
-function f4Move(s: { mach: number; total: TotalDrag }): number {
+function f4Move(s: { mach: number; total: TotalDrag }): { low: number; high: number } {
   const te = s.total.components.find((c) => c.name === 'fin trailing-edge base')!;
-  return te.low * (FIN_TRAILING_EDGE_BAND.low / bandLowAbove(s.mach) - 1);
+  return {
+    low: te.low * (FIN_TRAILING_EDGE_BAND.low / bandLowAbove(s.mach) - 1),
+    high: te.high * (1 - FIN_TRAILING_EDGE_BAND.high / bandHighAbove(s.mach)),
+  };
 }
 
 let shots: Shot[] = [];
@@ -494,19 +499,23 @@ describe(
         const c = CORRECTED[k]!;
         expect(s.shot).toBe(r.shot);
         expect(c.shot).toBe(r.shot);
-        // Since F4 (0019 section 3.4.1, 2026-10-27) the trailing edges' band at Mach 1.60 to 1.80
-        // is widened by RM A52E01's wing 2 at Mach 1.7: at the 1.799 shot its low end, and so the
-        // total's and the tolerance's, lie below the correction's record by this much.
+        // Since F4 (0019 section 3.4.1, 2026-10-27; R1, 2026-10-28) the trailing edges' band at
+        // Mach 1.60 to 1.80 is widened at both ends by RM A52E01's lines at Mach 1.7: at the 1.799
+        // shot its low end, and so the total's and the tolerance's, lie below the correction's
+        // record, and its high end above it, by these amounts.
         const f4 = f4Move(s);
-        expect(f4 > 0).toBe(s.mach < 1.8);
+        expect(f4.low > 0).toBe(s.mach < 1.8);
+        expect(f4.high > 0).toBe(s.mach < 1.8);
         expect(Math.abs(s.total.cd - c.cd)).toBeLessThan(1e-5);
-        expect(Math.abs(s.total.low + f4 - c.low)).toBeLessThan(1e-5);
-        expect(Math.abs(s.total.high - c.high)).toBeLessThan(1e-5);
+        expect(Math.abs(s.total.low + f4.low - c.low)).toBeLessThan(1e-5);
+        expect(Math.abs(s.total.high - f4.high - c.high)).toBeLessThan(1e-5);
         expect(Math.abs(s.inputLow - r.inputLow)).toBeLessThan(1e-5);
         expect(Math.abs(s.inputHigh - r.inputHigh)).toBeLessThan(1e-5);
         expect(Math.abs(s.residual - c.residual)).toBeLessThan(1e-4);
-        expect(Math.abs(s.tolerance[0] + f4 / s.total.cd - c.tolerance[0]!)).toBeLessThan(1e-4);
-        expect(Math.abs(s.tolerance[1] - c.tolerance[1]!)).toBeLessThan(1e-4);
+        expect(Math.abs(s.tolerance[0] + f4.low / s.total.cd - c.tolerance[0]!)).toBeLessThan(1e-4);
+        expect(Math.abs(s.tolerance[1] - f4.high / s.total.cd - c.tolerance[1]!)).toBeLessThan(
+          1e-4,
+        );
         s.total.components.forEach((x, j) => {
           if (x.name === 'body base') {
             expect(
@@ -756,8 +765,10 @@ describe(
         (s) =>
           s.total.components.find((c) => c.name === 'fin trailing-edge base')!.high / s.te.vacuum,
       );
+      // 0.722 at the Mach 1.799 shot since R1 (0019 section 3.4.1), a widening made after the
+      // gate was used; 0.721 before.
       expect([Math.min(...r), Math.max(...r)].map((x) => Math.round(1000 * x) / 1000)).toEqual([
-        0.721, 0.931,
+        0.722, 0.931,
       ]);
     });
 

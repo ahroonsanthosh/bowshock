@@ -675,15 +675,23 @@ row used.
   outward, gives a low end of **0.35** at the nodes whose window meets its
   Mach interval (1.65, 1.70 and 1.75, nodes every 0.05 as 0019 item 5's),
   linear to 0.93 at 1.60 and 1.80, at every layer parameter served; the
-  high end, 1.21, and the band elsewhere are unchanged. (The first
-  application, wing 2 without the allowance, gave 0.41.) The label says
-  so where it applies. In the refusal population it changes 29 of the 181
+  band elsewhere is unchanged. (The first application, wing 2 without the
+  allowance, gave 0.41.) _Since the re-review (R1, 2026-10-28):_ every
+  RM A52E01 line at Mach 1.7 with an agreeing alpha 0 pair (fig. 8(a)'s
+  #7, #9 and #10, fig. 8(b)'s #6) enters at both ends, the same way, so
+  the high end is **1.26** at the same nodes (set by 8(a) #9, any wing:
+  1.084 over the term served, 1.252 with the shape allowance), linear to
+  1.21 at 1.60 and 1.80; at the gate's shot at Mach 1.799 it is 1.211.
+  The label says so where it applies. In the refusal population it
+  changes 29 of the 181
   served totals (Mach 1.627 to 1.796), lowering the trailing-edge term's
   low end by up to 0.0463 in C_D, 58% of the term
   (`docs/research/refusals/out/f4-probe.out`; 23 of 155 on the head
-  merged with A5, f88ecbe); it changes no refusal. It
-  reaches the Basic Finner gate's shot at Mach 1.799, whose low end there
-  is 0.918: its band and tolerance move
+  merged with A5, f88ecbe; since R1 it also raises the term's high end in
+  those 23 by up to 0.0041 in C_D, 5.1% of the term); it changes no
+  refusal. It
+  reaches the Basic Finner gate's shot at Mach 1.799, whose band there
+  is 0.918 to 1.211: its band and tolerance move
   slightly (section 11.6's note), no verdict changes. **This widening was
   made after the gate was used**, with its residuals known: a recorded
   change to a tested term, not a new test, and the gate does not test it
@@ -1536,13 +1544,15 @@ and `.json`).
 _A widening made after the gate was used (F4, 2026-10-27; 0019 section
 3.4.1, and section 5.1 here), with the residuals known; like the
 correction above, a recorded change, not a new test:_ at DA95021318 (Mach
-1.799) the trailing edges' band low end is 0.918 of the term, not 0.93
-(RM A52E01's lines at Mach 1.7 widen it at Mach 1.60 to 1.80), so its
-total is 0.6134 (0.5283 to 0.7297), its model-form low end -13.9% (-13.7%
-as recorded), and its tolerance -24.8% to +23.5% (-24.6% as recorded; the
-first application, with #10 as wing 2, gave 0.5285 and -24.7%); the
-page's table shows these. Every other value, and every
-verdict, is as recorded.
+1.799) the trailing edges' band is 0.918 to 1.211 of the term, not 0.93
+to 1.21 (RM A52E01's lines at Mach 1.7 widen it at Mach 1.60 to 1.80; its
+high end since the re-review's R1, 2026-10-28, also after the gate was
+used), so its total is 0.6134 (0.5283 to 0.7298), its model-form low end
+-13.9% (-13.7% as recorded), its high end +19.0% as recorded, and its
+tolerance -24.8% to +23.5% (-24.6% as recorded; the first application,
+with #10 as wing 2, gave 0.5285 and -24.7%; the high end 0.7297 and
++23.5% before R1, as recorded); the page's table shows these. Every
+other value, and every verdict, is as recorded.
 
 (Tolerances by round 5's arithmetic, section 10.3; the second run's own
 high ends were +26.5% to +31.4%. Corrected bands rounded outward, as the

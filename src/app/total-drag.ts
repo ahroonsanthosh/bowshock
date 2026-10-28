@@ -1075,15 +1075,16 @@ export interface PublishedShot {
  */
 export const PUBLISHED_GATE: readonly PublishedShot[] = [
   {
-    // Since 0019 section 3.4.1's F4 (2026-10-27), a widening made after the gate was used, the
-    // trailing edges' band at Mach 1.799 is widened by RM A52E01's lines at Mach 1.7: low end
-    // 0.5283 and tolerance -24.8% (0.5296 and -24.6% as the correction recorded them).
+    // Since 0019 section 3.4.1's F4 (2026-10-27) and its re-review (R1, 2026-10-28), widenings
+    // made after the gate was used, the trailing edges' band at Mach 1.799 is widened at both
+    // ends by RM A52E01's lines at Mach 1.7: low end 0.5283, high end 0.7298 and tolerance
+    // -24.8% to +23.5% (0.5296, 0.7297 and -24.6% to +23.5% as the correction recorded them).
     shot: 'DA95021318',
     mach: 1.799,
     cx0: 0.594,
     cd: 0.6134,
     low: 0.5283,
-    high: 0.7297,
+    high: 0.7298,
     residual: -3.2,
     tolerance: [-24.8, 23.5],
     secondRun: -3.0,

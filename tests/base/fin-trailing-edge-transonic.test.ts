@@ -34,10 +34,15 @@ import {
   thickLayerFactor,
   THIN_LAYER_LIMIT,
   thinLayerBasePressure,
-  ABOVE_BAND_POINTS,
-  aboveLeastRatio,
+  ABOVE_BAND_LINES,
+  type AboveBandLine,
+  aboveRatios,
+  bandAbove,
+  bandHighAbove,
   bandLowAbove,
+  RM_A52E01_LINE10_ALTERNATIVE_END,
   RM_A52E01_M17_LINE7,
+  RM_A52E01_M17_LINE9,
   RM_A52E01_M17_LINE10,
   TrailingEdgeRefusals,
   trailingEdgeBasis,
@@ -461,17 +466,18 @@ const stepAt15 = (t: TransonicTrailingEdge) =>
 
 /**
  * The check above Mach 1.5 (0019 section 3.4.1, the results note): each point the readings hold
- * above 1.5 against the term served there, the curve times K(M, X) and the band 0.93 to 1.21
- * times K's spread, over the point's Mach interval (from 1.5) and its layer range. RM A52E01's
- * lines are any wing: each is taken as wing 2 (h/c 0.030) and as wing 3 or 4 (h/c 0.015, the
- * same layer). The ratios are as measured, with no shape widening, as the band above 1.5 has none.
+ * above 1.5 against the term served there, the curve times K(M, X) and the band served there
+ * (0.93 to 1.21, widened at both ends near Mach 1.7, F4 and R1) times K's spread, over the
+ * point's Mach interval (from 1.5) and its layer range. RM A52E01's lines are any wing: each is
+ * taken as wing 2 (h/c 0.030) and as wing 3 or 4 (h/c 0.015, the same layer). The ratios are as
+ * measured, with no shape widening: the band's widening near 1.7 holds the allowance itself.
  */
 function checkAbove15(): string[] {
   const out = [
-    '# The check above Mach 1.5 (0019 section 3.4.1): the band there is 0.93 to 1.21, its low end',
-    "# widened near Mach 1.7 by RM A52E01's wing 2 (F4). ratio: base drag measured over the term",
-    "# served (curve times K(M, X)); band: the band's ends times K's spread over K. Written by",
-    '# tests/base/fin-trailing-edge-transonic.test.ts.',
+    '# The check above Mach 1.5 (0019 section 3.4.1): the band there is 0.93 to 1.21, widened at',
+    "# both ends near Mach 1.7 by RM A52E01's lines at Mach 1.7 (F4, R1). ratio: base drag",
+    "# measured over the term served (curve times K(M, X)); band: the band's ends times K's spread",
+    '# over K. Written by tests/base/fin-trailing-edge-transonic.test.ts.',
   ];
   const line = (p: TransonicEvidencePoint, taken: string, xs: readonly number[]) => {
     const m0 = Math.max(p.machLow, 1.5);
@@ -484,7 +490,7 @@ function checkAbove15(): string[] {
         const r = [p.cpLow, p.cpHigh].map((cp) => cp / (thinLayerBasePressure(m) * k.nominal));
         const b = [
           (trailingEdgeBasis(m).band.low * k.low) / k.nominal,
-          (FIN_TRAILING_EDGE_BAND.high * k.high) / k.nominal,
+          (trailingEdgeBasis(m).band.high * k.high) / k.nominal,
         ] as const;
         [rLo, rHi] = [Math.min(rLo, ...r), Math.max(rHi, ...r)];
         [bLo, bHi] = [Math.min(bLo, b[0]), Math.max(bHi, b[1])];
@@ -645,8 +651,8 @@ describe('the band below Mach 1.5 (items 5 and 6)', () => {
       ),
     );
     // Every point inside: TN 3548 and RM A51J25 fig. 7's symbols as before; RM A52E01 at Mach 1.7,
-    // any wing, so taken as each, inside the band widened there by #10 (F4), #7 (wing 3 by every
-    // reader naming one, not covered by F4's rule) included.
+    // any wing, so taken as each, inside the band widened there at both ends by its lines with
+    // an agreeing pair (F4, R1); the lines read once, or with no agreeing pair, stay checks.
     expect(lines.filter((l) => l.endsWith('partly outside'))).toEqual([]);
     expect(lines.filter((l) => l.endsWith('inside')).length).toBe(33);
   });
@@ -705,71 +711,117 @@ describe('the band below Mach 1.5 (items 5 and 6)', () => {
   });
 });
 
-describe("the band above Mach 1.5 near 1.7: RM A52E01's lines at Re 1.5e6 (0019 3.4.1 item 6, F4)", () => {
+describe("the band above Mach 1.5 near 1.7: RM A52E01's lines (0019 3.4.1 item 6, F4; R1)", () => {
   const four = 'pairing-2026-10-27-a52e01-m17-four';
-  const row = records(`${four}/identity_map.csv`).find(
-    (r) => r.drawn_curve === 'M=1.2, 1.4, 1.7 #10',
-  )!;
+  const fourRow = (curve: string) =>
+    records(`${four}/identity_map.csv`).find((r) => r.drawn_curve === `M=1.2, 1.4, 1.7 ${curve}`)!;
+  const threeRow = (figure: string, curve: string) =>
+    curvesOf(figure).find((r) => r.drawn_curve === `M=1.2, 1.4, 1.7 ${curve}`)!;
+  const valuesOf = (r: Record<string, string>, readers: readonly string[]) =>
+    readers.flatMap((k) => alpha0Of(r[`alpha0_${k}`]!) ?? []);
 
-  it("takes every reading of line #10 from the four-way pairing, D's alternative end as a value", () => {
-    // Wing 2 by every reader naming a wing (B, C, D); A names none. B and C flag their calls
-    // uncertain, so by the three-reading rule as written it is any wing (the coordinator's ruling
-    // of 2026-10-27; the first F4 application took it as wing 2).
-    for (const k of ['B', 'C', 'D']) expect(row[`${k}_wing_call`]).toMatch(/^wing 2,/);
-    expect(row.A_wing_call).toMatch(/^names no wing/);
-    expect(row.B_wing_call).toMatch(/flagged uncertain/);
-    expect(row.C_wing_call).toMatch(/confidence medium/);
-    expect(wingOfFour(row)).toBe('any wing');
-    expect(row.alpha0_status).toMatch(/^TWO OR MORE AGREEING READINGS \(C-D\)/);
-    const c = alpha0Of(row.alpha0_C!)!;
-    const d = alpha0Of(row.alpha0_D!)!;
-    // D's alternative: the end piece is not part of the curve, which then ends at alpha 0.343.
+  it('holds every RM A52E01 line at Mach 1.7 with an agreeing pair at alpha 0, and no other', () => {
+    // From the pairings: 8(a) #7, #9 and #10 (four-way), 8(b) #6 (three-way); read once or with
+    // no agreeing pair, the rest stay checks.
+    expect(ABOVE_BAND_LINES.map((l) => `${l.set} ${l.curve.split(' ').at(-1)}`).sort()).toEqual([
+      'RM A52E01 fig. 8(a) #10',
+      'RM A52E01 fig. 8(a) #7',
+      'RM A52E01 fig. 8(a) #9',
+      'RM A52E01 fig. 8(b) #6',
+    ]);
+    for (const curve of ['#7', '#8', '#9', '#10']) {
+      const agreeing = fourRow(curve).alpha0_status!.startsWith('TWO OR MORE');
+      expect(ABOVE_BAND_LINES.some((l) => l.set.endsWith('8(a)') && l.curve.endsWith(curve))).toBe(
+        agreeing,
+      );
+    }
+    for (const r of curvesOf('a52e01_fig8b').filter((c) => c.drawn_curve!.startsWith('M=1.2'))) {
+      if (r.A_mach !== '1.7' && r.B_mach !== '1.7' && r.C_mach !== '1.7') continue;
+      const curve = r.drawn_curve!.split(' ').at(-1)!;
+      expect(
+        ABOVE_BAND_LINES.some((l) => l.set.endsWith('8(b)') && l.curve.endsWith(` ${curve}`)),
+        curve,
+      ).toBe(r.alpha0_status!.startsWith('TWO OR MORE'));
+    }
+    // Each the envelope of every reading's value; any wing (a naming reader unsure in each);
+    // wings 3 and 4's layer for K; the 6.88 deg allowance; Mach +-0.01.
+    const expected: [AboveBandLine, number[], string][] = [
+      [RM_A52E01_M17_LINE7, valuesOf(fourRow('#7'), ['A', 'B', 'C', 'D']), 'four'],
+      [RM_A52E01_M17_LINE9, valuesOf(fourRow('#9'), ['A', 'B', 'C', 'D']), 'four'],
+      [
+        RM_A52E01_M17_LINE10,
+        [...valuesOf(fourRow('#10'), ['A', 'B', 'C', 'D']), RM_A52E01_LINE10_ALTERNATIVE_END],
+        'four',
+      ],
+    ];
+    const b6 = ABOVE_BAND_LINES.find((l) => l.set.endsWith('8(b)'))!;
+    expected.push([b6, valuesOf(threeRow('a52e01_fig8b', '#6'), ['A', 'B', 'C']), 'three']);
+    for (const [l, values] of expected) {
+      expect(l.cpLow, l.curve).toBeCloseTo(Math.min(...values), 12);
+      expect(l.cpHigh, l.curve).toBeCloseTo(Math.max(...values), 12);
+      expect(l.machErr).toBeCloseTo(0.01, 12);
+      expect([l.mach, l.wing, l.shape, l.faceAngleDeg]).toEqual([
+        1.7,
+        'any wing',
+        'converging',
+        6.88,
+      ]);
+      const re = l.set.endsWith('8(a)') ? 1.5e6 : 3.8e6;
+      expect(l.layerX).toBeCloseTo(layerParameterRange(0.015, re, re)[1], 12);
+    }
+    for (const r of [fourRow('#7'), fourRow('#9'), fourRow('#10')]) {
+      expect(wingOfFour(r)).toBe('any wing');
+    }
+  });
+
+  it("takes #10's alternative end from the pairing, as F4's rule takes it, a value", () => {
     const text = readFileSync(
       new URL(`../../docs/research/total-drag/audit/${four}/pairing.txt`, import.meta.url),
       'utf8',
     );
     const alt = /lowest end at alpha 0\.343 \+-0\.068, (-0\.\d+) \+-/.exec(text)!;
-    const values = [...c, ...d, Number(alt[1])];
-    expect(RM_A52E01_M17_LINE10.cpLow).toBeCloseTo(Math.min(...values), 12);
-    expect(RM_A52E01_M17_LINE10.cpHigh).toBeCloseTo(Math.max(...values), 12);
-    expect([RM_A52E01_M17_LINE10.mach, RM_A52E01_M17_LINE10.machErr]).toEqual([1.7, 0.01]);
-    // Any wing: wings 3 and 4's layer (h/c 0.015, the largest X) for K, the 6.88 deg widening.
-    expect([
-      RM_A52E01_M17_LINE10.hOverC,
-      RM_A52E01_M17_LINE10.reynolds,
-      RM_A52E01_M17_LINE10.faceAngleDeg,
-    ]).toEqual([0.015, 1.5e6, 6.88]);
+    expect(RM_A52E01_LINE10_ALTERNATIVE_END).toBe(Number(alt[1]));
+    expect(fourRow('#10').alpha0_status).toMatch(/^TWO OR MORE AGREEING READINGS \(C-D\)/);
   });
 
-  it("widens the low end at Mach 1.60 to 1.80, by item 5's windows, to the point's least ratio", () => {
-    const low = (m: number) => +bandLowAbove(m).toFixed(4);
-    for (const m of [1.5, 1.55, 1.6, 1.8, 1.9, 2.0, 2.5, 3.2]) expect(low(m), `${m}`).toBe(0.93);
-    for (const m of [1.65, 1.69, 1.7, 1.71, 1.75]) expect(low(m), `${m}`).toBe(0.35);
-    expect(low(1.625)).toBe(0.64);
-    expect(low(1.775)).toBe(0.64);
-    expect(low(1.799)).toBe(0.9184);
-    // 0.35: the least drag, -C's bound end -0.1207, over the curve at Mach 1.69 (K = 1, a thin
-    // layer, the wider choice), 0.418, less the shape allowance at 6.88 deg (any wing), 0.353,
-    // rounded outward.
-    const s = (transonicTrailingEdge().shapeAllowance * 6.88) / 4;
-    expect(0.1207 / -thinLayerBasePressure(1.69)).toBeCloseTo(0.418, 3);
-    expect(((1 - s) * 0.1207) / -thinLayerBasePressure(1.69)).toBeGreaterThan(0.35);
-    expect(((1 - s) * 0.1207) / -thinLayerBasePressure(1.69)).toBeLessThan(0.36);
-    // The high end and the band at Mach 1.5 are unchanged: no step there.
-    expect(trailingEdgeBasis(1.7).band.high).toBe(FIN_TRAILING_EDGE_BAND.high);
+  it("widens both ends at Mach 1.60 to 1.80, by item 5's windows, to the lines' ratios", () => {
+    const band = (m: number) => {
+      const b = bandAbove(m);
+      return [+b.low.toFixed(4), +b.high.toFixed(4)];
+    };
+    for (const m of [1.5, 1.55, 1.6, 1.8, 1.9, 2.0, 2.5, 3.2])
+      expect(band(m), `${m}`).toEqual([0.93, 1.21]);
+    for (const m of [1.65, 1.69, 1.7, 1.71, 1.75]) expect(band(m), `${m}`).toEqual([0.35, 1.26]);
+    expect(band(1.625)).toEqual([0.64, 1.235]);
+    expect(band(1.775)).toEqual([0.64, 1.235]);
+    expect(band(1.799)).toEqual([0.9184, 1.211]);
+    expect([bandLowAbove(1.7), bandHighAbove(1.7)]).toEqual([0.35, 1.26]);
+    // Each line's ratios: #10 sets the low end (0.418 less the 6.88 deg allowance, 0.353), #9 the
+    // high end (1.084 more the allowance, 1.252), both rounded outward.
+    const r = (l: AboveBandLine) => aboveRatios(l);
+    expect(r(RM_A52E01_M17_LINE10)).toEqual({ low: 0.35, high: 0.67 });
+    expect(r(RM_A52E01_M17_LINE9)).toEqual({ low: 0.75, high: 1.26 });
+    expect(r(RM_A52E01_M17_LINE7)).toEqual({ low: 0.51, high: 0.86 });
+    expect(r(ABOVE_BAND_LINES.find((l) => l.set.endsWith('8(b)'))!)).toEqual({
+      low: 0.73,
+      high: 1.17,
+    });
+    // The band at Mach 1.5 is unchanged: no step there.
     expect(trailingEdgeBasis(1.5).band).toEqual(FIN_TRAILING_EDGE_BAND);
+    expect(trailingEdgeBasis(1.7).band).toEqual({ low: 0.35, high: 1.26 });
   });
 
-  it('holds every reading of #10 and #7 inside the term served, as every wing they may be', () => {
-    for (const p of [RM_A52E01_M17_LINE10, RM_A52E01_M17_LINE7]) {
+  it('holds every reading of every line inside the term served, as every wing it may be', () => {
+    for (const l of ABOVE_BAND_LINES) {
+      const re = l.set.endsWith('8(a)') ? 1.5e6 : 3.8e6;
       for (const hc of [0.03, 0.015]) {
-        const xTurbulent = layerParameterRange(hc, 1.5e6, 1.5e6)[1];
+        const xTurbulent = layerParameterRange(hc, re, re)[1];
         for (let i = 0; i <= 10; i++) {
           const m = 1.69 + 0.002 * i;
           for (let j = 0; j <= 8; j++) {
             const x = 0.5 + ((xTurbulent - 0.5) * j) / 8;
             const h = hc * 0.1;
-            const r = finTrailingEdgeBaseDrag({
+            const t = finTrailingEdgeBaseDrag({
               mach: m,
               count: 1,
               thickness: h,
@@ -781,37 +833,23 @@ describe("the band above Mach 1.5 near 1.7: RM A52E01's lines at Re 1.5e6 (0019 
               reynoldsPerLength: (1 / (hc * x)) ** 5 / 0.1,
               referenceArea: h,
             });
-            const at = `${p.id} h/c ${hc} M ${m} X ${x}`;
-            expect(r.low, at).toBeLessThanOrEqual(-p.cpHigh);
-            expect(r.high, at).toBeGreaterThanOrEqual(-p.cpLow);
-            expect(r.label).toMatch(/band widened to 0\.350 near Mach 1\.7 on RM A52E01's wings/);
+            const at = `${l.set} ${l.curve} h/c ${hc} M ${m} X ${x}`;
+            expect(t.low, at).toBeLessThanOrEqual(-l.cpHigh);
+            expect(t.high, at).toBeGreaterThanOrEqual(-l.cpLow);
+            expect(t.label).toMatch(
+              /band widened to 0\.350 to 1\.260 near Mach 1\.7 on RM A52E01's wings at Re 1\.5e6 and 3\.8e6/,
+            );
           }
         }
       }
     }
   });
 
-  it("takes #7 in too: any wing (B flags its call), C and D's envelope, band only; it moves nothing", () => {
-    const r7 = records(`${four}/identity_map.csv`).find(
-      (r) => r.drawn_curve === 'M=1.2, 1.4, 1.7 #7',
-    )!;
-    for (const k of ['B', 'C', 'D']) expect(r7[`${k}_wing_call`]).toMatch(/^wing 3,/);
-    expect(r7.B_wing_call).toMatch(/flagged uncertain/);
-    expect(wingOfFour(r7)).toBe('any wing');
-    expect(r7.alpha0_status).toMatch(/^TWO OR MORE AGREEING READINGS \(C-D\)/);
-    const values = [...alpha0Of(r7.alpha0_C!)!, ...alpha0Of(r7.alpha0_D!)!];
-    expect(RM_A52E01_M17_LINE7.cpLow).toBeCloseTo(Math.min(...values), 12);
-    expect(RM_A52E01_M17_LINE7.cpHigh).toBeCloseTo(Math.max(...values), 12);
-    // Any wing: wings 3 and 4's layer (h/c 0.015) for the ratio's K, the 6.88 deg widening.
-    expect([RM_A52E01_M17_LINE7.hOverC, RM_A52E01_M17_LINE7.faceAngleDeg]).toEqual([0.015, 6.88]);
-    expect(ABOVE_BAND_POINTS).toEqual([RM_A52E01_M17_LINE10, RM_A52E01_M17_LINE7]);
-    // Its least ratio, 0.51 (0.60 before the shape widening), lies above #10's 0.35 in the same
-    // windows: the band is #10's alone.
-    expect(aboveLeastRatio(RM_A52E01_M17_LINE7)).toBe(0.51);
-    expect(aboveLeastRatio(RM_A52E01_M17_LINE10)).toBe(0.35);
-    expect(-RM_A52E01_M17_LINE7.cpHigh / -thinLayerBasePressure(1.69)).toBeCloseTo(0.6046, 3);
-    // Outside the band served before F4 (0.93): 0.62 to 0.74 of the term served at Mach 1.7.
+  it('#7, any wing, outside 0.93 to 1.21 as #10 is, is covered by the widening', () => {
+    // At -0.18, 0.62 to 0.74 of the term served at Mach 1.7: outside the band before F4.
     expect(-RM_A52E01_M17_LINE7.cpHigh / -thinLayerBasePressure(1.7)).toBeLessThan(0.93);
+    expect(-RM_A52E01_M17_LINE7.cpHigh / -thinLayerBasePressure(1.69)).toBeCloseTo(0.6046, 3);
+    expect(aboveRatios(RM_A52E01_M17_LINE7).low).toBeGreaterThan(bandLowAbove(1.7));
   });
 });
 
@@ -961,6 +999,60 @@ describe('what is refused below Mach 1.5 (item 7), and the labels (item 8)', () 
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, tanSweep: 0.2 }))).toBe(
       'swept-trailing-edge',
     );
+  });
+
+  it('gives every reason that applies, each once (review R2)', () => {
+    const reasons = (f: () => unknown) => {
+      try {
+        f();
+      } catch (e) {
+        if (e instanceof TrailingEdgeRefusals) return e.all.map((r) => r.reason);
+        expect(e).toBeInstanceOf(BaseRefusal);
+        return [(e as BaseRefusal).reason];
+      }
+      return [];
+    };
+    // h/c 0.25 with c/[h Re^(1/5)] 0.8 at Mach 1.3: beyond the reach (0.666) and thicker than
+    // any set (0.20).
+    const thick = {
+      ...edge,
+      mach: 1.3,
+      thickness: 0.025,
+      reynoldsPerLength: (0.1 / (0.025 * 0.8)) ** 5 / 0.1,
+    };
+    expect(reasons(() => finTrailingEdgeBaseDrag(thick))).toEqual([
+      'thick-layer',
+      'beyond-read-range',
+    ]);
+    // A tapered plate, root c/[h Re^(1/5)] 1.7 (h/c 0.03), tip h/c 0.3, at Mach 1.3: the root's
+    // layer and the tip's h/c, each once over every station.
+    const root = 0.1 / (0.003 * 1.7);
+    const tapered = {
+      ...edge,
+      mach: 1.3,
+      thickness: 0.003,
+      tipThickness: 0.003,
+      tipChord: 0.01,
+      reynoldsPerLength: root ** 5 / 0.1,
+    };
+    expect(reasons(() => finTrailingEdgeBaseDrag(tapered))).toEqual([
+      'thick-layer',
+      'beyond-read-range',
+    ]);
+    // A swept laminar edge: the sweep and the laminar layer, above 1.5 and below.
+    expect(
+      reasons(() =>
+        finTrailingEdgeBaseDrag({ ...edge, mach: 2.0, tanSweep: 0.2, layer: 'laminar' }),
+      ),
+    ).toEqual(['swept-trailing-edge', 'laminar-trailing-edge']);
+    expect(
+      reasons(() =>
+        finTrailingEdgeBaseDrag({ ...edge, mach: 1.3, tanSweep: 0.2, transitionReynolds: [3e6] }),
+      ),
+    ).toEqual(['swept-trailing-edge', 'laminar-trailing-edge']);
+    // One reason once: a tapered plate beyond the reach at every station is refused for it once.
+    const allThin = { ...tapered, tipChord: 0.08 };
+    expect(reasons(() => finTrailingEdgeBaseDrag(allThin))).toEqual(['thick-layer']);
   });
 
   it('checks every station on fins of varying chord', () => {

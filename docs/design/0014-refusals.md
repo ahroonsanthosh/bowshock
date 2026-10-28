@@ -2292,4 +2292,7 @@ registry, its content unchanged by the relabelling.
 
 Letters (w) to (ac) are allocated by the coordinator on other branches
 (the registry in the coordinator's letters file); the next free letter is
-the coordinator's to allocate.
+the coordinator's to allocate. _(Corrected 2026-10-28, on merging main
+into the trailing-edge branch: (ac) is no longer on another branch; it is
+the entry above this one, RM A51J11 and RM A52E01 for F4. (w) to (ab)
+remain the other branches'.)_
