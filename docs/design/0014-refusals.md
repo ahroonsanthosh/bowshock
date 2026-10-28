@@ -2900,6 +2900,13 @@ there.)
   Both readers worked from the PDF whose SHA-256 (`7f1ef2fe...b5d4`) is
   the copy (ah) read for the legend.
 
+- _What the agreement tests (noted 2026-10-28, after the re-review of
+  6f44814..cbb42b2)._ As with round 20, the readers agree to within
+  0.0001 in P_B at the three symbols used (within 0.0002 at all 15), so
+  their agreement mostly tests their calibrations, not two independent
+  placements of each symbol. The reviewer's independent scan confirms
+  the first measured symbol at Mach 2.9 at d/h 0.30.
+
 - _TR 1051 enters at these three symbols only_, the thinnest measured
   sting at each Mach number, as the plain envelope of the paired readings,
   both readings' values, not widened by reading errors
@@ -3131,6 +3138,35 @@ round 20 value is used; the addendum above is kept as written).
   tripped station is inside.
 - _Disclosed._ The correction was made by the coordinator with round 6's
   values known, before the pairing; the implementer records it as given.
+
+**2026-10-28 (ah), a note on the correction: the evidence against it,
+and a question for the owner** (the coordinator's, after the re-review of
+6f44814..cbb42b2, which passed; recorded as given).
+
+- _What the correction left out._ TN 2360 p. 8 describes the signature of
+  transition: while the layer is laminar the base-pressure coefficient
+  grows more negative as R rises, and transition brings a positive
+  increment. Fig. 5(a)'s lowest station is the most negative point of its
+  run, -0.2026 (round 20, R 0.765e6) against about -0.196 above 2 million
+  (-0.1953 to -0.1968), which fits a station still in transition. TN
+  2360's ref. 1 is Chapman's TN 2137, published as TR 1051, which says
+  roughness "may not bring about complete transition ahead of the base at
+  Reynolds numbers less than about 2 million".
+- _So_ the source does not settle the layer's state at the lowest
+  station. The ruling stays "undecided, take the wider choice", as in the
+  first addendum, and the band's high end, 1.17, probably rests on a point
+  whose layer was not fully turbulent. Without it the high end would be
+  1.14 (fig. 5(a) at R 4.41e6, 1.1356).
+- _Open question for the owner:_ whether TN 2360 fig. 5's lowest station
+  (R about 0.48e6 to 0.80e6, tripped but below where its own text shows
+  the base pressure independent of R) belongs in the compiled curve's
+  domain. Until the owner decides, it is inside and the band is 0.77 to
+  1.17.
+- _Timing, disclosed (the re-review)._ Reader B's fig. 7 values in data
+  units existed 3 s before the correction (4d7d5c9) was committed. Fig. 7
+  lists no Reynolds number, so the correction does not bear on it: its
+  two body-alone symbols were inside under the fourth addendum as first
+  written too.
 
 **2026-10-28 (ah), the fourth addendum applied: TN 2360 figs. 5 and 7
 from round 20** (the coordinator's instructions of 2026-10-28, after

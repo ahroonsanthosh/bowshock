@@ -289,6 +289,7 @@ describe("the rebuilt body base equals the library's where the library routes to
     expect(() => rebuiltBodyBase(1.4, cases[0]![1])).toThrow(/W2/);
   });
 
+  // 30 s: it routes a full harness run, and it measured 3 to 7 s alone against vitest's 5 s default.
   it("through the harness: three fins routed to the rebuilt factor give the library's total; the present model is refused there", () => {
     const three: HoldOutConfiguration = {
       ...drev,
@@ -352,7 +353,7 @@ describe("the rebuilt body base equals the library's where the library routes to
     const pb = pm.total!.components.find((x) => x.name === 'body base')!;
     expect(Math.abs(rm.total!.cd - (pm.total!.cd - pb.cd + rb.component.cd))).toBeLessThan(1e-12);
     expect(rm.total!.inputs).toEqual(pm.total!.inputs);
-  });
+  }, 30_000);
 });
 
 describe('the corners and the trailing-edge scaling, on DREV shots', { timeout: 1_800_000 }, () => {

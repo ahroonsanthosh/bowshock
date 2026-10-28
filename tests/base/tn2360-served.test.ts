@@ -11,9 +11,12 @@
  *
  * Each value, as read, must lie inside the band served: the served band is meant to contain a valid
  * measurement of a configuration it claims. A reading's own error is not added (0008's reading rule).
- * It checks the code that serves the bands against these data, not the data: a misread of them moves
- * the bands built on them too, and the tests that hold the data (compiled-curve.test.ts,
- * fins-on-base-w1.test.ts) catch it.
+ *
+ * What it is and is not: its 33 body-alone values are inside by construction, since they are among the
+ * readings that set the compiled curve's envelope; the finned values check that the bands are assembled
+ * consistently (the curve's band, the factor's band and the routing by position). It is not out-of-sample
+ * validation, and it does not catch misreads: a misread of these data moves the bands built on them too,
+ * and the tests that hold the data (compiled-curve.test.ts, fins-on-base-w1.test.ts) catch it.
  */
 
 import { describe, expect, it } from 'vitest';

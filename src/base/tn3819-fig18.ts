@@ -373,7 +373,8 @@ export interface Tr1051Fig23bSymbol {
  * D. R. Chapman, NACA TR 1051 (1951), appendix B, fig. 23(b): turbulent base pressure against the sting's
  * diameter over the base diameter, d/h, at each Mach number's thinnest measured sting symbol. Round 19
  * (docs/research/total-drag/audit/round19/): two blind readers of every symbol of the figure, paired by a
- * neutral party (15 of 15 symbols within the summed stated errors); the symbol, not the faired curve,
+ * neutral party (15 of 15 symbols within the summed stated errors; the readers agree to within 0.0001 at
+ * the three symbols used, so the agreement mostly tests their calibrations); the symbol, not the faired curve,
  * as the addendum to 0014 section 10.7 (ah) registers and its third addendum applies. The models (TR 1051, PDF pp. 12 and 21; its text and
  * fig. 23(b)'s legend, which both readers quote): every body a cone-cylinder (10 deg semiangle) or an
  * ogive-cylinder (10-calibre ogival radius), turbulent by a narrow transition strip, on a rear sting more
