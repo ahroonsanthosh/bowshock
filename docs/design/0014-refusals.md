@@ -2468,6 +2468,16 @@ definition was pinned, 0.90e6 to 4.32e6, does not stand.
   pass, but no hobby-scale fin face lies inside the measured Reynolds
   range, so wiring is deferred (0016 section 21.6).
 
+_Note, 2026-10-28 (Fable's review of 3e026a8):_ (af) registered, before
+any reading, "_On a pass_, square-cut leading edges are wired". It
+passed, and they are not wired. That is a deviation from (af) as
+registered, made by the coordinator's ruling above, not by (af)'s
+criteria. It is in the refusing direction: what (af) would have served
+stays refused. On the refusal audit's population the coverage is zero
+either way: none of its 1220 square-cut cases lies in the range (af)
+would have wired on (0.90e6 to 4.32e6) or in the recomputed one (3.85e6
+to 4.32e6) (0016 sections 21.6 and 21.10).
+
 **2026-10-27: second addendum to (ab), after the re-review of
 2026-10-27** (the review of 5e47532..ef7fc7d). (ab)'s text and its first
 addendum stand as written; where this one differs, it governs.

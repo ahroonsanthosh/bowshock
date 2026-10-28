@@ -410,6 +410,25 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
   input: asMessage,
 };
 
+/**
+ * Whether less sweep can help a rounded edge refused past 60 deg (0016 section 21.2). Its message
+ * names each failed term after the preamble, the term at the sweep first ("at 62.0 deg, ..."),
+ * then the term at 60 deg ("at 60 deg, ..."). Less sweep raises both the normal Mach number and
+ * the normal Reynolds number, so it helps only where the term at the sweep is refused and the
+ * term at 60 deg, which every bounded edge needs, is not refused for one above its range.
+ */
+function lessSweepHelps(message: string): boolean {
+  const m =
+    /^a rounded leading edge swept ([\d.]+) deg, beyond the 60 deg[^]*?\(0016 section 21\.2\): /.exec(
+      message,
+    );
+  if (m === null) return false;
+  const terms = message.slice(m[0].length);
+  if (!terms.startsWith(`at ${m[1]} deg, `)) return false;
+  const at60 = terms.indexOf('; and at 60 deg, ');
+  return at60 < 0 || !/is above |covers Mach/.test(terms.slice(at60));
+}
+
 /** Every reason src/fins gives. */
 const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
   'subsonic-free-stream': () => ({
@@ -451,21 +470,23 @@ const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
     /^a rounded leading edge swept [\d.]+ deg is refused/.test(r.message)
       ? {
           reason:
-            "a rounded leading edge's drag is bounded only up to 75 degrees of sweep, the most at " +
+            "a rounded leading edge's drag is bounded only up to 75.1 degrees of sweep, the most at " +
             'which its bounds have been checked against a measured swept cylinder',
-          change: 'less sweep (75 degrees or less), or a bevelled leading edge',
+          change: 'less sweep (75.1 degrees or less), or a bevelled leading edge',
         }
       : {
           reason: "the leading edge's sweep is not a usable number",
           change: 'a sweep of zero or more',
         },
   // From 60 to 75.1 deg the edge is bounded only where the term at its sweep and at 60 deg are both
-  // served (0016 section 21.2); there less sweep is a change that can help too.
+  // served (0016 section 21.2). Less sweep is offered only where it can help: where the term at
+  // the sweep is refused and the term at 60 deg is not refused for a Mach or Reynolds number above
+  // its range, which less sweep only raises (Fable's review, 2026-10-28).
   'leading-edge-range': (r) => ({
     reason:
       "a rounded leading edge's drag is measured only where the Mach number across the edge is " +
       '1.0 to 3.0 and for edge sizes within its data',
-    change: /^a rounded leading edge swept [\d.]+ deg, beyond the 60 deg/.test(r.message)
+    change: lessSweepHelps(r.message)
       ? 'less sweep (60 degrees or less), or a bevelled leading edge'
       : 'bevelled leading edges',
   }),
