@@ -633,8 +633,22 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
     const hi = now.map((x) => x[1]);
     const stated = `${pc(Math.max(...lo))} to ${pc(Math.min(...lo))} and ${pc(Math.min(...hi))} to ${pc(Math.max(...hi))}`;
     expect(stated).toBe('-21.5% to -28.5% and +26.5% to +31.3%');
-    expect(displayText(gateDisplay())).toContain(
-      `the tolerances would be ${stated}; no residual and no verdict changes`,
+    // The caption word for word: what the table shows (the run's values, F4's widening at the Mach
+    // 1.799 row) and what it does not ((ah)'s widening of the body base's band), with the tolerances
+    // the library gives now.
+    const table = gateDisplay().find((b) => b.kind === 'table');
+    if (table?.kind !== 'table') throw new Error('expected the gate table');
+    expect(table.caption).toBe(
+      'The Basic Finner gate re-run with the corrected fins-on-base factor (design record 0010 ' +
+        'section 11): a recorded correction made after the residuals were known, not a new test, ' +
+        'beside the second run (its section 4.2); tolerances as re-derived after an independent ' +
+        'audit (its section 10); residual: measured CX0 over modelled, minus 1; each band rounded ' +
+        'outward, other values to the nearest last digit shown; bands and tolerances as the run ' +
+        "formed them, except that the trailing edges' band at the Mach 1.799 shot widened at both " +
+        'ends since (design record 0019 section 3.4.1, F4), also after the gate was used, and that ' +
+        "row shows it; the body base's band was widened after the run too (design record 0014, " +
+        'section 10.7 (ah)), which the table does not show: a total on this page now shows a wider ' +
+        `band and the tolerances would be ${stated}; no residual and no verdict changes`,
     );
   });
 

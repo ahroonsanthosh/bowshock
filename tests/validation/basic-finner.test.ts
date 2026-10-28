@@ -638,14 +638,20 @@ describe(
       for (const s of shots) {
         const lo = s.total.low / s.total.cd - 1;
         const hi = s.total.high / s.total.cd - 1;
-        // -15.6% at the Mach 1.799 shot since F4 (0019 section 3.4.1), -15.4% before it.
-        expect(lo).toBeGreaterThan(-0.1575);
+        // -15.64% at the Mach 1.799 shot since F4 (0019 section 3.4.1), -15.4% before it.
+        expect(lo).toBeGreaterThan(-0.1566);
         expect(lo).toBeLessThan(-0.1385);
         expect(hi).toBeGreaterThan(0.2095);
         expect(hi).toBeLessThan(0.2225);
         expect(s.residual).toBeGreaterThan(lo);
         expect(s.residual).toBeLessThan(hi);
       }
+      // The ends the title states, to one decimal, from the computed values.
+      const pct = (v: number) => Math.round(1000 * v) / 10;
+      const los = shots.map((s) => s.total.low / s.total.cd - 1);
+      const his = shots.map((s) => s.total.high / s.total.cd - 1);
+      expect([pct(Math.min(...los)), pct(Math.max(...los))]).toEqual([-15.6, -13.9]);
+      expect([pct(Math.min(...his)), pct(Math.max(...his))]).toEqual([21.0, 22.2]);
     });
 
     it('per cluster: mean, min, max and standard deviation of the residuals, corrected and as the second run gave them', () => {

@@ -1093,7 +1093,9 @@ export interface PublishedShot {
  * tests, with the second run's residual beside each (0010 section 4.2). Each band is rounded
  * outward, as every band on the page is (./band.ts); the other values to the nearest last digit.
  * The bands and tolerances are the run's, formed with the compiled curve's band at the time, 0.82
- * to 1.08; the library's are wider by 0014 section 10.7 (ah), which the tests take off.
+ * to 1.08, except at the Mach 1.799 shot, whose row carries F4's widening of the trailing edges'
+ * band (0019 section 3.4.1; below); the library's are wider still by 0014 section 10.7 (ah), which
+ * the table does not show and the tests take off.
  */
 export const PUBLISHED_GATE: readonly PublishedShot[] = [
   {
