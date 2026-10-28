@@ -10,6 +10,7 @@
  * refused beyond 75.1 deg at any Mach number.
  */
 
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { FinRefusal } from '../../src/fins/refusal';
 import { RM_A55H31_FIG12, RM_A55H31_FIG12_SECOND } from '../../src/fins/rm-a55h31';
@@ -20,6 +21,7 @@ import {
   ROUNDED_EDGE_BAND,
   roundedEdgeBandLow,
   sweepChecks,
+  TN3861_RULE_MARGINS,
   transonicFrontSide,
 } from '../../src/fins/rounded-leading-edge';
 
@@ -88,7 +90,9 @@ describe('the bounds', () => {
     const e = at(2.8, 63);
     const { lower, upper } = e.bounded!;
     expect(e.label.startsWith('bounded, not measured: swept 63.0 deg, past the 60 deg')).toBe(true);
-    expect(e.label).toMatch(/the band the whole gap between two terms, each an analogy/);
+    expect(e.label).toMatch(
+      /the band the whole gap between two terms, each a cylinder's front side carried to a fin edge, an analogy tested only in the total\. /,
+    );
     expect(e.label).toContain(
       `Lower: the term at 63.0 deg (M_n ${lower.normalMach.toFixed(3)}) at its band's low end, ` +
         `${lower.band.low.toFixed(3)} of it: the `,
@@ -117,20 +121,33 @@ describe('the bounds', () => {
     expect(upperPart).toMatch(
       /extrapolated in normal Mach number \(checked at M_n 3\.38 to 6\.65; no yawed datum below M_n 1\.95 at 60 deg of sweep or less\)\. $/,
     );
-    // The ordering names figs. 15 and 16 and fig. 17, each read twice.
+    // The ordering names figs. 15 to 17, each read twice; what each point holds it over, the
+    // unflagged 70 deg point to 70 deg only, the two flagged points from 70 to 75.1 deg; the
+    // flags; and fig. 11's stagnation pressure for the 75.1 deg test (Fable's review and its
+    // quick look, 2026-10-28).
     expect(e.label).toMatch(
-      /rests on the principle and on TN 3861's crossflow points at 70, 75 and 75\.1 deg, every one above the principle/,
+      /rests on the principle and on TN 3861's crossflow points \(figs\. 15 to 17, each read twice\), all above the principle: /,
+    );
+    expect(e.label).toContain(
+      `the unflagged 70 deg point holds it to 70 deg, by ${TN3861_RULE_MARGINS.at70.toFixed(3)}; ` +
+        'from 70 to 75.1 deg it rests on the two flagged points too, by ' +
+        `${TN3861_RULE_MARGINS.at75.toFixed(3)} and ${TN3861_RULE_MARGINS.at751.toFixed(3)} (`,
     );
     expect(e.label).toMatch(
-      /figs\. 15 and 16, read twice; their front sides estimated with fig\. 17/,
+      /the unflagged 70 deg point holds it to 70 deg, by 0\.173; from 70 to 75\.1 deg it rests on the two flagged points too, by 0\.677 and 0\.176 \(/,
     );
     expect(e.label).toMatch(
-      /their front sides estimated with fig\. 17, read twice\) \(0016 section 21\.2\)$/,
+      /\(the 75 deg one flagged high, p\. 11; the 75\.1 deg one for an end effect, p\. 10, its stagnation pressure 0\.63 to 0\.74 of Rayleigh's on RM A55H31 fig\. 11\) \(0016 section 21\.2\)$/,
     );
+    // Not that the 70 deg point alone holds the ordering to 75.1 deg.
+    expect(e.label).not.toMatch(/alone holds/);
     expect(e.label).not.toMatch(/largest sweep checked on yawed cylinders|principle alone/);
     // Shorter than the about 2,800 characters the re-review found.
     expect(e.label.length).toBeLessThan(1800);
     expect(at(2.2, 60.1).label.length).toBeLessThan(1800);
+    // The longest on a grid of Mach 1.2 to 8, sweeps 60.1 to 75.1 deg and four Reynolds numbers
+    // (0016 section 21.10): 1,786 characters.
+    expect(at(2.45, 60.1, 2e4).label.length).toBeLessThan(1800);
   });
 
   it("beyond 75.1 deg, the largest sweep at which a yawed cylinder's front side is estimated: refused at any Mach number", () => {
@@ -149,6 +166,23 @@ describe('the bounds', () => {
     expect(at(5.0, 75).bounded).toBeDefined();
   });
 
+  it("21.2's rule's three margins, pinned to the committed verdict: 70 deg +0.1734, 75 deg +0.6771, 75.1 deg +0.1756", () => {
+    // docs/research/tn3861-fig17/rule/out/verdict.txt, written by rule/apply.test.ts, which
+    // checks it against a fresh run (Fable's review, 2026-10-28).
+    const verdict = readFileSync(
+      new URL('../../docs/research/tn3861-fig17/rule/out/verdict.txt', import.meta.url),
+      'utf8',
+    );
+    const margins = [...verdict.matchAll(/least margin (\d\.\d{4}): holds/g)].map((m) => m[1]);
+    expect(margins).toEqual(['0.1734', '0.6771', '0.1756']);
+    expect(verdict).toMatch(
+      /Lord and Ulmann's 70 deg point: P03[\s\S]*least margin 0\.1734: holds/,
+    );
+    expect(verdict).toMatch(/VERDICT: the rule HOLDS at all three points\n?$/);
+    expect(TN3861_RULE_MARGINS).toEqual({ at70: 0.1734, at75: 0.6771, at751: 0.1756 });
+    for (const v of Object.values(TN3861_RULE_MARGINS)) expect(v).toBeGreaterThan(0);
+  });
+
   it("the review's case either side of 60 deg: M 2.2, a 3 mm plate, Re_D 2e5", () => {
     const below = at(2.2, 59.9);
     const beyond = at(2.2, 60.1);
@@ -162,11 +196,19 @@ describe('the bounds', () => {
       expect(below.label).toContain(q);
       expect(beyond.label).toContain(q);
     }
-    // At 59.9 deg the served term's own words; past 60 deg, the datum clause only for the 60 deg term.
-    expect(below.label).toContain('no yawed datum below M_n 1.95 at a served sweep');
+    // At 59.9 deg the served term's own words; past 60 deg, the datum clause only for the 60 deg
+    // term. Since 60 to 75.1 deg is served, the clause names 60 deg or less, not "a served sweep"
+    // (Fable's review, 2026-10-28).
+    expect(below.label).toContain('no yawed datum below M_n 1.95 at 60 deg of sweep or less');
+    expect(below.label).not.toMatch(/at a served sweep/);
     expect(beyond.label).toContain('no yawed datum below M_n 1.95 at 60 deg of sweep or less');
     expect(beyond.bounded!.lower.regime).toBe('extrapolated in Reynolds number');
     expect(beyond.bounded!.upper.regime).toBe('extrapolated in Reynolds number');
+    // Each term's Reynolds qualifier says what the 3% is of: the term, not the Reynolds number
+    // or kappa (Fable's quick look, 2026-10-28).
+    const qualifier = 'extrapolated in Reynolds number (+-3% of the term); its band';
+    expect(beyond.label.split(qualifier).length - 1).toBe(2);
+    expect(beyond.label).not.toMatch(/\+-3%, an allowance/);
     expect(beyond.bounded!.upper.transonic).toBeDefined();
     expect(beyond.bounded!.lower.transonic).toBeDefined();
   });

@@ -342,6 +342,52 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     ).toBe('bevelled leading edges');
   });
 
+  it('past 60 deg, less sweep offered only where it can help: keyed on which term is refused (Fable, 2026-10-28)', () => {
+    const refusal = (mach: number, sweepDeg: number, re: number): FinRefusal => {
+      try {
+        roundedLeadingEdgeDrag({
+          mach,
+          radius: 0.0015,
+          faceAngle: 0,
+          tanLeadingEdgeSweep: Math.tan((sweepDeg * Math.PI) / 180),
+          reynoldsOnDiameter: re,
+        });
+      } catch (e) {
+        return e as FinRefusal;
+      }
+      throw new Error(`M ${mach} at ${sweepDeg} deg, Re_D ${re}: served`);
+    };
+    const change = (e: FinRefusal) =>
+      refusalWords({ component: 'fin leading edges', reason: e.reason, message: e.message }).change;
+    // Only the term at 60 deg refused, its Re_D/2 above 1e6 (the term at 62 deg, Re_D cos 62 deg
+    // 0.96e6, is served): less sweep only raises it, so only a bevelled edge.
+    const only60 = refusal(3.0, 62, 2.05e6);
+    expect(only60.reason).toBe('leading-edge-range');
+    expect(only60.message).toMatch(
+      /\(0016 section 21\.2\): at 60 deg, Reynolds number .* is above 1000000/,
+    );
+    expect(only60.message).not.toMatch(/: at 62\.0 deg, /);
+    expect(change(only60)).toBe('bevelled leading edges');
+    // Both terms refused above (M_n above 3.0 at 60 deg, Re above 1e6 at both): only a bevelled edge.
+    const bothAbove = refusal(7.0, 62, 2.2e6);
+    expect(bothAbove.message).toMatch(/: at 62\.0 deg, .*; and at 60 deg, /);
+    expect(change(bothAbove)).toBe('bevelled leading edges');
+    // The term at the sweep refused below its range and the term at 60 deg above it (Re_D cos
+    // 70 deg below 6.7e3, M/2 above 3.0): less sweep cannot serve the 60 deg term.
+    const mixed = refusal(6.5, 70, 1.5e4);
+    expect(mixed.message).toMatch(/: at 70\.0 deg, .* is below .*; and at 60 deg, .*covers Mach/);
+    expect(change(mixed)).toBe('bevelled leading edges');
+    // Only the term at the sweep refused, below its range: less sweep helps.
+    const onlySweep = refusal(2.0, 62, 2e5);
+    expect(onlySweep.message).toMatch(/: at 62\.0 deg, /);
+    expect(onlySweep.message).not.toMatch(/; and at 60 deg, /);
+    expect(change(onlySweep)).toBe('less sweep (60 degrees or less), or a bevelled leading edge');
+    // Both refused below their ranges (M 1.8: M_n 0.85 and 0.90): less sweep, below 60 deg, helps.
+    const bothBelow = refusal(1.8, 62, 2e5);
+    expect(bothBelow.message).toMatch(/: at 62\.0 deg, .*; and at 60 deg, /);
+    expect(change(bothBelow)).toBe('less sweep (60 degrees or less), or a bevelled leading edge');
+  });
+
   it('a rounded edge refused beyond 75.1 deg: refused at any Mach number, less sweep offered', () => {
     let e: FinRefusal | undefined;
     try {
@@ -360,9 +406,9 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
       refusalWords({ component: 'fin leading edges', reason: e!.reason, message: e!.message }),
     ).toEqual({
       reason:
-        "a rounded leading edge's drag is bounded only up to 75 degrees of sweep, the most at " +
+        "a rounded leading edge's drag is bounded only up to 75.1 degrees of sweep, the most at " +
         'which its bounds have been checked against a measured swept cylinder',
-      change: 'less sweep (75 degrees or less), or a bevelled leading edge',
+      change: 'less sweep (75.1 degrees or less), or a bevelled leading edge',
     });
     // A sweep that is not a number keeps its own words.
     expect(
