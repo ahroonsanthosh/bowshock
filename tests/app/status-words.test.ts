@@ -34,7 +34,7 @@ import {
 } from '../../src/app/status-words';
 import type { FinRefusal } from '../../src/fins/refusal';
 import { roundedLeadingEdgeDrag } from '../../src/fins/rounded-leading-edge';
-import { SWEPT_EDGE_BOUNDED_REASON } from '../../src/total/finned-body';
+import { SQUARE_EDGE_REFUSAL, SWEPT_EDGE_BOUNDED_REASON } from '../../src/total/finned-body';
 import {
   BOUNDED_REASON,
   CLASS_CLAIM,
@@ -376,6 +376,23 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     for (const r of refusalsAt('basic-finner', 1.4)) {
       expect(refusalWords(r).change).not.toMatch(/ahead/);
     }
+  });
+
+  it("a square-cut leading edge: the page's words, exactly (premises, not bounds; faces far larger)", () => {
+    // 0016 section 21.6 and the re-review of ef7fc7d..5159cac: measurements bore out what the
+    // bounds rest on, not the bounds, and only on faces far larger than a fin's.
+    expect(
+      refusalWords({
+        component: 'fin leading edges',
+        reason: 'square-leading-edge',
+        message: SQUARE_EDGE_REFUSAL,
+      }),
+    ).toEqual({
+      reason:
+        "a square-cut leading edge's drag has bounds, but measurements bear out what they rest on " +
+        "only on flat faces far larger than a model rocket fin's",
+      change: 'rounded or bevelled leading edges',
+    });
   });
 
   it('a reason the words do not know yet: its message, plainly', () => {

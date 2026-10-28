@@ -2207,3 +2207,14 @@ main f88ecbe.
   - The page says "the most at which its bounds have been checked
     against a measured swept cylinder".
   - 0014 carries a dated correction under the addendum.
+- **The square-cut edge's words overstated what was tested.**
+  - The page said measurements "bear them out" (the bounds). They bore
+    out the bounds' premises, not the bounds. The words now say
+    "measurements bear out what they rest on".
+  - `SQUARE_EDGE_REFUSAL` said the premises held "at every orifice".
+    It now says exactly what was tested: on all four sets, every face
+    orifice given a value lay above the sonic pressure (six marks on TN
+    4300's figures were given none); and on RM L57C18, the one set that
+    tests it, the face lay below the pitot pressure.
+  - A test pins the page's words exactly, so inverting "far larger"
+    fails it.

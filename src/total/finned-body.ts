@@ -687,11 +687,13 @@ export const SQUARE_EDGE_REFUSAL =
   'corner rounded to 0.02 of the half-thickness, 0.553 against a change of 0.105; at Mach 3.0 ' +
   'with 0.04, 0.531 against a change of 0.134; and at Mach 3.0 with 0.02, 0.445, below the ' +
   'sonic pressure itself, the sonic point then on the face. Measured flat-faced cylinders, read ' +
-  "twice and paired, then bore out the bounds' premises at every orifice (0014 section 10.7 " +
-  "(af)), but only at Reynolds numbers on the face's height of 3.85 to 4.32 million, under the " +
-  "definition pinned for them; a model rocket fin's, on its thickness, lies far below that (in " +
-  "the refusal audit's population, 290,000 at most), so the edge stays refused (0016 section " +
-  '21.6)';
+  "twice and paired, then bore out the bounds' premises, not the bounds (0014 section 10.7 " +
+  '(af)): on all four sets every face orifice that was given a value lay above the sonic ' +
+  "pressure (six marks on TN 4300's figures were given none), and on RM L57C18, the one set " +
+  'that tests it, below the pitot pressure. They did so only at Reynolds numbers on the ' +
+  "face's height of 3.85 to 4.32 million, under the definition pinned for them; a model rocket " +
+  "fin's, on its thickness, lies far below that (in the refusal audit's population, 290,000 at " +
+  'most), so the edge stays refused (0016 section 21.6)';
 
 /**
  * The leading edges and faces of a flat plate (0016, W4): a rounded edge's

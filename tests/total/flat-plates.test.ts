@@ -149,12 +149,19 @@ describe('refusals of flat plates', () => {
     );
     expect(s).toMatch(/at Mach 3\.0 with 0\.04, 0\.531 against a change of 0\.134/);
     expect(s).toMatch(/at Mach 3\.0 with 0\.02, 0\.445, below the sonic pressure itself/);
-    // Measured flat faces bore the premises out, at Reynolds numbers far above a fin's (0016 section 21.6).
-    expect(s).toMatch(
-      /bore out the bounds' premises at every orifice \(0014 section 10\.7\s+\(af\)\)/,
+    // Measured flat faces bore out the premises, not the bounds, at Reynolds numbers far above a
+    // fin's (0016 section 21.6; the re-review of ef7fc7d..5159cac): exactly what was tested.
+    expect(s).toContain(
+      "Measured flat-faced cylinders, read twice and paired, then bore out the bounds' premises, " +
+        'not the bounds (0014 section 10.7 (af)): on all four sets every face orifice that was ' +
+        "given a value lay above the sonic pressure (six marks on TN 4300's figures were given " +
+        'none), and on RM L57C18, the one set that tests it, below the pitot pressure. They did so ' +
+        "only at Reynolds numbers on the face's height of 3.85 to 4.32 million, under the " +
+        "definition pinned for them; a model rocket fin's, on its thickness, lies far below that " +
+        "(in the refusal audit's population, 290,000 at most), so the edge stays refused (0016 " +
+        'section 21.6)',
     );
-    expect(s).toMatch(/of 3\.85 to 4\.32 million/);
-    expect(s).toMatch(/so the edge stays refused \(0016 section\s+21\.6\)$/);
+    expect(s).not.toMatch(/at every orifice/);
     expect(reasons(config(flatPlate(0.05, 'rounded', 'rounded')), 2.8)).toEqual([
       BODY_BASE,
       'fin trailing-edge base: rounded-trailing-edge',

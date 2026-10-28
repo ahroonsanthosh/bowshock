@@ -420,8 +420,8 @@ const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
   }),
   'square-leading-edge': () => ({
     reason:
-      "a square-cut leading edge's drag has bounds, but measurements bear them out only on flat " +
-      "faces far larger than a model rocket fin's",
+      "a square-cut leading edge's drag has bounds, but measurements bear out what they rest on " +
+      "only on flat faces far larger than a model rocket fin's",
     change: 'rounded or bevelled leading edges',
   }),
   'leading-edge-geometry': () => ({
