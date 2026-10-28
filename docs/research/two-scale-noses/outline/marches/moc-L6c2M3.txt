@@ -594,3 +594,28 @@ r 4 (2188 x 80) from /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-1
   line 81 (x 5.31570e-4): min Mach 1.0065, wall K -7.45e-3, fitted downstream 0.0217387441804 (99.993% of the drag)
     MOC 640: 0.0200205144978, fitted - MOC 1.718e-3 (7.903e-2 of the drag), mass 5.20e-2, penetration 2.0e-1, 16 s
     MOC 1280: 0.0196678217760, fitted - MOC 2.071e-3 (9.526e-2 of the drag), mass 6.31e-2, penetration 2.5e-1, 62 s
+    MOC 2560: 0.0202330821385, fitted - MOC 1.506e-3 (6.926e-2 of the drag), mass 1.52e-1, penetration 6.8e-1, 255 s
+  line 137 (x 2.06971e-3): min Mach 1.3483, wall K -4.31e-2, fitted downstream 0.0217324980732 (99.965% of the drag)
+    MOC 640: 0.0217558744162, fitted - MOC -2.338e-5 (-1.075e-3 of the drag), mass 1.28e-3, penetration 0.0e+0, 12 s
+    MOC 1280: 0.0217389872360, fitted - MOC -6.489e-6 (-2.985e-4 of the drag), mass 6.32e-4, penetration 0.0e+0, 47 s
+    MOC 2560: 0.0217298740200, fitted - MOC 2.624e-6 (1.207e-4 of the drag), mass 3.09e-4, penetration 0.0e+0, 196 s
+  line 209 (x 8.21813e-3): min Mach 1.7457, wall K -1.21e-1, fitted downstream 0.0217017541034 (99.823% of the drag)
+    MOC 640: 0.0217111212881, fitted - MOC -9.367e-6 (-4.309e-4 of the drag), mass 9.55e-4, penetration 0.0e+0, 8 s
+    MOC 1280: 0.0217006752773, fitted - MOC 1.079e-6 (4.962e-5 of the drag), mass 4.50e-4, penetration 0.0e+0, 34 s
+    MOC 2560: 0.0216952679616, fitted - MOC 6.486e-6 (2.983e-4 of the drag), mass 2.07e-4, penetration 0.0e+0, 137 s
+  line 282 (x 3.21256e-2): min Mach 2.1434, wall K -2.15e-1, fitted downstream 0.0215618005385 (99.179% of the drag)
+    MOC 640: 0.0215664961532, fitted - MOC -4.696e-6 (-2.160e-4 of the drag), mass 7.07e-4, penetration 0.0e+0, 6 s
+    MOC 1280: 0.0215583302863, fitted - MOC 3.470e-6 (1.596e-4 of the drag), mass 3.31e-4, penetration 0.0e+0, 22 s
+    MOC 2560: 0.0215540599240, fitted - MOC 7.741e-6 (3.561e-4 of the drag), mass 1.51e-4, penetration 0.0e+0, 94 s
+  line 355 (x 1.25841e-1): min Mach 2.4738, wall K -2.90e-1, fitted downstream 0.0209393401042 (96.316% of the drag)
+    MOC 640: 0.0209344520139, fitted - MOC 4.888e-6 (2.248e-4 of the drag), mass 3.56e-4, penetration 0.0e+0, 4 s
+    MOC 1280: 0.0209310632748, fitted - MOC 8.277e-6 (3.807e-4 of the drag), mass 1.51e-4, penetration 0.0e+0, 14 s
+    MOC 2560: 0.0209291820270, fitted - MOC 1.016e-5 (4.672e-4 of the drag), mass 5.89e-5, penetration 0.0e+0, 53 s
+  line 423 (x 4.93224e-1): min Mach 2.7060, wall K -3.32e-1, fitted downstream 0.0182918800173 (84.139% of the drag)
+    MOC 640: 0.0182810961690, fitted - MOC 1.078e-5 (4.960e-4 of the drag), mass 4.73e-5, penetration 0.0e+0, 2 s
+    MOC 1280: 0.0182807629040, fitted - MOC 1.112e-5 (5.114e-4 of the drag), mass 1.77e-5, penetration 0.0e+0, 8 s
+    MOC 2560: 0.0182805983629, fitted - MOC 1.128e-5 (5.189e-4 of the drag), mass 5.39e-6, penetration 0.0e+0, 30 s
+  line 484 (x 1.92080e+0): min Mach 2.8595, wall K -3.50e-1, fitted downstream 0.00885112457605 (40.713% of the drag)
+    MOC 640: 0.00883533789409, fitted - MOC 1.579e-5 (7.262e-4 of the drag), mass 8.91e-5, penetration 0.0e+0, 1 s
+    MOC 1280: 0.00884105829294, fitted - MOC 1.007e-5 (4.630e-4 of the drag), mass 2.74e-5, penetration 0.0e+0, 3 s
+    MOC 2560: 0.00884209528553, fitted - MOC 9.029e-6 (4.153e-4 of the drag), mass 1.18e-5, penetration 0.0e+0, 10 s

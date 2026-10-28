@@ -44,3 +44,9 @@ seeded /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/sc
 2026-10-28T07:23:55Z a start moc L6c2M3
 2026-10-28T08:07:27Z b done L5c2M3r4 exit 0
 2026-10-28T08:07:27Z b start moc L5c2M3
+2026-10-28T08:22:00Z a done moc L6c2M3 exit 0
+2026-10-28T08:22:00Z a finished /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/vk/tree/tests/vk/jobs-a.txt
+2026-10-28T08:59:29Z b done moc L5c2M3 exit 0
+2026-10-28T08:59:29Z b finished /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/vk/tree/tests/vk/jobs-b.txt
+2026-10-28T10:11:08Z b finished /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/vk/tree/tests/vk/jobs-b.txt
+2026-10-28T10:11:08Z a finished /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/vk/tree/tests/vk/jobs-a.txt

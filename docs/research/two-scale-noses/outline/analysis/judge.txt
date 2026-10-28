@@ -60,6 +60,16 @@ Largest miss 3.57e-4 at C0 L5 M2 cyl2 line 204 (x 0.268); allowance (twice, roun
    line 228 x 0.6396 share 74.0%: fails (change from 1280 4.2e-5, 4.8e-5, 3.5e-5); orders fitted 1.88 march 1.33 upstream 1.17; miss 3.02e-4, 3.32e-4; finest minus lowest bound 7.41e-4
    line 240 x 1.0013 share 59.6%: fails (change from 1280 9.0e-5, 9.5e-5, 8.4e-5); orders fitted 1.91 march 1.55 upstream 1.35; miss 2.85e-4, 3.08e-4; finest minus lowest bound 7.28e-4
    containment (band + allowance over the error against each passing line's lowest bound): 1.73
+== haack C0 L5 M3 cyl2 (new): PASS
+   drags 0.03021018405, 0.03013207166, 0.03010443858, order 1.50, extrapolation -5.02e-4, band (no allowance) 6.28e-4
+   line 82 x 0.0009 share 100.0%: fails (mass balance 2.3e-4, 5.4e-3, 1.3e-1; change from 1280 -2.0e-4, -5.1e-3, -2.8e-2); orders fitted 1.50 march -2.82 upstream 2.01; miss -2.15e-3, 1.17e-1; finest minus lowest bound 9.14e-2
+   line 133 x 0.0033 share 99.9%: fails (mass balance 2.2e-4, 2.5e-4, 2.6e-4; change from 1280 -1.7e-4, -1.8e-4, -2.0e-4); orders fitted 1.50 march -0.04 upstream 2.03; miss 5.25e-4, -2.96e-4; finest minus lowest bound 2.13e-4
+   line 197 x 0.0113 share 99.7%: fails (mass balance 1.2e-4, 1.6e-4, 1.9e-4; change from 1280 -1.5e-4, -1.8e-4, -2.1e-4); orders fitted 1.50 march 0.21 upstream 1.96; miss -4.57e-4, -2.91e-4; finest minus lowest bound 2.21e-4
+   line 265 x 0.0394 share 98.8%: fails (mass balance 6.8e-5, 1.0e-4, 1.3e-4; change from 1280 -9.3e-5, -1.2e-4, -1.6e-4); orders fitted 1.50 march 0.23 upstream 1.84; miss -4.48e-4, -2.45e-4; finest minus lowest bound 2.70e-4
+   line 330 x 0.1380 share 95.2%: fails (mass balance 1.3e-5, 2.7e-5, 4.9e-5; change from 1280 -2.3e-5, -4.4e-5, -6.8e-5); orders fitted 1.50 march 0.87 upstream 1.66; miss -1.92e-4, -1.54e-4; finest minus lowest bound 3.63e-4
+   line 392 x 0.4752 share 82.1%: passes; orders fitted 1.52 march 1.28 upstream 1.36; miss -9.08e-5, -6.29e-5; finest minus lowest bound 4.65e-4
+   line 450 x 1.6620 share 40.2%: fails (change from 1280 4.4e-5, 4.2e-5, 3.5e-5); orders fitted 1.73 march 1.24 upstream 1.17; miss 2.85e-5, 9.39e-5; finest minus lowest bound 6.51e-4
+   containment (band + allowance over the error against each passing line's lowest bound): 3.07
 == haack C0 L6 M1.5 cyl2 (new): PASS
    drags 0.02470607572, 0.02455866730, 0.02452883581, order 2.30, extrapolation -4.05e-4, band (no allowance) 5.07e-4
    line 56 x 0.0071 share 99.8%: fails (mass balance 1.0e-3, 9.3e-4, 7.7e-4; change from 1280 5.7e-4, -3.9e-4, -3.0e-3; not monotone (march false, upstream true))
@@ -79,3 +89,13 @@ Largest miss 3.57e-4 at C0 L5 M2 cyl2 line 204 (x 0.268); allowance (twice, roun
    line 207 x 0.1709 share 94.5%: fails (mass balance 9.8e-6, 1.9e-5, 6.6e-5; change from 1280 2.1e-4, 2.3e-4, 1.6e-4; not monotone (march false, upstream true))
    line 239 x 0.5435 share 81.1%: fails (change from 1280 4.9e-5, 3.5e-5, 2.3e-5); orders fitted 2.14 march 1.50 upstream 1.45; miss 3.51e-4, 3.66e-4; finest minus lowest bound 7.00e-4
    line 270 x 1.7829 share 40.3%: fails (change from 1280 1.6e-4, 8.7e-5, 9.3e-5); orders fitted 2.15 march 1.57 upstream 1.93; miss 3.98e-4, 4.31e-4; finest minus lowest bound 8.06e-4
+== haack C0 L6 M3 cyl2 (new): PASS
+   drags 0.02182399314, 0.02176271112, 0.02174019577, order 1.44, extrapolation -6.01e-4, band (no allowance) 7.52e-4
+   line 81 x 0.0005 share 100.0%: fails (mass balance 3.5e-4, 2.0e-2, 1.5e-1; change from 1280 -4.5e-4, -1.3e-2, 2.6e-2); orders fitted 1.44 march 0.28 upstream 2.01; miss 2.12e-1, 7.91e-2; finest minus lowest bound 6.93e-2
+   line 137 x 0.0021 share 100.0%: fails (mass balance 2.6e-4, 2.9e-4, 3.1e-4; change from 1280 -3.3e-4, -3.9e-4, -4.2e-4); orders fitted 1.44 march 0.37 upstream 2.03; miss -5.80e-4, -4.90e-4; finest minus lowest bound 1.21e-4
+   line 209 x 0.0082 share 99.8%: fails (mass balance 1.4e-4, 1.7e-4, 2.1e-4; change from 1280 -1.8e-4, -2.1e-4, -2.5e-4); orders fitted 1.44 march -0.02 upstream 1.94; miss 2.00e-3, -3.15e-4; finest minus lowest bound 2.98e-4
+   line 282 x 0.0321 share 99.2%: fails (mass balance 8.1e-5, 1.1e-4, 1.5e-4; change from 1280 -1.1e-4, -1.5e-4, -2.0e-4); orders fitted 1.44 march 0.10 upstream 1.80; miss -8.85e-4, -2.59e-4; finest minus lowest bound 3.57e-4
+   line 355 x 0.1258 share 96.3%: fails (mass balance 1.6e-5, 3.3e-5, 5.9e-5; change from 1280 -3.4e-5, -6.0e-5, -8.7e-5); orders fitted 1.44 march 0.66 upstream 1.54; miss -2.04e-4, -1.40e-4; finest minus lowest bound 4.76e-4
+   line 423 x 0.4932 share 84.1%: passes; orders fitted 1.48 march 1.07 upstream 1.12; miss -5.85e-5, -1.84e-5; finest minus lowest bound 6.06e-4
+   line 484 x 1.9208 share 40.7%: fails (change from 1280 4.8e-5, 5.5e-5, 4.8e-5); orders fitted 1.67 march 1.33 upstream 1.04; miss 1.15e-4, 1.65e-4; finest minus lowest bound 8.19e-4
+   containment (band + allowance over the error against each passing line's lowest bound): 2.56
