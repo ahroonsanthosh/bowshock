@@ -222,3 +222,12 @@ Results so far, by the registered criteria:
   6.4e-12 and 4.8e-15), gates passed; nj = 80 running (on 2026-10-28 at
   05:08, resumed at 8000 and 4500 iterations after a restart; the lanes'
   stops and resumptions are in `fits/queue-log.txt` and `fits/log.txt`).
+
+The refusal audit's population (`docs/research/refusals`, 2000 rockets,
+8000 cases) with 6 calibers at Mach 1.5 added, an interim run before
+the Mach 3 verdicts: served totals 181 to 198 against main at 5921198
+(Mach 1.5 to 1.8: 68 to 84; 1.8 to 3.0: 113 to 114), and 155 to 168
+against main at 3e026a8, after fins near the base and the leading edges
+(Mach 1.5 to 1.8: 53 to 65; 1.8 to 3.0: 102 to 103); the run without the
+change gave main's outputs byte for byte both times, and the
+cross-check with `src/total` agreed on 1200 of 1200 cases each time.
