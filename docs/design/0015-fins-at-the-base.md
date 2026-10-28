@@ -420,10 +420,17 @@ measurement holds it). No measurement shows how positions carry to other
 chords, so fins ending ahead of the base (0 < x/c < 1) are served only
 with a root chord of 1.5 body diameters within 0.5% (`W1_POSITION_CHORD_OVER_DIAMETER`,
 `W1_POSITION_CHORD_TOLERANCE`; the 0.5% is 0011 section 3's precedent for
-the same geometry as measured), the swept fins served from 0.9 root
+the same geometry as measured, corrected 2026-10-28 below), the swept fins served from 0.9 root
 chords ahead included; any other chord, or none given, is refused with
 plain words. `bodyBaseDrag` takes the ratio from `BaseFins.rootChordOverDiameter`,
-which `baseFinsOf` sets from the body's diameter. Below about M 1.2 the
+which `baseFinsOf` sets from the body's diameter. _Corrected 2026-10-28 (the review of
+86bcf73, its item 4):_ 0011 section 3's 0.5% is a typing tolerance for the
+Basic Finner's own inputs, "not for other rockets", so it is no precedent
+here. The 0.5% stands on TN 2360's own resolution in position: a chord
+0.5% off 1.5 diameters is off by 0.0075 diameters, and it moves a position
+given in chords by at most 0.005 chords (at x/c 1.0), a fortieth of the 0.2
+chords between TN 2360's stations, across which the bracket already
+runs. Below about M 1.2 the
 at-base upper bound would rest on its margin, not on TN 2360's mechanism
 (the linear superposition loses meaning near M 1): moot now, recorded so
 the record stays true.
@@ -862,6 +869,20 @@ trailing edge is rounded, which the rebuilt factor does not take, is
 refused for its trailing edge with both reasons
 (`flat-plates.test.ts`, `fins-on-base-routing.test.ts`).
 
+**Ahead of the base, stated (2026-10-28, the review of 86bcf73, its item
+3).** "The counts and positions of section 3" above includes the measured
+positions ahead of the base (x/c above 0 to 1.0, Mach 1.5 to 2.0, the
+chord rule; x/c exactly 1.0 since 2026-10-27, TN 2360's station there),
+and there flat-faced fins take the same bounds: the upper the unswept
+circular-arc member at least as thick, at their position (TN 2360's), and
+the lower the same 0.838, the relief measured at the base. That lower end
+is taken by reference: no flat-faced fin is measured ahead of the base. It
+rests on this section's argument, the registered one (0014 section 10.7,
+amendment i): the relief arises at the fin-body junctures and the square
+edge, and the relief measured with fins ahead of the base, RM L52J21a's
+at 0.85 +-0.05 root chords, is at most 5% (M 1.62 to 2.41), inside it.
+This record confirms that reading; it adds no case and moves no total.
+
 **What it does not reach.** Rounded trailing edges: no circular arc
 bounds a rounded edge (its half-thickness falls as the square root of the
 distance to the edge), so neither bound is shown and nothing at the base
@@ -989,7 +1010,11 @@ read later for the zero member (below), and RM L52E06 fig. 8 for W2
 (section 11.3). The band-setting figures 0014 lists that this method does
 not use were not read (TN 2360 figs. 5 and 7, TN 3819 fig. 32, RM L52J21a
 fig. 39 and figs. 31 to 33 outside panel (d), RM L52E06 fig. 6, TN 3372
-figs. 7 to 12); 0014 section 10.7 (h) gives the status of each.
+figs. 7 to 12); 0014 section 10.7 (h) gives the status of each. _Corrected
+2026-10-28 (the review of 86bcf73, its item 7):_ TN 3819 fig. 32 has since
+been read three times blind (round 6, round 14 and round 16) and paired
+three ways (0014 section 10.7 (ad), its note of 2026-10-26); no method
+uses it, so it still sets nothing (section 10).
 
 **Second readings** (round 6, blind, made on another branch from its own
 renders: `docs/research/total-drag/audit/round6/readings/`, method in its

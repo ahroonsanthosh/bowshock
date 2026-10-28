@@ -165,7 +165,13 @@ export const W1_STATIONS = [0, 0.2, 0.4, 0.6, 0.8, 1.0] as const;
  * of the base are served only with this one (0015 section 3.3; 0014 section 10.7 (ad), the review of 2026-10-26).
  */
 export const W1_POSITION_CHORD_OVER_DIAMETER = 1.875 / 1.25;
-/** How close the root chord over the body diameter must be to TN 2360's: 0.5%, 0011 section 3's precedent. */
+/**
+ * How close the root chord over the body diameter must be to TN 2360's: 0.5%. Not 0011 section 3's typing
+ * tolerance, which 0011 keeps for the Basic Finner's own inputs: 0.5% of the 1.5-diameter chord is 0.0075
+ * diameters, and it moves a position given in chords by at most 0.005 chords (at x/c 1.0), a fortieth of the
+ * 0.2 chords between TN 2360's stations, across which the bracket already runs (0015 section 3.3, the note of
+ * 2026-10-28).
+ */
 export const W1_POSITION_CHORD_TOLERANCE = 0.005;
 
 /**
