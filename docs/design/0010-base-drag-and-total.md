@@ -146,8 +146,9 @@ band's carried down (0015 section 11.1), so 0.77, and its nominal, the
 band's midpoint, 1.04 (1.065 before). The label is now "correlation:
 compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.77 to 1.17
 measured over curve, set on every body-alone base pressure read twice in its
-domain (0008 section 3.3, 0014 section 10.7 (ah)), tested only in the
-total". This widens a band after the DREV gate and BRL 934's range A used
+domain, TR 1051 at its thinnest sting (0008 section 3.3, 0014 section 10.7
+(ah)), tested only in the total" (", TR 1051 at its thinnest sting" added
+2026-10-28, after Fable's review). This widens a band after the DREV gate and BRL 934's range A used
 it (0014 section 10.7 (ah) records what it moves there: no modelled total,
 no residual and no verdict). The paragraph above is kept as written.
 
