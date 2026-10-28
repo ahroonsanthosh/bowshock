@@ -176,3 +176,7 @@
 2026-10-28T07:06:30.229Z haack C0 L5 M3 cyl2 nj20x4: 10000 iterations, maxSpeed 4.20e-9, drag 0.0301044385836, remaining 5.64e-11
 2026-10-28T07:23:54.958Z haack C0 L6 M3 cyl2 nj20x4: quality {"wall":79.98183875631035,"minAngle":69.57430966629505,"sizeRatio":1.0729048140622468,"aspect":5.681003046213779,"gates":[],"stagnationError":-0.0002228496013532144,"standoff":0.000026179819720161362}
 2026-10-28T07:23:54.961Z haack C0 L6 M3 cyl2 nj20x4: settled early at 14000 iterations, remaining 7.17e-12, maxSpeed 2.31e-10, drag 0.021740195765273022, from the wall strip 0.021740195765273061; saved
+2026-10-28T07:26:04.494Z haack C0 L5 M3 cyl2 nj20x4: 11000 iterations, maxSpeed 1.95e-9, drag 0.0301044385825, remaining 1.55e-11
+2026-10-28T07:46:29.732Z haack C0 L5 M3 cyl2 nj20x4: 12000 iterations, maxSpeed 8.95e-10, drag 0.0301044385827, remaining 1.96e-12
+2026-10-28T08:07:26.995Z haack C0 L5 M3 cyl2 nj20x4: quality {"wall":80.08993130288249,"minAngle":69.22834871916588,"sizeRatio":1.0860123218836277,"aspect":5.268733608406561,"gates":[],"stagnationError":-0.00018641200422842008,"standoff":0.00004523773691082155}
+2026-10-28T08:07:27.015Z haack C0 L5 M3 cyl2 nj20x4: settled early at 13000 iterations, remaining 7.59e-12, maxSpeed 4.10e-10, drag 0.030104438583214738, from the wall strip 0.030104438583214752; saved
