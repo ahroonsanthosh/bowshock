@@ -19,7 +19,11 @@ import {
   ROUNDED_PLATE_AHEAD_OF_BASE,
 } from '../base/base-drag';
 import type { BaseRefusalReason } from '../base/refusal';
-import { W1_FLAT_BEYOND_60_MARK, W1_FLAT_UNDER_45_MARK } from '../base/fins-on-base-w1';
+import {
+  W1_FLAT_BEYOND_60_MARK,
+  W1_FLAT_UNDER_45_MARK,
+  W1_SWEEP_REFUSED_TOO,
+} from '../base/fins-on-base-w1';
 import type { FinRefusalReason } from '../fins/refusal';
 import type { ComponentRefusal } from '../total/total-drag';
 import type { RocketDesign } from '../rocket/design';
@@ -246,20 +250,32 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
   // Never advice to move the fins further ahead: nothing is served more than a root chord ahead (0014
   // section 10.7 (ad), 2026-10-27). Where their trailing edge is refused near the base too, the change
   // names one served at the base.
-  'fins-near-base': (r) => ({
-    reason:
-      'fins ending ahead of the base: the base drag with fins there is measured only up to one ' +
-      'root chord ahead, at Mach 1.5 to 2.0 (none is known below Mach 1.5), and only with a fin ' +
-      'root chord of 1.5 body diameters' +
-      (r.message.includes(ROUNDED_EDGE_NOTE) || r.message.includes(BLUNT_EDGE_NOTE)
-        ? ', and only for square or sharp trailing edges'
-        : ''),
-    change: r.message.includes(ROUNDED_EDGE_NOTE)
-      ? 'square or sharp trailing edges, with the fins ending at the base'
-      : r.message.includes(BLUNT_EDGE_NOTE)
-        ? 'sharp trailing edges, with the fins ending at the base'
-        : "the fins' trailing edges at the base",
-  }),
+  'fins-near-base': (r) => {
+    // A flat plate whose sweep is refused below Mach 1.62 too (0014 section 10.7 (z), the note of 2026-10-27):
+    // both reasons, and a change that the sweep's refusal does not stop.
+    const sweep = r.message.includes(W1_SWEEP_REFUSED_TOO);
+    return {
+      reason:
+        'fins ending ahead of the base: the base drag with fins there is measured only up to one ' +
+        'root chord ahead, at Mach 1.5 to 2.0 (none is known below Mach 1.5), and only with a fin ' +
+        'root chord of 1.5 body diameters' +
+        (r.message.includes(ROUNDED_EDGE_NOTE) || r.message.includes(BLUNT_EDGE_NOTE)
+          ? ', and only for square or sharp trailing edges'
+          : '') +
+        (sweep
+          ? '; and below Mach 1.62, at or near the base, flat fins are taken only unswept or swept ' +
+            '45 to 60 deg'
+          : ''),
+      change: r.message.includes(ROUNDED_EDGE_NOTE)
+        ? 'square or sharp trailing edges, with the fins ending at the base'
+        : r.message.includes(BLUNT_EDGE_NOTE)
+          ? 'sharp trailing edges, with the fins ending at the base'
+          : sweep
+            ? "the fins' trailing edges at the base, the fins unswept or swept 45 to 60 deg at the " +
+              'leading edge'
+            : "the fins' trailing edges at the base",
+    };
+  },
   'fin-count': () => ({
     reason: 'with fins at the base, the base drag is measured with four fins only',
     change: 'four fins',
@@ -270,15 +286,16 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
     r.message.includes(W1_FLAT_UNDER_45_MARK)
       ? {
           reason:
-            'below Mach 1.62 the base drag behind flat fins at the base is measured only with fins ' +
-            'swept 45 deg, and nothing measured shows a lighter sweep gives the same',
+            'below Mach 1.62 the base drag behind flat fins at or near the base is measured only at ' +
+            'Mach 1.06 to 1.10, with fins swept 45 deg, and nothing measured shows a lighter sweep ' +
+            'gives the same',
           change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
         }
       : r.message.includes(W1_FLAT_BEYOND_60_MARK)
         ? {
             reason:
-              'below Mach 1.62 the base drag behind flat fins at the base is not measured with fins ' +
-              'swept beyond 60 deg, and nothing measured shows a sharper sweep gives the same',
+              'below Mach 1.62 the base drag behind flat fins at or near the base is not measured ' +
+              'with fins swept beyond 60 deg, and nothing measured shows a sharper sweep gives the same',
             change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
           }
         : {

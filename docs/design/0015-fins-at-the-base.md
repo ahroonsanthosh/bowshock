@@ -1884,7 +1884,22 @@ leading edge swept beyond 60 deg below M 1.62 (the message carrying
 `W1_FLAT_BEYOND_60_MARK`): 61 and 70 deg refused at M 1.55 and served at
 1.65, served at 1.62 and refused at 1.6199, the same within a chord, 60
 and 59.9 deg served and 60.1 refused at 1.55; `status-words.test.ts`
-holds the page's three fin-sweep wordings to 0017's three rows.
+holds the page's three fin-sweep wordings to 0017's three rows. Since
+the quick look of 2026-10-27, after main's A5 (0014 10.7 (ad)): both
+rules are in `flatPlateSweepNarrowing`, and where the fins end ahead of
+the base and their position is refused too (below Mach 1.5, another root
+chord than 1.5 body diameters, or more than a chord ahead), the one
+refusal names both, the position first (`fins-near-base`, the sweep's
+reason after `W1_SWEEP_REFUSED_TOO`), in the factor and in
+`bodyBaseDrag`, and the page's words for it advise the base with a sweep
+served there, so that neither reason's advice leads into the other
+(`status-words.test.ts`: a plate 0.5 and 1.5 root chords ahead, swept 20
+and 70 deg, at Mach 1.2; `fins-on-base-w1.test.ts`: the same at Mach 1.2
+and, with a 2.5-diameter chord, 1.55). A sweep is printed to one
+decimal, or to as many as keep it on its own side of 45 and 60 deg
+(44.99 deg is not printed 45.0; `sweepDegrees`), and the narrowed words
+say "at or near the base", the first naming RM L52E06's Mach numbers,
+1.06 to 1.10.
 
 **Coverage.** Measured on the population of 0014 at 400 rockets, one
 condition per Mach band (1,600 cases), before and after this section

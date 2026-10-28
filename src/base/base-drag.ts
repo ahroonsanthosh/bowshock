@@ -61,8 +61,10 @@ import { W2_BAND, W2_LABEL, W2_MACH_RANGE, w2CurveBasePressure } from './base-w2
 import { finsOnBaseFactor, type FinsAtBase, type FinsOnBaseFactor } from './fins-on-base';
 import {
   finsOnBaseFactorW1,
+  flatPlateSweepNarrowing,
   nearBasePositionReasons,
   nearBasePositionRefusal,
+  W1_SWEEP_REFUSED_TOO,
   trailingEdgeShape,
   type FinsNearBase,
   type FinsOnBaseFactorW1,
@@ -304,6 +306,14 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
       const te = trailingEdgeShape(fins.nearBase.section);
       return te === 'diverging' || te === 'converging-blunt' ? BLUNT_EDGE_NOTE : '';
     };
+    // A flat plate whose sweep is refused below Mach 1.62 (0014 section 10.7 (z), the note of 2026-10-27): named
+    // with any refusal of its position, so that the advice for the position, the fins at the base, does not
+    // lead into the sweep's refusal.
+    const sweepNote = (): string => {
+      const sweep =
+        fins.nearBase === undefined ? undefined : flatPlateSweepNarrowing(mach, fins.nearBase);
+      return sweep === undefined ? '' : `${W1_SWEEP_REFUSED_TOO}${sweep}`;
+    };
     const rebuilt = (): FinsOnBaseFactorW1 => {
       const near = fins.nearBase;
       // A plate whose trailing edge is not square (rounded) has no section the rebuilt factor takes, at the base
@@ -341,8 +351,9 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
       }
       // Then the position: where TN 2360 measured none, no section serves the fins, so it is named before
       // any refusal of their section, sweep, count or thickness, whose words would lead to a change still
-      // refused there (0014 section 10.7 (ad), 2026-10-27; 0015 section 3.3).
-      const position = nearBasePositionRefusal(mach, x, fins.rootChordOverDiameter);
+      // refused there (0014 section 10.7 (ad), 2026-10-27; 0015 section 3.3), with the sweep's refusal where a
+      // plate's sweep is refused too (sweepNote).
+      const position = nearBasePositionRefusal(mach, x, fins.rootChordOverDiameter, sweepNote());
       if (position !== undefined) throw position;
       if (near === undefined) {
         throw (
@@ -439,7 +450,8 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
           'base drag with fins that far ahead (TN 2360 measures up to one chord ahead, with a root chord ' +
           'of 1.5 body diameters, at Mach 1.5 and 2.0), so they are refused; until 2026-10-27 they took ' +
           "the plain curve, whose band missed TN 2360's measurement a chord ahead (0015 section 3.3)" +
-          edgeNote(),
+          edgeNote() +
+          sweepNote(),
       );
     }
   }
