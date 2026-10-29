@@ -1223,9 +1223,12 @@ refused.
 Only the
 Von Karman nose is served (`bluntNoseRefusal`), and only inside the
 outline of the (calibers, Mach) points referenced
-(`VON_KARMAN_REFERENCES`, `insideOutline`): (1, 1.5), (1, 2), (1, 3),
-(3, 2), (3, 3), (5, 1.5), (5, 2), whose outline has the corners
-(1, 1.5), (5, 1.5), (5, 2), (3, 3) and (1, 3); a case outside is
+(`VON_KARMAN_REFERENCES`, `insideOutline`): since the owner's decision
+of 2026-10-29 (below), nine points, (1, 1.5), (1, 2), (1, 3), (3, 2),
+(3, 3), (5, 1.5), (5, 2), (5, 3) and (6, 3), whose outline has the
+corners (1, 1.5), (5, 1.5), (6, 3) and (1, 3) (until then W5's seven,
+the first seven of these, with the corners (1, 1.5), (5, 1.5), (5, 2),
+(3, 3) and (1, 3); this sentence updated 2026-10-29); a case outside is
 refused with the reason, as are the other Haack noses and the power
 series. The body's length is not a dimension of the outline: the
 references have 1 or 2 calibers of body, the page accepts 0 to 30.
@@ -1238,10 +1241,9 @@ the same value, and far inside the allowance: the body length is not
 restricted. With 30 calibers of body the fitted grids fail the
 aspect-ratio gate (14.0 and 14.7, against 13), so the page refuses that
 case on that ground, with the reason. The registration below judged
-four more cases; none is added yet (its results). Since the owner's
-decision of 2026-10-29 (after those results), 5 and 6 calibers at Mach 3
-are referenced too, and the outline's corners are (1, 1.5), (5, 1.5),
-(6, 3) and (1, 3). On the GPU the page's path gives the 1-caliber nose at Mach 2
+four more cases (its results); the owner's decision of 2026-10-29 added
+two of them, 5 and 6 calibers at Mach 3 (until then this sentence said
+"none is added yet"). On the GPU the page's path gives the 1-caliber nose at Mach 2
 within 4.2e-8 of the CPU's value on nj = 20 (0.42909808121884696
 against 0.42909806331220435; measured again on the merged code on
 2026-10-22, SwiftShader, `tests/gpu/fitted-flow-gpu.test.ts`).
@@ -1378,7 +1380,8 @@ cases would have the corners (1, 1.5), (6, 1.5), (6, 3) and (1, 3), and
 the failed case (6, 2) lies on its edge, which counts as inside
 (`insideOutline` takes a point on the outline, within 1e-9 of the
 points' extent, as inside), so nothing is added until the owner decides,
-and `VON_KARMAN_REFERENCES` keeps W5's seven. Choices for that decision,
+and `VON_KARMAN_REFERENCES` keeps W5's seven (until the owner's decision
+of 2026-10-29, below). Choices for that decision,
 with the refusal audit's served totals (2000 rockets, 8000 cases; on main
 at 76899f1, re-run 2026-10-28, 184 as they stand, Mach 1.5 to 1.8: 73,
 1.8 to 3.0: 111, and the same four counts again on 02549f2, re-run
@@ -1414,7 +1417,9 @@ here as the owner's decision so applied:
   calibers at Mach 2 against 5.67), where the lines of 6 calibers at Mach
   2 that do not pass would miss by up to 4.31e-4; the independent review
   found the evidence supports (a') best; (b) would need a new rule; (c)
-  leaves out two cases that passed the registered criteria.
+  leaves out all three cases that passed the registered criteria
+  (corrected 2026-10-29, the same day: this line first said "leaves out
+  two cases that passed", but 6 calibers at Mach 1.5 passed as well).
 - The allowance by `judge.mjs`'s reading, one line on each side of a
   passing line: 8e-4 stays. The reason: the lines W5's reading would
   count at Mach 3 fail the line criterion on every grid, and by the words

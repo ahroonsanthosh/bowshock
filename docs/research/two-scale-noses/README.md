@@ -232,7 +232,8 @@ Results, by the registered criteria (2026-10-28):
 - The registration's hold: the outline of the passing cases has the
   corners (1, 1.5), (6, 1.5), (6, 3) and (1, 3), and the failed (6, 2)
   lies on its edge, so nothing is added until the owner decides;
-  `VON_KARMAN_REFERENCES` keeps W5's seven (0006 gives the choices).
+  `VON_KARMAN_REFERENCES` keeps W5's seven (until 2026-10-29; 0006 gives
+  the choices).
   `insideOutline` counts a point on the outline as inside, which is why
   (6, 2) on the edge holds them.
 - The lines next to a passing line (recorded 2026-10-28): the
@@ -291,12 +292,17 @@ None below Mach 1.5 in any run. Each run with W5's seven gave main's
 agreed on 1200 of 1200 cases. The runs with added cases are for the
 owner's decision only (`population/option-a`, `population/option-a-prime`
 and `population/all-three` on cdd26e6, the same under `population/76899f1`
-on 76899f1:
+on 76899f1 and `population/02549f2` on 02549f2:
 the run of `docs/research/refusals` on the merged head with those points
 added to `VON_KARMAN_REFERENCES` for the run, then taken out); the
 branch's own outputs are the held run, which is main's. Since the owner's
 decision of 2026-10-29 (option (a'), branch `claude/wip/vk-a-prime` from
 main 95673cd), the code serves 5 and 6 calibers at Mach 3 and
 `docs/research/refusals/out/impact.out` is that run: 237 of 8000 (Mach
-1.5 to 1.8: 77; 1.8 to 3.0: 160), byte for byte the (a') run on 02549f2,
-the cross-check agreeing on 1200 of 1200.
+1.5 to 1.8: 77; 1.8 to 3.0: 160), the cross-check agreeing on 1200 of
+1200. Its `impact.out` and `.json` are byte for byte the (a') run on
+02549f2, `population/02549f2/option-a-prime` (committed 2026-10-29 with
+the other two option runs on 02549f2; the sentence first named that run
+before it was committed). Against `population/76899f1/option-a-prime`
+the totals are the same (237, 77, 160) and only rows of fin reasons
+differ, moved by main's fin changes between 76899f1 and 02549f2.
