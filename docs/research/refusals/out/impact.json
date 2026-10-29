@@ -1,8 +1,8 @@
 {
  "baseline": {
   "all bands": {
-   "total": 184,
-   "nose only": 1562,
+   "total": 182,
+   "nose only": 1564,
    "nothing": 6254
   },
   "M 1.0-1.2": {
@@ -16,8 +16,8 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 73,
-   "nose only": 630,
+   "total": 71,
+   "nose only": 632,
    "nothing": 1297
   },
   "M 1.8-3.0": {
@@ -42,8 +42,8 @@
  "noseServed": {
   "all bands": {
    "cases": 8000,
-   "noseServed": 628,
-   "withPageSection": 809
+   "noseServed": 622,
+   "withPageSection": 798
   },
   "M 1.0-1.2": {
    "cases": 2000,
@@ -57,8 +57,8 @@
   },
   "M 1.5-1.8": {
    "cases": 2000,
-   "noseServed": 223,
-   "withPageSection": 298
+   "noseServed": 217,
+   "withPageSection": 287
   },
   "M 1.8-3.0": {
    "cases": 2000,
@@ -68,8 +68,8 @@
  },
  "lenientTip": {
   "all bands": {
-   "total": 374,
-   "nose only": 3057,
+   "total": 370,
+   "nose only": 3061,
    "nothing": 4569
   },
   "M 1.0-1.2": {
@@ -83,8 +83,8 @@
    "nothing": 1082
   },
   "M 1.5-1.8": {
-   "total": 154,
-   "nose only": 1251,
+   "total": 150,
+   "nose only": 1255,
    "nothing": 595
   },
   "M 1.8-3.0": {
@@ -95,8 +95,8 @@
  },
  "altitude0": {
   "all bands": {
-   "total": 188,
-   "nose only": 1558,
+   "total": 186,
+   "nose only": 1560,
    "nothing": 6254
   },
   "M 1.0-1.2": {
@@ -110,8 +110,8 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 76,
-   "nose only": 627,
+   "total": 74,
+   "nose only": 629,
    "nothing": 1297
   },
   "M 1.8-3.0": {
@@ -122,8 +122,8 @@
  },
  "altitude20": {
   "all bands": {
-   "total": 145,
-   "nose only": 1601,
+   "total": 143,
+   "nose only": 1603,
    "nothing": 6254
   },
   "M 1.0-1.2": {
@@ -137,8 +137,8 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 51,
-   "nose only": 652,
+   "total": 49,
+   "nose only": 654,
    "nothing": 1297
   },
   "M 1.8-3.0": {
@@ -149,8 +149,8 @@
  },
  "more four-fin, sharp-edged, high-power fins (four fins 70%; bevelled or double-wedge sections 60%; boat-tails 5%)": {
   "all bands": {
-   "total": 237,
-   "nose only": 1509,
+   "total": 235,
+   "nose only": 1511,
    "nothing": 6254
   },
   "M 1.0-1.2": {
@@ -164,8 +164,8 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 93,
-   "nose only": 610,
+   "total": 91,
+   "nose only": 612,
    "nothing": 1297
   },
   "M 1.8-3.0": {
@@ -189,8 +189,8 @@
  ],
  "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%)": {
   "all bands": {
-   "total": 382,
-   "nose only": 3309,
+   "total": 379,
+   "nose only": 3312,
    "nothing": 4309
   },
   "M 1.0-1.2": {
@@ -204,8 +204,8 @@
    "nothing": 902
   },
   "M 1.5-1.8": {
-   "total": 146,
-   "nose only": 1223,
+   "total": 143,
+   "nose only": 1226,
    "nothing": 631
   },
   "M 1.8-3.0": {
