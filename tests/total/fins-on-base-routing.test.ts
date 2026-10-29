@@ -30,6 +30,8 @@ import {
   W1_FLAT_SUBSONIC_EDGE_MARK,
   W1_FLAT_SWEPT_TE_MARK,
   W1_FLAT_UNDER_45_MARK,
+  W1_FLAT_BEYOND_60_MARK,
+  W1_FLAT_UNSWEPT_MARK,
   W1_LONGER_BEVELS,
   W1_OUTSIDE_AT,
   W1_SECTION_SHAPE_LIMIT,
@@ -575,17 +577,30 @@ describe('fins a root chord or more ahead of the base: the plain curve withdrawn
     // The review's N2 (2026-10-27): the words for a rounded plate near the base once offered fins a chord or
     // more ahead, refused now. Their change today, square trailing edges at the base, is served at every
     // Mach number of the curve.
-    const plate = (trailingEdge: 'square' | 'rounded', x: number) => ({
+    const plate = (trailingEdge: 'square' | 'rounded', x: number, sweep = 0) => ({
       count: 4,
-      planform: trapezoidalPlanform({ rootChord: 1, span: 0.6, leadingEdgeSweep: 0 }),
+      planform: trapezoidalPlanform({ rootChord: 1, span: 0.6, leadingEdgeSweep: sweep }),
       section: flatPlate(0.03, 'rounded', trailingEdge),
       sectionFamily: 'other' as const,
       leadingEdgeRadius: 0,
       trailingEdgeAheadOfBase: x,
     });
     for (const mach of [1.0, 1.2, 1.5, 1.8, 2.0, 2.4, 3.0]) {
-      const r = base(mach, baseFinsOf(plate('square', 0), 1 / 1.5));
+      // Below M 1.62 the unswept plate is refused since 2026-10-29 (the owner's decision, 0014 10.7 (z)): there
+      // the square edges are served with the leading edge swept 45 deg, which the sweep's own words then advise,
+      // and the rounded plate's chain ends served.
+      const low = mach < 1.62;
+      const r = base(mach, baseFinsOf(plate('square', 0, low ? Math.PI / 4 : 0), 1 / 1.5));
       expect(r.finsOnBase, `M ${mach}`).toBeDefined();
+      if (low) {
+        const unswept = refusalOf(() => base(mach, baseFinsOf(plate('square', 0), 1 / 1.5)));
+        expect(unswept.reason, `M ${mach}`).toBe('fin-sweep');
+        expect(unswept.message, `M ${mach}`).toContain(W1_FLAT_UNSWEPT_MARK);
+        expect(unswept.endedBy, `M ${mach}`).toBe('served');
+      }
+      const rounded = refusalOf(() => base(mach, baseFinsOf(plate('rounded', 0), 1 / 1.5)));
+      expect(rounded.reason, `M ${mach}`).toBe('fin-trailing-edge');
+      expect(rounded.endedBy, `M ${mach}`).toBe('served');
     }
     const far = refusalOf(() => base(1.8, baseFinsOf(plate('rounded', 1.5), 1 / 1.5)));
     expect(far.reason).toBe('fins-near-base');
@@ -665,9 +680,10 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
         'unswept or at a few sweeps',
     );
     expect(words.reason).not.toMatch(/at the base, with fins at the base/);
+    // "(below Mach 1.62, unswept or swept 45 to 60 deg; ..." until the owner's decision of 2026-10-29.
     expect(words.change).toBe(
       "the fins' trailing edges at the base; and flat fins with a square, unswept trailing edge (below " +
-        'Mach 1.62, unswept or swept 45 to 60 deg; beyond 60 deg only where the leading edge meets the ' +
+        'Mach 1.62, swept 45 to 60 deg; beyond 60 deg only where the leading edge meets the ' +
         'air faster than sound), or unswept fins of constant chord',
     );
   });
@@ -736,10 +752,12 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
     expect(r.message).toContain(
       '; with the fins at the base and square trailing edges, they are refused too: ',
     );
+    // "..., or unswept ones" until the owner's decision of 2026-10-29; the chain follows the advice to 45 deg.
     expect(refusalWords(r).change).toBe(
       'square or sharp trailing edges, with the fins ending at the base; and flat fins swept 45 to 60 ' +
-        'deg at the leading edge, or unswept ones',
+        'deg at the leading edge',
     );
+    expect(r.endedBy).toBe('served');
     const sameAtBase = at(withSection(swept, flatPlate(0.03, 'rounded', 'rounded'), 0), 1.55);
     expect(sameAtBase.refusals.find((x) => x.component === 'body base')?.reason).toBe(
       'fin-trailing-edge',
@@ -831,9 +849,10 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
     const words = refusalWords(r);
     // Each change one item, between semicolons (the review of 55a76d2); the 12% double wedge, no steeper than
     // an arc of its own thickness, is refused for its thickness alone (the re-check of 174490b).
+    // "(below Mach 1.62, unswept or swept 45 to 60 deg; ..." until the owner's decision of 2026-10-29.
     expect(words.change).toBe(
       "the fins' trailing edges at the base; four fins; flat fins with a square, unswept trailing " +
-        'edge (below Mach 1.62, unswept or swept 45 to 60 deg; beyond 60 deg only where the leading edge ' +
+        'edge (below Mach 1.62, swept 45 to 60 deg; beyond 60 deg only where the leading edge ' +
         'meets the air faster than sound), or unswept fins of constant chord; and fins of that thickness',
     );
     // A further refusal's message is the one-step message, never one carrying a chain of its own (N6).
@@ -1216,29 +1235,71 @@ describe("a plate's swept trailing edge, and a subsonic edge beyond 60 deg, in t
       }
     }
   });
-  it('a swept trailing edge whose leading edge is refused too, and a subsonic edge beyond 60 deg: the fins made unswept, and served', () => {
-    for (const [mach, le, te, mark] of [
-      [1.55, 20, 10, W1_FLAT_UNDER_45_MARK],
-      [1.8, 70, 10, W1_FLAT_SUBSONIC_EDGE_MARK],
-      [1.8, 70, 0, W1_FLAT_SUBSONIC_EDGE_MARK],
-      [1.7, 60.1, 0, W1_FLAT_SUBSONIC_EDGE_MARK],
+  it('a swept trailing edge whose leading edge is refused too, and a subsonic edge beyond 60 deg: the fins made unswept, and served (below Mach 1.62 swept 45 deg since 2026-10-29)', () => {
+    // Below Mach 1.62 the fins were made unswept until the owner's decision of 2026-10-29; the unswept plate is
+    // refused there since, so they are given the measured 45 deg, the trailing edge unswept.
+    const AT_45 = 'with the fins swept 45 deg at the leading edge, the trailing edge unswept';
+    for (const [mach, le, te, mark, what] of [
+      [1.55, 20, 10, W1_FLAT_UNDER_45_MARK, AT_45],
+      [1.55, 0, 10, W1_FLAT_UNSWEPT_MARK, AT_45],
+      [1.2, 70, -10, W1_FLAT_BEYOND_60_MARK, AT_45],
+      [1.8, 70, 10, W1_FLAT_SUBSONIC_EDGE_MARK, 'with the fins unswept'],
+      [1.8, 70, 0, W1_FLAT_SUBSONIC_EDGE_MARK, 'with the fins unswept'],
+      [1.7, 60.1, 0, W1_FLAT_SUBSONIC_EDGE_MARK, 'with the fins unswept'],
     ] as const) {
       const where = `M ${mach}, ${le}/${te} deg`;
       const f = platedFins(le, te);
       const e = refusalOf(mach, f);
       expect(e.reason, where).toBe('fin-sweep');
       expect(e.message, where).toContain(mark);
+      if (te !== 0) expect(e.message, where).toContain(W1_FLAT_SWEPT_TE_MARK);
       expect(e.endedBy, where).toBe('served');
       const a = adviceFor(e, f)!;
-      expect(a.what, where).toBe('with the fins unswept');
+      expect(a.what, where).toBe(what);
+      expect(a.fins.tanTrailingEdge, where).toBe(0);
+      expect(a.fins.nearBase!.tanTrailingEdgeSweep, where).toBe(0);
+      const leAfter = what === AT_45 ? 1 : 0;
+      expect(a.fins.tanLeadingEdge, where).toBe(leAfter);
+      expect(a.fins.nearBase!.tanLeadingEdgeSweep, where).toBe(leAfter);
       expect(() => base(mach, a.fins), where).not.toThrow();
     }
+  });
+  it("the owner's decision of 2026-10-29: an unswept plate below Mach 1.62, at the base and within a chord, is advised 45 deg, and served; from Mach 1.62 served unswept", () => {
+    for (const xc of [0, 0.5]) {
+      for (const mach of xc === 0
+        ? [1.0, 1.06, 1.2, 1.49, 1.5, 1.55, 1.6199]
+        : [1.5, 1.55, 1.6199]) {
+        const where = `M ${mach}, x/c ${xc}`;
+        const f = platedFins(0, 0, xc);
+        const e = refusalOf(mach, f);
+        expect(e.reason, where).toBe('fin-sweep');
+        expect(e.message, where).toContain(W1_FLAT_UNSWEPT_MARK);
+        expect(e.further, where).toBeUndefined();
+        expect(e.endedBy, where).toBe('served');
+        const a = adviceFor(e, f)!;
+        expect(a.what, where).toBe(
+          'with the fins swept 45 deg at the leading edge, the trailing edge unswept',
+        );
+        expect(a.fins.trailingEdgeAheadOfBase, where).toBe(xc);
+        expect(() => base(mach, a.fins), where).not.toThrow();
+      }
+      // The step at Mach 1.62: served unswept from it.
+      for (const mach of [1.62, 1.65, 2.0]) {
+        expect(() => base(mach, platedFins(0, 0, xc)), `M ${mach}, x/c ${xc}`).not.toThrow();
+      }
+    }
+    // A sharp section unswept below Mach 1.62 is not touched by it.
+    expect(() =>
+      base(1.2, fins({ nearBase: near(doubleWedge(0.08)), rootChordOverDiameter: 1.5 })),
+    ).not.toThrow();
   });
   it('ahead of the base where the position is refused: the position first, then the sweep with the fins at the base, then served', () => {
     for (const [le, te, mark] of [
       [50, 10, W1_FLAT_SWEPT_TE_MARK],
       [50, -10, W1_FLAT_SWEPT_TE_MARK],
       [20, 0, W1_FLAT_UNDER_45_MARK],
+      // The unswept plate below Mach 1.62 (the owner's decision of 2026-10-29).
+      [0, 0, W1_FLAT_UNSWEPT_MARK],
     ] as const) {
       const where = `${le}/${te} deg`;
       const e = refusalOf(1.2, platedFins(le, te, 0.5));

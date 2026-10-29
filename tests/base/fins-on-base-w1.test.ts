@@ -34,6 +34,8 @@ import {
   W1_FLAT_SUBSONIC_EDGE_MARK,
   W1_FLAT_SWEPT_TE_MARK,
   W1_FLAT_UNDER_45_MARK,
+  W1_FLAT_UNSWEPT_MARK,
+  W1_PLATE_MARGIN_FROM_162,
   W1_SWEEP_REFUSED_TOO,
   flatPlateSweepNarrowing,
   sweepDegrees,
@@ -1185,9 +1187,16 @@ describe('refusals', () => {
           1.0, 1.2, 1.49, 1.5, 1.6, 1.62, 1.65, 1.8, 1.99, 2.0, 2.5, 2.56, 2.6, 3.0,
         ]) {
           for (const xc of mach >= 1.5 && mach <= 2.0 ? [0, 0.5] : [0]) {
+            // Below M 1.62 the unswept plate is refused since 2026-10-29 (the owner's decision, 0014 10.7 (z)), so
+            // its bracket is read there from the plate swept 45 deg, the same bounds (the test below holds the
+            // unswept plate's refusal).
             const unswept = finsOnBaseFactorW1(
               mach,
-              fins({ section, tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: xc }),
+              fins({
+                section,
+                tanLeadingEdgeSweep: mach < W1_RELIEF_MEASURED_FROM ? 1 : 0,
+                trailingEdgeAheadOfBase: xc,
+              }),
             );
             for (const le of sweeps) {
               const where = `${name}, M ${mach}, x/c ${xc}, ${le} deg`;
@@ -1246,6 +1255,13 @@ describe('refusals', () => {
                 `the leading edge swept ${le.toFixed(1)} deg with the trailing edge unswept, with flat faces`,
               );
               expect(r.label, where).toContain('0015 section 12');
+              // From M 1.62 every plate's label says the floor is carried there on a margin (the owner's decision
+              // of 2026-10-29); below it, where the floor's own Mach numbers are nearer, not.
+              if (mach >= W1_RELIEF_MEASURED_FROM) {
+                expect(r.label, where).toContain(W1_PLATE_MARGIN_FROM_162);
+              } else {
+                expect(r.label, where).not.toContain(W1_PLATE_MARGIN_FROM_162);
+              }
               // The trailing edge is placed where it is: in the base plane only for fins at the base.
               if (xc === 0) {
                 expect(r.label, where).toContain('set at the trailing edge, in the base plane');
@@ -1297,9 +1313,11 @@ describe('refusals', () => {
       expect(at(1.7, 20, 0.5)).toBe('served');
       // Below M 1.5, at the base: refused too (W2's range), with the narrowing's words, not the Mach range's.
       expect(at(1.2, 30)).toBe('fin-sweep');
-      // Not narrowed: the unswept plate (0014 10.7 (i), main's) and 45 to 60 deg (section 4).
+      // Not narrowed: the unswept plate (0014 10.7 (i), main's) and 45 to 60 deg (section 4). Since 2026-10-29
+      // (the owner's decision, 0014 10.7 (z)) the unswept plate is refused below M 1.62 too, by its own rule (the
+      // test of that decision below); 45 to 60 deg is still not narrowed.
       for (const mach of [1.0, 1.2, 1.55]) {
-        expect(at(mach, 0), `M ${mach}, 0 deg`).toBe('served');
+        expect(at(mach, 0), `M ${mach}, 0 deg`).toBe('fin-sweep');
         expect(at(mach, 45), `M ${mach}, 45 deg`).toBe('served');
         expect(at(mach, 60), `M ${mach}, 60 deg`).toBe('served');
       }
@@ -1532,8 +1550,10 @@ describe('refusals', () => {
       expect(flagAt(2.8, 61)).toBe(true);
       expect(flagAt(3.0, 70)).toBe(true);
       expect(flagAt(2.0, 0, 0.5)).toBe(true);
-      // Below Mach 1.62 an unswept plate is still served, and flagged.
-      expect(flagAt(1.2, 0)).toBe(true);
+      // Below Mach 1.62 an unswept plate was served, and flagged, until 2026-10-29 (the owner's decision: refused
+      // there since); from M 1.62 it is served and flagged.
+      expect(() => flagAt(1.2, 0)).toThrow(BaseRefusal);
+      expect(flagAt(1.62, 0)).toBe(true);
       // A sharp section is never flagged (a plate with a swept trailing edge is refused since 2026-10-28).
       expect(flagAt(2.0, 0, 0, doubleWedge(0.024, 0.5))).toBe(false);
       expect(
@@ -1542,6 +1562,133 @@ describe('refusals', () => {
           fins({ section: doubleWedge(0.024, 0.5), tanLeadingEdgeSweep: tanDeg(50) }),
         ).sweepByArgument,
       ).toBe(false);
+    });
+    it("the owner's decision of 2026-10-29: a plate with both edges unswept is refused below M 1.62, at the base and within a chord, and served from it, every plate's label from M 1.62 naming the margin (0014 10.7 (z))", () => {
+      expect(W1_FLAT_UNSWEPT_MARK).toContain(`below M ${W1_RELIEF_MEASURED_FROM}`);
+      const square: SymmetricSection = {
+        x: [0, 1e-3, 1],
+        halfThickness: [0, 0.012, 0.012],
+        bluntTrailingEdge: true,
+      };
+      const outcome = (
+        mach: number,
+        le: number,
+        xc = 0,
+        chord = 1.5,
+        section: SymmetricSection = plate(0.024),
+      ) => {
+        try {
+          return finsOnBaseFactorW1(
+            mach,
+            fins({
+              section,
+              tanLeadingEdgeSweep: tanDeg(le),
+              tanTrailingEdgeSweep: 0,
+              trailingEdgeAheadOfBase: xc,
+              rootChordOverDiameter: chord,
+            }),
+          );
+        } catch (e) {
+          if (e instanceof BaseRefusal) return e;
+          throw e;
+        }
+      };
+      const refused = (r: ReturnType<typeof outcome>, where: string): BaseRefusal => {
+        expect(r, where).toBeInstanceOf(BaseRefusal);
+        return r as BaseRefusal;
+      };
+      const served = (r: ReturnType<typeof outcome>, where: string) => {
+        if (r instanceof BaseRefusal) throw new Error(`${where}: ${r.message}`);
+        return r;
+      };
+      // The step at M 1.62, at the base and within a chord where positions are served (M 1.5 to 2.0).
+      for (const section of [plate(0.024), square, plate(0.08)]) {
+        for (const xc of [0, 0.5]) {
+          for (const mach of [1.5, 1.55, 1.6, 1.6199]) {
+            const where = `M ${mach}, x/c ${xc}`;
+            const r = refused(outcome(mach, 0, xc, 1.5, section), where);
+            expect(r.reason, where).toBe('fin-sweep');
+            expect(r.message, where).toContain(W1_FLAT_UNSWEPT_MARK);
+            // 45 to 60 deg, the change the words advise, is served there.
+            for (const le of [45, 60])
+              served(outcome(mach, le, xc, 1.5, section), `${where}, ${le} deg`);
+          }
+          for (const mach of [1.62, 1.65, 2.0]) {
+            const where = `M ${mach}, x/c ${xc}`;
+            const r = served(outcome(mach, 0, xc, 1.5, section), where);
+            expect(r.bounded, where).toBe(true);
+            expect(r.low, where).toBe(W1_FLAT_RELIEF_LOW);
+            expect(r.sweepByArgument, where).toBe(true);
+            expect(r.label, where).toContain(W1_PLATE_MARGIN_FROM_162);
+          }
+        }
+        // At the base below M 1.5 too, down to M 1.0; served from M 1.62 to 3.0.
+        for (const mach of [1.0, 1.06, 1.2, 1.49]) {
+          const r = refused(outcome(mach, 0, 0, 1.5, section), `M ${mach}`);
+          expect(r.reason, `M ${mach}`).toBe('fin-sweep');
+          expect(r.message, `M ${mach}`).toContain(W1_FLAT_UNSWEPT_MARK);
+          served(outcome(mach, 45, 0, 1.5, section), `M ${mach}, 45 deg`);
+        }
+        for (const mach of [2.5, 3.0]) served(outcome(mach, 0, 0, 1.5, section), `M ${mach}`);
+      }
+      // The message names the missing measurement, the floor's margin, the vortex, and the decision.
+      const m = refused(outcome(1.2, 0), 'M 1.2').message;
+      expect(m).toContain('flat-faced fins with both edges unswept at M 1.2');
+      expect(m).toContain(
+        'no base pressure is measured with unswept flat plates at or near the base below M 1.62',
+      );
+      expect(m).toContain("F 0.852 at M 1.06 against the floor's 0.838, a margin of 0.014");
+      expect(m).toContain('the unswept plate stands the strongest juncture vortex of any sweep');
+      expect(m).toContain("the owner's decision of 2026-10-29");
+      expect(m).not.toContain(W1_FLAT_UNDER_45_MARK);
+      expect(m).not.toContain(W1_FLAT_BEYOND_60_MARK);
+      // Where the position is refused too (another chord; below M 1.5 ahead of the base), one refusal names both,
+      // the position first.
+      for (const [mach, chord] of [
+        [1.55, 2.5],
+        [1.2, 1.5],
+      ] as const) {
+        const both = refused(outcome(mach, 0, 0.5, chord), `M ${mach}, chord ${chord}`);
+        expect(both.reason).toBe('fins-near-base');
+        expect(both.message).toContain(W1_SWEEP_REFUSED_TOO);
+        expect(both.message).toContain(W1_FLAT_UNSWEPT_MARK);
+        expect(both.message.indexOf(W1_SWEEP_REFUSED_TOO)).toBeGreaterThan(0);
+      }
+      // A sharp section unswept is not touched by it.
+      served(outcome(1.2, 0, 0, 1.5, doubleWedge(0.024, 0.5)), 'double wedge, M 1.2');
+      // A swept trailing edge on an unswept leading edge names both reasons below M 1.62, one from it.
+      const te = (mach: number) =>
+        flatPlateSweepNarrowing(mach, {
+          section: plate(0.024),
+          tanLeadingEdgeSweep: 0,
+          tanTrailingEdgeSweep: -tanDeg(10),
+        })!;
+      expect(te(1.2)).toContain(W1_FLAT_SWEPT_TE_MARK);
+      expect(te(1.2)).toContain(
+        '; and with the trailing edge unswept, flat-faced fins with both edges unswept at M 1.2',
+      );
+      expect(te(1.2)).toContain(W1_FLAT_UNSWEPT_MARK);
+      expect(te(1.62)).toContain(W1_FLAT_SWEPT_TE_MARK);
+      expect(te(1.62)).not.toContain(W1_FLAT_UNSWEPT_MARK);
+      // From M 1.62 every plate's label names the margin, whatever the sweep; below it none does.
+      expect(W1_PLATE_MARGIN_FROM_162).toContain(
+        'its 16.2% relief against the at most 6.2% RM L52J21a allows',
+      );
+      expect(W1_PLATE_MARGIN_FROM_162).toContain('not on a measurement at this Mach number');
+      for (const le of [0, 20, 45, 60, 70]) {
+        expect(served(outcome(3.0, le), `M 3.0, ${le} deg`).label).toContain(
+          W1_PLATE_MARGIN_FROM_162,
+        );
+      }
+      for (const le of [45, 50, 60]) {
+        expect(served(outcome(1.55, le), `M 1.55, ${le} deg`).label).not.toContain(
+          W1_PLATE_MARGIN_FROM_162,
+        );
+      }
+      // A sharp section's label never carries it.
+      expect(
+        served(outcome(2.0, 0, 0, 1.5, doubleWedge(0.024, 0.5)), 'double wedge, M 2.0').label,
+      ).not.toContain(W1_PLATE_MARGIN_FROM_162);
     });
     it('the sweep is printed on its own side of 45 and 60 deg (the review of 2026-10-27)', () => {
       const plateAt = (le: number) =>
