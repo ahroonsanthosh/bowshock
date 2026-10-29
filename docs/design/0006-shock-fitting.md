@@ -1238,7 +1238,10 @@ the same value, and far inside the allowance: the body length is not
 restricted. With 30 calibers of body the fitted grids fail the
 aspect-ratio gate (14.0 and 14.7, against 13), so the page refuses that
 case on that ground, with the reason. The registration below judged
-four more cases; none is added yet (its results). On the GPU the page's path gives the 1-caliber nose at Mach 2
+four more cases; none is added yet (its results). Since the owner's
+decision of 2026-10-29 (after those results), 5 and 6 calibers at Mach 3
+are referenced too, and the outline's corners are (1, 1.5), (5, 1.5),
+(6, 3) and (1, 3). On the GPU the page's path gives the 1-caliber nose at Mach 2
 within 4.2e-8 of the CPU's value on nj = 20 (0.42909808121884696
 against 0.42909806331220435; measured again on the merged code on
 2026-10-22, SwiftShader, `tests/gpu/fitted-flow-gpu.test.ts`).
@@ -1400,6 +1403,29 @@ allowance on each count of the lines next to a passing line
   3.0: 185); allowance 8e-4 or 2e-3;
 - (c) add none: 184; allowance 8e-4.
 
+**The owner's decision (2026-10-29).** The owner's words: "whatever is
+most accurate wins". The coordinator applied them as follows, recorded
+here as the owner's decision so applied:
+
+- Option (a'): 5 and 6 calibers at Mach 3 join `VON_KARMAN_REFERENCES`,
+  whose outline then has the corners (1, 1.5), (5, 1.5), (6, 3) and
+  (1, 3); 6 calibers at Mach 1.5 is not added. The reasons: (a') keeps the
+  outline's edge twice as far from the failed (6, 2) as (a) does (5.33
+  calibers at Mach 2 against 5.67), where the lines of 6 calibers at Mach
+  2 that do not pass would miss by up to 4.31e-4; the independent review
+  found the evidence supports (a') best; (b) would need a new rule; (c)
+  leaves out two cases that passed the registered criteria.
+- The allowance by `judge.mjs`'s reading, one line on each side of a
+  passing line: 8e-4 stays. The reason: the lines W5's reading would
+  count at Mach 3 fail the line criterion on every grid, and by the words
+  of the criterion ("a line is used where, on every grid, ...") they give
+  no reference, so their misses are not misses of the procedure.
+
+The registered criteria and the hold rule are unchanged; this decision
+is what the hold waited for. The served outline now reaches 5 calibers
+at Mach 1.5, about 5.33 at Mach 2, about 5.67 at Mach 2.5 and 6 at Mach
+3; the failed (6, 2) and 6 calibers at Mach 1.5 lie outside it.
+
 **Sharp tips whose bow shock detaches** stay refused (the sharp
 problem's message). On the same grids (0004), with 5 calibers of
 cylinder at Mach 1.2:
@@ -1433,7 +1459,8 @@ grids, with no third grid and no reference; the parabolic nose on nj =
   family's own convergence, and the stagnation-point checks. Two-scale noses: the
   outline beyond W5's (6 calibers at Mach 1.5 and 3 and 5 calibers at
   Mach 3 passed the registered criteria, 6 calibers at Mach 2 failed;
-  held for the owner's decision); Von Karman
+  held for the owner's decision; since that decision, 2026-10-29, the
+  two at Mach 3 are served and 6 calibers at Mach 1.5 is not); Von Karman
   noses below Mach 1.5 (the criteria not shown valid there); the other
   Haack noses and the power series (no reference); sharp tips whose
   shock detaches (no third grid, no reference).

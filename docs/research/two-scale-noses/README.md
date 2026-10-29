@@ -253,6 +253,16 @@ Results, by the registered criteria (2026-10-28):
   cases whose march's change from 1280 intervals is below 3.5e-5 on every
   grid, the largest miss is 3.57e-4 (checked here), so 8e-4 holds; the
   evidence supports (a') best.
+- The owner's decision (2026-10-29; the owner's words "whatever is most
+  accurate wins", applied by the coordinator; 0006 gives both reasons in
+  full): option (a'). 5 and 6 calibers at Mach 3 join
+  `VON_KARMAN_REFERENCES` (outline corners (1, 1.5), (5, 1.5), (6, 3),
+  (1, 3)); 6 calibers at Mach 1.5 is not added, so the outline's edge
+  passes 5.33 calibers at Mach 2, twice as far from the failed (6, 2) as
+  (a)'s. The allowance is counted by `judge.mjs`'s reading, one line on
+  each side: 8e-4 stays, since the lines W5's reading would count at Mach
+  3 fail the line criterion on every grid and so give no reference. The
+  registered criteria and the hold rule are unchanged.
 - The lanes ran from 2026-10-27 08:47 to 2026-10-28 08:59 UTC, through
   four container restarts, each fit resuming from its last checkpoint
   (`fits/queue-log.txt`, `fits/log.txt`).
