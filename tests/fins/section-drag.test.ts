@@ -380,6 +380,35 @@ describe('exact section drag: what it refuses', () => {
     expect(finWaveDrag(planform, wedgeFlat, 2).exactSection).toBe(true);
   });
 
+  it('a long, shallow rear bevel is a face with slope however shallow: a hexagon whose rear bevel is under 1 deg is still refused (the review of 2026-10-28)', () => {
+    // The same 3% plate's 10 deg front wedge. Rear bevels of 0.95 deg (closing to a sharp edge over 0.9 of the
+    // chord) and 0.61 deg (closing half the thickness over 0.7, a blunt edge): each lies behind the first landing
+    // point, so the reflected wave reaches a face with slope and the section is refused. Taking faces under 1 deg
+    // as flat would serve both, which no other test caught (the review planted that mutation).
+    const h = 0.015;
+    const b = h / Math.tan((10 * Math.PI) / 180);
+    const longRear = hexagonal(2 * h, b, 0.9);
+    const bluntRear: SymmetricSection = {
+      x: [0, b, 0.3, 1],
+      halfThickness: [0, h, h, h / 2],
+      bluntTrailingEdge: true,
+    };
+    const slopeDeg = (rise: number, run: number) => (Math.atan(rise / run) * 180) / Math.PI;
+    expect(slopeDeg(h, 0.9)).toBeLessThan(1);
+    expect(slopeDeg(h / 2, 0.7)).toBeLessThan(1);
+    for (const section of [longRear, bluntRear]) {
+      for (const mach of [1.5, 2, 2.5]) {
+        const r = exactSectionDrag(section, mach, { neglectReflectedWaves: true });
+        expect(r.exact, `M ${mach}`).toBe(false);
+        expect(r.upper.lastSlopedFaceEnd, `M ${mach}`).toBe(1);
+        expect(r.upper.firstReflection, `M ${mach}`).toBeLessThan(1);
+        const e = refusal(() => exactSectionDrag(section, mach));
+        expect(e.reason, `M ${mach}`).toBe('reflected-wave');
+        expect(e.message).toContain('ahead of the end of its last face with slope (x/c = 1.000)');
+      }
+    }
+  });
+
   it('each surface decides on its own faces: a wedge-flat above and a rear bevel below are refused for the lower surface, and the mirror for the upper (0009 section 8)', () => {
     // The same 3% plate's front wedge on both surfaces, blunt trailing edge; one surface flat to the edge,
     // the other closing by half its thickness over the last 20% of the chord (a face with slope behind the

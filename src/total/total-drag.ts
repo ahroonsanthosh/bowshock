@@ -58,6 +58,17 @@ export interface ComponentRefusal {
   readonly component: string;
   readonly reason: string;
   readonly message: string;
+  /**
+   * A body base refused for its fins: every further reason the fins meet as the words' changes are made in turn
+   * (src/base/refusal.ts, FurtherRefusal), so the words name every reason. Absent where there is none.
+   */
+  readonly further?: readonly {
+    readonly reason: string;
+    readonly message: string;
+    readonly after: string;
+  }[];
+  /** How that chain of changes ended (src/base/base-drag.ts, followAdvice), where one was followed. */
+  readonly endedBy?: 'served' | 'no-change' | 'repeat' | 'steps';
 }
 
 /** Thrown when any component of a total is refused; lists every refusal. */

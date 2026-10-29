@@ -37,10 +37,10 @@
  * refuses the case: its tolerance cannot be formed.
  */
 
-import type { BaseFins } from '../base/base-drag';
+import { rebuiltFinsOnBase, type BaseFins } from '../base/base-drag';
 import { W2_MACH_RANGE } from '../base/base-w2';
 import { COMPILED_CURVE_BAND, compiledCurveBasePressure } from '../base/compiled-curve';
-import { finsOnBaseFactorW1, type FinsOnBaseFactorW1 } from '../base/fins-on-base-w1';
+import type { FinsOnBaseFactorW1 } from '../base/fins-on-base-w1';
 import { BaseRefusal } from '../base/refusal';
 import { vacuumBaseDrag } from '../base/vacuum';
 import {
@@ -125,21 +125,16 @@ export function rebuiltBodyBase(
       `below Mach ${W2_MACH_RANGE[1]} the body base is W2's and is not composed here (asked ${mach})`,
     );
   }
-  const near = fins.nearBase;
-  if (near === undefined) {
-    throw new BaseRefusal(
-      'fins-near-base',
-      "the fins' section and sweeps, which the rebuilt factor needs, are not given",
-    );
-  }
-  const factor = finsOnBaseFactorW1(mach, {
-    ...near,
-    count: fins.count,
-    trailingEdgeAheadOfBase: fins.trailingEdgeAheadOfBase,
-    // Fins ahead of the base are served only with TN 2360's root chord (0015 section 3.3).
-    ...(fins.rootChordOverDiameter === undefined
-      ? {}
-      : { rootChordOverDiameter: fins.rootChordOverDiameter }),
+  // Routed as the library routes fins to the rebuilt factor (src/base/base-drag.ts): ahead of the base the
+  // position first, a rounded or blunt trailing edge refused there in the library's words, a trailing edge
+  // within 1e-9 of a chord taken as one chord, beyond a chord refused, every reason carried (the review of
+  // 86bcf73, its item 10).
+  const factor = rebuiltFinsOnBase({
+    mach,
+    afterbody: 'cylinder',
+    boundaryLayerAtBase: 'turbulent',
+    baseAreaRatio: 1,
+    fins,
   });
   const curve = compiledCurveBasePressure(mach);
   const q = -curve.pB;
@@ -166,7 +161,15 @@ export function rebuiltBodyBase(
 }
 
 function refusalOf(component: string, e: unknown): ComponentRefusal {
-  if (e instanceof BaseRefusal) return { component, reason: e.reason, message: e.message };
+  if (e instanceof BaseRefusal) {
+    return {
+      component,
+      reason: e.reason,
+      message: e.message,
+      ...(e.further === undefined ? {} : { further: e.further }),
+      ...(e.endedBy === undefined ? {} : { endedBy: e.endedBy }),
+    };
+  }
   throw e;
 }
 
