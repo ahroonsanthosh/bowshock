@@ -875,11 +875,13 @@ export function bluntNoseRefusal(body: Body, mach: number): string | undefined {
 /**
  * The Von Karman noses checked against the method of characteristics
  * (0006, "Two-scale noses"): nose length in calibers, Mach number. W5's
- * seven. The outline's registration of 2026-10-27 judged four more
- * (docs/research/two-scale-noses/outline): 6 calibers at Mach 1.5 and 3
- * and 5 calibers at Mach 3 passed, 6 calibers at Mach 2 failed. That
- * failed point lies inside the outline of the passing ones, so by the
- * registration none of them is added until the owner decides.
+ * seven, and 5 and 6 calibers at Mach 3. The outline's registration of
+ * 2026-10-27 judged four more cases (docs/research/two-scale-noses/outline):
+ * 6 calibers at Mach 1.5 and 3 and 5 calibers at Mach 3 passed, 6 calibers
+ * at Mach 2 failed, and the registration held them for the owner; by the
+ * owner's decision of 2026-10-29 (option (a')) the two at Mach 3 are added
+ * and 6 calibers at Mach 1.5 is not, which keeps the outline's edge at
+ * 5.33 calibers at Mach 2, away from the failed (6, 2).
  */
 export const VON_KARMAN_REFERENCES: readonly (readonly [number, number])[] = [
   [1, 1.5],
@@ -889,6 +891,8 @@ export const VON_KARMAN_REFERENCES: readonly (readonly [number, number])[] = [
   [3, 3],
   [5, 1.5],
   [5, 2],
+  [5, 3],
+  [6, 3],
 ];
 
 /**

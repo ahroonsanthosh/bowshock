@@ -235,14 +235,23 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
       expect(bluntNoseRefusal(nose(vonKarman, calibers), mach)).toBeUndefined();
     }
     expect(bluntNoseRefusal(nose(vonKarman, 8), 1.2)).toMatch(/outside the referenced range/);
-    // The outline's edge from 5 calibers at Mach 2 to 3 at Mach 3.
-    expect(bluntNoseRefusal(nose(vonKarman, 4), 2.5)).toBeUndefined();
-    expect(bluntNoseRefusal(nose(vonKarman, 4.1), 2.5)).toMatch(/outside the referenced range/);
-    expect(bluntNoseRefusal(nose(vonKarman, 5), 2.1)).toMatch(/outside the referenced range/);
-    // The cases the registration of 2026-10-27 judged are held for the
-    // owner's decision (von-karman-references.test.ts): still refused.
+    // The outline since the owner's decision of 2026-10-29 (option (a'),
+    // von-karman-references.test.ts): corners (1, 1.5), (5, 1.5), (6, 3)
+    // and (1, 3), its edge from 5 calibers at Mach 1.5 to 6 at Mach 3
+    // passing 5.33 at Mach 2 and 5.67 at Mach 2.5.
+    expect(bluntNoseRefusal(nose(vonKarman, 5), 3)).toBeUndefined();
+    expect(bluntNoseRefusal(nose(vonKarman, 6), 3)).toBeUndefined();
+    expect(bluntNoseRefusal(nose(vonKarman, 4.1), 2.5)).toBeUndefined();
+    expect(bluntNoseRefusal(nose(vonKarman, 5.6), 2.5)).toBeUndefined();
+    expect(bluntNoseRefusal(nose(vonKarman, 5.7), 2.5)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(vonKarman, 5.3), 2)).toBeUndefined();
+    // Near the failed 6 calibers at Mach 2, and 6 calibers at Mach 1.5
+    // (passed, not added): refused.
+    expect(bluntNoseRefusal(nose(vonKarman, 5.4), 2)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(vonKarman, 6), 2)).toMatch(/outside the referenced range/);
     expect(bluntNoseRefusal(nose(vonKarman, 6), 1.5)).toMatch(/outside the referenced range/);
-    expect(bluntNoseRefusal(nose(vonKarman, 5), 3)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(vonKarman, 5.1), 1.5)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(vonKarman, 6.1), 3)).toMatch(/outside the referenced range/);
     expect(bluntNoseRefusal(nose({ kind: 'haack', parameter: 1 / 3 }, 3), 2)).toMatch(
       /only the Von Karman/,
     );

@@ -7,7 +7,10 @@
  * (outline/analysis/judge.json), and the registration's rule for adding
  * them: a passing case joins the references and the outline is their
  * convex hull, but if a failed case would lie inside the hull of the
- * passing ones, nothing is added until the owner decides.
+ * passing ones, nothing is added until the owner decides. The hold applied
+ * to the registration's cases; the owner's decision of 2026-10-29 (0006,
+ * option (a')) adds 5 and 6 calibers at Mach 3 and not 6 calibers at Mach
+ * 1.5, with the allowance counted on one line each side of a passing line.
  */
 
 import { execFileSync } from 'node:child_process';
@@ -61,14 +64,29 @@ const held = failed.some((v) =>
   ),
 );
 
+/** The owner's decision of 2026-10-29 on the held cases (0006): option (a'). */
+const OWNER_ADDS: readonly (readonly [number, number])[] = [
+  [5, 3],
+  [6, 3],
+];
+
 describe('the Von Karman references (0006, "Two-scale noses")', () => {
-  it("serves what the registration adds: every passing case, or W5's alone while the hold applies", () => {
-    expect(record.verdicts.filter((v) => v.source === 'W5' && v.pass)).toHaveLength(7);
-    const added = held ? passed.filter((v) => v.source === 'W5') : passed;
-    expect(sorted(VON_KARMAN_REFERENCES)).toEqual(sorted(added.map((v) => point(v.case))));
+  it("serves W5's seven and the cases the owner added from the held ones, 5 and 6 calibers at Mach 3", () => {
+    const w5 = passed.filter((v) => v.source === 'W5');
+    expect(w5).toHaveLength(7);
+    // The owner added only cases that passed the registered criteria.
+    const newPassed = passed.filter((v) => v.source === 'new').map((v) => point(v.case));
+    for (const p of OWNER_ADDS)
+      expect(newPassed.some((q) => q[0] === p[0] && q[1] === p[1])).toBe(true);
+    expect(sorted(VON_KARMAN_REFERENCES)).toEqual(
+      sorted([...w5.map((v) => point(v.case)), ...OWNER_ADDS]),
+    );
+    // 6 calibers at Mach 1.5 passed but is not added, nor inside the outline.
+    expect(VON_KARMAN_REFERENCES.some(([c, m]) => c === 6 && m === 1.5)).toBe(false);
+    expect(insideOutline(VON_KARMAN_REFERENCES, [6, 1.5])).toBe(false);
   });
 
-  it('holds the new cases for the owner: 6 calibers at Mach 2 failed, inside the hull of those that passed', () => {
+  it('the registration held its cases for the owner: 6 calibers at Mach 2 failed, inside the hull of those that passed', () => {
     expect(failed.map((v) => point(v.case))).toEqual([[6, 2]]);
     expect(failed[0]!.reasons.length).toBeGreaterThan(0);
     expect(sorted(passed.filter((v) => v.source === 'new').map((v) => point(v.case)))).toEqual([

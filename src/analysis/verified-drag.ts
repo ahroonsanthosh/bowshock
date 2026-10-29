@@ -148,9 +148,10 @@ export const FITTED_DRAG_FLOOR = 7e-5;
  * allowance is twice the largest of these, 3.64e-4, rounded up (by the
  * registered rule's count of the lines next to it, x = 0.27 and 0.64, the
  * largest is 3.57e-4, which gives the same). The cases that passed under the
- * registration of 2026-10-27 (docs/research/two-scale-noses/outline; not
- * served yet, held for the owner's decision) miss by less: up to 2.04e-4
- * with the lines next to their passing lines. The bands it was set from
+ * registration of 2026-10-27 (docs/research/two-scale-noses/outline; 5 and
+ * 6 calibers at Mach 3 served since the owner's decision of 2026-10-29,
+ * which also counts the lines next to a passing line as one on each side)
+ * miss by less: up to 2.04e-4 with the lines next to their passing lines. The bands it was set from
  * are of three grids; the page's bands of four grids have been checked
  * against a reference on two of these noses (1 and 3 calibers at Mach 2,
  * 0006), its bands of five grids (320 cells across) on none.
