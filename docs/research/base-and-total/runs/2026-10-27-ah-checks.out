@@ -378,3 +378,26 @@ R 0.765e6 typed -0.2062.
         × without fins: -P_B times the area ratio, the curve band and the interpolation bound 1ms
         × fins at the base: the factor on the term, its band added linearly 1ms
         × never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9486 of it (M 3.0, fins at the base; 0.9199 with 0.77 to 1.13, 0.8840 before 0014 10.7 (ah), 0.9535 before the correction of 0010 section 11), 0.711 without fins (0.686 with 1.13, 0.656 before (ah)) 218ms
+
+## 2026-10-28, after Fable's review: the rounding rule and the label, each with an error planted
+
+round-high: the band's high end rounded to the nearest (Math.round) in place of up; round-low: its low end
+rounded to the nearest in place of down; label-no-thinnest: the curve's label without "TR 1051 at its
+thinnest sting".
+
+== round-high:       Tests  1 failed | 31 passed (32)
+        × 0008 section 3.3's rounding, outward to two decimals, on synthetic ends: down at the low end, up at the high end, an end on the second decimal kept 12ms
+== round-low:       Tests  1 failed | 31 passed (32)
+        × 0008 section 3.3's rounding, outward to two decimals, on synthetic ends: down at the low end, up at the high end, an end on the second decimal kept 12ms
+== label-no-thinnest:       Tests  1 failed | 17 passed (18)
+        × a total inside the class: an estimate, its claim suspended, the headline rounded outward, every label, the notes 156ms
+
+## 2026-10-28, after Fable's quick look: the rounding guard set too wide, at each end
+
+guard-high-wide: the high end's guard 1e-2 in place of 1e-9; guard-low-wide: the low end's. Caught by the
+cases just past a decimal, 1.1601 (to 1.17) and 0.76995 (to 0.76).
+
+== guard-high-wide:       Tests  1 failed | 31 passed (32)
+        × 0008 section 3.3's rounding, outward to two decimals, on synthetic ends: down at the low end, up at the high end, an end on the second decimal kept 11ms
+== guard-low-wide:       Tests  1 failed | 31 passed (32)
+        × 0008 section 3.3's rounding, outward to two decimals, on synthetic ends: down at the low end, up at the high end, an end on the second decimal kept 12ms

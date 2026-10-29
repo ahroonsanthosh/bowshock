@@ -71,6 +71,7 @@
 import {
   bodyBaseDrag,
   FINS_ON_BASE_THINNEST_DATA,
+  squarePlateSection,
   type BaseFins,
   type BodyBaseDrag,
 } from '../base/base-drag';
@@ -298,7 +299,16 @@ function frictionCds(config: FinnedBody, conditions: FlightConditions, s: Fricti
 }
 
 function refusalOf(component: string, e: unknown): ComponentRefusal {
-  if (e instanceof BaseRefusal || e instanceof FinRefusal) {
+  if (e instanceof BaseRefusal) {
+    return {
+      component,
+      reason: e.reason,
+      message: e.message,
+      ...(e.further === undefined ? {} : { further: e.further }),
+      ...(e.endedBy === undefined ? {} : { endedBy: e.endedBy }),
+    };
+  }
+  if (e instanceof FinRefusal) {
     return { component, reason: e.reason, message: e.message };
   }
   throw e;
@@ -703,9 +713,11 @@ export const SQUARE_EDGE_REFUSAL =
   "twice and paired, then bore out the bounds' premises, not the bounds (0014 section 10.7 " +
   '(af)): on all four sets every face orifice that was given a value lay above the sonic ' +
   "pressure (six marks on TN 4300's figures were given none), and on RM L57C18, the one set " +
-  'that tests it, below the pitot pressure. They did so only at Reynolds numbers on the ' +
-  "face's height of 3.85 to 4.32 million, under the definition pinned for them; a model rocket " +
-  "fin's, on its thickness, lies far below that (in the refusal audit's population, 290,000 at " +
+  'that tests it, below the pitot pressure. Under the definition pinned for them, they did so ' +
+  "at Reynolds numbers on the face's height of 3.85 to 4.32 million (RM L57C18); TM X-19 and " +
+  'TN D-5392 bore the premises out too, at 0.90 and 1.88 million on their diameters, but on a ' +
+  "basis the readers did not record, so neither counts. A model rocket fin's, on its " +
+  "thickness, lies far below all of these (in the refusal audit's population, 290,000 at " +
   'most), so the edge stays refused (0016 section 21.6)';
 
 /**
@@ -804,11 +816,7 @@ export function baseFinsOf(fins: FinSet, bodyDiameter?: number): BaseFins {
     plate === undefined
       ? (fins.section as SymmetricSection)
       : plate.trailingEdge === 'square'
-        ? {
-            x: [0, 1e-3, 1],
-            halfThickness: [0, thicknessRatio / 2, thicknessRatio / 2],
-            bluntTrailingEdge: true,
-          }
+        ? squarePlateSection(thicknessRatio)
         : undefined;
   // Flat faces at the trailing edge (plates; a plate bevelled at the leading edge only): not the present
   // factor's families (0014 section 10.7).

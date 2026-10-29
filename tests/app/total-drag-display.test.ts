@@ -540,8 +540,8 @@ describe('the display', { timeout: 60_000 }, () => {
     );
     expect(baseRow[4]!.split('; ')[0]).toBe(
       'correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.77 to 1.17 measured ' +
-        'over curve, set on every body-alone base pressure read twice in its domain (0008 section 3.3, ' +
-        '0014 section 10.7 (ah)), tested only in the total',
+        'over curve, set on every body-alone base pressure read twice in its domain, TR 1051 at its ' +
+        'thinnest sting (0008 section 3.3, 0014 section 10.7 (ah)), tested only in the total',
     );
     expect(blocks).toContainEqual({ kind: 'list', items: [FINS_BAND_NOTE, FINS_ON_BASE_NOTE] });
   });

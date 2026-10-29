@@ -62,23 +62,28 @@ import {
 import { W2_BAND, W2_LABEL, W2_MACH_RANGE, w2CurveBasePressure } from './base-w2';
 import { finsOnBaseFactor, type FinsAtBase, type FinsOnBaseFactor } from './fins-on-base';
 import {
+  aheadText,
   finsOnBaseFactorW1,
-  flatPlateSweepNarrowing,
+  sectionBracket,
+  W1_FLAT_BEYOND_60_MARK,
+  W1_FLAT_SUBSONIC_EDGE_MARK,
+  W1_FLAT_SWEPT_TE_MARK,
+  W1_FLAT_UNDER_45_MARK,
+  W1_SECTION_SHAPE_MARK,
   nearBasePositionReasons,
   nearBasePositionRefusal,
-  W1_SWEEP_REFUSED_TOO,
   trailingEdgeShape,
   type FinsNearBase,
   type FinsOnBaseFactorW1,
 } from './fins-on-base-w1';
-import { BaseRefusal } from './refusal';
+import { BaseRefusal, type FurtherRefusal } from './refusal';
 import { vacuumBaseDrag } from './vacuum';
 
 export const COMPILED_CURVE_LABEL =
   'correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band ' +
   `${COMPILED_CURVE_BAND.low.toFixed(2)} to ${COMPILED_CURVE_BAND.high.toFixed(2)} measured over curve, ` +
-  'set on every body-alone base pressure read twice in its domain (0008 section 3.3, 0014 section ' +
-  '10.7 (ah)), tested only in the total';
+  'set on every body-alone base pressure read twice in its domain, TR 1051 at its thinnest sting ' +
+  '(0008 section 3.3, 0014 section 10.7 (ah)), tested only in the total';
 
 export interface BaseFins extends FinsAtBase {
   /** Distance of the fins' trailing edges ahead of the base, in root chords (0: at the base). */
@@ -129,6 +134,26 @@ export const ROUNDED_PLATE_AHEAD_OF_BASE = 'a plate with a rounded trailing edge
  */
 export const BLUNT_AHEAD_OF_BASE =
   'fins whose faces widen or narrow to a blunt trailing edge, ending';
+
+/**
+ * The section of a flat plate with square trailing edges, thickness over chord `thicknessRatio`, as the
+ * rebuilt factor takes it (`baseFinsOf` in src/total/finned-body.ts gives square-edged plates this one).
+ */
+export function squarePlateSection(thicknessRatio: number): FinsNearBase['section'] {
+  return {
+    x: [0, 1e-3, 1],
+    halfThickness: [0, thicknessRatio / 2, thicknessRatio / 2],
+    bluntTrailingEdge: true,
+  };
+}
+
+/**
+ * What "sharp trailing edges" stands for in place of a blunt one when the words' change is run at the base: a
+ * symmetric double wedge of the same thickness ratio (another sharp section may meet another refusal).
+ */
+function sharpStandInSection(thicknessRatio: number): FinsNearBase['section'] {
+  return { x: [0, 0.5, 1], halfThickness: [0, thicknessRatio / 2, 0] };
+}
 
 /** How the refusal of fins ending more than a root chord ahead of the base begins (0015 section 3.3). */
 export const MORE_THAN_A_CHORD_AHEAD = 'fins ending more than a root chord ahead of the base';
@@ -226,7 +251,8 @@ export interface BodyBaseDrag {
   readonly vacuumClamped: readonly string[];
 }
 
-export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
+/** The body base, refused with the first reason met (bodyBaseDrag carries every reason). */
+function bodyBaseDragOnce(input: BodyBaseInput): BodyBaseDrag {
   const { mach, afterbody, boundaryLayerAtBase, baseAreaRatio, fins } = input;
   if (afterbody !== 'cylinder') {
     throw new BaseRefusal(
@@ -268,195 +294,11 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
   let source: FinsOnBaseSource | undefined;
   let presentRefusal: BaseRefusal | undefined;
   if (fins !== undefined) {
-    const x = fins.trailingEdgeAheadOfBase;
-    if (!(x >= 0 && Number.isFinite(x))) {
-      throw new BaseRefusal('input', `the fins' trailing edges must lie at or ahead of the base`);
-    }
-    // Below M 1.5 the served body base is W2's, the curve times its band's midpoint (1.04), a free-flight
-    // correction. The rebuilt factor's members built on fig. 35's free-flight line are already free-flight
-    // values over the curve itself, so they apply to the curve at nominal 1, not on top of W2's midpoint
-    // (0015 section 11.2); the zero member and the flat plates' relief, ratios to the body without fins,
-    // apply to W2's term as it is.
-    const onW2Curve = (w: FinsOnBaseFactorW1): FinsOnBaseFactorW1 => {
-      if (!below || curveRange.nominal === 1) return w;
-      const s = 1 / curveRange.nominal;
-      const scaled = (m: FinsOnBaseFactorW1['lower']): FinsOnBaseFactorW1['lower'] =>
-        m.thickness === 0 || m.count === 0
-          ? m
-          : { ...m, band: { low: m.band.low * s, high: m.band.high * s } };
-      const lower = scaled(w.lower);
-      const upper = scaled(w.upper);
-      const low = Math.min(lower.band.low, upper.band.low);
-      const high = Math.max(lower.band.high, upper.band.high);
-      return {
-        ...w,
-        lower,
-        upper,
-        low,
-        high,
-        nominal: 0.5 * (low + high),
-        label:
-          `${w.label}; below M 1.5 the members built on TN 3819 fig. 35's free-flight line apply to Love's ` +
-          `curve itself, not to W2's body base ${curveRange.nominal.toFixed(3)} times it, so the factor is ` +
-          `stated on W2's term (those members over ${curveRange.nominal.toFixed(3)}); at M 1.5 the term ` +
-          `steps where W2's ${curveRange.nominal.toFixed(3)} ends (0015 section 11.2)`,
-      };
-    };
-    // A trailing edge that nothing measures ahead of the base (0015 section 4): a plate's rounded one, or a
-    // blunt one that the faces widen or narrow to.
-    const edgeNote = (): string => {
-      if (fins.nearBase === undefined) return fins.flatFaced === true ? ROUNDED_EDGE_NOTE : '';
-      const te = trailingEdgeShape(fins.nearBase.section);
-      return te === 'diverging' || te === 'converging-blunt' ? BLUNT_EDGE_NOTE : '';
-    };
-    // A flat plate whose sweep is refused below Mach 1.62 (0014 section 10.7 (z), the note of 2026-10-27): named
-    // with any refusal of its position, so that the advice for the position, the fins at the base, does not
-    // lead into the sweep's refusal.
-    const sweepNote = (): string => {
-      const sweep =
-        fins.nearBase === undefined ? undefined : flatPlateSweepNarrowing(mach, fins.nearBase);
-      return sweep === undefined ? '' : `${W1_SWEEP_REFUSED_TOO}${sweep}`;
-    };
-    const rebuilt = (): FinsOnBaseFactorW1 => {
-      const near = fins.nearBase;
-      // A plate whose trailing edge is not square (rounded) has no section the rebuilt factor takes, at the base
-      // or ahead of it: refused for its trailing edge, and ahead of the base for its position too where that
-      // is refused (0015 sections 3.3 and 4).
-      if (near === undefined && fins.flatFaced === true) {
-        const position = nearBasePositionReasons(mach, x, fins.rootChordOverDiameter);
-        throw new BaseRefusal(
-          'fin-trailing-edge',
-          x > 0
-            ? `${ROUNDED_PLATE_AHEAD_OF_BASE} ${x} root chords ahead of the base: the rebuilt factor's ` +
-                'flat-plate value covers square trailing edges only, and a rounded trailing edge has no ' +
-                'measurement at or near the base (0015 section 4)' +
-                (position.length > 0
-                  ? `; its position is refused too: ${position.join('; and ')} (0015 section 3.3)`
-                  : '')
-            : `${presentRefusal === undefined ? '' : `${presentRefusal.message}; `}the rebuilt factor's ` +
-                'flat-plate value covers square trailing edges only: a rounded trailing edge has no ' +
-                'measurement at or near the base (0015 section 4)',
-        );
-      }
-      // A blunt trailing edge that the faces widen or narrow to has no measurement ahead of the base: refused
-      // for it, as the rounded plate above, its position named too where that is refused (0015 section 4).
-      if (x > 0 && edgeNote() === BLUNT_EDGE_NOTE) {
-        const position = nearBasePositionReasons(mach, x, fins.rootChordOverDiameter);
-        throw new BaseRefusal(
-          'fin-trailing-edge',
-          `${BLUNT_AHEAD_OF_BASE} ${Number(x.toPrecision(3))} root chords ahead of the base: no ` +
-            "band-setting source measures such a trailing edge's effect on the body base ahead of it, " +
-            'and the ordering of 0015 section 4 does not reach it' +
-            (position.length > 0
-              ? `; its position is refused too: ${position.join('; and ')} (0015 section 3.3)`
-              : ''),
-        );
-      }
-      // Then the position: where TN 2360 measured none, no section serves the fins, so it is named before
-      // any refusal of their section, sweep, count or thickness, whose words would lead to a change still
-      // refused there (0014 section 10.7 (ad), 2026-10-27; 0015 section 3.3), with the sweep's refusal where a
-      // plate's sweep is refused too (sweepNote).
-      const position = nearBasePositionRefusal(mach, x, fins.rootChordOverDiameter, sweepNote());
-      if (position !== undefined) throw position;
-      if (near === undefined) {
-        throw (
-          presentRefusal ??
-          new BaseRefusal(
-            'fins-near-base',
-            `fins ending ${x} root chords ahead of the base: the present fins-on-base factor is ` +
-              "measured with the trailing edges at the base, and the fins' section and sweeps, which " +
-              'the rebuilt factor (0015) needs, are not given',
-          )
-        );
-      }
-      // A plate of one thickness on a tapered planform (`thinnest`): its thinnest station is the same section
-      // scaled in thickness, and the rebuilt factor brackets every station (0015 section 3.6). It does not
-      // take the present factor's thin-plate rule (low end F = 1): its members run from the zero member,
-      // whose low end is measured relief below F = 1, to t/c 0.10, so a thinner station lies inside its
-      // data and only moves the lower member down to the zero member (flat plates: RM L52E06's relief).
-      const scale =
-        fins.thinnest !== undefined && fins.thicknessRatio > 0
-          ? fins.thinnest.thicknessRatio / fins.thicknessRatio
-          : 1;
-      const spanSections =
-        near.spanSections ??
-        (scale < 1 - 1e-12
-          ? [{ ...near.section, halfThickness: near.section.halfThickness.map((h) => h * scale) }]
-          : undefined);
-      try {
-        return onW2Curve(
-          finsOnBaseFactorW1(mach, {
-            ...near,
-            ...(spanSections === undefined ? {} : { spanSections }),
-            count: fins.count,
-            trailingEdgeAheadOfBase: Math.min(x, 1),
-            ...(fins.rootChordOverDiameter === undefined
-              ? {}
-              : { rootChordOverDiameter: fins.rootChordOverDiameter }),
-          }),
-        );
-      } catch (e) {
-        if (!(e instanceof BaseRefusal) || presentRefusal === undefined) throw e;
-        throw new BaseRefusal(
-          e.reason,
-          `${e.message}; the present factor (0010 section 1.3) refuses it too: ${presentRefusal.message}`,
-        );
-      }
-    };
-    if (x === 0) {
-      try {
-        // The present factor serves the fin families it was measured on (wedge, circular-arc and
-        // hexagonal sections); flat-faced fins go to the rebuilt factor's flat-plate value (0014 section
-        // 10.7, 2026-10-21).
-        if (fins.flatFaced === true) {
-          throw new BaseRefusal('flat-plate-fins', FLAT_PLATES_AT_BASE_REFUSAL);
-        }
-        // Thinner than the present factor's 5% data at some station, none thicker than 10% (0016
-        // section 18): the factor at 5% with its low end F = 1.
-        const thinnest = fins.thinnest?.thicknessRatio ?? fins.thicknessRatio;
-        const thin = thinnest < FINS_ON_BASE_THINNEST_DATA && fins.thicknessRatio <= 0.1;
-        factor = finsOnBaseFactor(
-          mach,
-          thin
-            ? { ...fins, thicknessRatio: Math.max(fins.thicknessRatio, FINS_ON_BASE_THINNEST_DATA) }
-            : fins,
-        );
-        if (thin) {
-          factor = extendedBelowThinnestData(factor, thinnest, fins.thinnest?.spanShareBelow ?? 1);
-        }
-        source = 'present';
-        // Bounded, not measured: the gap between the bounds in C_D beside it (0014 section 10.2).
-        labels.push(`${factor.label}${gapOf(factor)}`);
-      } catch (e) {
-        if (!(e instanceof BaseRefusal)) throw e;
-        presentRefusal = e;
-        const w1 = rebuilt();
-        factor = w1;
-        source = 'rebuilt';
-        labels.push(`${w1.label}${gapOf(w1)}; ${FINS_ON_BASE_ROUTING_LABEL} (${e.message})`);
-      }
-    } else if (x <= 1 + WITHIN_A_CHORD) {
-      // Up to one root chord ahead, a trailing edge exactly a chord ahead included (TN 2360's station at x/c
-      // 1.0): the rebuilt factor, where TN 2360 measured positions (0015 section 3.3).
-      const w1 = rebuilt();
-      factor = w1;
-      source = 'rebuilt';
-      labels.push(
-        `${w1.label}${gapOf(w1)}; ${FINS_ON_BASE_ROUTING_LABEL} (it takes fins at the base only)`,
-      );
-    } else {
-      // More than a root chord ahead nothing is measured; the plain curve served here until 2026-10-27 is
-      // withdrawn (0014 section 10.7 (ad); 0015 section 3.3).
-      throw new BaseRefusal(
-        'fins-near-base',
-        `${MORE_THAN_A_CHORD_AHEAD} (${Number(x.toPrecision(3))} root chords): nothing measures the ` +
-          'base drag with fins that far ahead (TN 2360 measures up to one chord ahead, with a root chord ' +
-          'of 1.5 body diameters, at Mach 1.5 and 2.0), so they are refused; until 2026-10-27 they took ' +
-          "the plain curve, whose band missed TN 2360's measurement a chord ahead (0015 section 3.3)" +
-          edgeNote() +
-          sweepNote(),
-      );
-    }
+    const routed = routeFins(mach, fins, below ? curveRange.nominal : 1, gapOf, false);
+    factor = routed.factor;
+    source = routed.source;
+    presentRefusal = routed.presentRefusal;
+    labels.push(routed.label);
   }
   // The body's base pressure served: the curve times the band's nominal ratio (1 from M 1.5).
   const q = -curve.pB * curveRange.nominal;
@@ -496,4 +338,471 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
     vacuum,
     vacuumClamped,
   };
+}
+
+/** A body base's fins routed to a factor: which, the present factor's refusal it stands in for, and its label. */
+interface RoutedFins {
+  readonly factor: FinsOnBaseFactor | FinsOnBaseFactorW1;
+  readonly source: FinsOnBaseSource;
+  readonly presentRefusal: BaseRefusal | undefined;
+  readonly label: string;
+}
+
+/**
+ * The fins-on-base factor for these fins, routed as 0015 section 5 says, or the refusal of the first reason met
+ * (bodyBaseDrag carries the further reasons, everyReason). `w2Nominal` is W2's midpoint below M 1.5 (the factor
+ * is then stated on W2's term, onW2Curve), 1 from M 1.5; `gapOf` states a bounded factor's gap in C_D; with
+ * `rebuiltOnly` the rebuilt factor is used at the base too, the present one not asked (the hold-out run's
+ * rebuilt model, src/validation/hold-out-run.ts, routed like the library: the review of 86bcf73, its item 10).
+ */
+function routeFins(
+  mach: number,
+  fins: BaseFins,
+  w2Nominal: number,
+  gapOf: (f: { readonly bounded: boolean; readonly low: number; readonly high: number }) => string,
+  rebuiltOnly: boolean,
+): RoutedFins {
+  const x = fins.trailingEdgeAheadOfBase;
+  if (!(x >= 0 && Number.isFinite(x))) {
+    throw new BaseRefusal('input', `the fins' trailing edges must lie at or ahead of the base`);
+  }
+  let presentRefusal: BaseRefusal | undefined;
+  // Below M 1.5 the served body base is W2's, the curve times its band's midpoint (1.04), a free-flight
+  // correction. The rebuilt factor's members built on fig. 35's free-flight line are already free-flight
+  // values over the curve itself, so they apply to the curve at nominal 1, not on top of W2's midpoint
+  // (0015 section 11.2); the zero member and the flat plates' relief, ratios to the body without fins,
+  // apply to W2's term as it is.
+  const onW2Curve = (w: FinsOnBaseFactorW1): FinsOnBaseFactorW1 => {
+    if (w2Nominal === 1) return w;
+    const s = 1 / w2Nominal;
+    const scaled = (m: FinsOnBaseFactorW1['lower']): FinsOnBaseFactorW1['lower'] =>
+      m.thickness === 0 || m.count === 0
+        ? m
+        : { ...m, band: { low: m.band.low * s, high: m.band.high * s } };
+    const lower = scaled(w.lower);
+    const upper = scaled(w.upper);
+    const low = Math.min(lower.band.low, upper.band.low);
+    const high = Math.max(lower.band.high, upper.band.high);
+    return {
+      ...w,
+      lower,
+      upper,
+      low,
+      high,
+      nominal: 0.5 * (low + high),
+      label:
+        `${w.label}; below M 1.5 the members built on TN 3819 fig. 35's free-flight line apply to Love's ` +
+        `curve itself, not to W2's body base ${w2Nominal.toFixed(3)} times it, so the factor is ` +
+        `stated on W2's term (those members over ${w2Nominal.toFixed(3)}); at M 1.5 the term ` +
+        `steps where W2's ${w2Nominal.toFixed(3)} ends (0015 section 11.2)`,
+    };
+  };
+  const note = edgeNoteOf(fins);
+  const rebuilt = (): FinsOnBaseFactorW1 => {
+    const near = fins.nearBase;
+    // A plate whose trailing edge is not square (rounded) has no section the rebuilt factor takes, at the base
+    // or ahead of it: refused for its trailing edge, and ahead of the base for its position too where that
+    // is refused (0015 sections 3.3 and 4).
+    if (near === undefined && fins.flatFaced === true) {
+      const position = nearBasePositionReasons(mach, x, fins.rootChordOverDiameter);
+      throw new BaseRefusal(
+        'fin-trailing-edge',
+        x > 0
+          ? `${ROUNDED_PLATE_AHEAD_OF_BASE} ${aheadText(x)} root chords ahead of the base: the rebuilt ` +
+              "factor's flat-plate value covers square trailing edges only, and a rounded trailing edge has " +
+              'no measurement at or near the base (0015 section 4)' +
+              (position.length > 0
+                ? `; its position is refused too: ${position.join('; and ')} (0015 section 3.3)`
+                : '')
+          : `${presentRefusal === undefined ? '' : `${presentRefusal.message}; `}the rebuilt factor's ` +
+              'flat-plate value covers square trailing edges only: a rounded trailing edge has no ' +
+              'measurement at or near the base (0015 section 4)',
+      );
+    }
+    // A blunt trailing edge that the faces widen or narrow to has no measurement ahead of the base: refused
+    // for it, as the rounded plate above, its position named too where that is refused (0015 section 4).
+    if (x > 0 && note === BLUNT_EDGE_NOTE) {
+      const position = nearBasePositionReasons(mach, x, fins.rootChordOverDiameter);
+      throw new BaseRefusal(
+        'fin-trailing-edge',
+        `${BLUNT_AHEAD_OF_BASE} ${aheadText(x)} root chords ahead of the base: no ` +
+          "band-setting source measures such a trailing edge's effect on the body base ahead of it, " +
+          'and the ordering of 0015 section 4 does not reach it' +
+          (position.length > 0
+            ? `; its position is refused too: ${position.join('; and ')} (0015 section 3.3)`
+            : ''),
+      );
+    }
+    // Then the position: where TN 2360 measured none, no section serves the fins, so it is named before
+    // any refusal of their section, sweep, count or thickness, whose words would lead to a change still
+    // refused there (0014 section 10.7 (ad), 2026-10-27; 0015 section 3.3).
+    const position = nearBasePositionRefusal(mach, x, fins.rootChordOverDiameter);
+    if (position !== undefined) throw position;
+    if (near === undefined) {
+      throw (
+        presentRefusal ??
+        new BaseRefusal(
+          'fins-near-base',
+          x > 0
+            ? `fins ending ${aheadText(x)} root chords ahead of the base: the present fins-on-base factor is ` +
+                "measured with the trailing edges at the base, and the fins' section and sweeps, which " +
+                'the rebuilt factor (0015) needs, are not given'
+            : "the fins' section and sweeps, which the rebuilt factor (0015) needs, are not given",
+        )
+      );
+    }
+    // A plate of one thickness on a tapered planform (`thinnest`): its thinnest station is the same section
+    // scaled in thickness, and the rebuilt factor brackets every station (0015 section 3.6). It does not
+    // take the present factor's thin-plate rule (low end F = 1): its members run from the zero member,
+    // whose low end is measured relief below F = 1, to t/c 0.10, so a thinner station lies inside its
+    // data and only moves the lower member down to the zero member (flat plates: RM L52E06's relief).
+    const scale =
+      fins.thinnest !== undefined && fins.thicknessRatio > 0
+        ? fins.thinnest.thicknessRatio / fins.thicknessRatio
+        : 1;
+    const spanSections =
+      near.spanSections ??
+      (scale < 1 - 1e-12
+        ? [{ ...near.section, halfThickness: near.section.halfThickness.map((h) => h * scale) }]
+        : undefined);
+    try {
+      return onW2Curve(
+        finsOnBaseFactorW1(mach, {
+          ...near,
+          ...(spanSections === undefined ? {} : { spanSections }),
+          count: fins.count,
+          trailingEdgeAheadOfBase: Math.min(x, 1),
+          ...(fins.rootChordOverDiameter === undefined
+            ? {}
+            : { rootChordOverDiameter: fins.rootChordOverDiameter }),
+        }),
+      );
+    } catch (e) {
+      if (!(e instanceof BaseRefusal) || presentRefusal === undefined) throw e;
+      throw new BaseRefusal(
+        e.reason,
+        `${e.message}; the present factor (0010 section 1.3) refuses it too: ${presentRefusal.message}`,
+      );
+    }
+  };
+  if (x === 0 && !rebuiltOnly) {
+    try {
+      // The present factor serves the fin families it was measured on (wedge, circular-arc and
+      // hexagonal sections); flat-faced fins go to the rebuilt factor's flat-plate value (0014 section
+      // 10.7, 2026-10-21).
+      if (fins.flatFaced === true) {
+        throw new BaseRefusal('flat-plate-fins', FLAT_PLATES_AT_BASE_REFUSAL);
+      }
+      // Thinner than the present factor's 5% data at some station, none thicker than 10% (0016
+      // section 18): the factor at 5% with its low end F = 1.
+      const thinnest = fins.thinnest?.thicknessRatio ?? fins.thicknessRatio;
+      const thin = thinnest < FINS_ON_BASE_THINNEST_DATA && fins.thicknessRatio <= 0.1;
+      let factor: FinsOnBaseFactor = finsOnBaseFactor(
+        mach,
+        thin
+          ? { ...fins, thicknessRatio: Math.max(fins.thicknessRatio, FINS_ON_BASE_THINNEST_DATA) }
+          : fins,
+      );
+      if (thin) {
+        factor = extendedBelowThinnestData(factor, thinnest, fins.thinnest?.spanShareBelow ?? 1);
+      }
+      // Bounded, not measured: the gap between the bounds in C_D beside it (0014 section 10.2).
+      return {
+        factor,
+        source: 'present',
+        presentRefusal: undefined,
+        label: `${factor.label}${gapOf(factor)}`,
+      };
+    } catch (e) {
+      if (!(e instanceof BaseRefusal)) throw e;
+      presentRefusal = e;
+      const w1 = rebuilt();
+      return {
+        factor: w1,
+        source: 'rebuilt',
+        presentRefusal,
+        label: `${w1.label}${gapOf(w1)}; ${FINS_ON_BASE_ROUTING_LABEL} (${e.message})`,
+      };
+    }
+  }
+  if (x <= 1 + WITHIN_A_CHORD) {
+    // Up to one root chord ahead, a trailing edge exactly a chord ahead included (TN 2360's station at x/c
+    // 1.0): the rebuilt factor, where TN 2360 measured positions (0015 section 3.3).
+    const w1 = rebuilt();
+    return {
+      factor: w1,
+      source: 'rebuilt',
+      presentRefusal: undefined,
+      label:
+        x === 0
+          ? `${w1.label}${gapOf(w1)}`
+          : `${w1.label}${gapOf(w1)}; ${FINS_ON_BASE_ROUTING_LABEL} (it takes fins at the base only)`,
+    };
+  }
+  // More than a root chord ahead no band-setting source measures the base drag; the plain curve served here
+  // until 2026-10-27 is withdrawn (0014 section 10.7 (ad); 0015 section 3.3).
+  throw new BaseRefusal(
+    'fins-near-base',
+    `${MORE_THAN_A_CHORD_AHEAD} (${aheadText(x)} root chords): no band-setting source measures the base ` +
+      'drag with fins that far ahead (TN 2360 measures up to one chord ahead, with a root chord of 1.5 body ' +
+      "diameters, at Mach 1.5 and 2.0; NSWCDD/TR-92/509's configurations 11 to 16 measure one and two " +
+      'chords ahead at Mach 2.0 to 3.0, but as a check that sets nothing, 0014 section 10.7 (ad)), so they ' +
+      "are refused; until 2026-10-27 they took the plain curve, whose band missed TN 2360's measurement a " +
+      'chord ahead (0015 section 3.3)' +
+      note,
+  );
+}
+
+/** A trailing edge that nothing measures ahead of the base (0015 section 4): a plate's rounded one, or a blunt one. */
+function edgeNoteOf(fins: BaseFins): string {
+  if (fins.nearBase === undefined) return fins.flatFaced === true ? ROUNDED_EDGE_NOTE : '';
+  const te = trailingEdgeShape(fins.nearBase.section);
+  return te === 'diverging' || te === 'converging-blunt' ? BLUNT_EDGE_NOTE : '';
+}
+
+/** At most this many changes are followed in turn (everyReason): one for each kind of change, and one more. */
+export const EVERY_REASON_STEPS = 6;
+
+/**
+ * The change a body-base refusal's words advise, made to the fins, where it is a mechanical change of them:
+ * fins ahead of the base refused for their position or for a trailing edge nothing measures there, moved to
+ * the base (a plate's rounded trailing edge squared, a blunt edge made sharp, as the words say); at the base, a
+ * rounded or blunt trailing edge squared or made sharp; another count made four; swept fins unswept (a plate
+ * refused for its swept trailing edge alone: that edge unswept, its leading edge kept, as its words advise); a
+ * thickness outside 5% to 10% brought to the nearer end. Undefined where the words advise no such change (a
+ * speed, an afterbody, a boundary layer, a section's shape). Exported for its tests.
+ */
+export function adviceFor(
+  refusal: BaseRefusal,
+  fins: BaseFins,
+): { readonly fins: BaseFins; readonly what: string } | undefined {
+  const note = edgeNoteOf(fins);
+  const edged = (f: BaseFins): { readonly fins: BaseFins; readonly what: string } | undefined => {
+    if (note === ROUNDED_EDGE_NOTE) {
+      return {
+        fins: {
+          ...f,
+          nearBase: {
+            section: squarePlateSection(f.thicknessRatio),
+            sectionFamily: 'other',
+            tanLeadingEdgeSweep: f.tanLeadingEdge,
+            tanTrailingEdgeSweep: f.tanTrailingEdge,
+          },
+        },
+        what: 'square trailing edges',
+      };
+    }
+    if (note === BLUNT_EDGE_NOTE && f.nearBase !== undefined) {
+      return {
+        fins: {
+          ...f,
+          nearBase: {
+            section: sharpStandInSection(f.thicknessRatio),
+            sectionFamily: 'other',
+            tanLeadingEdgeSweep: f.nearBase.tanLeadingEdgeSweep,
+            tanTrailingEdgeSweep: f.nearBase.tanTrailingEdgeSweep,
+          },
+        },
+        what: 'sharp trailing edges (a symmetric double wedge of the same thickness)',
+      };
+    }
+    return undefined;
+  };
+  const ahead = fins.trailingEdgeAheadOfBase > 0;
+  switch (refusal.reason) {
+    case 'fins-near-base':
+    case 'fin-trailing-edge': {
+      if (ahead) {
+        const atBase: BaseFins = { ...fins, trailingEdgeAheadOfBase: 0 };
+        const e = edged(atBase);
+        return e === undefined
+          ? { fins: atBase, what: 'with the fins at the base' }
+          : { fins: e.fins, what: `with the fins at the base and ${e.what}` };
+      }
+      if (refusal.reason !== 'fin-trailing-edge') return undefined;
+      const e = edged(fins);
+      return e === undefined ? undefined : { fins: e.fins, what: `with ${e.what}` };
+    }
+    case 'fin-count':
+      return fins.count === 4 ? undefined : { fins: { ...fins, count: 4 }, what: 'with four fins' };
+    case 'fin-sweep': {
+      const near = fins.nearBase;
+      const swept =
+        Math.abs(fins.tanLeadingEdge) > 1e-12 ||
+        Math.abs(fins.tanTrailingEdge) > 1e-12 ||
+        (near !== undefined &&
+          (Math.abs(near.tanLeadingEdgeSweep) > 1e-12 ||
+            Math.abs(near.tanTrailingEdgeSweep) > 1e-12));
+      if (!swept) return undefined;
+      // A plate refused for its swept trailing edge alone (0015 section 12, the strict reading of 2026-10-28): its
+      // words advise an unswept trailing edge, the leading edge kept. Where its leading edge would be refused too
+      // with the edge unswept, the words advise both, and the fins are made unswept, as for every other sweep.
+      const message = refusal.message;
+      if (
+        near !== undefined &&
+        message.includes(W1_FLAT_SWEPT_TE_MARK) &&
+        ![W1_FLAT_UNDER_45_MARK, W1_FLAT_BEYOND_60_MARK, W1_FLAT_SUBSONIC_EDGE_MARK].some((m) =>
+          message.includes(m),
+        )
+      ) {
+        return {
+          fins: { ...fins, tanTrailingEdge: 0, nearBase: { ...near, tanTrailingEdgeSweep: 0 } },
+          what: 'with the trailing edges unswept',
+        };
+      }
+      return {
+        fins: {
+          ...fins,
+          tanLeadingEdge: 0,
+          tanTrailingEdge: 0,
+          ...(near === undefined
+            ? {}
+            : { nearBase: { ...near, tanLeadingEdgeSweep: 0, tanTrailingEdgeSweep: 0 } }),
+        },
+        what: 'with the fins unswept',
+      };
+    }
+    case 'fin-thickness': {
+      const t = fins.thicknessRatio;
+      const near = fins.nearBase;
+      // A section refused for its shape (it does not lie inside the 10% arc everywhere): its thickness scaled by
+      // 0.1 / tauEq, which puts it exactly inside the 10% arc, so it is served (the review of 55a76d2).
+      // Otherwise a thickness outside 5% to 10% brought to the nearer end.
+      let k: number;
+      if (refusal.message.includes(W1_SECTION_SHAPE_MARK) && near !== undefined) {
+        const tauEq = Math.max(
+          ...[near.section, ...(near.spanSections ?? [])].map((st) => sectionBracket(st).tauEq),
+        );
+        if (!(tauEq > 0.1)) return undefined;
+        k = 0.1 / tauEq;
+      } else {
+        const to = Math.min(Math.max(t, FINS_ON_BASE_THINNEST_DATA), 0.1);
+        if (!(t > 0) || Math.abs(to - t) <= 1e-12) return undefined;
+        k = to / t;
+      }
+      const to = t * k;
+      const scaled = (st: FinsNearBase['section']): FinsNearBase['section'] => ({
+        ...st,
+        halfThickness: st.halfThickness.map((h) => h * k),
+      });
+      return {
+        fins: {
+          ...fins,
+          thicknessRatio: to,
+          ...(fins.thinnest === undefined
+            ? {}
+            : { thinnest: { ...fins.thinnest, thicknessRatio: fins.thinnest.thicknessRatio * k } }),
+          ...(near === undefined
+            ? {}
+            : {
+                nearBase: {
+                  ...near,
+                  section: scaled(near.section),
+                  ...(near.spanSections === undefined
+                    ? {}
+                    : { spanSections: near.spanSections.map(scaled) }),
+                },
+              }),
+        },
+        what: `with the fins ${Number((100 * to).toPrecision(3))}% thick`,
+      };
+    }
+    default:
+      return undefined;
+  }
+}
+
+/** How a chain of advised changes ended (followAdvice): the last change served, or why not. */
+export type AdviceEnd = 'served' | 'no-change' | 'repeat' | 'steps';
+
+/**
+ * The chain of every reason (the reviews of 86bcf73 and 55a76d2), apart from the body base: from the first
+ * refusal, the change its words advise is made (`advise`) and the fins asked again (`ask`, a refusal or
+ * undefined where served), and so on. It ends when the fins are served ('served'), the words advise no
+ * mechanical change ('no-change'), a reason comes again ('repeat': the change fell short, that reason not named
+ * twice), or after `steps` changes ('steps'). Every further refusal is returned with the change that met it.
+ */
+export function followAdvice<F>(
+  first: BaseRefusal,
+  start: F,
+  advise: (
+    refusal: BaseRefusal,
+    fins: F,
+  ) => { readonly fins: F; readonly what: string } | undefined,
+  ask: (fins: F) => BaseRefusal | undefined,
+  steps = EVERY_REASON_STEPS,
+): { readonly further: readonly FurtherRefusal[]; readonly endedBy: AdviceEnd } {
+  const met = new Set<string>([first.reason]);
+  const further: FurtherRefusal[] = [];
+  let current = first;
+  let fins = start;
+  for (let step = 0; step < steps; step++) {
+    const advice = advise(current, fins);
+    if (advice === undefined) return { further, endedBy: 'no-change' };
+    fins = advice.fins;
+    const next = ask(fins);
+    if (next === undefined) return { further, endedBy: 'served' };
+    if (met.has(next.reason)) return { further, endedBy: 'repeat' };
+    met.add(next.reason);
+    further.push({ reason: next.reason, message: next.message, after: advice.what });
+    current = next;
+  }
+  return { further, endedBy: 'steps' };
+}
+
+/**
+ * Every reason a body base's fins meet (the review of 86bcf73, its item 11): followAdvice with adviceFor and the
+ * one-step body base, so each further refusal's message is the one-step message, never one carrying a chain of
+ * its own. Each is carried on the first (BaseRefusal.further) and in its message, with the change that met it,
+ * so that the words name every reason and every change; how the chain ended is BaseRefusal.endedBy.
+ */
+function everyReason(input: BodyBaseInput, first: BaseRefusal): BaseRefusal {
+  const fins = input.fins;
+  if (fins === undefined) return first;
+  const { further, endedBy } = followAdvice(first, fins, adviceFor, (f) => {
+    try {
+      bodyBaseDragOnce({ ...input, fins: f });
+      return undefined;
+    } catch (e) {
+      if (!(e instanceof BaseRefusal)) throw e;
+      return e;
+    }
+  });
+  return new BaseRefusal(
+    first.reason,
+    first.message + further.map((f) => `; ${f.after}, they are refused too: ${f.message}`).join(''),
+    further.length === 0 ? undefined : further,
+    endedBy,
+  );
+}
+
+/**
+ * The body base: the curve, its band, and the fins-on-base factor where fins end at or near the base. Refused
+ * with every reason the fins meet as the words' changes are made in turn (everyReason).
+ */
+export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
+  try {
+    return bodyBaseDragOnce(input);
+  } catch (e) {
+    if (!(e instanceof BaseRefusal) || input.fins === undefined) throw e;
+    throw everyReason(input, e);
+  }
+}
+
+/**
+ * The rebuilt factor for these fins, routed as bodyBaseDrag routes fins to it (ahead of the base, the position
+ * first, a rounded or blunt trailing edge refused there, a trailing edge within 1e-9 of a chord taken as one
+ * chord, beyond a chord refused), at the base too, where bodyBaseDrag asks the present factor first; refused
+ * with every reason, as bodyBaseDrag refuses. From M 1.5 (above W2's range). The hold-out run's rebuilt model
+ * (src/validation/hold-out-run.ts; the review of 86bcf73, its item 10).
+ */
+export function rebuiltFinsOnBase(input: BodyBaseInput): FinsOnBaseFactorW1 {
+  const { mach, fins } = input;
+  if (fins === undefined) throw new BaseRefusal('input', 'no fins are given');
+  try {
+    return routeFins(mach, fins, 1, () => '', true).factor as FinsOnBaseFactorW1;
+  } catch (e) {
+    if (!(e instanceof BaseRefusal)) throw e;
+    throw everyReason(input, e);
+  }
 }

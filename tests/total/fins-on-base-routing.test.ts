@@ -9,6 +9,9 @@ import { describe, expect, it } from 'vitest';
 import {
   BLUNT_AHEAD_OF_BASE,
   BLUNT_EDGE_NOTE,
+  EVERY_REASON_STEPS,
+  adviceFor,
+  followAdvice,
   FINS_ON_BASE_ROUTING_LABEL,
   MORE_THAN_A_CHORD_AHEAD,
   ROUNDED_EDGE_NOTE,
@@ -19,16 +22,36 @@ import {
 import { COMPILED_CURVE_BAND, compiledCurveBasePressure } from '../../src/base/compiled-curve';
 import { finsOnBaseFactor } from '../../src/base/fins-on-base';
 import {
+  aheadText,
+  bevelsNeeded,
+  hasBevels,
+  shapeLimit,
   W1_FLAT_RELIEF_LOW,
+  W1_FLAT_SUBSONIC_EDGE_MARK,
+  W1_FLAT_SWEPT_TE_MARK,
+  W1_FLAT_UNDER_45_MARK,
+  W1_LONGER_BEVELS,
+  W1_OUTSIDE_AT,
+  W1_SECTION_SHAPE_LIMIT,
+  W1_SECTION_SHAPE_MARK,
+  sectionBracket,
   finsOnBaseFactorW1,
   type FinsOnBaseFactorW1,
 } from '../../src/base/fins-on-base-w1';
 import { BaseRefusal } from '../../src/base/refusal';
 import { trapezoidalPlanform } from '../../src/fins/planform';
-import { doubleWedge, flatPlate, singleWedge, type SymmetricSection } from '../../src/fins/section';
+import {
+  doubleWedge,
+  flatPlate,
+  hexagonal,
+  singleWedge,
+  type SymmetricSection,
+} from '../../src/fins/section';
 import { baseFinsOf, finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents } from '../../src/total/total-drag';
+import { refusalWords } from '../../src/app/status-words';
+import { rebuiltBodyBase } from '../../src/validation/hold-out-run';
 import { BASIC_FINNER_GEOMETRY as G, BASIC_FINNER_SHOTS } from '../../src/validation/basic-finner';
 
 const near = (section: SymmetricSection, tanLe = 0, tanTe = 0) => ({
@@ -519,7 +542,7 @@ describe('fins a root chord or more ahead of the base: the plain curve withdrawn
             expect(e.reason, what).toBe('fins-near-base');
             expect(e.message.startsWith(`${MORE_THAN_A_CHORD_AHEAD} (`), what).toBe(true);
             expect(e.message, what).toContain(
-              'nothing measures the base drag with fins that far ahead',
+              'no band-setting source measures the base drag with fins that far ahead',
             );
             expect(e.message, what).toContain('until 2026-10-27 they took the plain curve');
           }
@@ -595,6 +618,636 @@ describe('fins a root chord or more ahead of the base: the plain curve withdrawn
     for (const mach of [1.0, 1.2, 1.5, 1.8, 2.0, 2.4, 3.0]) {
       const r = base(mach, fins({ nearBase: near(doubleWedge(0.08)) }));
       expect(r.finsOnBase, `M ${mach}`).toBeDefined();
+    }
+  });
+});
+
+describe('a refusal ahead of the base carries the same fins refused at the base (the review of b323511, finding 1)', () => {
+  // Fins of root chord 2.0 body diameters (body diameter 1) ending half a chord ahead of the base, at M 1.8.
+  const rocket = (
+    count: number,
+    section: SymmetricSection,
+    leadingEdgeSweepDeg: number,
+  ): FinnedBody => ({
+    body: { nose: { shape: { kind: 'conical' }, length: 2, baseRadius: 0.5 }, cylinderLength: 8 },
+    afterbody: 'cylinder',
+    fins: {
+      count,
+      planform: trapezoidalPlanform({
+        rootChord: 2,
+        span: 1,
+        leadingEdgeSweep: (leadingEdgeSweepDeg * Math.PI) / 180,
+        trailingEdgeSweep: 0,
+      }),
+      section,
+      sectionFamily: 'other',
+      leadingEdgeRadius: 0,
+      trailingEdgeAheadOfBase: 1,
+    },
+  });
+  const baseRefusal = (c: FinnedBody) =>
+    finnedBodyComponents(
+      c,
+      { mach: 1.8, temperature: 290, reynoldsPerLength: 1.5e6 },
+      exactConeNoseWaveDrag(1.8, Math.atan(0.25)),
+    ).refusals.find((r) => r.component === 'body base')!;
+
+  it("the review's case: three 5% double wedges, clipped delta, leading edge 34.2 deg, x/c 0.5, M 1.8: position and sweep named", () => {
+    const r = baseRefusal(rocket(3, doubleWedge(0.05), 34.2));
+    expect(r.reason).toBe('fins-near-base');
+    expect(r.message).toContain("the fins' root chord is 2.00 body diameters");
+    expect(r.further?.[0]?.reason).toBe('fin-sweep');
+    expect(r.message).toContain('; with the fins at the base, they are refused too: ');
+    const words = refusalWords(r);
+    expect(words.reason).toMatch(/^fins ending ahead of the base: /);
+    expect(words.reason).toContain(
+      '; and with the fins at the base, the base drag behind sharp-edged fins is measured only ' +
+        'unswept or at a few sweeps',
+    );
+    expect(words.reason).not.toMatch(/at the base, with fins at the base/);
+    expect(words.change).toBe(
+      "the fins' trailing edges at the base; and flat fins with a square, unswept trailing edge (below " +
+        'Mach 1.62, unswept or swept 45 to 60 deg; beyond 60 deg only where the leading edge meets the ' +
+        'air faster than sound), or unswept fins of constant chord',
+    );
+  });
+
+  it('where the same fins are served at the base, the position alone is named', () => {
+    // Four unswept 8% double wedges: at the base the present factor serves them at M 1.8.
+    const served = rocket(4, doubleWedge(0.08), 0);
+    const atBase: FinnedBody = { ...served, fins: { ...served.fins, trailingEdgeAheadOfBase: 0 } };
+    expect(
+      finnedBodyComponents(
+        atBase,
+        { mach: 1.8, temperature: 290, reynoldsPerLength: 1.5e6 },
+        exactConeNoseWaveDrag(1.8, Math.atan(0.25)),
+      ).base?.finsOnBaseSource,
+    ).toBe('present');
+    const r = baseRefusal(served);
+    expect(r.reason).toBe('fins-near-base');
+    expect(r.further).toBeUndefined();
+    expect('further' in r).toBe(false);
+    expect(r.message).not.toContain('they are refused too');
+    expect(refusalWords(r).change).toBe("the fins' trailing edges at the base");
+  });
+
+  it('more than a chord ahead too, and for a blunt trailing edge ahead of the base', () => {
+    const far = rocket(3, doubleWedge(0.05), 34.2);
+    const farther: FinnedBody = { ...far, fins: { ...far.fins, trailingEdgeAheadOfBase: 3 } };
+    const r = baseRefusal(farther);
+    expect(r.message.startsWith(MORE_THAN_A_CHORD_AHEAD)).toBe(true);
+    expect(r.further?.[0]?.reason).toBe('fin-sweep');
+    // Five wedges thickening to a blunt trailing edge: refused for the trailing edge, and at the base for
+    // their count, which comes first there.
+    const five = rocket(5, singleWedge(0.08), 0);
+    const b = baseRefusal(five);
+    expect(b.reason).toBe('fin-trailing-edge');
+    expect(b.message.startsWith(BLUNT_AHEAD_OF_BASE)).toBe(true);
+    expect(b.further?.[0]?.reason).toBe('fin-count');
+    expect(refusalWords(b).change).toBe(
+      'sharp trailing edges, with the fins ending at the base; and four fins',
+    );
+  });
+
+  it('a rounded or blunt trailing edge ahead of the base: the fins as the change makes them are run at the base (the review of e232dca)', () => {
+    const at = (c: FinnedBody, mach = 1.8) =>
+      finnedBodyComponents(
+        c,
+        { mach, temperature: 290, reynoldsPerLength: 1.5e6 },
+        exactConeNoseWaveDrag(mach, Math.atan(0.25)),
+      );
+    const withSection = (
+      c: FinnedBody,
+      section: FinnedBody['fins']['section'],
+      trailingEdgeAheadOfBase = 1,
+    ): FinnedBody => ({ ...c, fins: { ...c.fins, section, trailingEdgeAheadOfBase } });
+    const refusalAt = (c: FinnedBody, mach: number) =>
+      at(c, mach).refusals.find((x) => x.component === 'body base')!;
+    // A rounded plate on a clipped delta, leading edge 30 deg, trailing edge unswept, half a chord ahead.
+    // The change, square edges at the base, is refused there for the sweep at M 1.55 (a flat plate swept
+    // under 45 deg below M 1.62, main's A1); the same rounded plate at the base is refused only for its edge
+    // again, which named nothing new.
+    const swept = rocket(4, doubleWedge(0.05), 30);
+    const rounded = withSection(swept, flatPlate(0.03, 'rounded', 'rounded'));
+    const r = refusalAt(rounded, 1.55);
+    expect(r.reason).toBe('fin-trailing-edge');
+    expect(r.message.startsWith(ROUNDED_PLATE_AHEAD_OF_BASE)).toBe(true);
+    expect(r.further?.[0]?.reason).toBe('fin-sweep');
+    expect(r.message).toContain(
+      '; with the fins at the base and square trailing edges, they are refused too: ',
+    );
+    expect(refusalWords(r).change).toBe(
+      'square or sharp trailing edges, with the fins ending at the base; and flat fins swept 45 to 60 ' +
+        'deg at the leading edge, or unswept ones',
+    );
+    const sameAtBase = at(withSection(swept, flatPlate(0.03, 'rounded', 'rounded'), 0), 1.55);
+    expect(sameAtBase.refusals.find((x) => x.component === 'body base')?.reason).toBe(
+      'fin-trailing-edge',
+    );
+    // Unswept, the square-edged plate is served at the base: the edge alone is named.
+    const unswept = withSection(
+      rocket(4, doubleWedge(0.05), 0),
+      flatPlate(0.03, 'rounded', 'rounded'),
+    );
+    expect(
+      at(withSection(rocket(4, doubleWedge(0.05), 0), flatPlate(0.03, 'rounded', 'square'), 0))
+        .base,
+    ).toBeDefined();
+    expect(baseRefusal(unswept).further).toBeUndefined();
+    // More than a chord ahead, the same.
+    const far = refusalAt(withSection(swept, flatPlate(0.03, 'rounded', 'rounded'), 6), 1.55);
+    expect(far.message.startsWith(MORE_THAN_A_CHORD_AHEAD)).toBe(true);
+    expect(far.further?.[0]?.reason).toBe('fin-sweep');
+    // Blunt wedges, leading edge 30 deg: sharp edges at the base (a double wedge of the same thickness) are
+    // refused there for the sweep; the same wedges at the base only for their edge.
+    const blunt = withSection(swept, singleWedge(0.08));
+    const b = baseRefusal(blunt);
+    expect(b.reason).toBe('fin-trailing-edge');
+    expect(b.further?.[0]?.reason).toBe('fin-sweep');
+    expect(b.message).toContain(
+      '; with the fins at the base and sharp trailing edges (a symmetric double wedge of the same ' +
+        'thickness), they are refused too: ',
+    );
+    expect(
+      at(withSection(swept, singleWedge(0.08), 0)).refusals.find((x) => x.component === 'body base')
+        ?.reason,
+    ).toBe('fin-trailing-edge');
+    // Unswept, sharp edges are served at the base: the edge alone is named.
+    expect(
+      baseRefusal(withSection(rocket(4, doubleWedge(0.05), 0), singleWedge(0.08))).further,
+    ).toBe(undefined);
+  });
+});
+
+describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base, positions printed, the hold-out route', () => {
+  const body = {
+    nose: { shape: { kind: 'conical' as const }, length: 2, baseRadius: 0.5 },
+    cylinderLength: 8,
+  };
+  // Root chord 2 body diameters (diameter 1), x/c 0.5 ahead of the base unless given.
+  const rocket = (
+    count: number,
+    section: FinnedBody['fins']['section'],
+    leadingEdgeSweepDeg: number,
+    rootChord = 2,
+    xc = 0.5,
+  ): FinnedBody => ({
+    body,
+    afterbody: 'cylinder',
+    fins: {
+      count,
+      planform: trapezoidalPlanform({
+        rootChord,
+        span: 1,
+        leadingEdgeSweep: (leadingEdgeSweepDeg * Math.PI) / 180,
+        trailingEdgeSweep: 0,
+      }),
+      section,
+      sectionFamily: 'other',
+      leadingEdgeRadius: 0,
+      trailingEdgeAheadOfBase: xc * rootChord,
+    },
+  });
+  const parts = (c: FinnedBody, mach: number) =>
+    finnedBodyComponents(
+      c,
+      { mach, temperature: 290, reynoldsPerLength: 1.5e6 },
+      exactConeNoseWaveDrag(mach, Math.atan(0.25)),
+    );
+  const baseRefusalAt = (c: FinnedBody, mach: number) =>
+    parts(c, mach).refusals.find((r) => r.component === 'body base')!;
+
+  it("Fable's probe: five 12% double wedges, leading edge 34 deg, chord 2, x/c 0.5, M 1.8: every reason, every change", () => {
+    const r = baseRefusalAt(rocket(5, doubleWedge(0.12), 34), 1.8);
+    expect(r.reason).toBe('fins-near-base');
+    expect(r.further?.map((f) => [f.reason, f.after])).toEqual([
+      ['fin-count', 'with the fins at the base'],
+      ['fin-sweep', 'with four fins'],
+      ['fin-thickness', 'with the fins unswept'],
+    ]);
+    expect(r.message).toContain('; with the fins at the base, they are refused too: ');
+    expect(r.message).toContain('; with four fins, they are refused too: ');
+    expect(r.message).toContain('; with the fins unswept, they are refused too: ');
+    const words = refusalWords(r);
+    // Each change one item, between semicolons (the review of 55a76d2); the 12% double wedge, no steeper than
+    // an arc of its own thickness, is refused for its thickness alone (the re-check of 174490b).
+    expect(words.change).toBe(
+      "the fins' trailing edges at the base; four fins; flat fins with a square, unswept trailing " +
+        'edge (below Mach 1.62, unswept or swept 45 to 60 deg; beyond 60 deg only where the leading edge ' +
+        'meets the air faster than sound), or unswept fins of constant chord; and fins of that thickness',
+    );
+    // A further refusal's message is the one-step message, never one carrying a chain of its own (N6).
+    for (const f of r.further ?? []) expect(f.message).not.toContain('they are refused too');
+    expect(r.endedBy).toBe('served');
+    expect(words.reason).toContain(
+      '; and with the fins at the base, the base drag is measured with four fins only',
+    );
+    expect(words.reason).toContain('; and with four fins, the base drag behind sharp-edged fins');
+    expect(words.reason).toContain(
+      '; and with the fins unswept, the base drag is measured for fins 5% to 10% as thick as their chord',
+    );
+    // And the last change is served: four unswept 10% double wedges at the base.
+    expect(parts(rocket(4, doubleWedge(0.1), 0, 2, 0), 1.8).base).toBeDefined();
+    // At most EVERY_REASON_STEPS changes are followed.
+    expect(EVERY_REASON_STEPS).toBe(6);
+  });
+
+  it('hexagonal fins with bevels over a fifth of the chord: refused for their shape, told the thickness that serves them (the review of 55a76d2)', () => {
+    // Four unswept hexagonal fins 8% thick, bevels over 20% of the chord, at the base, Mach 1.7: their faces
+    // near the edges are steeper than the 10% arc's (they would need an arc of t/c 0.125); this shape is
+    // served up to t/c 0.064. Before, the words said "fins of that thickness", and the fins are 8% thick.
+    const hex = hexagonal(0.08, 0.2, 0.2);
+    const four = rocket(4, hex, 0, 2, 0);
+    const r = baseRefusalAt(four, 1.7);
+    expect(r.reason).toBe('fin-thickness');
+    expect(r.message).toContain(W1_SECTION_SHAPE_MARK);
+    expect(r.message).toContain('it would need an arc of t/c 0.125');
+    expect(r.message).toContain(`${W1_SECTION_SHAPE_LIMIT} 0.064`);
+    const words = refusalWords(r);
+    expect(words.change).not.toBe('fins of that thickness');
+    // The words' change and the chain's: the fins at 6.4% thick are served.
+    expect(r.endedBy).toBe('served');
+    expect(r.further).toBeUndefined();
+    expect(parts(rocket(4, hexagonal(0.064, 0.2, 0.2), 0, 2, 0), 1.7).base).toBeDefined();
+    expect(words.change.startsWith('fins at most 6.4% thick with this section')).toBe(true);
+    // Three such fins half a chord ahead, chord 2, Mach 1.8: the position, then (at the base) the shape;
+    // both changes made, the fins are served.
+    const three = baseRefusalAt(rocket(3, hex, 0, 2, 0.5), 1.8);
+    expect(three.reason).toBe('fins-near-base');
+    expect(three.further?.map((f) => f.reason)).toEqual(['fin-thickness']);
+    expect(three.endedBy).toBe('served');
+    expect(parts(rocket(3, hexagonal(0.064, 0.2, 0.2), 0, 2, 0), 1.8).base).toBeDefined();
+    expect(refusalWords(three).change).toBe(
+      "the fins' trailing edges at the base; and fins at most 6.4% thick with this section, or longer " +
+        'bevels, each over at least 27.7% of the chord',
+    );
+  });
+
+  it('a double wedge or an arc thicker than 10%: refused for its thickness, worded so, no bevels named (the re-check of 174490b)', () => {
+    const arc = (tau: number): SymmetricSection => {
+      const x = Array.from({ length: 201 }, (_, k) => k / 200);
+      return { x, halfThickness: x.map((v) => 2 * tau * v * (1 - v)) };
+    };
+    for (const [name, section] of [
+      ['a 12% double wedge', doubleWedge(0.12)],
+      ['a 12% arc', arc(0.12)],
+    ] as const) {
+      const r = baseRefusalAt(rocket(4, section, 0, 2, 0), 2.0);
+      expect(r.reason, name).toBe('fin-thickness');
+      expect(r.message, name).not.toContain(W1_SECTION_SHAPE_MARK);
+      expect(r.message, name).not.toContain('bevels');
+      expect(refusalWords(r), name).toEqual({
+        reason:
+          'with fins at the base, the base drag is measured for fins 5% to 10% as thick as their chord',
+        change: 'fins of that thickness',
+      });
+      // The change, 10%, is served.
+      expect(r.endedBy, name).toBe('served');
+    }
+    expect(hasBevels(doubleWedge(0.12))).toBe(false);
+    expect(hasBevels(arc(0.12))).toBe(false);
+    expect(hasBevels(hexagonal(0.08, 0.2, 0.2))).toBe(true);
+  });
+
+  it('where a section reaches outside the 10% arc, as the geometry says: at the ridge, where a bevel meets the flat, at an edge (the quick look of 5a9ce16)', () => {
+    // A double wedge with its ridge off the middle does not lie inside an arc of its own thickness: it reaches
+    // outside the 10% arc at its ridge, not near its edges, whose half-slopes are shallower than the arc's.
+    // Three fins, which the rebuilt factor takes (the present factor, which takes four, serves such a wedge
+    // at the base from Mach 1.8).
+    for (const ridge of [0.3, 0.2]) {
+      const r = baseRefusalAt(rocket(3, doubleWedge(0.1, ridge), 0, 2, 0), 2.0);
+      const what = `ridge ${ridge}`;
+      expect(r.message, what).toContain(W1_SECTION_SHAPE_MARK);
+      expect(r.message, what).toContain(`${W1_OUTSIDE_AT}at its ridge, so `);
+      expect(r.message, what).not.toContain('steeper');
+      expect(r.message, what).not.toContain(W1_LONGER_BEVELS);
+      const words = refusalWords(r);
+      expect(words.reason, what).toBe(
+        'with fins at or near the base, the base drag is measured only for sections that lie inside a ' +
+          '10%-thick circular arc everywhere, and this section reaches outside it at its ridge',
+      );
+      expect(words.change, what).toMatch(/^fins at most [\d.]+% thick with this section$/);
+      expect(r.endedBy, what).toBe('served');
+    }
+    // At 10% thick, ridge 0.3: the limit 8.4%, served.
+    expect(refusalWords(baseRefusalAt(rocket(3, doubleWedge(0.1, 0.3), 0, 2, 0), 2.0)).change).toBe(
+      'fins at most 8.4% thick with this section',
+    );
+    expect(parts(rocket(3, doubleWedge(0.084, 0.3), 0, 2, 0), 2.0).base).toBeDefined();
+    // A hexagonal section: its binding station is where a bevel meets the flat middle (checked by
+    // sectionBracket, not assumed).
+    const hex = hexagonal(0.08, 0.2, 0.2);
+    // Either junction: the symmetric section ties there, and which one is found rests on rounding.
+    const binding = sectionBracket(hex).binding;
+    expect(binding.kind).toBe('interior');
+    expect([0.2, 0.8].some((s) => Math.abs(binding.s - s) < 1e-9)).toBe(true);
+    const h = baseRefusalAt(rocket(3, hex, 0, 2, 0), 2.0);
+    expect(h.message).toContain(
+      `${W1_OUTSIDE_AT}where a bevel meets its flat middle, the bevel too steep for its thickness, so `,
+    );
+    expect(refusalWords(h).reason).toMatch(
+      /this section reaches outside it where a bevel meets its flat middle, the bevel too steep for its thickness$/,
+    );
+    expect(refusalWords(h).change).toBe(
+      'fins at most 6.4% thick with this section, or longer bevels, each over at least 27.7% of the chord',
+    );
+    // A section whose edge sets it: a steep lip at the leading edge.
+    const lip: SymmetricSection = { x: [0, 1e-4, 0.5, 1], halfThickness: [0, 0.002, 0.05, 0] };
+    expect(sectionBracket(lip).binding.kind).toBe('leading-edge');
+    let message = '';
+    try {
+      finsOnBaseFactorW1(2.0, {
+        count: 3,
+        section: lip,
+        sectionFamily: 'other',
+        tanLeadingEdgeSweep: 0,
+        tanTrailingEdgeSweep: 0,
+        trailingEdgeAheadOfBase: 0,
+      });
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    expect(message).toContain(
+      `${W1_OUTSIDE_AT}at its leading edge, where its faces are steeper than the arc's, so `,
+    );
+  });
+
+  it('longer bevels offered only where they can serve: at most 10% thick, with the least length; thicker, not at all (the quick look of 0e56581)', () => {
+    const at = (t: number, bevel: number) =>
+      baseRefusalAt(rocket(4, hexagonal(t, bevel, bevel), 0, 2, 0), 1.7);
+    // Thicker than 10%: no bevel length serves (the longest, a double wedge, needs an arc of its own t/c).
+    for (const [t, bevel] of [
+      [0.12, 0.2],
+      [0.12, 0.4],
+      [0.12, 0.49],
+      [0.105, 0.49],
+    ] as const) {
+      const r = at(t, bevel);
+      const what = `t/c ${t}, bevels ${bevel}`;
+      expect(r.message, what).toContain(W1_SECTION_SHAPE_MARK);
+      expect(r.message, what).not.toContain(W1_LONGER_BEVELS);
+      expect(refusalWords(r).change, what).toMatch(
+        /^fins at most [\d.]+% thick with this section$/,
+      );
+      expect(r.endedBy, what).toBe('served');
+    }
+    // 8% thick, bevels over 20%: offered, with the least length, 27.7%; following it, or taking the longest
+    // bevels, is served.
+    const r = at(0.08, 0.2);
+    expect(refusalWords(r).change).toBe(
+      'fins at most 6.4% thick with this section, or longer bevels, each over at least 27.7% of the chord',
+    );
+    expect(bevelsNeeded(0.08)).toBe(0.277);
+    for (const bevel of [0.277, 0.3, 0.49]) {
+      expect(
+        parts(rocket(4, hexagonal(0.08, bevel, bevel), 0, 2, 0), 1.7).base,
+        `bevels ${bevel}`,
+      ).toBeDefined();
+    }
+    // Just short of it: refused.
+    expect(at(0.08, 0.276).reason).toBe('fin-thickness');
+    // At 10% thick the least length is half the chord, a double wedge: still served.
+    expect(bevelsNeeded(0.1)).toBe(0.5);
+  });
+
+  it('the limit stated for a shape is rounded down: at it served, 0.1% of the chord above it refused (the re-check of 174490b)', () => {
+    // Bevels over 17% of the chord, 8% thick: the limit is not a round number.
+    const at = (t: number) =>
+      finsOnBaseFactorW1(2.0, {
+        count: 4,
+        section: hexagonal(t, 0.17, 0.17),
+        sectionFamily: 'other',
+        tanLeadingEdgeSweep: 0,
+        tanTrailingEdgeSweep: 0,
+        trailingEdgeAheadOfBase: 0,
+      });
+    let message = '';
+    try {
+      at(0.08);
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    const stated = Number(new RegExp(`${W1_SECTION_SHAPE_LIMIT} (\\d+\\.\\d+)`).exec(message)![1]);
+    expect(stated).toBe(0.056);
+    expect(() => at(stated)).not.toThrow();
+    expect(() => at(stated + 0.001)).toThrow(
+      /does not lie inside the 10%-thick circular arc everywhere/,
+    );
+    expect(shapeLimit(0.08, 0.08 / (4 * 0.17 * 0.83))).toBe(0.056);
+  });
+
+  it('the chain ends where a reason comes again, or after its steps (followAdvice)', () => {
+    // A stand-in for the body base: the advised change meets the first reason again.
+    const first = new BaseRefusal('fin-count', 'five fins');
+    const again = followAdvice(
+      first,
+      0,
+      (_r, n: number) => ({ fins: n + 1, what: `step ${n + 1}` }),
+      (n) =>
+        n === 1
+          ? new BaseRefusal('fin-sweep', 'swept')
+          : new BaseRefusal('fin-count', 'still five'),
+    );
+    expect(again.endedBy).toBe('repeat');
+    expect(again.further.map((f) => f.reason)).toEqual(['fin-sweep']);
+    // Never served and never repeating: it stops after its steps.
+    const reasons = [
+      'fin-sweep',
+      'fin-thickness',
+      'fin-trailing-edge',
+      'fins-near-base',
+      'flat-plate-fins',
+      'mach-range',
+      'afterbody',
+      'laminar-base',
+    ] as const;
+    const long = followAdvice(
+      first,
+      0,
+      (_r, n: number) => ({ fins: n + 1, what: `step ${n + 1}` }),
+      (n) => new BaseRefusal(reasons[n - 1]!, `reason ${n}`),
+    );
+    expect(long.endedBy).toBe('steps');
+    expect(long.further).toHaveLength(EVERY_REASON_STEPS);
+    // No change advised: it ends at once.
+    expect(
+      followAdvice(
+        first,
+        0,
+        () => undefined,
+        () => undefined,
+      ).endedBy,
+    ).toBe('no-change');
+  });
+
+  it('a reason that comes again ends the chain; a change the words do not make ends it too', () => {
+    // A boat-tail: refused for the afterbody, which no change of the fins clears.
+    const tail: FinnedBody = { ...rocket(4, doubleWedge(0.08), 0), afterbody: 'boat-tail' };
+    expect(baseRefusalAt(tail, 1.8).further).toBeUndefined();
+    // Four unswept 8% double wedges half a chord ahead with a chord of 2 diameters: the base serves them.
+    expect(baseRefusalAt(rocket(4, doubleWedge(0.08), 0), 1.8).further).toBeUndefined();
+  });
+
+  it('sharp fins swept at the leading edge ahead of the base: refused closer than 0.9 root chords, and W1b sweeps anywhere ahead (items 1 and 2)', () => {
+    const tan = (d: number) => Math.tan((d * Math.PI) / 180);
+    const at = (mach: number, le: number, xc: number) =>
+      base(
+        mach,
+        fins({
+          nearBase: near(doubleWedge(0.08), tan(le), 0),
+          rootChordOverDiameter: 1.5,
+          trailingEdgeAheadOfBase: xc,
+        }),
+      );
+    // Fable's example: 50 deg, x/c 0.5, M 1.8.
+    let e: unknown;
+    try {
+      at(1.8, 50, 0.5);
+    } catch (err) {
+      e = err;
+    }
+    expect(e).toBeInstanceOf(BaseRefusal);
+    expect((e as BaseRefusal).reason).toBe('fin-sweep');
+    expect((e as BaseRefusal).message).toMatch(
+      /^fins of a sharp section ending 0\.5 root chords ahead of the base with the leading edge swept 50\.0 deg/,
+    );
+    expect(
+      refusalWords({ component: 'body base', reason: 'fin-sweep', message: (e as Error).message })
+        .reason,
+    ).toMatch(
+      /^with fins ahead of the base, swept fins of a sharp section are measured only as RM L52J21a's/,
+    );
+    // Served at the base and from 0.9 root chords ahead.
+    expect(at(1.8, 50, 0).finsOnBase).toBeDefined();
+    expect(at(1.8, 50, 0.9).finsOnBase).toBeDefined();
+    // W1b: 30 deg at exactly M 2.0, ahead of the base: refused at x/c 0.5 and 0.95; at the base served.
+    for (const xc of [0.5, 0.95]) {
+      expect(() => at(2.0, 30, xc)).toThrow(
+        /such sweeps \(up to 45 deg, from M 2\.0\) are argued at the base only/,
+      );
+    }
+    expect(at(2.0, 30, 0).finsOnBase).toBeDefined();
+  });
+
+  it('a position past one chord is printed so: 1 + 2e-9 is not "1" (item 6)', () => {
+    const msg = (x: number) => {
+      try {
+        base(1.8, fins({ trailingEdgeAheadOfBase: x }));
+      } catch (e) {
+        return (e as Error).message;
+      }
+      return 'served';
+    };
+    expect(msg(1 + 2e-9)).toContain('(1.000000002 root chords)');
+    expect(msg(1.004)).toContain('(1.004 root chords)');
+    expect(msg(1.5)).toContain('(1.5 root chords)');
+    expect(aheadText(0.99999)).toBe('0.99999');
+    expect(aheadText(0.5)).toBe('0.5');
+  });
+
+  it('the hold-out run routes the rebuilt factor like the library (item 10)', () => {
+    const f = fins({
+      nearBase: near(doubleWedge(0.08)),
+      rootChordOverDiameter: 1.5,
+      trailingEdgeAheadOfBase: 1 + 5e-10,
+    });
+    // Within 1e-9 of a chord: one chord, served as the library serves it.
+    expect(rebuiltBodyBase(1.8, f).factor.nominal).toBe(base(1.8, f).finsOnBase!.nominal);
+    // A blunt edge ahead of the base: the library's words, near the base, not at it.
+    let e: unknown;
+    try {
+      rebuiltBodyBase(1.8, {
+        ...f,
+        trailingEdgeAheadOfBase: 0.5,
+        nearBase: near(singleWedge(0.08)),
+      });
+    } catch (err) {
+      e = err;
+    }
+    expect((e as BaseRefusal).reason).toBe('fin-trailing-edge');
+    expect((e as Error).message.startsWith(BLUNT_AHEAD_OF_BASE)).toBe(true);
+    // Beyond a chord: refused as the library refuses.
+    expect(() => rebuiltBodyBase(1.8, { ...f, trailingEdgeAheadOfBase: 1.2 })).toThrow(
+      /^fins ending more than a root chord ahead of the base \(1\.2 root chords\)/,
+    );
+  });
+});
+
+describe("a plate's swept trailing edge, and a subsonic edge beyond 60 deg, in the chain of every reason (A1's follow-up merged with A5's)", () => {
+  const plate = (t = 0.024): SymmetricSection => ({
+    x: [0, 0.1, 1],
+    halfThickness: [0, t / 2, t / 2],
+    bluntTrailingEdge: true,
+  });
+  const tan = (d: number) => Math.tan((d * Math.PI) / 180);
+  const platedFins = (le: number, te: number, xc = 0) =>
+    fins({
+      thicknessRatio: 0.024,
+      flatFaced: true,
+      trailingEdgeAheadOfBase: xc,
+      rootChordOverDiameter: 1.5,
+      nearBase: near(plate(), tan(le), tan(te)),
+    });
+  const refusalOf = (mach: number, f: BaseFins): BaseRefusal => {
+    try {
+      base(mach, f);
+    } catch (e) {
+      if (e instanceof BaseRefusal) return e;
+      throw e;
+    }
+    throw new Error('served');
+  };
+  it("a swept trailing edge alone: the words' change, that edge unswept with the leading edge kept, is the change made, and it serves", () => {
+    for (const te of [10, -10, 45]) {
+      for (const xc of [0, 0.5]) {
+        const where = `te ${te}, x/c ${xc}`;
+        const f = platedFins(50, te, xc);
+        const e = refusalOf(1.8, f);
+        expect(e.reason, where).toBe('fin-sweep');
+        expect(e.message, where).toContain(W1_FLAT_SWEPT_TE_MARK);
+        expect(e.endedBy, where).toBe('served');
+        const a = adviceFor(e, f)!;
+        expect(a.what, where).toBe('with the trailing edges unswept');
+        expect(a.fins.tanLeadingEdge, where).toBe(tan(50));
+        expect(a.fins.nearBase!.tanLeadingEdgeSweep, where).toBe(tan(50));
+        expect(a.fins.tanTrailingEdge, where).toBe(0);
+        expect(a.fins.nearBase!.tanTrailingEdgeSweep, where).toBe(0);
+        expect(() => base(1.8, a.fins), where).not.toThrow();
+      }
+    }
+  });
+  it('a swept trailing edge whose leading edge is refused too, and a subsonic edge beyond 60 deg: the fins made unswept, and served', () => {
+    for (const [mach, le, te, mark] of [
+      [1.55, 20, 10, W1_FLAT_UNDER_45_MARK],
+      [1.8, 70, 10, W1_FLAT_SUBSONIC_EDGE_MARK],
+      [1.8, 70, 0, W1_FLAT_SUBSONIC_EDGE_MARK],
+      [1.7, 60.1, 0, W1_FLAT_SUBSONIC_EDGE_MARK],
+    ] as const) {
+      const where = `M ${mach}, ${le}/${te} deg`;
+      const f = platedFins(le, te);
+      const e = refusalOf(mach, f);
+      expect(e.reason, where).toBe('fin-sweep');
+      expect(e.message, where).toContain(mark);
+      expect(e.endedBy, where).toBe('served');
+      const a = adviceFor(e, f)!;
+      expect(a.what, where).toBe('with the fins unswept');
+      expect(() => base(mach, a.fins), where).not.toThrow();
+    }
+  });
+  it('ahead of the base where the position is refused: the position first, then the sweep with the fins at the base, then served', () => {
+    for (const [le, te, mark] of [
+      [50, 10, W1_FLAT_SWEPT_TE_MARK],
+      [50, -10, W1_FLAT_SWEPT_TE_MARK],
+      [20, 0, W1_FLAT_UNDER_45_MARK],
+    ] as const) {
+      const where = `${le}/${te} deg`;
+      const e = refusalOf(1.2, platedFins(le, te, 0.5));
+      expect(e.reason, where).toBe('fins-near-base');
+      expect(e.further?.[0]?.reason, where).toBe('fin-sweep');
+      expect(e.further?.[0]?.after, where).toBe('with the fins at the base');
+      expect(e.further?.[0]?.message, where).toContain(mark);
+      expect(e.further, where).toHaveLength(1);
+      expect(e.endedBy, where).toBe('served');
     }
   });
 });

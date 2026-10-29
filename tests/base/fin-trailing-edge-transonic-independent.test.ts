@@ -227,17 +227,33 @@ describe('the nodes and the served term, recomputed from the record (item 3 to 7
     }
   });
 
+  // Each series with a stated layer over its own points' Mach intervals, from the lowest point's to
+  // the highest point's (0019 3.4.1 item 7, narrowed 2026-10-28, the review's M3).
+  const spans = new Map<string, { x: number; lo: number; hi: number }>();
+  for (const p of TRANSONIC_TE_EVIDENCE) {
+    if (p.properties.layer === undefined) continue;
+    const key = `${p.set}|${p.reading}|${p.series}`;
+    const s = spans.get(key) ?? { x: p.properties.layer[0], lo: Infinity, hi: -Infinity };
+    spans.set(key, { x: s.x, lo: Math.min(s.lo, p.machLow), hi: Math.max(s.hi, p.machHigh) });
+  }
+  const measuredReach = (m: number) =>
+    Math.max(0, ...[...spans.values()].filter((s) => m >= s.lo && m <= s.hi).map((s) => s.x));
+
   it("gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K", () => {
-    for (const m of [1.0, 1.02, 1.07, 1.13, 1.15, 1.22, 1.3, 1.37, 1.44, 1.49]) {
+    for (const m of [
+      1.0, 1.02, 1.07, 1.1, 1.105, 1.11, 1.12, 1.13, 1.15, 1.22, 1.3, 1.37, 1.44, 1.49,
+    ]) {
       const { k, t } = between(m);
       const envLow = nodes[k]!.low + t * (nodes[k + 1]!.low - nodes[k]!.low);
       const envHigh = nodes[k]!.high + t * (nodes[k + 1]!.high - nodes[k]!.high);
-      const reach = Math.min(nodes[k]!.reach, nodes[k + 1]!.reach, 4.5);
+      const reach = Math.min(nodes[k]!.reach, nodes[k + 1]!.reach, 4.5, measuredReach(m));
       for (const [hc, x] of [
         [0.06, 0.6],
         [0.1, 0.9],
+        [0.03, 1.2],
         [0.03, 1.7],
         [0.03, 1.9],
+        [0.03, 2.0],
         [0.012, 4.4],
       ] as const) {
         const s = serve(m, hc, x);

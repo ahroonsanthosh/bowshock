@@ -22,7 +22,7 @@
  */
 
 import { bluntNoseRefusal, sharpFitProblem } from '../../../src/analysis/fitted-flow';
-import { bodyBaseDrag } from '../../../src/base/base-drag';
+import { bodyBaseDrag, type BaseFins } from '../../../src/base/base-drag';
 import { finTrailingEdgeBaseDrag } from '../../../src/base/fin-trailing-edge';
 import { BaseRefusal } from '../../../src/base/refusal';
 import { FinRefusal } from '../../../src/fins/refusal';
@@ -117,7 +117,7 @@ export const REASONS = {
   finsW1Count: 'base (rebuilt factor): fins at the base, not two to four',
   finsW1Thickness: 'base (rebuilt factor): a section outside the 10% circular arc (steep bevels)',
   finsW1TrailingEdge: 'base (rebuilt factor): a rounded or diverging blunt trailing edge',
-  finsW1Sweep: 'base (rebuilt factor): sweep not measured (sharp sections with the leading edge 0 to 45 or above 60 deg, or the trailing edge beyond it, or swept aft closer to the base than 0.9 root chords, or swept forward; plates with a swept trailing edge outside 45 to 60 deg; since 0015 section 12 plates with an unswept trailing edge are served at every leading-edge sweep, but since 2026-10-27 not swept more than 0 and under 45 deg, or beyond 60 deg, below Mach 1.62, 0014 10.7 (z))',
+  finsW1Sweep: 'base (rebuilt factor): sweep not measured (sharp sections with the leading edge 0 to 45 or above 60 deg, or the trailing edge beyond it, or swept aft closer to the base than 0.9 root chords, or swept forward; plates with a swept trailing edge (outside 45 to 60 deg until 2026-10-28, at any sweep since); since 0015 section 12 plates with an unswept trailing edge are served at every leading-edge sweep, but since 2026-10-27 not swept more than 0 and under 45 deg, or beyond 60 deg, below Mach 1.62, and since 2026-10-28 not beyond 60 deg where M cos L is below 1, 0014 10.7 (z))',
   // Fin trailing-edge base.
   teTaper:
     EDGES !== 'before'
@@ -381,27 +381,31 @@ export function teBelow15Refused(r: Rocket, mach: number, rePerMetre: number): b
  * src/total builds (baseFinsOf: a plate's largest t/c at its shorter end chord and its thinnest station, both
  * edge sweeps, the rebuilt factor's section); undefined if served.
  */
+/** The rocket's fins as the body base takes them (src/total's baseFinsOf, with the body's diameter). */
+export function rocketBaseFins(r: Rocket): BaseFins {
+  return baseFinsOf({
+    count: r.finCount,
+    planform: trapezoidalPlanform({
+      rootChord: r.rootChord,
+      span: r.span,
+      leadingEdgeSweep: r.leadingEdgeSweepDeg * DEG,
+      trailingEdgeSweep: r.trailingEdgeSweepDeg * DEG,
+    }),
+    section: librarySection(r)!,
+    sectionFamily: 'other',
+    leadingEdgeRadius: roundedLeadingEdge(r) ? r.thickness / 2 : 0,
+    trailingEdgeAheadOfBase: r.trailingEdgeAheadChords * r.rootChord,
+  }, r.diameter);
+}
+
 export function finsOnBaseReason(r: Rocket, mach: number): ReasonKey | undefined {
-  const section = librarySection(r)!;
   try {
     bodyBaseDrag({
       mach,
       afterbody: 'cylinder',
       boundaryLayerAtBase: 'turbulent',
       baseAreaRatio: 1,
-      fins: baseFinsOf({
-        count: r.finCount,
-        planform: trapezoidalPlanform({
-          rootChord: r.rootChord,
-          span: r.span,
-          leadingEdgeSweep: r.leadingEdgeSweepDeg * DEG,
-          trailingEdgeSweep: r.trailingEdgeSweepDeg * DEG,
-        }),
-        section,
-        sectionFamily: 'other',
-        leadingEdgeRadius: roundedLeadingEdge(r) ? r.thickness / 2 : 0,
-        trailingEdgeAheadOfBase: r.trailingEdgeAheadChords * r.rootChord,
-      }, r.diameter),
+      fins: rocketBaseFins(r),
     });
     return undefined;
   } catch (e) {

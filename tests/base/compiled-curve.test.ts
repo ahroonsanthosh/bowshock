@@ -18,6 +18,7 @@ import {
   compiledCurveBasePressure,
   compiledCurveValue,
   interpolationErrorBound,
+  roundedOutward,
   twiceReadNodes,
 } from '../../src/base/compiled-curve';
 import {
@@ -320,6 +321,19 @@ describe('the band, recomputed from the data', () => {
       high: Math.ceil(100 * Math.max(e.tunnel.max, e.herrinDutton.max)) / 100,
     };
     expect(before).toEqual({ low: 0.82, high: 1.08 });
+  });
+
+  it("0008 section 3.3's rounding, outward to two decimals, on synthetic ends: down at the low end, up at the high end, an end on the second decimal kept", () => {
+    expect(roundedOutward(0.7731, 1.162)).toEqual({ low: 0.77, high: 1.17 });
+    expect(roundedOutward(0.7781, 1.1691)).toEqual({ low: 0.77, high: 1.17 });
+    expect(roundedOutward(0.8237, 1.0783)).toEqual({ low: 0.82, high: 1.08 });
+    expect(roundedOutward(0.77, 1.17)).toEqual({ low: 0.77, high: 1.17 });
+    expect(roundedOutward(0.77 - 1e-12, 1.17 + 1e-12)).toEqual({ low: 0.77, high: 1.17 });
+    // Just past a decimal: a guard set too wide (1e-2 in place of 1e-9) would keep these on it.
+    expect(roundedOutward(0.7731, 1.1601)).toEqual({ low: 0.77, high: 1.17 });
+    expect(roundedOutward(0.76995, 1.1601)).toEqual({ low: 0.76, high: 1.17 });
+    const e = compiledCurveBandEvidence();
+    expect(COMPILED_CURVE_BAND).toEqual(roundedOutward(e.min, e.max));
   });
 
   it('the more negative curve lies inside the band about the served one', () => {
