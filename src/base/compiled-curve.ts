@@ -288,15 +288,23 @@ export function compiledCurveBandEvidence(gamma = 1.4): CompiledCurveBandEvidenc
 }
 
 /**
+ * 0008 section 3.3's rounding: an envelope rounded outward to two decimals, the low end down and the
+ * high end up (an end already on the second decimal, within 1e-9, stays).
+ */
+export function roundedOutward(min: number, max: number): { low: number; high: number } {
+  return {
+    low: Math.floor(min * 100 + 1e-9) / 100,
+    high: Math.ceil(max * 100 - 1e-9) / 100,
+  };
+}
+
+/**
  * The model-form band of the compiled curve, measured over curve (ratio of
  * base drag): the evidence's envelope rounded outward to two decimals.
  */
 export const COMPILED_CURVE_BAND = (() => {
   const e = compiledCurveBandEvidence();
-  return {
-    low: Math.floor(e.min * 100 + 1e-9) / 100,
-    high: Math.ceil(e.max * 100 - 1e-9) / 100,
-  };
+  return roundedOutward(e.min, e.max);
 })();
 
 export interface CompiledCurveBasePressure {

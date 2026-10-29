@@ -3478,7 +3478,8 @@ and a question for the owner** (the coordinator's, after the re-review of
   (R about 0.48e6 to 0.80e6, tripped but below where its own text shows
   the base pressure independent of R) belongs in the compiled curve's
   domain. Until the owner decides, it is inside and the band is 0.77 to
-  1.17.
+  1.17. (Corrected 2026-10-28, after Fable's review: the question has
+  three answers, in the note on TR 1051's stings below.)
 - _Timing, disclosed (the re-review)._ Reader B's fig. 7 values in data
   units existed 3 s before the correction (4d7d5c9) was committed. Fig. 7
   lists no Reynolds number, so the correction does not bear on it: its
@@ -3581,6 +3582,23 @@ applied as registered). The band becomes **0.77 to 1.17** at Mach 1.5 to
   values, none outside and none refused. The closest is the one that
   sets the band's end: fig. 5(a) at R 0.765e6, reader B's 0.2026 against
   0.2028.
+- _TR 1051's stings against TN 2360's (noted 2026-10-28, after Fable's
+  review of 5921198..4970b94, which passed; the coordinator's
+  instruction)._ TR 1051 enters at its thinnest measured sting symbol
+  only, and that registered criterion stands as written; the band does
+  not change. But it is not applied alike: TN 2360's body, which is in
+  the band and sets its high end, sits on a d/h 0.4 sting, and TR 1051
+  itself says its data at Mach 2.0 and 2.9 were all taken at d/h 0.4 (p.
+  12). Round 19 read the next symbols twice, at d/h 0.390 at Mach 2.0
+  (-0.1393 and -0.1392) and 0.397 at Mach 2.9 (-0.1157 from both
+  readers), and they are left out as thicker stings. Against both curves
+  they span 0.9305 to 1.1553, inside 0.77 to 1.17. The owner's question
+  above, corrected, has three answers: the high end 1.17 (with fig. 5's
+  lowest station); 1.16 (without it, with TR 1051's symbols up to d/h
+  0.4, matching TN 2360's sting); or 1.14 (without it, TR 1051 at its
+  thinnest symbol only). The label now says "TR 1051 at its thinnest
+  sting" beside "every body-alone base pressure read twice in its
+  domain", which is true only so.
 - _Merged with B1 (main at cdd26e6, 2026-10-28)._ 0019 section 3.4.1's
   F4 widens the trailing edges' band at the DREV gate's Mach 1.799 shot,
   also after the gate was used. With both widenings the gate's model-form
