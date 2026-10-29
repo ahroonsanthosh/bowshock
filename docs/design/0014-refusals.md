@@ -2820,7 +2820,8 @@ above stands as written, the runs it quotes being those at commits
   chord. So the served domain for fins ahead of the base is no wider than
   what TN 2360 measured in chord over diameter at each Mach number: a
   root chord of 1.5 body diameters, within 0.5% (the precedent of 0011
-  section 3, each dimension within 0.5% of the configuration measured),
+  section 3, each dimension within 0.5% of the configuration measured;
+  that reason corrected 2026-10-28, the entry of that date below),
   at Mach 1.5 to 2.0. Every other chord is refused there, at every
   position 0 < x/c < 1 (the swept fins served from 0.9 root chords ahead
   among them, whose members there are TN 2360's), in plain words; so is a
@@ -2922,18 +2923,45 @@ that the increment is nearly zero a chord fore or aft.
   rounded plate near the base no longer leads into another refusal; and
   every piece of advice to move fins "a root chord or more ahead of the
   base" is removed, since that position is now refused.
-- _How the words keep off another refusal, in the code (written with it;
-  nothing more is served):_ ahead of the base the position is checked
-  before the fins' section, sweep, count or thickness, so no refusal of
-  those is named where every section would still be refused. A blunt
-  trailing edge that the faces widen or narrow to (the Basic Finner's
-  wedges), which the rebuilt factor refuses at every position, is
-  refused ahead of the base in words of its own, near the base and not
-  "at this speed", and its change is sharp trailing edges at the base.
-  More than a chord ahead, a plate's rounded trailing edge or such a
-  blunt one is named beside the position, and the change named is a
-  trailing edge served at the base. A change named never moves the fins
-  further ahead.
+- _How the refusals carry every reason, in the code (nothing more is
+  served; heading and text corrected after the review of b323511, whose
+  finding 1 showed the first wording promised more than the code did):_
+  ahead of the base the position is checked before the fins' section,
+  sweep, count or thickness, so no refusal of those is named where every
+  section would still be refused. A blunt trailing edge that the faces
+  widen or narrow to (the Basic Finner's wedges), which the rebuilt factor
+  refuses at every position, is refused ahead of the base in words of its
+  own, near the base and not "at this speed"; its words say that at the
+  base four unswept wedges like the Basic Finner's are measured from Mach
+  1.8, and its change is sharp trailing edges at the base. More than a
+  chord ahead, a plate's rounded trailing edge or such a blunt one is
+  named beside the position. Where fins ahead of the base are refused for
+  their position or for such a trailing edge, the words send the
+  rocketeer to the base, so the fins are run at the base as the words'
+  change makes them: for a refusal of the position the same fins; for a
+  plate's rounded trailing edge the same plate with square trailing
+  edges; for a blunt edge the faces widen or narrow to, a symmetric
+  double wedge of the same thickness ratio standing for "sharp trailing
+  edges". Refused there, that refusal is carried with the first, in its
+  message and in its words, which name both and give both changes (or
+  none, where nothing about the rocket changes the second); served there,
+  the first reason alone is named. The review's case, three 5%
+  double wedges on a clipped delta with the leading edge swept 34.2 deg,
+  the trailing edge unswept, a root chord of 2.0 diameters, x/c 0.5, Mach
+  1.8, was refused for its position and told to move the fins to the
+  base, where they are refused again for their sweep; its words now name
+  both. Until the review of e232dca the same fins were run at the base
+  for the trailing-edge refusals too, where they are refused for the
+  same edge again, so a plate's or a wedge's sweep, count and thickness
+  at the base were never checked: in the population the change the words
+  advise was still refused for 22 of 36 rounded plates per band from Mach
+  1.0 to 1.8 (for sweep) and 6 of 36 at 1.8 to 3.0; the fins as the change
+  makes them are run since. Still not checked: a sharp section other
+  than that double wedge, which may meet a refusal of its own shape
+  (steep bevels, say); and, until 2026-10-28, the changes that the
+  refusal at the base names in turn, so a chain of more than two reasons
+  was not followed (followed since: the entry of 2026-10-28 below). A
+  change named never moves the fins further ahead.
 - _What it cost (the same 2000 rockets, `docs/research/refusals/`):_ on
   the merged head (main at 5921198 merged at 1ec9df1, whose audit counts
   the Von Karman noses the page serves), 155 of 8000 cases serve a total
@@ -2970,6 +2998,172 @@ that the increment is nearly zero a chord fore or aft.
   assumption of no fin effect is not shown there.
   `fins-on-base-routing.test.ts` holds the numbers, 0.1563, 0.1635 and
   0.1693.
+
+**2026-10-28, the review of 86bcf73 (PASS, with minor items) and the
+merge with main's A1.** The review (Fable's, on A5 as main holds it,
+f88ecbe, and on this branch's follow-ups) asked that code and record
+match: where the record does not name a served case, either a registered
+argument is cited for it or it is refused under section 10.2.
+
+- _Sharp fins swept ahead of the base (its items 1 and 2):_ refused under
+  section 10.2. A sharp section with the leading edge swept and the
+  trailing edge unswept was served at every measured position ahead of
+  the base, though 0015 section 3.4 names it at the base and, as a
+  trailing edge swept no more than the leading edge, from 0.9 root
+  chords (RM L52J21a's position); no measurement or registered argument
+  covers it between. It is now served ahead of the base only from 0.9
+  root chords. W1b's moderate sweeps, argued at the base only, were
+  served ahead of it at exactly Mach 2.0; they are refused ahead of it.
+  0015 section 3.4 has a note of this date.
+- _Flat plates ahead of the base (item 3):_ the argument cited, nothing
+  refused. 0015 section 4's "counts and positions of section 3" covers
+  the measured positions ahead of the base (x/c 1.0 among them since
+  2026-10-27), with the lower end the at-base relief, 0.838, taken by
+  reference to section 4's argument (amendment i); the relief measured
+  ahead of the base, RM L52J21a's, is at most 5%, inside it. 0015 section
+  4 now says so in a paragraph of this date.
+- _The chord rule's 0.5% (item 4):_ 0011 section 3's tolerance is for the
+  Basic Finner's own inputs, "not for other rockets", so it was no
+  precedent. The 0.5% stands on TN 2360's resolution in position: 0.5% of
+  the 1.5-diameter chord is 0.0075 diameters, moving a position given in
+  chords by at most 0.005 chords, a fortieth of the 0.2 chords between
+  TN 2360's stations (0015 section 3.3, a correction of this date).
+- _Words and messages (items 5 to 10):_ the withdrawal says "no
+  band-setting source measures" fins more than a chord ahead, naming
+  NSWCDD/TR-92/509's configurations 11 to 16, one and two chords ahead at
+  Mach 2.0 to 3.0, as the check that sets nothing (above); a position is
+  printed with digits enough to show which side of one chord it lies
+  (1.000000002, not 1); 0015's list of figures not read is corrected for
+  TN 3819 fig. 32, read three times since; the position's words say that
+  one reading at Mach 2.41 is not yet settled and that the chord counts
+  within 0.5%; the sweep's words for a sharp section ahead of the base
+  are worded for fins ahead of it (0017's rows follow, a new one for it);
+  and the hold-out run's rebuilt model is routed as the library routes
+  fins (`rebuiltFinsOnBase`), so a trailing edge within 1e-9 of a chord is
+  one chord there too, and a blunt edge ahead of the base has the
+  library's words.
+- _Every reason (item 11):_ only the first refusal at the base was named,
+  so a rocket with three reasons still got advice that fell short. The
+  review's probe, five 12% double wedges with the leading edge swept 34
+  deg, a root chord of 2 diameters, x/c 0.5, Mach 1.8, was told "the
+  fins' trailing edges at the base, and four fins", then refused for its
+  sweep, then its thickness. Now, where a refusal's words advise a
+  mechanical change of the fins (the position, the edge, the count, the
+  sweep, a thickness of 5% to 10%), the change is made and the body base
+  asked again, until it is served, a reason comes again, no such change
+  is advised, or six changes are made; every reason met is carried with
+  the change that met it, in the message and in the words, which give
+  every change. The probe is now refused for its position, its count,
+  its sweep and its thickness, its change "the fins' trailing edges at
+  the base, four fins, ..., and fins of that thickness". This applies at
+  the base as well as ahead of it. Still not followed: a change the words
+  do not make mechanically (a section's shape, a speed, an afterbody),
+  and a sharp section other than the double wedge that stands for "sharp
+  trailing edges".
+- _Merged with A1 (main 76899f1):_ A1 named a flat plate's sweep refused
+  below Mach 1.62 inside a refusal of its position; this branch's chain
+  carries the same sweep as the refusal at the base. In `bodyBaseDrag`
+  the chain alone names it now, once; the factor called directly keeps
+  A1's single combined refusal (0015 section 12, a note of this date).
+- _Population (the same 2000 rockets):_ main's run at 76899f1 serves 184
+  of 8000 cases a total (73 at Mach 1.5 to 1.8, 111 at 1.8 to 3.0); this
+  branch after these items gives `out/impact.out` and `.json` byte for
+  byte as main's: no case moves, no total is lost or gained, and the
+  cross-check agrees on all 1200 cases. No case of the population changes
+  its outcome or the first reason the audit records for it: the new sweep
+  refusals meet no case it serves, and the words and the chain of
+  reasons change no count.
+
+**2026-10-28, the review of 55a76d2 (NOT PASS on one finding), fixed.**
+
+- _The blocking finding:_ the rebuilt factor refuses with `fin-thickness`
+  both fins thicker than 10% and a section whose faces near the edges are
+  steeper than the 10% circular arc's, the members' bound (0015 section
+  6: "sections outside the 10% arc"); the page worded both as thickness,
+  "fins of that thickness". For bevelled sections that is false: with
+  bevels over a fifth of the chord any fin thicker than 6.4% is refused
+  (the arc's slope near the edges), so four unswept hexagonal fins 8%
+  thick at the base, Mach 1.7, were told to take a thickness they had;
+  and the chain's thickness change (to 5% to 10%) left them refused.
+  Now the factor's message names the shape and the thickness at which a
+  section of that shape is served (its thickness times 0.1 over the arc it
+  would need, rounded down), the page words it as a shape ("fins at most
+  6.4% thick with this section, or longer bevels"), and the chain's change
+  scales the section by 0.1 over that arc, which puts it on the 10% arc
+  exactly, so it is served. The record's rule is unchanged; only the
+  words and the change were wrong.
+- _The replay, as the review asked_ (`docs/research/refusals/advice-replay.test.ts`,
+  `out/advice-replay.out`; the baseline population's 2000 rockets at four
+  Mach bands, the body base asked as `evaluate.ts` asks it): 8000 cases,
+  2192 served at once, and of the 5808 refused every chain of advised
+  changes ends served (5808), none ending without a mechanical change,
+  none falling short. With the thickness change put back as it was (a
+  plant), 1027 fall short, every one of them bevelled, the shape refused
+  again after the change.
+- _Minor items:_ the sweep's words for sharp fins ahead of the base now
+  say what is measured, RM L52J21a's 45 deg at 0.85 +-0.05 root chords
+  (the RM-10's 60 deg at the base), and what is taken from it; the
+  changes of a chain are listed between semicolons, each one item; a
+  further refusal's message is the one-step message (tested); the end of
+  a chain where a reason comes again, or the steps run out, is tested on
+  `followAdvice` itself, since no case of the replay reaches it now; and
+  the page's filter for a plate's sweep named twice, unreachable since
+  the merge with A1, is removed. The review's optional offer of TN 2360's
+  root chord in the position's words is not taken: that change is not
+  followed by the chain, so it could fall short unseen.
+- _Population:_ `out/impact.out` and `.json` byte for byte as main's at
+  76899f1 (184 of 8000 totals; cross-check 1200 of 1200): the words and
+  the changes move no count.
+
+**2026-10-28, the re-check of 174490b (PASS), its three small items.** A
+double wedge or a circular arc thicker than 10%, which lies inside a
+circular arc of its own thickness, is refused for its thickness
+alone and worded so ("fins of that thickness", the change 10%); the
+shape's words name bevels only where the section has them (a flat middle
+between bevels, `hasBevels`), so a double wedge with its ridge off the
+middle is told a thickness, not longer bevels. The advice replay is a
+guard: it fails if any chain ends with a reason met again or its steps run
+out, and if the committed `out/advice-replay.out` differs from a fresh run.
+The shape's stated limit is rounded down, tested where it is not a round
+number (bevels over 17% of the chord, 8% thick: 0.056, served at it,
+refused 0.001 above), with rounding up planted.
+
+**2026-10-28, the quick look of 5a9ce16 (NOT PASS, narrowly), fixed.**
+The test of a section's shape (`sectionBracket`'s tauEq, the largest of its
+half-thickness over 2 s (1 - s) along the chord and of its edges'
+half-slopes) asks whether the section lies inside the 10%-thick circular
+arc everywhere, not near its edges. The message, the page's words and
+0017's row said "its faces near the edges are steeper", false for a double
+wedge with its ridge off the middle: at ridge 0.3 and t/c 0.10 its edge
+half-slopes, 0.083 and 0.036, are shallower than the arc's 0.100, and it
+reaches outside the arc at its ridge (tauEq 1.19 times its thickness).
+Now `sectionBracket` returns the station that sets tauEq, and the message
+and the words say the section does not lie inside the arc everywhere and
+where it reaches outside: at its ridge (a double wedge), where a bevel
+meets its flat middle, the bevel too steep for its thickness (a hexagonal
+section; that junction is the binding station, checked, not assumed), or
+at an edge, where its faces are steeper than the arc's. The advice, a
+thickness at which the shape is served (8.4% at ridge 0.3), is unchanged
+and served. This entry's note of the 55a76d2 review, "a section whose
+faces near the edges are steeper than the 10% circular arc's", holds
+only where the binding station is an edge or a bevel's end. The
+population and the advice replay are byte for byte as before (184 of
+8000 totals).
+
+**2026-10-28, the quick look of 0e56581 (NOT PASS, narrowly), fixed.** The
+shape's words offered "or longer bevels" for every section with bevels,
+but thicker than 10% no bevel length serves a section (the longest, a
+double wedge, needs an arc of its own t/c): a hexagonal section 12% thick
+with bevels over 20%, 40% or 49% of the chord, and 10.5% thick with
+bevels over 49%, was offered bevels that are refused again. Now longer
+bevels are offered only at most 10% thick, with the least length that
+serves: a bevel of length b reaches the 10% arc where t / (4 b (1 - b)) =
+0.10, so bevels each at least (1 - sqrt(1 - t / 0.10)) / 2 of the chord
+serve, rounded up to 0.1% (8% thick: 27.7%; served at it and at the
+longest, refused at 27.6%). 0017's row and note follow. The symmetric
+hexagon's test accepts either bevel junction as its binding station, the
+two tying. Population and advice replay byte for byte as before (184 of
+8000 totals).
 
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that

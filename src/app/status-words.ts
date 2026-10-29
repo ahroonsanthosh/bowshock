@@ -22,6 +22,10 @@ import type { BaseRefusalReason } from '../base/refusal';
 import {
   W1_FLAT_BEYOND_60_MARK,
   W1_FLAT_UNDER_45_MARK,
+  W1_LONGER_BEVELS,
+  W1_OUTSIDE_AT,
+  W1_SECTION_SHAPE_LIMIT,
+  W1_SECTION_SHAPE_MARK,
   W1_SWEEP_REFUSED_TOO,
 } from '../base/fins-on-base-w1';
 import type { FinRefusalReason } from '../fins/refusal';
@@ -269,6 +273,12 @@ const asMessage = (r: ComponentRefusal): PlainReason => ({
 
 type Worded = (r: ComponentRefusal) => PlainReason;
 
+/**
+ * The rebuilt factor's refusals of a sharp section's sweep ahead of the base (src/base/fins-on-base-w1.ts): each
+ * names the fins "ending ... root chords ahead of the base"; at the base they say "at the base".
+ */
+const SHARP_SWEPT_AHEAD = /^fins of a sharp section ending [\d.e+-]+ root chords ahead of the base/;
+
 /** Every reason src/base gives. */
 const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
   'mach-range': (r) =>
@@ -299,8 +309,8 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
     return {
       reason:
         'fins ending ahead of the base: the base drag with fins there is measured only up to one ' +
-        'root chord ahead, at Mach 1.5 to 2.0 (none is known below Mach 1.5), and only with a fin ' +
-        'root chord of 1.5 body diameters' +
+        'root chord ahead, at Mach 1.5 to 2.0 (none is known below Mach 1.5; one at Mach 2.41 is read ' +
+        'but not yet settled), and only with a fin root chord of 1.5 body diameters, within 0.5%' +
         (r.message.includes(ROUNDED_EDGE_NOTE) || r.message.includes(BLUNT_EDGE_NOTE)
           ? ', and only for square or sharp trailing edges'
           : '') +
@@ -340,16 +350,27 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
               'with fins swept beyond 60 deg, and nothing measured shows a sharper sweep gives the same',
             change: 'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
           }
-        : {
-            reason:
-              'with fins at the base, the base drag behind wedge or bevelled fins is measured only ' +
-              'unswept or at a few sweeps (a tapered fin has a swept edge); flat fins with a square, ' +
-              'unswept trailing edge are taken at any leading-edge sweep, but below Mach 1.62 only ' +
-              'unswept or swept 45 to 60 deg',
-            change:
-              'flat fins with a square, unswept trailing edge (below Mach 1.62, unswept or swept 45 to ' +
-              '60 deg), or unswept fins of constant chord',
-          },
+        : // Sharp fins ending ahead of the base swept other than as RM L52J21a's (the review of 86bcf73, its
+          // item 9): worded for fins ahead of the base, not at it.
+          SHARP_SWEPT_AHEAD.test(r.message)
+          ? {
+              reason:
+                'with fins ahead of the base, swept fins of a sharp section are measured only as RM ' +
+                "L52J21a's, both edges swept 45 deg and ending 0.85 +-0.05 root chords ahead (60 deg is " +
+                'measured only at the base), so they are taken there only swept 45 to 60 deg, the ' +
+                'trailing edge no more, from 0.9 root chords ahead; not swept like these at this position',
+              change: 'unswept fins of constant chord',
+            }
+          : {
+              reason:
+                'with fins at the base, the base drag behind wedge or bevelled fins is measured only ' +
+                'unswept or at a few sweeps (a tapered fin has a swept edge); flat fins with a square, ' +
+                'unswept trailing edge are taken at any leading-edge sweep, but below Mach 1.62 only ' +
+                'unswept or swept 45 to 60 deg',
+              change:
+                'flat fins with a square, unswept trailing edge (below Mach 1.62, unswept or swept 45 to ' +
+                '60 deg), or unswept fins of constant chord',
+            },
   'fin-trailing-edge': (r) =>
     // A rounded plate ending ahead of the base (src/base/base-drag.ts): refused at every speed, near the base.
     r.message.startsWith(ROUNDED_PLATE_AHEAD_OF_BASE)
@@ -366,7 +387,8 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
             reason:
               'with fins near the base, the base drag is measured only for fins with square or sharp ' +
               'trailing edges, not for a blunt one that the faces widen or narrow to (as the Basic ' +
-              "Finner's wedges)",
+              "Finner's wedges); at the base, four unswept wedges like the Basic Finner's are " +
+              'measured from Mach 1.8',
             change: 'sharp trailing edges, with the fins ending at the base',
           }
         : {
@@ -388,12 +410,44 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
       'be bounded yet',
     change: 'square or bevelled trailing edges',
   }),
-  'fin-thickness': () => ({
-    reason:
-      'with fins at the base, the base drag is measured for fins 5% to 10% as thick as their ' +
-      'chord',
-    change: 'fins of that thickness',
-  }),
+  'fin-thickness': (r) => {
+    // A section refused for its shape, not its thickness (the review of 55a76d2): it does not lie inside the 10%
+    // circular arc everywhere. The change: thinner fins, as thin as the message says this shape is served, or
+    // longer bevels where it has them.
+    if (r.message.includes(W1_SECTION_SHAPE_MARK)) {
+      const limit = new RegExp(`${W1_SECTION_SHAPE_LIMIT} (\\d+\\.\\d+)`).exec(r.message);
+      const pct =
+        limit === null ? undefined : `${Number((100 * Number(limit[1])).toPrecision(3))}%`;
+      // Where the section reaches outside the arc, as the factor found it (the quick look of 5a9ce16): at the
+      // ends of its bevels, at its ridge, at an edge; bevels named only where the section has them.
+      const at = r.message.indexOf(W1_OUTSIDE_AT);
+      const where =
+        at < 0
+          ? undefined
+          : r.message.slice(at + W1_OUTSIDE_AT.length).split(`, so ${W1_SECTION_SHAPE_LIMIT}`)[0];
+      // The bevels' change only where the factor offers it (at most 10% thick), with its least length.
+      const bevels = new RegExp(
+        `${W1_LONGER_BEVELS}, each over at least ([\\d.]+)% of the chord`,
+      ).exec(r.message);
+      return {
+        reason:
+          'with fins at or near the base, the base drag is measured only for sections that lie inside a ' +
+          '10%-thick circular arc everywhere, and this section reaches outside it' +
+          (where === undefined ? '' : ` ${where}`),
+        change:
+          (pct === undefined ? 'thinner fins' : `fins at most ${pct} thick with this section`) +
+          (bevels === null
+            ? ''
+            : `, or longer bevels, each over at least ${bevels[1]!}% of the chord`),
+      };
+    }
+    return {
+      reason:
+        'with fins at the base, the base drag is measured for fins 5% to 10% as thick as their ' +
+        'chord',
+      change: 'fins of that thickness',
+    };
+  },
   'swept-trailing-edge': () => ({
     reason: "a swept square trailing edge's drag is not measured",
     change: 'unswept trailing edges, or bevelled ones',
@@ -552,8 +606,40 @@ const PAGE_WORDS: Readonly<Record<'not-computed' | 'not-verified', Worded>> = {
 const isKey = <K extends string>(table: Readonly<Record<K, unknown>>, key: string): key is K =>
   Object.prototype.hasOwnProperty.call(table, key);
 
-/** A refusal of the logic in plain words (any reason it does not know: its message). */
+/**
+ * A refusal of the logic in plain words (any reason it does not know: its message). A body base refused for its
+ * fins that carries further refusals, met as its words' changes are made in turn (src/base/base-drag.ts,
+ * everyReason), names every reason, each after the change that met it, and gives every change, or none where
+ * nothing about the rocket changes one of them (the reviews of b323511 and 86bcf73).
+ */
 export function refusalWords(r: ComponentRefusal): PlainReason {
+  const own = ownWords(r);
+  const further = r.further ?? [];
+  if (further.length === 0) return own;
+  const words = further.map((f) => ({
+    after: f.after,
+    plain: ownWords({ component: r.component, reason: f.reason, message: f.message }),
+  }));
+  // Each further reason's words say "with fins at the base" themselves; said once (the review of e232dca).
+  const said = (reason: string) =>
+    reason
+      .replace(/^with fins at (or near )?the base, /, '')
+      .replace('the base drag with fins at the base', 'the base drag');
+  const changes = [own.change, ...words.map((w) => w.plain.change)];
+  const distinct = changes.filter((c, k) => changes.indexOf(c) === k);
+  // Each change one item, between semicolons: a change may hold a comma or an "or" of its own (the review of
+  // 55a76d2).
+  return {
+    reason: own.reason + words.map((w) => `; and ${w.after}, ${said(w.plain.reason)}`).join(''),
+    change: changes.includes(NOTHING)
+      ? NOTHING
+      : distinct.length === 1
+        ? distinct[0]!
+        : `${distinct.slice(0, -1).join('; ')}; and ${distinct[distinct.length - 1]!}`,
+  };
+}
+
+function ownWords(r: ComponentRefusal): PlainReason {
   if (r.component === 'flight condition') return { reason: r.message, change: 'see the reason' };
   // The fins' place below zero: the fins overhang the base (the only way the builder or an
   // import gives it, since a field that is not a number is never put into the rocket).

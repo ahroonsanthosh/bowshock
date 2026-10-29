@@ -41,6 +41,10 @@ import {
   finsOnBaseFactorW1,
   W1_FLAT_BEYOND_60_MARK,
   W1_FLAT_UNDER_45_MARK,
+  W1_LONGER_BEVELS,
+  W1_OUTSIDE_AT,
+  W1_SECTION_SHAPE_LIMIT,
+  W1_SECTION_SHAPE_MARK,
   W1_SWEEP_REFUSED_TOO,
 } from '../../src/base/fins-on-base-w1';
 import { bodyBaseDrag } from '../../src/base/base-drag';
@@ -424,8 +428,9 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
       {
         reason:
           'fins ending ahead of the base: the base drag with fins there is measured only up to one ' +
-          'root chord ahead, at Mach 1.5 to 2.0 (none is known below Mach 1.5), and only with a fin ' +
-          'root chord of 1.5 body diameters',
+          'root chord ahead, at Mach 1.5 to 2.0 (none is known below Mach 1.5; one at Mach 2.41 is ' +
+          'read but not yet settled), and only with a fin root chord of 1.5 body diameters, within ' +
+          '0.5%',
         change: "the fins' trailing edges at the base",
       },
     );
@@ -465,7 +470,8 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
       reason:
         'with fins near the base, the base drag is measured only for fins with square or sharp ' +
         'trailing edges, not for a blunt one that the faces widen or narrow to (as the Basic ' +
-        "Finner's wedges)",
+        "Finner's wedges); at the base, four unswept wedges like the Basic Finner's are " +
+        'measured from Mach 1.8',
       change: 'sharp trailing edges, with the fins ending at the base',
     });
     expect(blunt.reason).not.toContain('at this speed');
@@ -485,6 +491,133 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     );
     expect(far(BLUNT_EDGE_NOTE).reason).toMatch(/, and only for square or sharp trailing edges$/);
     expect(far('').reason).not.toContain('trailing edges');
+  });
+
+  it("a refusal ahead of the base carrying the same fins' refusal at the base: both named, both changes", () => {
+    // The review of b323511, finding 1: the words must carry every reason.
+    const position = {
+      component: 'body base',
+      reason: 'fins-near-base',
+      message: 'fins ending 0.5 root chords ahead of the base at Mach 1.8: ...',
+    };
+    const alone = refusalWords(position);
+    const both = refusalWords({
+      ...position,
+      further: [
+        {
+          reason: 'fin-sweep',
+          message: 'swept fins at the base ...',
+          after: 'with the fins at the base',
+        },
+      ],
+    });
+    expect(both.reason).toBe(
+      `${alone.reason}; and with the fins at the base, the base drag behind wedge or bevelled fins ` +
+        'is measured only unswept or at a few sweeps (a tapered fin has a swept edge); flat fins ' +
+        'with a square, unswept trailing edge are taken at any leading-edge sweep, but below Mach ' +
+        '1.62 only unswept or swept 45 to 60 deg',
+    );
+    expect(both.reason).not.toMatch(/at the base, with fins at the base/);
+    // A reason at the base that names the fins at the base inside it: said once.
+    const edge = refusalWords({
+      ...position,
+      further: [{ reason: 'fin-trailing-edge', message: 'x', after: 'with the fins at the base' }],
+    });
+    expect(edge.reason).toBe(
+      `${alone.reason}; and with the fins at the base, at this speed, the base drag is measured ` +
+        'only for flat fins with square trailing edges or fins with sharp ones, not for this ' +
+        'trailing edge (a wedge thickening to it, or a rounded one)',
+    );
+    expect(both.change).toBe(
+      "the fins' trailing edges at the base; and flat fins with a square, unswept trailing edge " +
+        '(below Mach 1.62, unswept or swept 45 to 60 deg), or unswept fins of constant chord',
+    );
+    // Where nothing about the rocket changes the reason at the base, no change is offered.
+    const speed = refusalWords({
+      ...position,
+      further: [
+        {
+          reason: 'mach-range',
+          message: 'outside the Mach numbers measured',
+          after: 'with the fins at the base',
+        },
+      ],
+    });
+    expect(speed.change).toBe('');
+    // Without one, the position's words alone.
+    expect(alone.change).toBe("the fins' trailing edges at the base");
+  });
+
+  it("0017's table gives the base's changes as the page words them (its rows amended 2026-10-27)", () => {
+    const rows = readFileSync('docs/design/0017-rocketeer-interface.md', 'utf8').split('\n');
+    const change = (key: string) => {
+      const line = rows.find((l) => l.startsWith(`| ${key} `));
+      if (line === undefined) throw new Error(`no row ${key}`);
+      return line.split('|')[3]!.trim();
+    };
+    const words = (reason: string, message = '') =>
+      refusalWords({ component: 'body base', reason, message }).change;
+    for (const [key, reason] of [
+      ['`fin-count`', 'fin-count'],
+      ['`fin-thickness` (thicker than 10%)', 'fin-thickness'],
+      ['`fin-sweep`', 'fin-sweep'],
+      ['`flat-plate-fins` (main since `e42d5d4`)', 'flat-plate-fins'],
+    ] as const) {
+      expect(change(key), key).toBe(words(reason));
+    }
+    expect(change('`fins-near-base`').startsWith(words('fins-near-base'))).toBe(true);
+    // A section refused for its shape (the review of 55a76d2): the row's change, with N the message's limit.
+    const shape = words(
+      'fin-thickness',
+      `this section, t/c 0.080, ${W1_SECTION_SHAPE_MARK} (it would need an arc of t/c 0.125): its faces ` +
+        `there are steeper than the arc's, so ${W1_SECTION_SHAPE_LIMIT} 0.064, thinner in proportion, ` +
+        `${W1_LONGER_BEVELS}, each over at least 27.7% of the chord`,
+    );
+    expect(shape).toBe(
+      'fins at most 6.4% thick with this section, or longer bevels, each over at least 27.7% of the chord',
+    );
+    // The row's reason: the page's words without the station, which the message names.
+    const shapeWords = refusalWords({
+      component: 'body base',
+      reason: 'fin-thickness',
+      message: `this section, t/c 0.100, ${W1_SECTION_SHAPE_MARK} (it would need an arc of t/c 0.119): ${W1_OUTSIDE_AT}at its ridge, so ${W1_SECTION_SHAPE_LIMIT} 0.084, thinner in proportion`,
+    });
+    expect(shapeWords.reason).toBe(
+      'with fins at or near the base, the base drag is measured only for sections that lie inside a ' +
+        '10%-thick circular arc everywhere, and this section reaches outside it at its ridge',
+    );
+    expect(shapeWords.change).toBe('fins at most 8.4% thick with this section');
+    const rowReason = rows
+      .find((l) => l.startsWith("| `fin-thickness` (the section's shape)"))!
+      .split('|')[2]!
+      .trim();
+    expect(rowReason.startsWith(shapeWords.reason.replace(' at its ridge', ''))).toBe(true);
+    expect(rowReason).not.toMatch(/faces near the edges are steeper/);
+    expect(change("`fin-thickness` (the section's shape)")).toBe(
+      'fins at most N% thick with this section (N from the message: 6.4% for bevels over a fifth of the ' +
+        'chord), or, at most 10% thick, longer bevels each over at least the length the message gives',
+    );
+    // A trailing edge refused near the base: square or sharp for a plate's rounded one, sharp for a wedge's
+    // blunt one, the fins at the base, as the page words them.
+    const te = change('`fin-trailing-edge` (main since W1, `b86c308`)');
+    expect(te).toContain('with the fins at the base: square or sharp (plates), sharp (wedges)');
+    expect(words('fin-trailing-edge', `${ROUNDED_PLATE_AHEAD_OF_BASE} 0.5 root chords ...`)).toBe(
+      'square or sharp trailing edges, with the fins ending at the base',
+    );
+    expect(words('fin-trailing-edge', `${BLUNT_AHEAD_OF_BASE} 0.5 root chords ...`)).toBe(
+      'sharp trailing edges, with the fins ending at the base',
+    );
+    for (const key of [
+      '`fins-near-base`',
+      '`fin-count`',
+      '`fin-thickness` (thicker than 10%)',
+      "`fin-thickness` (the section's shape)",
+      '`fin-sweep`',
+      '`flat-plate-fins` (main since `e42d5d4`)',
+      '`fin-trailing-edge` (main since W1, `b86c308`)',
+    ]) {
+      expect(change(key), key).not.toMatch(/more ahead/);
+    }
   });
 
   it('no advice moves the fins a chord or more ahead of the base (refused there since 2026-10-27)', () => {
@@ -561,7 +694,7 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
             nearBase: fins,
           },
         });
-      const messages: string[] = [];
+      const refusals: BaseRefusal[] = [];
       for (const call of [
         library(0.5),
         library(1.5),
@@ -574,67 +707,65 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
       ]) {
         try {
           call();
-          messages.push('');
         } catch (e) {
           expect((e as BaseRefusal).reason, `${deg} deg`).toBe('fins-near-base');
-          messages.push((e as Error).message);
+          refusals.push(e as BaseRefusal);
         }
       }
-      expect(messages).toHaveLength(3);
-      for (const [k, message] of messages.entries()) {
+      expect(refusals).toHaveLength(3);
+      const mark = deg < 45 ? W1_FLAT_UNDER_45_MARK : W1_FLAT_BEYOND_60_MARK;
+      const plain = refusalWords({ component: 'body base', reason: 'fins-near-base', message: '' });
+      for (const [k, e] of refusals.entries()) {
+        const where = `${deg} deg, call ${k}`;
         // Both reasons: the position's, and the sweep's.
-        expect(message, `${deg} deg, call ${k}`).toContain(
+        expect(e.message, where).toContain(
           k === 1
             ? MORE_THAN_A_CHORD_AHEAD
             : 'below Mach 1.5 no measurement with fins ahead of the base',
         );
-        expect(message, `${deg} deg`).toContain(W1_SWEEP_REFUSED_TOO);
-        expect(message, `${deg} deg`).toContain(
-          deg < 45 ? W1_FLAT_UNDER_45_MARK : W1_FLAT_BEYOND_60_MARK,
-        );
-        const words = refusalWords({ component: 'body base', reason: 'fins-near-base', message });
-        expect(words.reason).toContain('flat fins are taken only unswept or swept 45 to 60 deg');
-        // The words are the plain position words with the sweep's clause, and 0017's row holds them.
-        const clause =
-          'below Mach 1.62, at or near the base, flat fins are taken only unswept or swept 45 to 60 deg';
-        const plain = refusalWords({
+        const r = {
           component: 'body base',
-          reason: 'fins-near-base',
-          message: '',
-        });
-        expect(words.reason).toBe(`${plain.reason}; and ${clause}`);
-        const row = readFileSync(
-          new URL('../../docs/design/0017-rocketeer-interface.md', import.meta.url),
-          'utf8',
-        )
-          .split('\n')
-          .filter((l) =>
-            l.startsWith("| `fins-near-base` (a flat plate's sweep refused too, below Mach 1.62)"),
-          )
-          .map((l) =>
-            l
-              .split('|')
-              .slice(1, -1)
-              .map((c) => c.trim()),
+          reason: e.reason,
+          message: e.message,
+          ...(e.further === undefined ? {} : { further: e.further }),
+        };
+        const words = refusalWords(r);
+        if (k < 2) {
+          // Through the library (merged with A5's chain, 2026-10-28): the sweep is the plate's refusal at the
+          // base, carried beside the position's and named once, not also in the position's message.
+          expect(e.message, where).not.toContain(W1_SWEEP_REFUSED_TOO);
+          expect(e.further?.[0]?.reason, where).toBe('fin-sweep');
+          expect(e.further?.[0]?.message, where).toContain(mark);
+          const sweep = refusalWords({
+            component: 'body base',
+            reason: 'fin-sweep',
+            message: e.further![0]!.message,
+          });
+          expect(words.reason, where).toBe(
+            `${plain.reason}; and with the fins at the base, ${sweep.reason}`,
           );
-        expect(row).toHaveLength(1);
-        expect(row[0]![1]).toBe(
-          `the reason of \`fins-near-base\`, and ${clause} (0014 10.7 (z), the note of 2026-10-27)`,
-        );
-        expect(row[0]![2]).toBe(words.change);
-        // The advice: at the base and at a sweep served there, not "unswept ones" alone, nor the base alone.
-        expect(words.change).toBe(
-          "the fins' trailing edges at the base, the fins unswept or swept 45 to 60 deg at the leading edge",
-        );
-        // And the advice is served: the same plate at the base, swept 45 deg, at Mach 1.2.
-        expect(() =>
-          finsOnBaseFactorW1(1.2, {
-            ...fins,
-            tanLeadingEdgeSweep: 1,
-            trailingEdgeAheadOfBase: 0,
-          }),
-        ).not.toThrow();
+          expect(words.change, where).toBe(`${plain.change}; and ${sweep.change}`);
+          expect(sweep.change).toBe(
+            'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
+          );
+        } else {
+          // The factor itself, called directly, names both in one message (A1's own refusal).
+          expect(e.message, where).toContain(W1_SWEEP_REFUSED_TOO);
+          expect(e.message, where).toContain(mark);
+          expect(words.reason, where).toBe(
+            `${plain.reason}; and below Mach 1.62, at or near the base, flat fins are taken only ` +
+              'unswept or swept 45 to 60 deg',
+          );
+        }
       }
+      // And the advice is served: the same plate at the base, swept 45 deg, at Mach 1.2.
+      expect(() =>
+        finsOnBaseFactorW1(1.2, {
+          ...fins,
+          tanLeadingEdgeSweep: 1,
+          trailingEdgeAheadOfBase: 0,
+        }),
+      ).not.toThrow();
     }
   });
 
@@ -653,6 +784,54 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         "only on flat faces far larger than a model rocket fin's",
       change: 'rounded or bevelled leading edges',
     });
+  });
+
+  it('every further reason in turn, with the change that met it; sweep words for sharp fins ahead of the base (the review of 86bcf73)', () => {
+    const first = {
+      component: 'body base',
+      reason: 'fins-near-base',
+      message: 'fins ending 0.5 root chords ahead of the base at Mach 1.8: ...',
+    };
+    const w = refusalWords({
+      ...first,
+      further: [
+        { reason: 'fin-count', message: 'x', after: 'with the fins at the base' },
+        { reason: 'fin-thickness', message: 'x', after: 'with four fins' },
+      ],
+    });
+    const plain = refusalWords(first);
+    expect(w.reason).toBe(
+      `${plain.reason}; and with the fins at the base, the base drag is measured with four fins ` +
+        'only; and with four fins, the base drag is measured for fins 5% to 10% as thick as their chord',
+    );
+    expect(w.change).toBe(
+      "the fins' trailing edges at the base; four fins; and fins of that thickness",
+    );
+    // The sweep of a sharp section ahead of the base, worded for fins ahead of it; 0017's row holds it.
+    const ahead = refusalWords({
+      component: 'body base',
+      reason: 'fin-sweep',
+      message:
+        'fins of a sharp section ending 0.5 root chords ahead of the base with the leading edge swept ' +
+        '50.0 deg and the trailing edge unswept at M 1.8: ...',
+    });
+    expect(ahead.reason).toMatch(/^with fins ahead of the base, /);
+    expect(ahead.change).toBe('unswept fins of constant chord');
+    const row = readFileSync('docs/design/0017-rocketeer-interface.md', 'utf8')
+      .split('\n')
+      .find((l) => l.startsWith('| `fin-sweep` (sharp fins ahead of the base)'))!
+      .split('|')
+      .map((c) => c.trim());
+    expect(row[2]).toBe(ahead.reason);
+    expect(row[3]).toBe(ahead.change);
+    // At the base the words stay as they were.
+    expect(
+      refusalWords({
+        component: 'body base',
+        reason: 'fin-sweep',
+        message: 'fins of a sharp section at the base ...',
+      }).reason,
+    ).toMatch(/^with fins at the base, /);
   });
 
   it('a reason the words do not know yet: its message, plainly', () => {
