@@ -294,4 +294,9 @@ and `population/all-three` on cdd26e6, the same under `population/76899f1`
 on 76899f1:
 the run of `docs/research/refusals` on the merged head with those points
 added to `VON_KARMAN_REFERENCES` for the run, then taken out); the
-branch's own outputs are the held run, which is main's.
+branch's own outputs are the held run, which is main's. Since the owner's
+decision of 2026-10-29 (option (a'), branch `claude/wip/vk-a-prime` from
+main 95673cd), the code serves 5 and 6 calibers at Mach 3 and
+`docs/research/refusals/out/impact.out` is that run: 237 of 8000 (Mach
+1.5 to 1.8: 77; 1.8 to 3.0: 160), byte for byte the (a') run on 02549f2,
+the cross-check agreeing on 1200 of 1200.
