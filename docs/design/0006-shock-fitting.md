@@ -1378,7 +1378,8 @@ points' extent, as inside), so nothing is added until the owner decides,
 and `VON_KARMAN_REFERENCES` keeps W5's seven. Choices for that decision,
 with the refusal audit's served totals (2000 rockets, 8000 cases; on main
 at 76899f1, re-run 2026-10-28, 184 as they stand, Mach 1.5 to 1.8: 73,
-1.8 to 3.0: 111; on cdd26e6 they were 155, 213, 204 and 242) and the
+1.8 to 3.0: 111, and the same four counts again on 02549f2, re-run
+2026-10-29; on cdd26e6 they were 155, 213, 204 and 242) and the
 allowance on each count of the lines next to a passing line
 (`judge.mjs`'s, W5's):
 

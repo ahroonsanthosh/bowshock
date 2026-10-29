@@ -274,6 +274,7 @@ The refusal audit's population (`docs/research/refusals`, 2000 rockets,
 | main 76899f1, with 6 cal. Mach 1.5, 5 cal. Mach 3 (a) | 253 | 99              | 154             |
 | main 76899f1, with 5 and 6 cal. Mach 3 (a')    | 237       | 77              | 160             |
 | main 76899f1, with all three passing cases (b, nothing cut out) | 288 | 103             | 185             |
+| main 02549f2 (2026-10-29): the same four runs   | 184, 253, 237, 288 | 73, 99, 77, 103 | 111, 154, 160, 185 |
 
 None below Mach 1.5 in any run. Each run with W5's seven gave main's
 `impact.out` byte for byte, and every run's cross-check with `src/total`
