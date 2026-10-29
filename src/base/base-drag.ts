@@ -69,6 +69,7 @@ import {
   W1_FLAT_SUBSONIC_EDGE_MARK,
   W1_FLAT_SWEPT_TE_MARK,
   W1_FLAT_UNDER_45_MARK,
+  W1_FLAT_UNSWEPT_MARK,
   W1_SECTION_SHAPE_MARK,
   nearBasePositionReasons,
   nearBasePositionRefusal,
@@ -568,7 +569,8 @@ export const EVERY_REASON_STEPS = 6;
  * fins ahead of the base refused for their position or for a trailing edge nothing measures there, moved to
  * the base (a plate's rounded trailing edge squared, a blunt edge made sharp, as the words say); at the base, a
  * rounded or blunt trailing edge squared or made sharp; another count made four; swept fins unswept (a plate
- * refused for its swept trailing edge alone: that edge unswept, its leading edge kept, as its words advise); a
+ * refused for its swept trailing edge alone: that edge unswept, its leading edge kept, as its words advise; a
+ * plate refused below M 1.62 for its leading edge, unswept among them since 2026-10-29: swept 45 deg); a
  * thickness outside 5% to 10% brought to the nearer end. Undefined where the words advise no such change (a
  * speed, an afterbody, a boundary layer, a section's shape). Exported for its tests.
  */
@@ -627,6 +629,27 @@ export function adviceFor(
       return fins.count === 4 ? undefined : { fins: { ...fins, count: 4 }, what: 'with four fins' };
     case 'fin-sweep': {
       const near = fins.nearBase;
+      const message = refusal.message;
+      // A plate refused below M 1.62 for its leading edge, unswept (the owner's decision of 2026-10-29), swept more
+      // than 0 and under 45 deg, or beyond 60 deg (0014 section 10.7 (z)), with its trailing edge's reason too
+      // where that is swept: its words advise a leading edge swept 45 to 60 deg, the trailing edge unswept, so the
+      // fins are given the measured 45 deg, served there; unswept they would be refused again.
+      if (
+        near !== undefined &&
+        [W1_FLAT_UNSWEPT_MARK, W1_FLAT_UNDER_45_MARK, W1_FLAT_BEYOND_60_MARK].some((m) =>
+          message.includes(m),
+        )
+      ) {
+        return {
+          fins: {
+            ...fins,
+            tanLeadingEdge: 1,
+            tanTrailingEdge: 0,
+            nearBase: { ...near, tanLeadingEdgeSweep: 1, tanTrailingEdgeSweep: 0 },
+          },
+          what: 'with the fins swept 45 deg at the leading edge, the trailing edge unswept',
+        };
+      }
       const swept =
         Math.abs(fins.tanLeadingEdge) > 1e-12 ||
         Math.abs(fins.tanTrailingEdge) > 1e-12 ||
@@ -636,14 +659,12 @@ export function adviceFor(
       if (!swept) return undefined;
       // A plate refused for its swept trailing edge alone (0015 section 12, the strict reading of 2026-10-28): its
       // words advise an unswept trailing edge, the leading edge kept. Where its leading edge would be refused too
-      // with the edge unswept, the words advise both, and the fins are made unswept, as for every other sweep.
-      const message = refusal.message;
+      // with the edge unswept, the words advise both: below M 1.62 the fins are given 45 deg (above), and from it,
+      // the leading edge beyond 60 deg with its edge subsonic, they are made unswept, as for every other sweep.
       if (
         near !== undefined &&
         message.includes(W1_FLAT_SWEPT_TE_MARK) &&
-        ![W1_FLAT_UNDER_45_MARK, W1_FLAT_BEYOND_60_MARK, W1_FLAT_SUBSONIC_EDGE_MARK].some((m) =>
-          message.includes(m),
-        )
+        !message.includes(W1_FLAT_SUBSONIC_EDGE_MARK)
       ) {
         return {
           fins: { ...fins, tanTrailingEdge: 0, nearBase: { ...near, tanTrailingEdgeSweep: 0 } },
