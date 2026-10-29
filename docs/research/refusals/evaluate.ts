@@ -7,9 +7,14 @@
  * library itself where the library can represent the rocket.
  *
  * Nose: the page's shapes (src/app/nose-drag.ts), Mach 1.2 and above (the
- * page's input), and for sharp tips the solver's own tip tests
+ * page's input), for sharp tips the solver's own tip tests
  * (sharpFitProblem, src/analysis/fitted-flow.ts) and the fitted grids' wall
- * gate (50 deg, so tips up to 40 deg; src/grid/quality.ts). Not modelled:
+ * gate (50 deg, so tips up to 40 deg; src/grid/quality.ts), and for the
+ * two-scale noses (the Haack series and the power series) the solver's own
+ * gate (bluntNoseRefusal): only the Von Karman nose is served, and only
+ * inside the outline of the lengths and Mach numbers checked against a
+ * reference (VON_KARMAN_REFERENCES; docs/design/0006-shock-fitting.md,
+ * "Two-scale noses"). Not modelled:
  * the grid gates on long bodies (a fallback family exists), fits that do not
  * converge, and families whose band cannot be measured ("not verified"):
  * these can only be known by solving, so the nose is counted as served
@@ -112,7 +117,7 @@ export const REASONS = {
   finsW1Count: 'base (rebuilt factor): fins at the base, not two to four',
   finsW1Thickness: 'base (rebuilt factor): a section outside the 10% circular arc (steep bevels)',
   finsW1TrailingEdge: 'base (rebuilt factor): a rounded or diverging blunt trailing edge',
-  finsW1Sweep: 'base (rebuilt factor): sweep not measured (sharp sections with the leading edge 0 to 45 or above 60 deg, or the trailing edge beyond it, or swept aft closer to the base than 0.9 root chords, or swept forward; plates with a swept trailing edge (outside 45 to 60 deg until 2026-10-28, at any sweep since); since 0015 section 12 plates with an unswept trailing edge are served at every leading-edge sweep, but since 2026-10-27 not swept more than 0 and under 45 deg, or beyond 60 deg, below Mach 1.62, and since 2026-10-28 not beyond 60 deg where M cos L is below 1, 0014 10.7 (z))',
+  finsW1Sweep: 'base (rebuilt factor): sweep not measured (sharp sections with the leading edge 0 to 45 or above 60 deg, or the trailing edge beyond it, or swept aft closer to the base than 0.9 root chords, or swept forward; plates with a swept trailing edge (outside 45 to 60 deg until 2026-10-28, at any sweep since); since 0015 section 12 plates with an unswept trailing edge are served at every leading-edge sweep, but since 2026-10-27 not swept more than 0 and under 45 deg, or beyond 60 deg, below Mach 1.62, and since 2026-10-28 not beyond 60 deg where M cos L is below 1, and since 2026-10-29 (the owner\'s decision) not unswept below Mach 1.62 either, 0014 10.7 (z))',
   // Fin trailing-edge base.
   teTaper:
     EDGES !== 'before'

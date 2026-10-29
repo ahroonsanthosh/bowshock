@@ -1,0 +1,2 @@
+2026-10-27T08:42:06.626Z haack C0 L1 M2 cyl1 nj20x1: start, save to ../smoke/mismatch, fingerprint {"case":"haack C0 L1 M2 cyl1","refinement":1,"chunk":400,"maxIterations":40000,"settle":1e-9,"noise":1e-10,"ungated":true,"numerics":"19341f0e668a385b","runner":"a8d5ee86f33113c9"}
+2026-10-27T08:44:24.662Z haack C0 L1 M2 cyl1 nj20x1: REFUSED checkpoint ../smoke/ckpt-mismatch: fingerprint differs in chunk

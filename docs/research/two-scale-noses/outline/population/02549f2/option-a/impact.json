@@ -1,0 +1,234 @@
+{
+ "baseline": {
+  "all bands": {
+   "total": 253,
+   "nose only": 1929,
+   "nothing": 5818
+  },
+  "M 1.0-1.2": {
+   "total": 0,
+   "nose only": 0,
+   "nothing": 2000
+  },
+  "M 1.2-1.5": {
+   "total": 0,
+   "nose only": 477,
+   "nothing": 1523
+  },
+  "M 1.5-1.8": {
+   "total": 99,
+   "nose only": 806,
+   "nothing": 1095
+  },
+  "M 1.8-3.0": {
+   "total": 154,
+   "nose only": 646,
+   "nothing": 1200
+  }
+ },
+ "order": [
+  "W6 blunted nose tips",
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
+  "W11 square-cut leading edges and rounded trailing edges",
+  "W9 sharp sections: reflected waves and detached bevel shocks",
+  "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
+  "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
+  "W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)",
+  "W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0",
+  "W10 boat-tails",
+  "W8 steep, detached and subsonic sharp tips",
+  "W12 page: the wedge-flat section with a blunt trailing edge"
+ ],
+ "noseServed": {
+  "all bands": {
+   "cases": 8000,
+   "noseServed": 628,
+   "withPageSection": 809
+  },
+  "M 1.0-1.2": {
+   "cases": 2000,
+   "noseServed": 0,
+   "withPageSection": 0
+  },
+  "M 1.2-1.5": {
+   "cases": 2000,
+   "noseServed": 0,
+   "withPageSection": 0
+  },
+  "M 1.5-1.8": {
+   "cases": 2000,
+   "noseServed": 223,
+   "withPageSection": 298
+  },
+  "M 1.8-3.0": {
+   "cases": 2000,
+   "noseServed": 405,
+   "withPageSection": 511
+  }
+ },
+ "lenientTip": {
+  "all bands": {
+   "total": 511,
+   "nose only": 3810,
+   "nothing": 3679
+  },
+  "M 1.0-1.2": {
+   "total": 0,
+   "nose only": 0,
+   "nothing": 2000
+  },
+  "M 1.2-1.5": {
+   "total": 0,
+   "nose only": 918,
+   "nothing": 1082
+  },
+  "M 1.5-1.8": {
+   "total": 195,
+   "nose only": 1613,
+   "nothing": 192
+  },
+  "M 1.8-3.0": {
+   "total": 316,
+   "nose only": 1279,
+   "nothing": 405
+  }
+ },
+ "altitude0": {
+  "all bands": {
+   "total": 257,
+   "nose only": 1925,
+   "nothing": 5818
+  },
+  "M 1.0-1.2": {
+   "total": 0,
+   "nose only": 0,
+   "nothing": 2000
+  },
+  "M 1.2-1.5": {
+   "total": 0,
+   "nose only": 477,
+   "nothing": 1523
+  },
+  "M 1.5-1.8": {
+   "total": 102,
+   "nose only": 803,
+   "nothing": 1095
+  },
+  "M 1.8-3.0": {
+   "total": 155,
+   "nose only": 645,
+   "nothing": 1200
+  }
+ },
+ "altitude20": {
+  "all bands": {
+   "total": 192,
+   "nose only": 1990,
+   "nothing": 5818
+  },
+  "M 1.0-1.2": {
+   "total": 0,
+   "nose only": 0,
+   "nothing": 2000
+  },
+  "M 1.2-1.5": {
+   "total": 0,
+   "nose only": 477,
+   "nothing": 1523
+  },
+  "M 1.5-1.8": {
+   "total": 66,
+   "nose only": 839,
+   "nothing": 1095
+  },
+  "M 1.8-3.0": {
+   "total": 126,
+   "nose only": 674,
+   "nothing": 1200
+  }
+ },
+ "more four-fin, sharp-edged, high-power fins (four fins 70%; bevelled or double-wedge sections 60%; boat-tails 5%)": {
+  "all bands": {
+   "total": 315,
+   "nose only": 1867,
+   "nothing": 5818
+  },
+  "M 1.0-1.2": {
+   "total": 0,
+   "nose only": 0,
+   "nothing": 2000
+  },
+  "M 1.2-1.5": {
+   "total": 0,
+   "nose only": 477,
+   "nothing": 1523
+  },
+  "M 1.5-1.8": {
+   "total": 119,
+   "nose only": 786,
+   "nothing": 1095
+  },
+  "M 1.8-3.0": {
+   "total": 196,
+   "nose only": 604,
+   "nothing": 1200
+  }
+ },
+ "more four-fin, sharp-edged, high-power fins (four fins 70%; bevelled or double-wedge sections 60%; boat-tails 5%) order": [
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
+  "W6 blunted nose tips",
+  "W9 sharp sections: reflected waves and detached bevel shocks",
+  "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
+  "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
+  "W11 square-cut leading edges and rounded trailing edges",
+  "W8 steep, detached and subsonic sharp tips",
+  "W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0",
+  "W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)",
+  "W12 page: the wedge-flat section with a blunt trailing edge",
+  "W10 boat-tails"
+ ],
+ "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%)": {
+  "all bands": {
+   "total": 452,
+   "nose only": 3644,
+   "nothing": 3904
+  },
+  "M 1.0-1.2": {
+   "total": 0,
+   "nose only": 0,
+   "nothing": 2000
+  },
+  "M 1.2-1.5": {
+   "total": 0,
+   "nose only": 1098,
+   "nothing": 902
+  },
+  "M 1.5-1.8": {
+   "total": 173,
+   "nose only": 1378,
+   "nothing": 449
+  },
+  "M 1.8-3.0": {
+   "total": 279,
+   "nose only": 1168,
+   "nothing": 553
+  }
+ },
+ "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%) order": [
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
+  "W11 square-cut leading edges and rounded trailing edges",
+  "W9 sharp sections: reflected waves and detached bevel shocks",
+  "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
+  "W6 blunted nose tips",
+  "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
+  "W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)",
+  "W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0",
+  "W10 boat-tails",
+  "W8 steep, detached and subsonic sharp tips",
+  "W12 page: the wedge-flat section with a blunt trailing edge"
+ ],
+ "crossCheck": {
+  "checked": 1200,
+  "agree": 1200
+ }
+}

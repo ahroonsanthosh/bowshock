@@ -392,8 +392,11 @@ first comparison with measurements on a generated grid:
   two-scale grids above, measured with the fitted shock in 0006; the
   stagnation pressure on them converges at first order only (the
   curvature is singular at the tip), the drag at observed orders of 1.49
-  to 2.28 on nj = 20, 40 and 80, with an allowance of its own (0006,
-  "Two-scale noses").
+  to 2.28 on nj = 20, 40 and 80 on the noses served (1.44 to 2.30 with
+  the 5- and 6-caliber noses measured 2026-10-27 and 28; since the
+  owner's decision of 2026-10-29, which serves 5 and 6 calibers at Mach
+  3, 1.44 to 2.28 on the noses served), with an allowance of its own
+  (0006, "Two-scale noses").
 - **Low supersonic Mach numbers.** Near Mach 1 the outer boundary meets
   the vertical grid lines at ever smaller angles; slender cones pass the
   12 deg gate down to Mach 1.1 (the table above: 12.3 and 17.3 deg), but

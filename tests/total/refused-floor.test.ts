@@ -136,29 +136,38 @@ describe("the trailing edges' band text in the total (review R3)", () => {
 });
 
 describe('each refused part, and the floor', () => {
-  it('fin friction and square trailing edges refused below Mach 1.5: a floor, the parts named', () => {
+  it("fin friction and square trailing edges refused below Mach 1.5: not negative, the parts named; no floor since 2026-10-29, the unswept plate's body base refused", () => {
     // At Mach 1.3, where only TN 3548 and RM A51J25 reach (c/[h Re^(1/5)] to 0.666).
     const c = rocket({ section: flatPlate(0.06, 'rounded', 'square') });
     const { parts, view } = refused(c, 1.3);
-    expect(refusedOf(parts)).toEqual(['fin friction', 'fin trailing-edge base']);
+    // Until 2026-10-29 the body base was served here and the view was a floor over the two parts below. Since
+    // the owner's decision (0014 10.7 (z)) the unswept plate's body base is refused below Mach 1.62, and its sign
+    // is not argued, so the floor is withheld for it alone; the two parts are still shown not negative.
+    expect(refusedOf(parts)).toEqual(['fin friction', 'body base', 'fin trailing-edge base']);
+    expect(parts.refusals.find((r) => r.component === 'body base')?.reason).toBe('fin-sweep');
+    expect(nonNegative('fin friction', c, 1.3)).toBe(true);
+    expect(nonNegative('fin trailing-edge base', c, 1.3)).toBe(true);
     // Every part served is shown, unchanged.
     expect(view.served).toEqual(parts.components);
     expect(view.notShown).toEqual([]);
     expect(view.floor).toEqual({
-      kind: 'floor',
-      value: sum(parts.components.map((x) => x.low)) + sum(parts.inputs.map((i) => i.low)),
-      refused: ['fin friction', 'fin trailing-edge base'],
-      withInputs: false,
-      label: floorLabel(['fin friction', 'fin trailing-edge base'], false),
+      kind: 'withheld',
+      reasons: [
+        'the body base is refused, and its sign with these fins or this afterbody is not argued ' +
+          '(design record 0011, section 10.2)',
+      ],
     });
-    expect(view.floor.kind === 'floor' && view.floor.label).toBe(
+    // The floor's label for these two parts, as it read when the body base was served.
+    expect(floorLabel(['fin friction', 'fin trailing-edge base'], false)).toBe(
       "a floor, not an estimate: the sum of the served parts' low ends; the refused parts " +
         '(fin friction, fin trailing-edge base) are not negative',
     );
   });
 
   it("the input bands' low ends are added, and the label says so", () => {
-    const c = rocket({ section: flatPlate(0.06, 'rounded', 'square') });
+    // A closed section: the unswept plate's body base is refused below Mach 1.62 since 2026-10-29 (the owner's
+    // decision), which withholds its floor (the test above); this test used it until then.
+    const c = rocket({ section: doubleWedge(0.05) });
     const { parts, view } = refused(c, 1.4, { transitionReynolds: [5e5], wallTemperature: 250 });
     const lows = parts.inputs.map((i) => i.low);
     expect(Math.min(...lows)).toBeLessThan(0);
@@ -221,12 +230,15 @@ describe('each refused part, and the floor', () => {
     const ok = refused(square(0), 2);
     expect(refusedOf(ok.parts)).toEqual(['fin leading edges']);
     expect(ok.view.floor.kind).toBe('floor');
-    // Mach 1.4: below 1.5, and the friction and trailing edge refused besides (not negative).
+    // Mach 1.4: below 1.5, and the friction and trailing edge refused besides (not negative); the body base too
+    // since 2026-10-29 (the owner's decision: the unswept plate below Mach 1.62), its sign not argued.
     const low = refused(square(0), 1.4);
     expect(low.view.floor.kind === 'withheld' && low.view.floor.reasons).toEqual([
       "the fin leading edges are refused, and a flat plate's leading edge is shown not to be " +
         "negative only with supersonic edges, its trailing edge and the body's base lowering it " +
         'otherwise (design record 0011, section 10.3): the Mach number 1.4 is below 1.5',
+      'the body base is refused, and its sign with these fins or this afterbody is not argued ' +
+        '(design record 0011, section 10.2)',
     ]);
     // Mach 2, swept 65 deg: the edge's normal Mach number 0.845.
     const swept = refused(square(65), 2);
@@ -290,9 +302,14 @@ describe('each refused part, and the floor', () => {
     });
     expect(names(view.served)).not.toContain('nose wave drag');
     expect(view.served).toEqual(parts.components.slice(1));
+    // The unswept plate's body base is refused at Mach 1.4 since 2026-10-29 (the owner's decision), and named too.
     expect(view.floor).toEqual({
       kind: 'withheld',
-      reasons: ['the nose wave drag has not been solved at this Mach number'],
+      reasons: [
+        'the nose wave drag has not been solved at this Mach number',
+        'the body base is refused, and its sign with these fins or this afterbody is not argued ' +
+          '(design record 0011, section 10.2)',
+      ],
     });
   });
 

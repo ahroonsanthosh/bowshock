@@ -949,6 +949,35 @@ export const W1_FLAT_UNDER_45_MARK = 'more than 0 and under 45 deg, below M 1.62
 export const W1_FLAT_BEYOND_60_MARK = 'beyond 60 deg, below M 1.62';
 
 /**
+ * A phrase only the refusal of flat-faced fins with both edges unswept below M 1.62 carries (the owner's decision
+ * of 2026-10-29, 0014 section 10.7 (z); 0015 section 12): the floor there is RM L52E06's relief with plates swept
+ * 45 deg alone, and which way the unswept plate's juncture vortex moves the relief is not shown. The page's words
+ * for it key on this.
+ */
+export const W1_FLAT_UNSWEPT_MARK = 'the unswept plate below M 1.62';
+
+/**
+ * The reading of RM L52E06 fig. 7 that sets the floor (W1_FLAT_RELIEF_LOW), unmoved by its reading error: F 0.852
+ * at M 1.06, the floor 0.838 lying 0.014 below it (0015 section 12; 0014 section 10.7 (z), its note of 2026-10-27).
+ */
+const FLOOR_READING = (() => {
+  let best = { mach: Number.NaN, measured: Number.NaN, floor: Number.POSITIVE_INFINITY };
+  for (const p of L52E06_FIG7) {
+    const pairs: [number | undefined, number | undefined][] = [
+      [p.rimFins, p.rimNoFins],
+      [p.centreFins, p.centreNoFins],
+    ];
+    for (const [fins, none] of pairs) {
+      if (fins === undefined || none === undefined) continue;
+      const floor = (Math.abs(fins) - p.error) / (Math.abs(none) + p.error);
+      if (floor < best.floor)
+        best = { mach: p.mach, measured: Math.abs(fins) / Math.abs(none), floor };
+    }
+  }
+  return best;
+})();
+
+/**
  * A phrase only the refusal of flat-faced fins swept beyond 60 deg from M 1.62 carries where the leading edge's
  * normal Mach number M cos L is below 1 (the ruling of 2026-10-28, 0014 section 10.7 (z); 0015 section 12): from M
  * 1.62 these plates rest on a margin over RM L52J21a's relief, measured on edges that meet the stream faster than
@@ -992,6 +1021,21 @@ const L52J21A_MACH = [
   W1_RELIEF_MEASURED_FROM,
   Math.max(...L52J21A_FIG38C.map((p) => p.mach)),
 ] as const;
+
+/** A factor's relief in percent, to one decimal: 0.838 is 16.2%. */
+const reliefPct = (f: number) => `${(100 * (1 - f)).toFixed(1)}%`;
+
+/**
+ * Every flat plate's label from M 1.62 (the owner's decision of 2026-10-29, 0014 section 10.7 (z); 0015 section
+ * 12): the floor, RM L52E06's relief measured at M 1.06 to 1.10, is carried there in Mach number on a margin over
+ * RM L52J21a's relief, not on a measurement, whatever the plate's sweep.
+ */
+export const W1_PLATE_MARGIN_FROM_162 =
+  `from M ${W1_RELIEF_MEASURED_FROM} the floor, RM L52E06's relief measured at M 1.06 to 1.10, is carried in ` +
+  `Mach number on a margin, its ${reliefPct(W1_FLAT_RELIEF_LOW)} relief against the at most ` +
+  `${reliefPct(W1_RELIEF_LOW)} RM L52J21a allows with fins near the base (measured at M ` +
+  `${L52J21A_MACH[0]} to ${L52J21A_MACH[1]}), not on a measurement ` +
+  "at this Mach number (0015 section 12; 0014 section 10.7 (z), the owner's decision of 2026-10-29)";
 
 /** M cos L for a message: to two decimals, or to as many as keep a value below 1 printed below 1. */
 function normalMachText(v: number): string {
@@ -1078,11 +1122,16 @@ const tcText = (tc: number) =>
 /**
  * A sweep angle (radians) in degrees for a message or label: to one decimal, or to as many as it takes for the
  * printed value to stay on its own side of 45 and 60 deg, the bounds the sweep rules turn on (44.99 deg is never
- * printed 45.0, nor 60.01 deg 60.0; the review of 2026-10-27).
+ * printed 45.0, nor 60.01 deg 60.0; the review of 2026-10-27). A sweep above 0 that one decimal would print 0.0 is
+ * printed to two significant digits, so it reads above 0, as the rules take it (a tan of 1e-6 is 0.000057 deg, not
+ * 0.0; the review of 2026-10-29), as aheadText shows a position's side of one chord.
  */
 export function sweepDegrees(a: number): string {
   const d = (a * 180) / Math.PI;
   const onBound = (b: number) => Math.abs(d - b) <= (1e-9 * 180) / Math.PI;
+  if (d > 0 && !onBound(0) && Number(d.toFixed(1)) === 0) {
+    return d.toFixed(1 - Math.floor(Math.log10(d)));
+  }
   for (const digits of [1, 2, 3, 4, 6, 9, 12]) {
     const text = d.toFixed(digits);
     const v = Number(text);
@@ -1113,6 +1162,10 @@ export const W1_SWEEP_REFUSED_TOO = '; their sweep is refused at or near the bas
  *   deg. There the floor is RM L52E06's relief with plates swept 45 deg alone, measured at M 1.06 to 1.10, and
  *   which way the juncture vortex moves F is not shown: under 45 deg the plate is not shown to lie between the
  *   unswept plate and the 45 deg ones, beyond 60 deg it lies past the last sweep measured;
+ * - both edges unswept, below M 1.62 (the owner's decision of 2026-10-29): the floor there is the same relief
+ *   with plates swept 45 deg alone, F 0.852 at M 1.06 against the floor's 0.838, and the unswept plate stands the
+ *   strongest juncture vortex, whose direction on the relief is not shown; no base pressure with unswept plates
+ *   at the base below M 1.62 says it does not. From M 1.62 it is served on the margin, as the other plates are;
  * - the trailing edge unswept, from M 1.62: the leading edge swept beyond 60 deg where M cos L is below 1. There
  *   these plates lie past the last sweep measured at the base, the RM-10's 60 deg, and rest on a margin of 2.6
  *   times over the at most 6.2% relief RM L52J21a allows, measured on arcs whose edges see M cos L of 1.15 to
@@ -1145,14 +1198,29 @@ export function flatPlateSweepNarrowing(
       (unswept === undefined ? '' : `; and with the trailing edge unswept, ${unswept}`)
     );
   }
-  if (!(le > 1e-9 && tes <= 1e-9)) return undefined;
+  // Here the trailing edge is unswept. Both edges unswept: refused below M 1.62, served from it on the margin (the
+  // owner's decision of 2026-10-29).
+  if (!(le > 1e-9)) {
+    if (!(mach < W1_RELIEF_MEASURED_FROM - 1e-12)) return undefined;
+    return (
+      `flat-faced fins with both edges unswept at M ${mach}, ${W1_FLAT_UNSWEPT_MARK}: no base pressure is ` +
+      'measured with unswept flat plates at or near the base below M ' +
+      `${W1_RELIEF_MEASURED_FROM}; the floor there is RM L52E06's relief with plates swept 45 deg alone ` +
+      `(F ${FLOOR_READING.measured.toFixed(3)} at M ${FLOOR_READING.mach} against the floor's ` +
+      `${W1_FLAT_RELIEF_LOW.toFixed(3)}, a margin of ` +
+      `${(FLOOR_READING.measured - W1_FLAT_RELIEF_LOW).toFixed(3)}), the unswept plate stands the ` +
+      'strongest juncture vortex of any sweep, and whether that adds relief or takes it away is not ' +
+      'shown, so these fins are not shown to lie inside the bracket (0015 section 12; 0014 section 10.7 ' +
+      "(z), the owner's decision of 2026-10-29)"
+    );
+  }
   const head =
     `flat-faced fins with the leading edge swept ${sweepDegrees(le)} deg and the trailing edge unswept ` +
     `at M ${mach}`;
   if (!(mach < W1_RELIEF_MEASURED_FROM - 1e-12)) {
     const normal = mach * Math.cos(le);
     if (!(le > W1_SWEPT_RANGE[1] + 1e-9 && normal < 1 - 1e-12)) return undefined;
-    const pct = (f: number) => `${(100 * (1 - f)).toFixed(1)}%`;
+    const pct = reliefPct;
     const edge = (m: number) => (m * Math.cos(W1_SWEPT_RANGE[0])).toFixed(2);
     return (
       `${head}, ${W1_FLAT_SUBSONIC_EDGE_MARK} (${normalMachText(normal)}), ${W1_PAST_LAST_SWEEP}: from M ` +
@@ -1229,14 +1297,16 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     mach >= W1_MODERATE_SWEEP.mach[0] - 1e-12 &&
     mach <= W1_MODERATE_SWEEP.mach[1] + 1e-12;
   // Flat faces at a square trailing edge with the trailing edge unswept: served at every leading-edge sweep from
-  // M 1.62, below it unswept or swept 45 to 60 deg (0015 section 12; 0014 section 10.7 (z) and its note). Neither bound of the flat-plate value uses the leading edge:
+  // M 1.62, below it unswept or swept 45 to 60 deg (0015 section 12; 0014 section 10.7 (z) and its note), since
+  // 2026-10-29 (the owner's decision) below it swept 45 to 60 deg alone. Neither bound of the flat-plate value uses the leading edge:
   // the upper rests on the faces' slope near the trailing edge (zero on a flat face at any sweep), the lower
   // on RM L52E06's relief at the fin-body junctures and the square edge, in one plane parallel to the base
   // (the base plane at x/c 0), which the leading-edge sweep does not move when the trailing edge is unswept.
   const plateAnyLeadingEdgeSweep = bounded && swept && tes <= 1e-9;
   const deg = sweepDegrees;
-  // The rulings after A1's reviews (0014 section 10.7 (z), its notes of 2026-10-27 and 2026-10-28; 0015 section
-  // 12): a plate swept more than 0 and under 45 deg, or beyond 60 deg, below M 1.62; beyond 60 deg from M 1.62
+  // The rulings after A1's reviews (0014 section 10.7 (z), its notes of 2026-10-27 and 2026-10-28, and the owner's
+  // decision of 2026-10-29; 0015 section 12): a plate unswept, swept more than 0 and under 45 deg, or beyond 60
+  // deg, below M 1.62; beyond 60 deg from M 1.62
   // where M cos L is below 1; and a plate's trailing edge swept, aft or forward, at any Mach number, are refused
   // (flatPlateSweepNarrowing). Checked before the sweeps of section 3.4, so that a plate with a swept trailing
   // edge is refused for it, with the reason the floor gives. Ahead of the base, where its position is refused
@@ -1450,6 +1520,7 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         "(the increment follows the faces' slope near the trailing edge, zero here) and RM L52E06's " +
         '(relief with these fins), 0015 section 4',
     );
+    if (!(mach < W1_RELIEF_MEASURED_FROM - 1e-12)) reasons.push(W1_PLATE_MARGIN_FROM_162);
   } else if (fins.sectionFamily !== 'circular-arc') {
     reasons.push(
       `the section bracketed by its thickness near the edges (arcs t/c ${tr.tauLow.toFixed(3)} to ` +

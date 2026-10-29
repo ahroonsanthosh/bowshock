@@ -2065,6 +2065,61 @@ now says the plate's sweep lies inside the measured ends, not past them,
 and the label of a plate swept 45 to 60 deg says the same ("its sweep
 inside the bracket's measured ends, not past them").
 
+_2026-10-29, the owner's decision on the question above (main's unswept
+plates below Mach 1.62), and the ruling applying it:_ The owner's words:
+"whatever is most accurate wins". The coordinator's ruling applying
+them, recorded as the owner's decision so applied: (1) below Mach 1.62,
+flat-faced fins at the base with the leading edge unswept and the
+trailing edge unswept are refused at the base term, under 10.2, on the
+review's reasoning recorded above: below Mach 1.62 the floor is RM
+L52E06's relief with plates swept 45 deg alone (F 0.852 at M 1.06
+against the floor's 0.838, a margin of 0.014); the unswept plate stands
+the strongest juncture vortex of any sweep; nothing measured shows
+whether that adds relief or takes it away; and no base pressure with
+unswept plates at the base below Mach 1.62 says it does not. The page's
+words name the missing measurement (base pressures with unswept flat
+plates at the base below Mach 1.62), as for the plates swept more than 0
+and under 45 deg, and the rule applies wherever theirs does: at the
+base, and within a chord where 0015 section 3.3 serves positions (Mach
+1.5 to 1.62 there). In the chain of every reason the change advised is a
+leading edge swept 45 deg, which is served there. (2) From Mach 1.62 the
+unswept plate stays served on the same ground as the other plates: RM
+L52J21a's at most 6.2% relief against a floor allowing 16.2%, a margin,
+not a measurement; its label says so, and so does every plate's label
+from Mach 1.62, the floor being carried there in Mach number on that
+margin whatever the sweep. This answers the open question above and
+narrows main's amendment (i) for unswept plates below Mach 1.62; (i)'s
+text stands as registered. Written before the code; what it costs is
+recorded below when run.
+
+_2026-10-29, the owner's decision's cost, run after the code:_ the
+population (`out/impact.out`, 2,000 rockets, 8,000 cases): totals 184 to
+182 of 8,000 (Mach 1.5 to 1.8: 73 to 71), 628 to 622 with the nose
+assumed served, 809 to 798 with the page's section offered too; the
+cross-check agreeing on 1,200 of 1,200 and the reflected-wave split
+unchanged. The rule refuses the base term of 144 cases of 59 rockets, at
+Mach 1.0 to 1.2 and 1.2 to 1.5 (59 cases each) and at Mach 1.5 to 1.8
+where drawn below 1.62 (26): 108 at the base, newly refused, and 36
+within a chord, already refused for their position; 118 below Mach 1.5,
+where fin friction refuses every total, and 26 at Mach 1.5 to 1.62; 65
+with a rounded leading edge, 42 bevelled at the leading edge only, 37
+square-cut. The rebuilt factor's sweep refusal goes from 33.3% to 34.6%
+of cases. What is lost: the two totals are plates with a rounded leading
+edge at the base, at Mach 1.546 and 1.582, whose base term was the only
+reason left; with the nose assumed served, six (four more whose nose is
+refused), and with the page's section offered too, eleven (five plates
+bevelled at the leading edge only). And the page's floor ("a floor, not
+an estimate", 0011 section 10.3): of the 108 at the base, 5 showed one
+with the nose as audited and 50 with the nose assumed served, where the
+other parts refused were shown not negative; all 108 are withheld now,
+the body base refused and its sign not argued (0011 section 10.2). The
+advice replay (`out/advice-replay.out`): the body base served at once in
+1,721 of 8,000 cases, 1,829 before; every one of the 6,279 refused ends
+served by the changes its words advise (these plates swept 45 deg at the
+leading edge), none by a reason met again or by its steps. The breakdown
+and the floors are from uncommitted probes of the cases, the floors run
+on this head and on main's base code.
+
 **2026-10-26 (ac): RM A51J11 and RM A52E01, named before they are opened,
 for F4's thin trailing edges and thick layers below Mach 1.5** (rule 2 of
 10.1, as (k); 0019 section 3.4, "Layers and h/c"). Neither has been
