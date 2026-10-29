@@ -145,3 +145,143 @@ REF=1 npx vitest run --config tests/tmp-haack/vitest.config.ts`; the
 lane scripts give the environment of every run quoted. A finer grid's
 fit was started from the saved coarser one (`seed.mjs`), which shortens
 it only: the converged fit does not depend on its start.
+
+## `outline/`: widening the outline (2026-10-27)
+
+New references for the outline, registered before any run in 0006
+("Widening the outline: registration"): 6 calibers at Mach 1.5, 2 and 3
+and 5 calibers at Mach 3 (2 calibers of cylinder), judged by W5's
+criteria unchanged; 4 calibers at Mach 3 only if neither case at Mach 3
+passes. Branch `claude/wip/vk-outline`.
+
+- `runners/`: the runners as they run, from a frozen tree (the src of
+  main at 5ba98ff, its `COMMIT` file; the runners in `tests/vk/`).
+  `fitsave.test.ts`, `seed.mjs` and `moc.test.ts` are W5's (the fit, its
+  chunks and early stop, the seed, the march; `fitdata.ts` and
+  `common.ts` unchanged), with three changes. Every checkpoint and save
+  carries a fingerprint (the case, the chunk, the iteration limit, the
+  stop's tolerances, and `fingerprint.ts`'s sha256 over the source files
+  the runner reaches: the files under src/ as `numerics`, the runner's
+  own as `runner`), and a checkpoint, seed or saved fit with another one
+  is refused. The fit is checkpointed every 250 iterations inside a
+  chunk, with the early stop's history, while the stop is still judged
+  once per chunk. The march's lines are chosen by the registered rule
+  (`auto`). `lane.sh` with `jobs-a.txt` and `jobs-b.txt`: the two lanes,
+  resumable (a saved grid, or a march with its `.done` file, is skipped).
+- `fits/smoke/`: the runner checked before the lanes started, on W5's
+  1-caliber nose at Mach 2, nj = 20: stopped 300 iterations into a chunk
+  at 1300 iterations, resumed, settled at 5000 iterations with the drag
+  0.42909806331325262, against W5's 0.42909806331220435 (2.44e-12
+  relative; corrected 2026-10-28 from 2.4e-11, which the message of
+  3883113 also gives and which cannot be changed there); a checkpoint with another chunk size was refused
+  (`log-mismatch.txt`). That save carries the runner hash from before the
+  fingerprint check was moved ahead of the problem's construction, the
+  only change made to the runner since.
+- `analysis/judge.mjs`: the registered criteria applied to W5's marches
+  and to the new ones (fits, line criterion, references, misses, the
+  allowance by W5's rule, containment). On W5's `marches/moc.jsonl`
+  (`analysis/judge-w5.txt`) it gives W5's passing lines, misses and
+  containment ratios (1.73 on 5 calibers at Mach 2, 2.08 at Mach 1.5,
+  2.27 on 3 calibers at Mach 2) and the allowance of 8e-4. One
+  difference from 0006's text: the marched lines next to the one passing
+  line of 5 calibers at Mach 2 (x = 0.41) are those at x = 0.27 and 0.64
+  (misses up to 3.57e-4), not 0.18 and 0.27; the line at x = 0.18 is two
+  lines away, and fails the change from 1280 intervals on nj = 20 and 40
+  (6.7e-5 and 4.1e-5 of the drag) as well as nj = 80's mass balance. Its
+  miss of 3.64e-4 and the 3.57e-4 both give an allowance of 8e-4.
+- `fits/saved/`, `fits/log.txt`, `fits/queue-log.txt`: the saved fit
+  heads (the cell states, 0.07 to 5.6 MB each, stay in the lanes' folder)
+  and the lanes' logs; `marches/`: each case's march (`.txt`, `.jsonl`).
+  `analysis/judge.txt` and `judge.json`: the verdicts (from this folder,
+  `node outline/analysis/judge.mjs marches/moc.jsonl outline/fits/saved
+  outline/marches --json outline/analysis/judge.json`).
+
+Results, by the registered criteria (2026-10-28):
+
+| Case             | nj = 20      | nj = 40      | nj = 80      | Order | Lines passing (x)  | Verdict |
+| ---------------- | ------------ | ------------ | ------------ | ----- | ------------------ | ------- |
+| 6 cal., Mach 1.5 | 0.0247060757 | 0.0245586673 | 0.0245288358 | 2.30  | one, 0.25 (90.8%)  | passes  |
+| 6 cal., Mach 2   | 0.0235075806 | 0.0234152171 | 0.0233932940 | 2.07  | none               | fails   |
+| 5 cal., Mach 3   | 0.0302101841 | 0.0301320717 | 0.0301044386 | 1.50  | one, 0.48 (82.1%)  | passes  |
+| 6 cal., Mach 3   | 0.0218239931 | 0.0217627111 | 0.0217401958 | 1.44  | one, 0.49 (84.1%)  | passes  |
+
+- 6 calibers at Mach 1.5 (iterations 5500, 9000, 15000; gates passed,
+  wall cells at 71.5 deg or more): the one passing line misses by +1.11e-4
+  and +1.21e-4, the marched lines next to it (x = 0.10 and 0.63) by up to
+  1.67e-4; the band with the allowance contains the error against the
+  lowest bound 2.40 times.
+- 6 calibers at Mach 2 (iterations 5500, 8000, 14000; gates passed, wall
+  cells at 76.6 deg or more) fails: no line passes the line criterion.
+  The five lines at x = 0.002 to 0.17 fail both the mass balance (4.4e-5
+  to 8.6e-3 on nj = 80) and the change from 1280 intervals, two of them
+  without monotone marches; the line at x = 0.54 (81% of the drag) fails
+  only the change from 1280 intervals on nj = 20 and 40 (4.91e-5 and
+  3.54e-5, against 3.5e-5; 2.26e-5 on nj = 80), and the line at x = 1.78
+  that change on every grid (8.7e-5 to 1.6e-4). Those two would miss by
+  +3.51e-4 to +4.31e-4.
+- 5 calibers at Mach 3 (iterations 5500, 8000, 13000; gates passed, wall
+  cells at 79.4 deg or more; nj = 20 and 40 as W5's saved fits to
+  6.38e-12 and 4.84e-15): the one passing line misses by -9.08e-5 and -6.29e-5, the
+  lines next to it (x = 0.14 and 1.66) by up to 1.92e-4; containment 3.07.
+- 6 calibers at Mach 3 (iterations 6000, 8000, 14000; gates passed, wall
+  cells at 79.3 deg or more): the one passing line misses by -5.85e-5 and
+  -1.84e-5, the lines next to it (x = 0.13 and 1.92) by up to 2.04e-4;
+  containment 2.56.
+- Every passing case rests on one line, as W5's 5 calibers at Mach 2. The
+  largest miss counted stays W5's 3.57e-4, so the allowance stays 8e-4.
+- The registration's hold: the outline of the passing cases has the
+  corners (1, 1.5), (6, 1.5), (6, 3) and (1, 3), and the failed (6, 2)
+  lies on its edge, so nothing is added until the owner decides;
+  `VON_KARMAN_REFERENCES` keeps W5's seven (0006 gives the choices).
+  `insideOutline` counts a point on the outline as inside, which is why
+  (6, 2) on the edge holds them.
+- The lines next to a passing line (recorded 2026-10-28): the
+  registration did not define them; W5's text named the two lines ahead
+  of 5 calibers at Mach 2's passing line, while `judge.mjs` counts one on
+  each side, a rule fixed before any new data (it ran on W5's marches
+  before the lanes started at 08:47 on 2026-10-27 and was committed in
+  3883113 at 08:48:30; the first new fit was saved at 08:56, the first
+  new march ran at 21:12). On W5's reading the allowance would be 9e-4
+  with 5 calibers at Mach 3 (the second line ahead, x = 0.039, march
+  order 0.23, misses by -4.48e-4) and 2e-3 with 6 calibers at Mach 3 (x =
+  0.032, march order 0.10, -8.85e-4); with 6 calibers at Mach 1.5 alone
+  it stays 8e-4. That reading decides the allowance if either Mach 3 case
+  is added, so it is the owner's, with the choices. The independent
+  review's view (2026-10-28, information for the owner): a line failing
+  the line criterion on every grid gives no reference, so `judge.mjs`'s
+  reading is the physically right one; over every line of the passing
+  cases whose march's change from 1280 intervals is below 3.5e-5 on every
+  grid, the largest miss is 3.57e-4 (checked here), so 8e-4 holds; the
+  evidence supports (a') best.
+- The lanes ran from 2026-10-27 08:47 to 2026-10-28 08:59 UTC, through
+  four container restarts, each fit resuming from its last checkpoint
+  (`fits/queue-log.txt`, `fits/log.txt`).
+
+The refusal audit's population (`docs/research/refusals`, 2000 rockets,
+8000 cases), served totals:
+
+| Base, references                               | All bands | Mach 1.5 to 1.8 | Mach 1.8 to 3.0 |
+| ---------------------------------------------- | --------- | --------------- | --------------- |
+| main 5921198, W5's seven                       | 181       | 68              | 113             |
+| main 5921198, with 6 cal. Mach 1.5 (interim)   | 198       | 84              | 114             |
+| main 3e026a8, W5's seven                       | 155       | 53              | 102             |
+| main 3e026a8, with 6 cal. Mach 1.5 (interim)   | 168       | 65              | 103             |
+| main cdd26e6, W5's seven (the branch, held)    | 155       | 53              | 102             |
+| main cdd26e6, with 6 cal. Mach 1.5, 5 cal. Mach 3 (a) | 213 | 71              | 142             |
+| main cdd26e6, with 5 and 6 cal. Mach 3 (a')    | 204       | 55              | 149             |
+| main cdd26e6, with all three passing cases (b, nothing cut out) | 242 | 73              | 169             |
+| main 76899f1, W5's seven (the branch, held; 2026-10-28) | 184 | 73              | 111             |
+| main 76899f1, with 6 cal. Mach 1.5, 5 cal. Mach 3 (a) | 253 | 99              | 154             |
+| main 76899f1, with 5 and 6 cal. Mach 3 (a')    | 237       | 77              | 160             |
+| main 76899f1, with all three passing cases (b, nothing cut out) | 288 | 103             | 185             |
+| main 02549f2 (2026-10-29): the same four runs   | 184, 253, 237, 288 | 73, 99, 77, 103 | 111, 154, 160, 185 |
+
+None below Mach 1.5 in any run. Each run with W5's seven gave main's
+`impact.out` byte for byte, and every run's cross-check with `src/total`
+agreed on 1200 of 1200 cases. The runs with added cases are for the
+owner's decision only (`population/option-a`, `population/option-a-prime`
+and `population/all-three` on cdd26e6, the same under `population/76899f1`
+on 76899f1:
+the run of `docs/research/refusals` on the merged head with those points
+added to `VON_KARMAN_REFERENCES` for the run, then taken out); the
+branch's own outputs are the held run, which is main's.

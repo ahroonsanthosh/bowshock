@@ -7,9 +7,14 @@
  * library itself where the library can represent the rocket.
  *
  * Nose: the page's shapes (src/app/nose-drag.ts), Mach 1.2 and above (the
- * page's input), and for sharp tips the solver's own tip tests
+ * page's input), for sharp tips the solver's own tip tests
  * (sharpFitProblem, src/analysis/fitted-flow.ts) and the fitted grids' wall
- * gate (50 deg, so tips up to 40 deg; src/grid/quality.ts). Not modelled:
+ * gate (50 deg, so tips up to 40 deg; src/grid/quality.ts), and for the
+ * two-scale noses (the Haack series and the power series) the solver's own
+ * gate (bluntNoseRefusal): only the Von Karman nose is served, and only
+ * inside the outline of the lengths and Mach numbers checked against a
+ * reference (VON_KARMAN_REFERENCES; docs/design/0006-shock-fitting.md,
+ * "Two-scale noses"). Not modelled:
  * the grid gates on long bodies (a fallback family exists), fits that do not
  * converge, and families whose band cannot be measured ("not verified"):
  * these can only be known by solving, so the nose is counted as served

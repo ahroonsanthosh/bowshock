@@ -1,0 +1,14 @@
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/agent-add283c06777a544a
+
+stdout | tests/zz-review-vkfit.test.ts > Von Karman fits on the page path
+VK 4.054 cal, cylinder 13.015 cal, M 1.5063, refinement 1: refusal undefined; converged true after 6964 (speed 1.0e-12); drag 0.05065948442766357; grid 170x20: min angle 47.4 deg, wall 72.1 deg (>= 50), size ratio 1.196, aspect 11.53 (<= 13); grid gates undefined; case undefined; 546 s
+VK 4.21 cal, cylinder 13.739 cal, M 1.6429, refinement 1: refusal undefined; converged true after 6759 (speed 1.0e-12); drag 0.04649312419286421; grid 209x20: min angle 51.5 deg, wall 73.9 deg (>= 50), size ratio 1.194, aspect 11.14 (<= 13); grid gates undefined; case undefined; 583 s
+VK 4.652 cal, cylinder 13.03 cal, M 1.5818, refinement 1: refusal undefined; converged true after 6852 (speed 1.0e-12); drag 0.03909465152632759; grid 196x20: min angle 50.0 deg, wall 72.8 deg (>= 50), size ratio 1.213, aspect 11.29 (<= 13); grid gates undefined; case undefined; 603 s
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  13:28:36
+   Duration  1734.66s (tests 100%)
+

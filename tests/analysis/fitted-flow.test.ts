@@ -239,6 +239,10 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     expect(bluntNoseRefusal(nose(vonKarman, 4), 2.5)).toBeUndefined();
     expect(bluntNoseRefusal(nose(vonKarman, 4.1), 2.5)).toMatch(/outside the referenced range/);
     expect(bluntNoseRefusal(nose(vonKarman, 5), 2.1)).toMatch(/outside the referenced range/);
+    // The cases the registration of 2026-10-27 judged are held for the
+    // owner's decision (von-karman-references.test.ts): still refused.
+    expect(bluntNoseRefusal(nose(vonKarman, 6), 1.5)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(vonKarman, 5), 3)).toMatch(/outside the referenced range/);
     expect(bluntNoseRefusal(nose({ kind: 'haack', parameter: 1 / 3 }, 3), 2)).toMatch(
       /only the Von Karman/,
     );

@@ -1,0 +1,9 @@
+# Lane b: 6 calibers at Mach 2 and 5 calibers at Mach 3 (2 of cylinder); nj 20, then 40, then 80 and its marches.
+fam 6 2 2 1
+fam 5 2 3 1
+fam 6 2 2 2
+fam 5 2 3 2
+fam 6 2 2 4
+moc 6 2 2
+fam 5 2 3 4
+moc 5 2 3

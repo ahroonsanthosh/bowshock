@@ -1,0 +1,12 @@
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/agent-add283c06777a544a
+
+stdout | tests/zz-review-vkfit2.test.ts > aspect on the finer grids
+VK 4.054 cal, cylinder 13.015 cal, M 1.5063: r1 converged true aspect 11.535 size 1.196 gates undefined; r1 (170x20): start aspect 9.432, on the converged base shock 11.535 (size 1.196, wall 72.1 deg) gates undefined; r2 (340x40): start aspect 9.895, on the converged base shock 12.077 (size 1.115, wall 71.8 deg) gates undefined; r4 (680x80): start aspect 10.132, on the converged base shock 12.359 (size 1.150, wall 71.8 deg) gates undefined; r8 (1360x160): start aspect 10.252, on the converged base shock 12.501 (size 1.259, wall 71.8 deg) gates undefined
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  13:57:55
+   Duration  500.52s (tests 100%)
+
