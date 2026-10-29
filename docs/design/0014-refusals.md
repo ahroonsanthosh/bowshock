@@ -2065,6 +2065,33 @@ now says the plate's sweep lies inside the measured ends, not past them,
 and the label of a plate swept 45 to 60 deg says the same ("its sweep
 inside the bracket's measured ends, not past them").
 
+_2026-10-29, the owner's decision on the question above (main's unswept
+plates below Mach 1.62), and the ruling applying it:_ The owner's words:
+"whatever is most accurate wins". The coordinator's ruling applying
+them, recorded as the owner's decision so applied: (1) below Mach 1.62,
+flat-faced fins at the base with the leading edge unswept and the
+trailing edge unswept are refused at the base term, under 10.2, on the
+review's reasoning recorded above: below Mach 1.62 the floor is RM
+L52E06's relief with plates swept 45 deg alone (F 0.852 at M 1.06
+against the floor's 0.838, a margin of 0.014); the unswept plate stands
+the strongest juncture vortex of any sweep; nothing measured shows
+whether that adds relief or takes it away; and no base pressure with
+unswept plates at the base below Mach 1.62 says it does not. The page's
+words name the missing measurement (base pressures with unswept flat
+plates at the base below Mach 1.62), as for the plates swept more than 0
+and under 45 deg, and the rule applies wherever theirs does: at the
+base, and within a chord where 0015 section 3.3 serves positions (Mach
+1.5 to 1.62 there). In the chain of every reason the change advised is a
+leading edge swept 45 deg, which is served there. (2) From Mach 1.62 the
+unswept plate stays served on the same ground as the other plates: RM
+L52J21a's at most 6.2% relief against a floor allowing 16.2%, a margin,
+not a measurement; its label says so, and so does every plate's label
+from Mach 1.62, the floor being carried there in Mach number on that
+margin whatever the sweep. This answers the open question above and
+narrows main's amendment (i) for unswept plates below Mach 1.62; (i)'s
+text stands as registered. Written before the code; what it costs is
+recorded below when run.
+
 **2026-10-26 (ac): RM A51J11 and RM A52E01, named before they are opened,
 for F4's thin trailing edges and thick layers below Mach 1.5** (rule 2 of
 10.1, as (k); 0019 section 3.4, "Layers and h/c"). Neither has been
