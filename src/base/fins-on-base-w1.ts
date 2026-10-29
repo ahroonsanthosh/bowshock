@@ -1122,11 +1122,16 @@ const tcText = (tc: number) =>
 /**
  * A sweep angle (radians) in degrees for a message or label: to one decimal, or to as many as it takes for the
  * printed value to stay on its own side of 45 and 60 deg, the bounds the sweep rules turn on (44.99 deg is never
- * printed 45.0, nor 60.01 deg 60.0; the review of 2026-10-27).
+ * printed 45.0, nor 60.01 deg 60.0; the review of 2026-10-27). A sweep above 0 that one decimal would print 0.0 is
+ * printed to two significant digits, so it reads above 0, as the rules take it (a tan of 1e-6 is 0.000057 deg, not
+ * 0.0; the review of 2026-10-29), as aheadText shows a position's side of one chord.
  */
 export function sweepDegrees(a: number): string {
   const d = (a * 180) / Math.PI;
   const onBound = (b: number) => Math.abs(d - b) <= (1e-9 * 180) / Math.PI;
+  if (d > 0 && !onBound(0) && Number(d.toFixed(1)) === 0) {
+    return d.toFixed(1 - Math.floor(Math.log10(d)));
+  }
   for (const digits of [1, 2, 3, 4, 6, 9, 12]) {
     const text = d.toFixed(digits);
     const v = Number(text);

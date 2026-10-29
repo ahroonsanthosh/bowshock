@@ -1723,15 +1723,17 @@ The rebuilt factor (sections 3 and 4) extended below its tunnel members:
 - **No ratio members** (TN 2360 measures at M 1.5 and 2.0 only): sections
   are bracketed between the zero member and the reference, three fins
   between zero and four, flat plates bounded between 0.838 and the
-  reference (section 4's ordering). Fins ending ahead of the base are
-  refused (a bound built on 2026-10-26 was withdrawn after the
-  independent review, section 3.3).
+  reference (section 4's ordering; since 2026-10-29, the owner's
+  decision, not unswept ones, refused below M 1.62, section 12). Fins
+  ending ahead of the base are refused (a bound built on 2026-10-26 was
+  withdrawn after the independent review, section 3.3).
 - **Sweep:** RM L52E06's flat plates are swept 45 deg at the leading
-  edge, so flat-faced fins are served swept (45 to 60 deg, as above M 1.5);
-  swept fins of sharp sections are refused, since none is measured below
-  M 1.49. Variant (2c), every section swept, was not approved: it would
-  lean further on the RM-10 at M 1.49, whose totals (TN 3320) are held
-  back (section 3.4).
+  edge, so flat-faced fins are served swept (45 to 60 deg, as above M
+  1.5; since 2026-10-29, the owner's decision, only so, unswept plates
+  being refused below M 1.62, section 12); swept fins of sharp sections
+  are refused, since none is measured below M 1.49. Variant (2c), every
+  section swept, was not approved: it would lean further on the RM-10 at
+  M 1.49, whose totals (TN 3320) are held back (section 3.4).
 - **From M 1.0** (the owner's decision of 2026-10-21: no blanket refusal
   below Mach 1.2; serve wherever the result is accurate, with its band).
   W2 had refused fins at the base below M 1.1 because fig. 35's line then
@@ -2078,7 +2080,10 @@ refusal (0014 10.7 (ad), its bullet on every reason), not also in the
 position's message, so it is named once; the factor called directly
 still names both in one refusal, as above. A sweep is printed to one
 decimal, or to as many as keep it on its own side of 45 and 60 deg
-(44.99 deg is not printed 45.0; `sweepDegrees`), and the narrowed words
+(44.99 deg is not printed 45.0; `sweepDegrees`; since 2026-10-29, after
+the review of that date, a sweep above 0 that one decimal would print
+0.0 is printed to two significant digits, a tan of 1e-6 as 0.000057 deg,
+not 0.0 beside "more than 0 and under 45 deg"), and the narrowed words
 say "at or near the base", the first naming RM L52E06's Mach numbers,
 1.06 to 1.10. A total that holds such a plate names the argument in its
 claim (2026-10-28): the factor's `sweepByArgument` is set for flat-faced

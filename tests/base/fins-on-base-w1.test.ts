@@ -1719,6 +1719,27 @@ describe('refusals', () => {
       expect(sweepDegrees((45 * Math.PI) / 180)).toBe('45.0');
       expect(sweepDegrees((60 * Math.PI) / 180)).toBe('60.0');
       expect(sweepDegrees((44.95 * Math.PI) / 180)).toBe('44.95');
+      // Just above 0 deg (the review of 2026-10-29): printed above 0, to two significant digits, as the rule
+      // takes it (more than 0 and under 45 deg); exactly 0, and what the rules take as unswept, print 0.0.
+      expect(sweepDegrees(Math.atan(1e-6))).toBe('0.000057');
+      expect(sweepDegrees((0.04 * Math.PI) / 180)).toBe('0.040');
+      expect(sweepDegrees((0.06 * Math.PI) / 180)).toBe('0.1');
+      expect(sweepDegrees(0)).toBe('0.0');
+      expect(sweepDegrees(1e-10)).toBe('0.0');
+      const tiny = (() => {
+        try {
+          finsOnBaseFactorW1(
+            1.55,
+            fins({ section: plate(0.024), tanLeadingEdgeSweep: 1e-6, tanTrailingEdgeSweep: 0 }),
+          );
+        } catch (e) {
+          return (e as Error).message;
+        }
+        return '';
+      })();
+      expect(tiny).toContain('swept 0.000057 deg and the trailing edge unswept');
+      expect(tiny).toContain(W1_FLAT_UNDER_45_MARK);
+      expect(tiny).not.toMatch(/swept 0\.0+ deg/);
     });
     it('a plate ahead of the base whose position and sweep are both refused: one refusal naming both, the position first (the review of 2026-10-27)', () => {
       for (const le of [20, 70]) {
