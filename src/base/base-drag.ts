@@ -65,6 +65,10 @@ import {
   aheadText,
   finsOnBaseFactorW1,
   sectionBracket,
+  W1_FLAT_BEYOND_60_MARK,
+  W1_FLAT_SUBSONIC_EDGE_MARK,
+  W1_FLAT_SWEPT_TE_MARK,
+  W1_FLAT_UNDER_45_MARK,
   W1_SECTION_SHAPE_MARK,
   nearBasePositionReasons,
   nearBasePositionRefusal,
@@ -563,11 +567,12 @@ export const EVERY_REASON_STEPS = 6;
  * The change a body-base refusal's words advise, made to the fins, where it is a mechanical change of them:
  * fins ahead of the base refused for their position or for a trailing edge nothing measures there, moved to
  * the base (a plate's rounded trailing edge squared, a blunt edge made sharp, as the words say); at the base, a
- * rounded or blunt trailing edge squared or made sharp; another count made four; swept fins unswept; a
+ * rounded or blunt trailing edge squared or made sharp; another count made four; swept fins unswept (a plate
+ * refused for its swept trailing edge alone: that edge unswept, its leading edge kept, as its words advise); a
  * thickness outside 5% to 10% brought to the nearer end. Undefined where the words advise no such change (a
- * speed, an afterbody, a boundary layer, a section's shape).
+ * speed, an afterbody, a boundary layer, a section's shape). Exported for its tests.
  */
-function adviceFor(
+export function adviceFor(
   refusal: BaseRefusal,
   fins: BaseFins,
 ): { readonly fins: BaseFins; readonly what: string } | undefined {
@@ -629,6 +634,22 @@ function adviceFor(
           (Math.abs(near.tanLeadingEdgeSweep) > 1e-12 ||
             Math.abs(near.tanTrailingEdgeSweep) > 1e-12));
       if (!swept) return undefined;
+      // A plate refused for its swept trailing edge alone (0015 section 12, the strict reading of 2026-10-28): its
+      // words advise an unswept trailing edge, the leading edge kept. Where its leading edge would be refused too
+      // with the edge unswept, the words advise both, and the fins are made unswept, as for every other sweep.
+      const message = refusal.message;
+      if (
+        near !== undefined &&
+        message.includes(W1_FLAT_SWEPT_TE_MARK) &&
+        ![W1_FLAT_UNDER_45_MARK, W1_FLAT_BEYOND_60_MARK, W1_FLAT_SUBSONIC_EDGE_MARK].some((m) =>
+          message.includes(m),
+        )
+      ) {
+        return {
+          fins: { ...fins, tanTrailingEdge: 0, nearBase: { ...near, tanTrailingEdgeSweep: 0 } },
+          what: 'with the trailing edges unswept',
+        };
+      }
       return {
         fins: {
           ...fins,

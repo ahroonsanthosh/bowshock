@@ -469,7 +469,13 @@ landing lies behind the first corner), asserted. Since the check of
 verdict: a section flat to the edge above and closing over its last 20%
 below is refused for the lower surface, and its mirror for the upper (a
 check of the upper surface alone, planted, passed every other test of
-`tests/fins` and `tests/total`).
+`tests/fins` and `tests/total`). Since the review of 2026-10-28, which
+found that taking any face with slope under 1 deg as flat passed every
+test, a hexagon with a long, shallow rear bevel is held refused: the
+same 3% plate's 10 deg front wedge with a rear bevel of 0.95 deg
+(closing to a sharp edge over 0.9 of the chord) and one of 0.61 deg
+(closing half the thickness over 0.7, to a blunt edge), at Mach 1.5, 2
+and 2.5; that mutation, planted, now fails it.
 
 **Coverage** (0014's population at 400 rockets, 1,600 cases, the run of
 0015 section 12 as the "before",
@@ -517,4 +523,12 @@ with the nose assumed served, and with the page's section offered too
 above still hold. After main's B1 and the body base band (cdd26e6 and
 0b2def5, also 2026-10-28) the counts are unchanged: 184, 628, 633 and
 811; the reflected-wave figures still hold, and the cross-check agrees
-on all 1,200 cases checked.
+on all 1,200 cases checked. After the rulings of 2026-10-28 on flat
+plates at the base (0015 section 12: beyond 60 deg where M cos L is
+below 1, and a forward-swept trailing edge, refused), 184 and 628 are
+unchanged and the count with the page's section offered is 809 (811
+before): two plates bevelled at the leading edge only, which this
+section serves, swept beyond 60 deg with the edge subsonic; the
+reflected-wave figures still hold. The strict reading the same day (a
+swept trailing edge on a plate refused either way, 0015 section 12)
+leaves 184, 628 and 809 as they are.

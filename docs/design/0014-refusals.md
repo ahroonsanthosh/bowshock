@@ -1886,14 +1886,16 @@ unswept plate and RM L52E06's 45 deg plates below Mach 1.62, where the
 floor is those plates' relief alone, and are refused there, at the base
 term, the page's words naming the missing measurement (base pressures
 with such plates at the base below Mach 1.62). From Mach 1.62 they stay
-served: there RM L52J21a measures at most 5% relief with fins near the
-base, against a floor 16% down (F 0.838). Plates swept 45 deg or more,
-and the unswept plate, are not changed. The code went in first (ad7b970)
-and this note the same day, the ruling having come after the code was
-reviewed; no data enter and no band moves. At the audit's default size,
-after main's audit fix (5921198): totals served 228 of 8,000 without the
-ruling and 209 with it (Mach 1.5 to 1.8: 111 to 92; 1.8 to 3.0: 117
-either way), against main's 181; with the nose assumed served 743 and 687.
+served: there RM L52J21a allows at most 6.2% relief with fins near the
+base (0015 section 3.5's zero member, 0.9378; "at most 5%" here until
+2026-10-28), against a floor 16% down (F 0.838). Plates swept 45 deg or
+more, and the unswept plate, are not changed. The code went in first
+(ad7b970) and this note the same day, the ruling having come after the
+code was reviewed; no data enter and no band moves. At the audit's
+default size, after main's audit fix (5921198): totals served 228 of
+8,000 without the ruling and 209 with it (Mach 1.5 to 1.8: 111 to 92;
+1.8 to 3.0: 117 either way), against main's 181; with the nose assumed
+served 743 and 687.
 
 _2026-10-27, the second ruling under this note:_ flat-faced fins with
 the trailing edge unswept and the leading edge swept beyond 60 deg are
@@ -1904,11 +1906,12 @@ shown. The page's words name the missing measurement (base pressures
 with plates swept beyond 60 deg at the base below Mach 1.62). Exactly 60
 deg, and 45 to 60, stay as 0015 section 4 serves them; from Mach 1.62
 these plates stay served on the same ground as those under 45 deg (RM
-L52J21a's at most 5% relief). The code went in first (b3308ed), this
-line after it. No total moves at the audit's default size (209 of 8,000;
-687 with the nose assumed served): the plates it reaches are refused for
-something else as well; the rebuilt factor's sweep refusal goes from
-36.0% to 38.0% of cases.
+L52J21a's at most 6.2% relief, "5%" here until 2026-10-28; since
+2026-10-28 only where M cos L is at least 1, below). The code went in
+first (b3308ed), this line after it. No total moves at the audit's
+default size (209 of 8,000; 687 with the nose assumed served): the
+plates it reaches are refused for something else as well; the rebuilt
+factor's sweep refusal goes from 36.0% to 38.0% of cases.
 
 _2026-10-28, the counts on main with A5:_ after main's A5 (f88ecbe; (ad)
 below) the audit's default run serves 179 totals of 8,000 against main's
@@ -1950,6 +1953,117 @@ registered and reviewed under (i) as an argument from the slope
 mechanism and the measured relief, so the owner decides. (Plates swept
 beyond 60 deg below Mach 1.62, which 0015 section 12 named with the same
 open direction, are refused by the second ruling above.)
+
+_2026-10-28, rulings under this entry after the independent review of A1
+(main at 76899f1) and A2, both passed; under 10.2, written before the
+code (0015 section 12, its rulings of this date):_ (1) From Mach 1.62
+the plates 0015 section 12 serves rest on a 2.6 times margin over RM
+L52J21a's measured relief, not on a measurement at their conditions: the
+floor, 0.838, allows 16.2% relief, and RM L52J21a at most 6.2%. Its fins
+are sharp circular arcs swept 45 deg at both edges, whose edges see M
+cos L of 1.15 to 1.70, the weakest juncture case; a plate swept beyond
+60 deg sees M cos L below 1 at Mach 1.62 to 2.0, RM L52E06's regime,
+where the relief measured was largest (15%). So flat-faced fins at the
+base, and within a chord, with the leading edge swept beyond 60 deg are
+refused where M cos L is below 1; where it is at least 1, from Mach 2.0,
+they stay served. The same ground, a margin and not a measurement,
+carries main's unswept plates ((i)) from Mach 1.62; whether they stay
+served on it is put to the owner with the question above, and they are
+not changed. (2) "At most 5% relief" understated the record's own zero
+member, 6.2%; corrected where it stood, here and in 0015 sections 4 and
+12, the margin to 0.838 still about 0.10. (3) A plate's trailing-edge
+sweep: 0015 section 12 served it "either way (RM L52E06's plates and the
+RM-10 bracket it; ...)", wording that commit 6ae4336 (2026-10-26) put in
+after the population run so that the record matched the code, not a
+reading of the sources. Read now: RM L52E06's trailing edge is unswept
+(its p. 3 and fig. 1(c), p. 11), and the RM-10's is swept 60 deg aft (RM
+E50D28, TN 3819's ref. 36, p. 5 and fig. 2, p. 17). A plate is served
+with the trailing edge unswept, or swept aft no more than a leading edge
+swept 45 to 60 deg, as before; one swept forward is refused at the base
+and within a chord, with words that say so. No data enter and no band
+moves. What it costs is recorded below when run.
+
+_2026-10-28, what the rulings cost,_ the run after the code
+(`out/impact.out`, 2,000 rockets, 8,000 cases; the run before is the
+same file as committed before it): the rule on subsonic edges refuses
+the base term of 81 cases, 49 at Mach 1.62 to 1.8 and 32 at 1.8 to 3.0
+(the rebuilt factor's sweep refusal 28.6% to 29.3% of cases; some of the
+81 were refused for a section outside the 10% arc before, which the
+sweep now names first): 44 plates with a rounded leading edge, 31 with a
+square-cut one, 6 bevelled. None was a total: totals served stay 184 of
+8,000 (Mach 1.5 to 1.8: 73; 1.8 to 3.0: 111), and 628 with the nose
+assumed served. Every one is refused for something else too: 38 of the
+rounded-edge plates for the edge's normal Mach number alone (the rounded
+term needs M cos L of at least 1, as the review said), 25 of the
+square-cut plates for the square-cut edge alone (refused, 0016 section
+21.6; if it is lifted, these now need the base too), and 3 of the
+bevelled plates for the page's section alone (the page does not offer a
+plate bevelled at the leading edge only, W12), one of them ahead of the
+base where its position is refused too: with that section offered too,
+811 totals become 809 (Mach 1.5 to 1.8: 299 to 298; 1.8 to 3.0: 512 to
+511), the other two plates (one rocket, swept 67.2 deg, at Mach 1.71 and
+2.17). The rule on forward-swept trailing edges refuses no case: the
+population sweeps every swept trailing edge aft. The cross-check agrees
+on 1,200 of 1,200; the reflected-wave split (`out/reflected-split.out`)
+is unchanged; the counts by section and by what else refuses are from a
+probe of the same cases, not committed.
+
+_2026-10-28, later, the ruling on (3)'s reading, under 10.2, written
+before the code:_ the strict reading. The plates' floor is RM L52E06's
+relief, measured only with the trailing edge unswept; the RM-10 (RM
+E50D28) gives the bracket's 60 deg end in leading-edge sweep, but its
+fins are circular arcs whose trailing edge is swept 60 deg aft and below
+sonic at its Mach numbers, so it does not show that a plate's floor
+holds with a swept trailing edge (this ground replaces the wording of
+48d95b1, the note below); and 0015 section 12's argument does not cover
+a square edge carried out of one plane parallel to the base. So a plate
+with the trailing edge swept, aft or forward, is refused at the base and
+within a chord, the words naming why. This replaces (3)'s service of
+plates swept aft; what RM L52E06 and RM E50D28 state stays recorded.
+Sharp sections with the RM-10's 60 deg aft trailing edge stay refused as
+they are; opening the RM-10's measured case would need its own
+registered procedure (readings, pairing, domain), recorded in 0015
+section 3.4 as a possible later item. No total is expected to move; the
+run is recorded below when made.
+
+_2026-10-28, what the strict reading costs,_ the run after its code
+(`out/impact.out`, 2,000 rockets, 8,000 cases): no total moves, as
+expected: 184 of 8,000 served (Mach 1.5 to 1.8: 73; 1.8 to 3.0: 111),
+628 with the nose assumed served, 809 with the page's section offered
+too, the cross-check agreeing on 1,200 of 1,200 and the reflected-wave
+split unchanged. The rule refuses the base term of 632 cases, 158
+rockets at each of the four Mach bands (356 with a rounded leading edge,
+192 square-cut, 84 bevelled); some were refused for their sweep already
+(a leading edge outside 45 to 60 deg, or a trailing edge swept more than
+it), and the rebuilt factor's sweep refusal goes from 29.3% to 33.3% of
+cases, about 320 more. Every one has its swept square trailing edge
+refused by that edge's own term (0016), so none was a total; in 103 that
+term was the only other reason besides the nose, so lifting it alone
+(W3) would now serve none of them, the swept edge's share as sole
+blocker 0.24% to 0% of cases. The breakdown is from the same uncommitted
+probe of the cases.
+
+_2026-10-28, corrected after the quick look of 9056ebb..1796dfe:_ the
+strict reading's ground above replaces the wording of 48d95b1, which set
+the RM-10 apart from the plates' bracket altogether; that contradicted
+the standing ground for plates swept 45 to 60 deg with the trailing edge
+unswept (0015 section 4, RM L52E06's plates and the RM-10 bracketing
+that range, and the second ruling of 2026-10-27 above). The ground is
+narrowed to the trailing edge; the rule is unchanged. A plate at exactly
+60 deg with its edge below sonic has its sweep inside the measured ends
+of the bracket (the RM-10's 60 deg), not past them; just beyond 60 deg
+it lies past the last measured sweep, hence the step at 60 (at Mach 1.7,
+60.0 deg served and 60.1 deg refused).
+
+_Corrected 2026-10-28, after the quick look of 1796dfe..95daded:_ the
+step line above said, as e604e68 wrote it the same day, that the plate
+at 60 deg is served "on the RM-10's measured end of the bracket, not on
+the margin". That holds in sweep only: the ends are measured at Mach
+1.06 to 1.10 and 1.49 to 1.98, and from Mach 1.62 the floor is carried
+in Mach number on a margin, as the rulings of 2026-10-28 say. The line
+now says the plate's sweep lies inside the measured ends, not past them,
+and the label of a plate swept 45 to 60 deg says the same ("its sweep
+inside the bracket's measured ends, not past them").
 
 **2026-10-26 (ac): RM A51J11 and RM A52E01, named before they are opened,
 for F4's thin trailing edges and thick layers below Mach 1.5** (rule 2 of
@@ -3020,7 +3134,10 @@ argument is cited for it or it is refused under section 10.2.
   the measured positions ahead of the base (x/c 1.0 among them since
   2026-10-27), with the lower end the at-base relief, 0.838, taken by
   reference to section 4's argument (amendment i); the relief measured
-  ahead of the base, RM L52J21a's, is at most 5%, inside it. 0015 section
+  ahead of the base, RM L52J21a's, is at most 6.2% (0015 section 3.5's
+  zero member, 0.9378; "at most 5%" as merged from lift-near-base,
+  corrected on merging it into the A1 follow-up, 2026-10-28, as (z)'s
+  note of that date corrected the same phrase), inside it. 0015 section
   4 now says so in a paragraph of this date.
 - _The chord rule's 0.5% (item 4):_ 0011 section 3's tolerance is for the
   Basic Finner's own inputs, "not for other rockets", so it was no
