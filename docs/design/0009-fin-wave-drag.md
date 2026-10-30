@@ -1682,3 +1682,36 @@ Registered here before its code is written.**
   together. The served cells before and after are recorded in
   `w9/shock-fix.out`. The records of 2026-10-30 (`w9/nodes.jsonl`,
   `w9/checks.jsonl`, `w9/verdict.out`) stay as they are.
+
+**2026-10-30, later: the change made (4d56bf2) and its check run, as
+registered above; it holds, and no value moved**
+(`w9/shock-fix.out`).
+
+- _The fold checks._ Fable's review asks that the checks that the net
+  does not fold at the shock (the intersection's u and v positive) apply
+  to the iterate actually returned. They do: where the fallback is used,
+  the point is computed again at the best iterate before those checks
+  run, and the wave angle returned is that iterate's.
+- _(1) and (2)._ `tests/validation/planar-characteristics.test.ts`: the
+  four nodes solve at N = 256, and with the planted removal each throws
+  "a shock point did not converge" (28 tests pass, and T3 at 14 deg,
+  Mach 1.6 fails as recorded before).
+- _(3)._ `w9/code-checks.out` is reproduced on 4d56bf2: all 74 lines but
+  the one naming the commit are identical.
+- _(4)._ 3,108 cases re-run (1,388 nodes and 1,720 check points): the
+  same eps and mass balance at all five levels, to the bit, in every one
+  (`w9/shock-fix-identity.jsonl`).
+- _The re-judgement._ The 4 nodes now pass 9.5 by (a): eps +0.154% (12
+  deg, b 0.0141, Mach 1.6), +0.207%, +0.199% and +0.168% (14 deg, b
+  0.0141, 0.0283 and 0.0566, Mach 2.4). Their nu runs converge and agree
+  at the three at Mach 2.4; at 12 deg and Mach 1.6 the nu run fails 9.5
+  (its changes do not shrink), so that node, like 105 others, has no
+  second run to check it. None is exact by the library. The 7 check
+  points now pass by (a), each inside its cell's band. 26 cells become
+  candidates (2 at 11 to 12 deg, b 0.01 to 0.02, Mach 1.6 to 1.7; 24 at
+  13 to 15 deg, b 0.01 to 0.08, Mach 2.2 to 2.6); 9.6 gives them 63 new
+  check points (26 centres and 37 of the population's refused hexagons),
+  all passing 9.5 and inside their bands. In all, 1,790 check points, 2
+  failing 9.5 (0.11%), none outside its band. The cells that would be
+  served if the independent check passes are 974, not 941: the 26 new
+  cells and the 7 that the check points had removed; none is removed.
