@@ -564,7 +564,10 @@ case, sign unresolved, against a fins' own band of 1.01 to 1.59). (b)
 Detached bevel shocks at Mach 1.0 to 1.6: the captured planar solve on
 nested grids; there the linear 3D factor (subsonic leading edges) is the
 larger unknown and stays labelled. Effort medium, and CPU-heavy (one
-hexagon's fourth grid took 28 minutes).
+hexagon's fourth grid took 28 minutes). _2026-10-30: (a) registered in
+0009 section 9 with another measuring method (a planar method of
+characteristics, the Euler solves its check); 10.7, the entry of that
+date._
 
 **W11. Square-cut leading edges and rounded trailing edges.** No opened
 source isolates either at these conditions. The owner has allowed them
@@ -3973,6 +3976,48 @@ applied as registered). The band becomes **0.77 to 1.17** at Mach 1.5 to
   +25.9% without the wall) at one decimal; recomputed by running
   (`basic-finner.test.ts`, `hold-out-run.test.ts`). The gate table's
   caption names both widenings.
+
+**2026-10-30 (letter not yet allocated; the coordinator's to give):
+W9(a), the reflected waves on hexagonal fin sections, registered before
+any run** (0009 section 9; the owner's instruction to lift this refusal
+only if it can be done accurately). Written and committed before the
+code it describes exists and before any computed value of its runs.
+
+- _What changes in 6.2's plan for W9(a)._ 6.2 planned planar Euler solves
+  on the bevelled family as the measurement. 0009 section 2.4 found such
+  a solve not converged on the one hexagon run (observed order 1.63
+  falling to 0.67, extrapolations -0.38% to +0.25% about the
+  shock-expansion value with the reflections neglected). The measurement
+  is now a planar method of characteristics with the shock fitted and
+  every reflected wave carried by the net (0009 sections 9.1 and 9.2),
+  and the captured Euler solves are its independent check (9.7), setting
+  nothing.
+- _What is registered there._ The checks of the code (9.3); the family:
+  hexagons with equal bevels at both edges, half-angle 5 to 15 deg, bevel
+  0.01 to 0.4525 of the chord, Mach 1.5 to 3.0, on a grid of 1,392
+  computed nodes (9.4); the convergence ladder (N = 16 to 256) and when a
+  case passes (9.5); the rule: a case is served only inside a cell whose
+  eight corners pass, at the shock-expansion value times one plus the
+  midpoint of its corners' envelope (each corner's uncertainty and 5e-4
+  added, rounded outward to 0.1%), the band that envelope; at most 898
+  check points held out (the population's refused hexagons in served
+  cells and 200 drawn at random), any failure of which refuses all (9.6);
+  the Euler cases and criteria (9.7); what stays refused, W9(b) among it
+  (9.8); the page's words (9.9); the population's count (9.10); the order
+  and files of the runs (9.11).
+- _No data enter._ The band is a computed one (inviscid, two-dimensional:
+  the reflected waves alone), as the nose's grid band is; no held-back
+  set of 10.1 is opened or used, no figure sets anything, and the fins'
+  own-drag band (1.01 to 1.59, 0008 section 4.3) applies on top as now.
+- _What the population holds_ (`docs/research/refusals/out/w9-family.out`,
+  from the shock-expansion code as it stands): the reflected-wave reason
+  refuses 811 hexagons, 762 at Mach 1.5 and above; 698 of those lie in
+  cells whose corners all have an attached shock, 64 in cells next to the
+  attachment limit, 49 below Mach 1.5. The 38 cases where it alone
+  refuses the total (235 totals to 273 if all are served) and the 86
+  where it is the only reason left with the nose assumed served (from
+  622 to 708) all lie in the first group. Which cells are served is
+  known only after the runs.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to

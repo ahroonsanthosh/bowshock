@@ -3,7 +3,8 @@
 - **Status:** Draft. A library with tests (`src/fins/`); on the drag page
   only as part of the total drag ([0011](0011-total-drag-on-the-page.md)).
   (0008 is reserved for the total-drag record.)
-- **Date:** 2026-10-19 (section 8 added 2026-10-26)
+- **Date:** 2026-10-19 (section 8 added 2026-10-26; section 9, a
+  registration, 2026-10-30)
 - **Inputs:** section 4 and step B4 of the total-drag research draft, its fin
   computations and scripts (`docs/research/total-drag/`: `draft.md`,
   `data/fin_computations.md`, `scripts/finwave.py`, `section2d.py`,
@@ -384,7 +385,9 @@ bound.
 - The size of the reflected waves for the refused hexagons over the range
   of bevels and Mach numbers, by planar Euler on grids finer than 480 x 224
   (four did not reach the asymptotic range on 15% bevels) or a
-  characteristics solution, before any of them is served.
+  characteristics solution, before any of them is served. (2026-10-30:
+  registered as section 9, by a characteristics solution with the planar
+  Euler solves as its check; not yet run.)
 - TN D-4014 fig. 4 (the ARCAS chamber force), to be digitised, as the audit
   asked, before the ARCAS increments are used to set a fin band.
 
@@ -532,3 +535,408 @@ section serves, swept beyond 60 deg with the edge subsonic; the
 reflected-wave figures still hold. The strict reading the same day (a
 swept trailing edge on a plate refused either way, 0015 section 12)
 leaves 184, 628 and 809 as they are.
+
+## 9. Reflected waves on hexagonal sections: the registration (W9(a), 2026-10-30)
+
+Registered on 2026-10-30, before the code it describes exists and before
+any computed value of its runs: no characteristics solution and no Euler
+solve named below has been run. The only values that exist for its cases
+are section 2.4's drags of E1 and the estimates of A2's review script
+that 9.7 quotes to choose E2 and E3. Noted in 0014 section 10.7 (its
+entry of 2026-10-30). Nothing in this section is reworded after results;
+changes are dated notes below it.
+
+### 9.1 The question, and why another method
+
+Section 2.1 refuses a section on which a wave reflected from the
+leading-edge shock can reach a face with slope (section 8): on the page,
+hexagons whose first reflection can land ahead of the end of the rear
+bevel. In the refusal audit (0014; 2,000 rockets at four Mach bands,
+8,000 cases, `docs/research/refusals/out/impact.out`) the reason applies
+to 10.2% of cases (815: 811 hexagons, every one a plate bevelled at both
+edges, and 4 double wedges below Mach 1.2) and is the only reason
+refusing the total in 0.47% (38 cases), so that lifting it alone would
+raise the totals served from 235 to 273. Of the 811 hexagons, 762 are at
+Mach 1.5 and above (`out/reflected-split.out`, `out/w9-family.out`).
+
+Section 2.4's captured planar Euler solve of one such hexagon did not
+converge cleanly: its observed order fell from 1.63 to 0.67, its finest
+grid still moved 0.45% per halving, and its extrapolations spanned 0.38%
+below to 0.25% above the shock-expansion value with the reflections
+neglected. A captured shock and captured corner fans are locally first
+order, which is the likely reason (not shown), and the effect to be
+measured is a few tenths of a percent. So the measurement is made by
+another method, and the captured solve becomes its independent check.
+
+**The method of characteristics, planar, with the shock fitted.** For
+steady inviscid flow over a convex polygon with an attached leading-edge
+shock and supersonic flow everywhere behind it, the equations between the
+shock and the surface are hyperbolic. The method of characteristics,
+with the oblique-shock relations at every shock point and centred
+Prandtl-Meyer fans at the corners, solves them exactly up to its
+discretisation error: every reflected wave (from the shock, from the
+wall, from the shock again) is carried by the net itself, and there is no
+numerical dissipation, no captured shock and no limiter. Its unit
+processes are second order, as those of `src/validation/characteristics.ts`
+(the axisymmetric method that checks noses, converged to about 1e-6 in
+drag and tested on cones against Taylor-Maccoll), so it should converge
+at order 2; 9.5 requires every case served to show its convergence. The
+captured planar Euler solver of section 2.4 is the independent check
+(9.7): a different discretisation of the same equations (conservative
+finite volumes, a captured shock, HLLC), sharing no code with the
+method. It sets nothing.
+
+### 9.2 The method
+
+**What is computed.** A symmetric hexagon at zero incidence, gamma 1.4: a
+front bevel of half-angle theta over a fraction b of the chord, a flat,
+and a rear bevel of the same angle and length. One surface is solved;
+the other is its mirror image, and in supersonic flow the two meet only
+behind the trailing edge. The result is the drag over shock-expansion
+theory's, eps = cd / cd_SE - 1, where cd_SE is `exactSectionDrag`'s with
+`neglectReflectedWaves`. Nothing reaches the front bevel (its pressure
+is the straight shock's in both) and the flat carries no drag, so eps
+comes from the rear bevel's pressures alone.
+
+**The equations.** Along the characteristics dy/dx = tan(theta +- mu),
+planar rotational flow with the total enthalpy constant gives Q dp +-
+d(theta) = 0, Q = cot(mu) / (rho V^2) (TN D-2970's equations (10) to
+(13), as `characteristics.ts` uses them, without the axisymmetric term),
+and the entropy, K = p / rho^gamma, is constant along streamlines. They
+are used in Prandtl-Meyer form, with nu the Prandtl-Meyer function:
+
+    d(nu) -+ d(theta) + C d(ln K) = 0 along C+-,  C = sqrt(M^2 - 1) / (gamma (gamma - 1) M^2),
+
+where d(ln K) is the change between the streamlines the characteristic
+crosses. Where the flow is homentropic (behind the straight shock, in the
+fans' simple regions, and in the layer along the wall, whose entropy is
+that of the straight shock) these are exact (nu -+ theta constant), so
+the method reproduces shock-expansion theory to round-off wherever no
+reflected wave arrives (9.3, T1 and T2), and only the averaged
+coefficient C and the positions carry the discretisation error. K at a
+point is taken from the stream function, as in `characteristics.ts`: the
+free stream crossing the shock below height y carries psi = rho_inf
+V_inf y, so the shock's history gives K(psi), and psi is integrated along
+each C- line from the shock. psi at the wall, which should vanish, is the
+mass balance (9.5).
+
+**The unit processes** are those of `characteristics.ts` in planar form,
+with the relations above: an interior point where a C- line and a C+
+line meet; a shock point,
+where a C+ line meets the shock, its wave angle found so that the
+oblique-shock state (`gas-dynamics.ts`) satisfies the C+ relation; a wall
+point, where a C- line meets the wall, with the wall's angle and
+entropy. Each averages its coefficients and directions over its segments
+and iterates to convergence (second order). Lines are held as
+directions, not slopes, so that a characteristic steeper than 90 deg
+(near-sonic flow behind the shock) is taken as it is.
+
+**The flow, in two parts.** (1) The step: the front bevel followed by a
+flat without end. In supersonic flow the rear corner influences nothing
+ahead of the C+ characteristic through it, so up to that characteristic
+the hexagon's flow is the step's. It is uniform behind the straight shock
+up to the head of the front corner's fan, which meets the shock at P
+(section 2.1); the fan is a simple wave, its rays carrying the exact
+Prandtl-Meyer states, up to the C- characteristic from P, which carries
+the first reflected wave; beyond it the net is marched along C- lines
+from the shock to the wall, each line starting where the next C+ line
+reaches the shock (a ray of the fan, then the reflections from the
+wall), as `characteristics.ts` marches. (2) The rear corner: the region
+bounded by the C+ characteristic through the rear corner, the rear bevel
+and the C- characteristic through the trailing edge. Its data are the
+step's flow along that C+ characteristic, traced through the step's net
+with the states interpolated along the step's C- lines; from points along
+it, C- lines are marched across the rear corner's centred fan and the
+reflections from the bevel down to the bevel. The bevel is continued past
+the trailing edge as a straight wall so that the last C- line lands past
+it, which in supersonic flow changes nothing ahead of the trailing edge.
+
+**Resolution.** One parameter, N: each fan turns through theta in N
+equal steps (N + 1 rays); the data points along the rear corner's C+
+characteristic are b / N apart in arc length; the step's lines are one
+per ray and per reflection; so every spacing of the net scales as 1 / N.
+Levels N = 16, 32, 64, 128 and 256.
+
+**The drag.** The rear bevel's pressure at its wall points (the rear
+fan's last state at the corner, then each landing), integrated over the
+bevel's rise by the trapezoid rule, the last interval cut at the trailing
+edge by linear interpolation; the front bevel's is the straight shock's.
+
+**Where the method stops.** A case fails at a level if a point is not
+supersonic, if the net folds (two lines of one family crossing: a shock
+forming), if the rear corner's region reaches the shock, or if a unit
+process does not converge in 50 iterations to 1e-13 (as
+`characteristics.ts`).
+
+**Code.** `src/validation/planar-characteristics.ts` (a reference beside
+`characteristics.ts`; nothing on the page calls it), its tests in
+`tests/validation/` (9.3), the runs in `docs/research/fin-wave-drag/w9/`.
+
+### 9.3 Checks of the code, before any case is run
+
+Committed tests, all passed before the runs of 9.5 to 9.7 start. They
+check the implementation; T2 also checks section 2.1's bound.
+
+- **T1.** A wedge followed by a flat to a square trailing edge (section
+  8's): at every level the method's drag equals the front wedge's
+  oblique-shock drag, and its wall pressure on the flat ahead of the
+  landing of the C- line from P equals shock-expansion's, within 1e-12
+  relative.
+- **T2.** Hexagons the library calls exact (the first reflection at or
+  beyond the trailing edge): 15% bevels at t/c 0.05 at Mach 2, 2.5 and 3,
+  and 30% bevels at t/c 0.05 at Mach 1.5, 2 and 3 (section 2.1's table):
+  eps within 1e-12 of zero at every level. The first reflected
+  characteristic crosses no reflected wave, so section 2.1's bound holds
+  for it exactly; a non-zero eps here would mean the code is wrong or the
+  bound is not one.
+- **T3.** The first reflection against its analytic coefficient. A weak
+  wave of the fan reaching the shock from behind turns the shock and
+  sends back a reflected wave; from the oblique-shock relations and the
+  compatibility relations above, the reflected wave's pressure change
+  over the incident wave's is R = (Q - sigma) / (Q + sigma), with sigma =
+  d(theta_s) / d(p_s) the slope of the shock polar at the shock's wave
+  angle (the upstream state fixed) and Q behind the shock (R vanishes for
+  a Mach wave, where sigma = Q). The method's first reflection, R_N = (p
+  at the first shock point after P - p on the fan's first ray after its
+  head) / (p on that ray - p behind the straight shock), must approach R:
+  |R_N - R| decreasing at each doubling of N from 32 to 256 and at N =
+  256 at most a quarter of its value at N = 32 (or below 1e-10 at every
+  N), at (theta, M) = (8 deg, 1.6), (12 deg, 2.2) and (15 deg, 3.0). This
+  checks the shock point against the relations it is built from, not
+  against other physics.
+
+### 9.4 The family and its grid
+
+**The sections.** The page's hexagon (`hexagonal`, `src/fins/section.ts`)
+with equal bevels: four breakpoints, the two middle ones at the same
+half-thickness, the bevels' lengths equal within 1e-9 of the chord; both
+edges sharp; zero incidence. A case is (theta, b, M): theta = atan(t / (2
+b c)) the bevels' half-angle, b the bevel's length over the chord, M the
+free-stream Mach number. It lies in the family when 5 <= theta <= 15 deg,
+0.01 <= b <= 0.4525 and 1.5 <= M <= 3.0.
+
+**The grid.** Nodes at theta = 5, 6, ..., 15 deg (11); b = 0.01 times
+2^(k/2), k = 0 to 11 (0.0100, 0.0141, 0.0200, 0.0283, 0.0400, 0.0566,
+0.0800, 0.1131, 0.1600, 0.2263, 0.3200, 0.4525); M = 1.5, 1.6, 1.7,
+1.8, 1.9, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0 (11). A node is computed where
+shock-expansion theory has a solution at its (theta, M): an attached
+shock with supersonic flow behind it. That excludes five (theta, M)
+pairs (12 to 15 deg at Mach 1.5, 15 deg at 1.6), so 1,392 of the 1,452
+nodes are computed. The cell of a case is, in each coordinate, the
+interval between consecutive nodes that holds it, the lower node
+included and the last interval holding its upper node too.
+
+**Why these ranges** (`docs/research/refusals/out/w9-family.out`, from
+`w9-family.test.ts`, which uses only the shock-expansion code as it
+stands). The 762 hexagons the reflected-wave rule refuses at Mach 1.5
+and above have half-angles 8.0 to 15.0 deg, bevels 0.018 to 0.150 of the
+chord, t/c 0.009 to 0.061, Mach 1.50 to 3.00 and Mach 1.01 to 2.53
+behind the leading-edge shock. The half-angles 5 to 7 deg and the bevels
+beyond 0.15 are added for the page: at the grid's nodes the shortest
+bevel at which a hexagon is exact today (section 2.1's bound) runs from
+0.0736 of the chord (5 deg, Mach 2.0) to 0.4034 (11 deg, Mach 1.5),
+except at 14 deg and Mach 1.6, next to the attachment limit, where even
+0.49 is refused; so 0.4525 reaches past it at every node but that one.
+Of the 762, 698 lie in cells whose eight corners all have an attached
+shock with supersonic flow behind it, which bounds from above what this
+registration can serve; the other 64 lie in cells next to the attachment
+limit (11 to 15 deg at Mach 1.50 to 1.70, Mach 1.01 to 1.17 behind the
+shock). All 38 sole blockers and all 86 cases where the reflected wave
+is the only reason left with the nose assumed served lie inside. Below
+Mach 1.5 (49 hexagons) the fins' own-drag band refuses the total anyway
+(0014 section 10.7 (f)), and the family does not go there.
+
+### 9.5 Convergence, and when a case passes
+
+For each node, and each check point and Euler case below, eps_N at the
+five levels, and d_N = eps_N - eps_(N/2). A case passes when every level
+runs (none stops as 9.2 says), the mass balance converges (the largest
+|psi| at the wall over every line, over rho_inf V_inf y_P with y_P the
+height of P, is at N = 256 at most half its value at N = 128, or below
+1e-9 at both), and either
+
+- (a) |d_256| <= 1e-6 and |d_128| <= 4e-6 (converged to well below what
+  matters, whatever the order), or
+- (b) d_128 and d_256 have the same sign, the observed order p =
+  log2(d_128 / d_256) lies in 0.8 to 3.0, and |d_256| <= 1e-4.
+
+Its value is eps_256 and its uncertainty U = 2 |d_256| + 1e-6. For an
+order of 0.8 or more the error left at N = 256, as Richardson's
+extrapolation estimates it, is at most 1.35 |d_256|, which U covers. The
+expected order is 2; the window starts at 0.8 because the heads and tails
+of the reflected wave trains are weak discontinuities (kinks in the
+flow's derivatives), which can lower the observed order where they cross
+a net.
+
+### 9.6 The rule: values, bands and failures
+
+**Served cells.** A cell is served when its eight corner nodes are
+computed and pass 9.5. A node that fails removes the cells it bounds; it
+is recorded with its reason.
+
+**The value and band** of a case in a served cell, with eps and U of the
+corners:
+
+- eps_lo = the least of (eps - U) over the eight corners, minus 5e-4,
+  rounded down to a multiple of 1e-3; eps_hi = the greatest of (eps + U),
+  plus 5e-4, rounded up to a multiple of 1e-3;
+- the section drag served is cd_SE (1 + (eps_lo + eps_hi) / 2), cd_SE
+  being the case's own, its band cd_SE (1 + eps_lo) to cd_SE (1 +
+  eps_hi), labelled not exact, the method and band named;
+- in the total (`src/total`) the fin wave drag is that value times the
+  linear 3D ratio on the planform, as now; its band's low end is 1.01
+  times the low end above and its high end 1.59 times the high end (the
+  fins' own-drag band, 0008 section 4.3), each widened by the quadrature
+  error as now.
+
+The 5e-4 and the outward rounding are a margin for what eight corners
+cannot show between them; the check points test it. The band is that of
+the inviscid two-dimensional reflected waves alone: what the section
+method does not represent otherwise (viscous effects, the product with
+the linear 3D ratio, section 6) stays under the fins' own-drag band as
+now.
+
+**Check points**, held out: computed only after every node has run and
+the served cells are fixed. (i) Every hexagon of the population that the
+reflected-wave rule refuses at Mach 1.5 and above and that lies in a
+served cell (at most 698). (ii) 200 points, each in a served cell drawn
+at random with equal weight among the served cells (in the order of
+their theta, b and M indices), placed uniformly in theta, ln b and M
+within it (mulberry32 with seed 20261030; for each point the cell, then
+theta, ln b and M, in that order). Each is computed at the five levels
+and must pass 9.5, and its eps - U to eps + U must lie within its cell's
+eps_lo to eps_hi.
+
+**Failure.** If any check point fails, any check of 9.7 fails, or T1 to
+T3 cannot be passed, nothing is served: the hexagons stay refused as
+now, the failure is recorded with every number, and the owner rules. No
+criterion, margin, grid, case or check point changes after a result is
+seen. A defect found in the code after the runs start is fixed, recorded
+in a dated note with what it changed, and every run of 9.5 to 9.7 is
+repeated from the start with the fixed code.
+
+### 9.7 The independent check: captured planar Euler
+
+**Cases.** E1 is section 2.4's. E2 and E3 are chosen where the
+reflected waves change the flat's pressure most, so that the effect
+stands furthest above the Euler's own error, and with opposite signs:
+A2's review script, `docs/research/refusals/scripts/flat_state.py`
+(re-run on 2026-10-30, unchanged), integrates the first reflections over
+the whole front fan and finds the flat's pressure, once they have all
+arrived, changed by -0.77% at 15 deg and Mach 1.8 (1.0105 to 1.0028 of
+the free stream's), -0.53% at Mach 2.0 and +0.57% at Mach 3.0 (1.0132 to
+1.0190), and almost none at Mach 2.5, where its reflection coefficient
+changes sign. Its coefficient, R = (s - k) / (s + k) in its notation, is
+the R of 9.3's T3.
+
+- E1: t/c 0.08, bevels 0.15 of the chord (theta 14.93 deg), Mach 2.0.
+- E2: theta 15 deg, b 0.12 (t/c 0.06431), Mach 1.8.
+- E3: theta 15 deg, b 0.10 (t/c 0.05359), Mach 3.0.
+
+All three are refused today and lie in the family. **Set-up:** section
+2.4's (`runs/euler.test.ts`: x/c from -0.3 to 1.2 and 1.4 chords high,
+every corner on a vertical grid line, 0.025 of the chord at level 0 and
+28 rows, each level halving both spacings; HLLC, van Albada, the shared
+scaled reconstruction; each solve run until the density residual is
+below 1e-11 of its start and the drag changes by less than 1e-11), levels
+0 to 3, recording also the pressure on every wall face. A solve that
+reaches `runs/euler.test.ts`'s iteration cap (40,000 times 2^level)
+without meeting both is recorded as such, and the check fails. E1's
+earlier drags stay as recorded; its re-run records them again beside
+them, and the criteria below use the re-run. The method's values for E1
+to E3 are computed at its five levels and must pass 9.5.
+
+**Criteria, in each case:**
+
+- **(E-a) The drag.** With D_1, D_2, D_3 the Euler drags at levels 1 to
+  3: if they converge monotonically ((D_2 - D_1)(D_3 - D_2) > 0), the
+  method's drag, cd_SE (1 + eps), must lie between D_3 and D_3 + (D_3 -
+  D_2) / (sqrt(2) - 1), the Euler's drag extrapolated at any order of
+  0.5 or more; otherwise within D_3 +- 2.5 |D_3 - D_2|; in either case
+  the interval widened at each end by cd_SE U. On section 2.4's drags of
+  E1 that interval runs from 0.53% below to 0.57% above the
+  shock-expansion value: this criterion catches only an error of the
+  method larger than the Euler's own uncertainty.
+- **(E-b) The wall pressure where the reflected waves act.** Over the
+  wall faces whose centres lie on the flat from the library's
+  first-reflection bound x_1 (section 2.1) to 0.2 b ahead of the rear
+  corner, and on the rear bevel from 0.2 b behind its corner to 0.2 b
+  ahead of the trailing edge: e_k is the root mean square, weighted by
+  face length, of the Euler's wall pressure at level k minus the
+  method's at N = 256 (interpolated linearly at the face's centre), over
+  the free stream's pressure; s_k is the same against shock-expansion's
+  pressure (constant on each face). It must hold that e_3 < e_2 and e_3
+  <= s_3 / 2: the Euler moves toward the method's pressures where the
+  reflected waves change them, and at its finest grid lies at least twice
+  as close to them as to the pressures with the reflections neglected.
+  (The engine's wall pressure is within 0.04% of the oblique-shock value
+  on a wedge and 0.07% of Prandtl-Meyer's at an expansion corner on 60 x
+  30 cells, 0003; `flat_state.py`'s estimates of the reflected waves'
+  change of the flat's pressure are above.)
+
+The check passes when both hold in all three cases.
+
+### 9.8 What may be served, and what stays refused
+
+Only if 9.3 and 9.5 to 9.7 pass, `src/fins` serves the hexagons that lie
+in served cells, as 9.6 says; hexagons the library calls exact today are
+unchanged, and so is `neglectReflectedWaves`. Everything else the
+reflected-wave rule refuses stays refused as now, the words saying why:
+unequal bevels; a half-angle outside 5 to 15 deg; a bevel outside 0.01 to
+0.4525 of the chord; a Mach number outside 1.5 to 3.0; a cell with a
+corner where the shock is detached or the flow behind it subsonic, or
+where the method failed; double wedges (none of the population's at Mach
+1.2 and above; its 4 below Mach 1.2 are refused by the fins' own-drag
+band too) and any other section. Detached bevel shocks and subsonic flow
+behind them (W9(b)) are not in scope and stay refused.
+
+### 9.9 The page's words
+
+- **Served.** The fin wave drag's label names the method and the band,
+  for example "shock-expansion section drag, with the waves reflected
+  from the leading-edge shock taken from the planar method of
+  characteristics (+0.1% to +0.4% of it, 0009 section 9), times the
+  linear 3D ratio (0009)" (the numbers there only show the form); its
+  band text names the reflected waves' band beside the fins' own band
+  and the quadrature error. The total's claim and word do not change: an
+  estimate, not validated.
+- **Refused.** The reflected-wave words keep that a wave from the leading
+  edge's shock could land on the fin's rear bevel, and say what has been
+  computed: equal bevels at both edges, 5 to 15 degrees, at Mach 1.5 to
+  3.0, away from the speed at which the shock stands off the edge. The
+  change advised names what brings the fin inside where that helps
+  (equal bevels; a bevel angle within 5 to 15 degrees), and otherwise
+  stays "a longer bevel or a thinner fin". 0017's rows say the same. The
+  exact words are written with the code, after the results are judged.
+
+### 9.10 How the population run counts it
+
+`evaluate.ts` asks `exactSectionDrag` itself, so `impact.test.ts` counts
+the reflected-wave reason only where the rule still refuses;
+`reflected-split.test.ts` gains rows for the hexagons served by this
+section and for those still refused, by why (outside the family, or in a
+cell not served). After the code: `impact.out`, the advice replay
+(`ONLY=./advice-replay.test.ts`, a guard) and the reflected split
+(`ONLY=./reflected-split.test.ts`), each with `--config
+docs/research/refusals/vitest.config.ts`, the cross-check against
+`src/total` required to agree; the README's count line set from that
+run, dated. The most it can add (`w9-family.out`): 38 totals (235 to
+273 of 8,000), and 86 with the nose assumed served (622 to 708), if
+every cell that holds one of those cases is served.
+
+### 9.11 Order and records
+
+1. The method and T1 to T3, passed and committed; every line of every
+   run below records the commit it ran on.
+2. The nodes, each at its five levels, one solve at a time,
+   single-threaded, at normal priority:
+   `docs/research/fin-wave-drag/w9/nodes.jsonl`, one line per node as it
+   finishes; a restarted run skips the nodes already recorded.
+3. E1 to E3 at levels 0 to 3, one solve at a time: `w9/euler.jsonl`, one
+   line per level as it finishes, the wall pressures beside it;
+   resumable the same way.
+4. The served cells from `nodes.jsonl` by 9.6, then the check points:
+   `w9/checks.jsonl`, resumable.
+5. The verdict by 9.5 to 9.7, recorded below this registration with every
+   failure. If it passes: the code of 9.8 to 9.10, its tests with planted
+   errors, and the population run; then the reviews.
