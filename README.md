@@ -9,7 +9,7 @@ Nothing to install and nothing to pay.
 **[Try it](https://ahroonsanthosh.github.io/bowshock/)** (needs WebGPU, such
 as a recent Chrome or Edge).
 
-![The app at 2880 by 1800: the Basic Finner at Mach 1.8 in the 3D view, flow streaks coloured by Mach number around the cone, the builder on the left and the drag curve on the right](docs/images/hero.webp)
+![The app at 2880 by 1800: the Basic Finner at Mach 1.8 in the 3D view, its flow on the finest grid, 160 cells across, with streaks coloured by Mach number around the cone; the builder on the left; on the right the drag curve, a point every 0.1 in Mach number, run to Mach 1.8 only, where it reads Estimate, CD 0.612 (0.517 to 0.748), with no number below Mach 1.8](docs/images/hero.webp)
 
 > Early days. Please don't use it for flight decisions yet.
 
@@ -26,28 +26,27 @@ rather than guessing.
 **Solid:**
 
 - **Nose drag** for cones, ogives, parabolic and ellipsoid noses from Mach
-  1.2 to 5, and Von Kármán noses from Mach 1.5 to 3. The band covers the
-  numerical error; tunnel tests sit from a few percent to about a third off the
-  inviscid answer, and that gap isn't on the page yet.
+  1.2 to 5, and Von Kármán noses from Mach 1.5 to 3 (1 to 5 calibers long,
+  up to 6 at Mach 3). The band covers the numerical error; tunnel tests sit
+  from a few percent to about a third off the inviscid answer, and that gap
+  isn't on the page yet.
 - **Skin friction**, within -12% to +19% of 23 measurements.
+- **Fins and base**, wherever wind-tunnel data or exact theory covers the
+  shape.
 - **The solver itself**, against exact shock, expansion and cone solutions.
 
 **The honest catch:** a total needs every part checked, and most real
-rockets have at least one part that isn't yet. Rounded nose tips, swept
-fins, Von Karman noses outside the lengths and speeds checked and other
-Haack noses, boat-tails, square or rounded fin edges and anything below
-Mach 1.5 are the usual blockers. In our test set of 2,000 typical rockets, each
-flown at four speeds (8,000 cases), only 235 cases get a total today. For those, bowshock still shows the parts it can work out, and a
-"drag is at least this much" floor where that is safe.
+rockets have at least one part that isn't yet. The usual blockers are
+anything below Mach 1.5, rounded nose tips, Haack and power-series noses
+outside the range above, fins at the base swept in ways no test has
+measured, fins that end just ahead of the base, boat-tails, and square or
+rounded fin edges. In our test set of 2,000 typical rockets, each flown at
+four speeds (8,000 cases), 235 cases get a total today. For the rest,
+bowshock lists every reason, says what you could change, shows the parts it
+can work out, and gives a "drag is at least this much" floor where that is
+safe.
 
 **Not built yet:** viscous (RANS) flow, angle of attack, motor plume.
-
-## What's next
-
-Checking the parts that block the most rockets, starting with base drag
-behind swept fins, fin shock reflections and square fin edges, then the fins
-below Mach 1.5. Each fix is measured against theory or wind-tunnel data
-before it goes live.
 
 ## How we keep it honest
 
