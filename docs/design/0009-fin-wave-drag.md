@@ -1205,3 +1205,15 @@ are added to it.
   both converge by 9.5 they must agree within the larger of their two U;
   any disagreement beyond that stops the runs for a report. A node is
   judged, and serves, by the registered run alone.
+
+**2026-10-30, later: T3R run, after the note above was pushed (eb39a49);
+the code then switched to the pressure (e09cf7e).** T3R passes
+(`w9/code-checks.out`, commit e09cf7e): R = -0.0436 at 11 deg and Mach
+1.5; |R_N - R| is 2.05e-2, 1.32e-2, 7.74e-3, 4.23e-3, 2.22e-3, 1.14e-3,
+5.77e-4, 2.90e-4, 1.46e-4 and 7.29e-5 at N = 16 to 8192, falling at every
+doubling, by 1.987, 1.993 and 1.997 over the last three. The checks rerun
+on that commit give the same numbers as before for T1, T4 with its four
+planted errors, T5, the quadrature and T3, and for T2 values that differ
+only in round-off (all within 3.3e-14, as before), so the gate as ruled
+passes. The family has not been run: it waits for the quick look of this
+note.
