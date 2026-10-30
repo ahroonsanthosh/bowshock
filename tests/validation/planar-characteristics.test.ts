@@ -17,6 +17,7 @@ import {
   t1,
   t4Passes,
 } from '../support/planar-characteristics-checks';
+import { hexagonCharacteristics } from '../../src/validation/planar-characteristics';
 
 // The code checks of design record 0009 section 9.3 on
 // src/validation/planar-characteristics.ts, each against its registered
@@ -91,5 +92,30 @@ describe('0009 section 9.3: the code checks of the planar method of characterist
   it("T5: the rear bevel's quadrature integrates a linear Cp exactly, the last interval cut", () => {
     const q = quadratureCheck();
     expect(Math.abs(q.method / q.exact - 1)).toBeLessThanOrEqual(1e-14);
+  });
+});
+
+describe("0009 section 9.14: the shock point's fallback to its best iterate", () => {
+  // The four nodes whose N = 256 solve threw "a shock point did not converge"
+  // before the change: the secant loop had reached the round-off floor and
+  // its 60th iterate fell on a jump of about 1e-12
+  // (docs/research/fin-wave-drag/w9/shock-point.out). A solve that completes
+  // has passed the 1e-12 test at every shock point.
+  const DEG = Math.PI / 180;
+  const FAILED: [number, number, number][] = [
+    [12, 0.01 * 2 ** 0.5, 1.6],
+    [14, 0.01 * 2 ** 0.5, 2.4],
+    [14, 0.01 * 2 ** 1.5, 2.4],
+    [14, 0.01 * 2 ** 2.5, 2.4],
+  ];
+
+  it.each(FAILED)('%d deg, b %f, Mach %d solves at N = 256', (t, b, m) => {
+    expect(() => hexagonCharacteristics(m, t * DEG, b, 256)).not.toThrow();
+  });
+
+  it.each(FAILED)('the fallback removed (planted): %d deg, b %f, Mach %d throws', (t, b, m) => {
+    expect(() =>
+      hexagonCharacteristics(m, t * DEG, b, 256, { planted: 'no-best-iterate' }),
+    ).toThrow('a shock point did not converge');
   });
 });

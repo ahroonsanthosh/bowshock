@@ -75,11 +75,14 @@ export class CharacteristicsFailure extends Error {
 }
 
 /**
- * Errors planted on purpose, for the checks of 0009 section 9.3's T4 only:
- * the entropy term left out, its sign flipped, or each new interior point
- * given the ln K of the point before it on its C- line instead of ln K(psi).
+ * Errors planted on purpose, for the checks of 0009 section 9.3's T4: the
+ * entropy term left out, its sign flipped, or each new interior point
+ * given the ln K of the point before it on its C- line instead of ln K(psi);
+ * and for the check of section 9.14's change: the shock point's fallback to
+ * its best iterate removed.
  */
-export type PlantedError = 'no-entropy-term' | 'entropy-term-sign' | 'previous-k';
+export type PlantedError =
+  'no-entropy-term' | 'entropy-term-sign' | 'previous-k' | 'no-best-iterate';
 
 /** A point of the net. */
 export interface NetPoint {
@@ -464,20 +467,36 @@ export function stepFlow(
     let b1 = betaS * (1 - 1e-4);
     let r0 = at(b0).residual;
     let r1 = at(b1).residual;
+    // 0009 section 9.14: the iterate with the smallest |residual| met so far.
+    // The loop can run on at the round-off floor, where a secant step built
+    // from two residuals of round-off size may jump by about 1e-12; it is
+    // used only when the last iterate fails, so a solve that passes is
+    // unchanged to the bit.
+    let best = Math.abs(r0) <= Math.abs(r1) ? b0 : b1;
+    let bestResidual = Math.min(Math.abs(r0), Math.abs(r1));
     for (let it = 0; it < 60 && Math.abs(b1 - b0) > 1e-16 && r1 !== r0; it++) {
       const b2 = b1 - (r1 * (b1 - b0)) / (r1 - r0);
       b0 = b1;
       r0 = r1;
       b1 = b2;
       r1 = at(b1).residual;
+      if (Math.abs(r1) < bestResidual) {
+        best = b1;
+        bestResidual = Math.abs(r1);
+      }
     }
-    const final = at(b1);
+    let beta = b1;
+    let final = at(b1);
+    if (!(Math.abs(final.residual) < 1e-12) && options.planted !== 'no-best-iterate') {
+      beta = best;
+      final = at(best);
+    }
     if (!(Math.abs(final.residual) < 1e-12))
       throw new CharacteristicsFailure('a shock point did not converge');
     if (!(final.q.u > 0 && final.q.v > 0))
       throw new CharacteristicsFailure('the net folds at the shock');
     final.c.psi = gas.vInf * final.c.y;
-    return { pt: final.c, beta: b1 };
+    return { pt: final.c, beta };
   };
 
   const extend = () => {
@@ -784,7 +803,12 @@ export function hexagonCharacteristics(
   delta: number,
   bevel: number,
   intervals: number,
-  options: { gamma?: number; interpolation?: TraceInterpolation } = {},
+  options: {
+    gamma?: number;
+    interpolation?: TraceInterpolation;
+    /** Only the shock point's planted error (0009 section 9.14's check). */
+    planted?: 'no-best-iterate';
+  } = {},
 ): HexagonSolution {
   if (!(bevel > 0 && bevel < 0.5))
     throw new RangeError('the bevels must leave a flat between them');
