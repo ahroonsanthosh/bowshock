@@ -4169,6 +4169,21 @@ its review, below; still before any code or run).
   half-angles and Mach numbers. Five cases cost about 11 to 21 hours one
   solve at a time, about 4.5 to 7 hours one solve per core. Nothing has
   run for this check.
+- _2026-10-30, later: 9.13 run; unresolved, nothing served_ (0009
+  section 9.13's note on the runs, `w9/paired-verdict.out`). 50 solves,
+  all within the stopping rule; E2 equal to 9.7 to the bit. The flat
+  windows of K1, K2, K3 and E2 are resolved agreements (the Euler within
+  1.2e-4 of the method's flat pressure change of -2.0e-3 to -4.3e-3);
+  K5's flat and every bevel window are unresolved; none disagrees. So
+  nothing is served, the refusal stands, and level 5, not granted, is
+  for the owner. Read with no gate: the reference's wall entropy, taken
+  from the hexagon's wall cells (4% to 14% above the shock's and not
+  falling with the grid), over-corrects the bevel by a constant amount
+  (about 2.6 times the effect in K1), while the unpaired Euler moves
+  toward the method at every level in all five cases; by 9.13's formula
+  the unpaired share is unresolved in four cases and in K3 would read as
+  57% of the method's effect, on a change from level 3 to 4 too abrupt
+  to trust.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to

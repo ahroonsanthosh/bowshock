@@ -1713,6 +1713,57 @@ the CPU, levels 2 to 4 run as one process per case, at most four at
 once, K5 last (`w9/paired-launch.sh`, which also resumes them after a
 restart and runs the judge when every case is done).
 
+**2026-10-30, later: the runs and the verdict of 9.13. The check is
+unresolved, and nothing is served** (`w9/paired-verdict.out`). Levels 2
+to 4 ran from 15:47 to 19:22 UTC on 602b06f (levels 0 and 1 on dfc1cab),
+four processes at once, K5 from 18:06. All 50 solves met the stopping
+rule below the cap, and none had to be resumed. E2's hexagon equals
+9.7's drags at levels 0 to 3 to the bit.
+
+- _The flat windows._ Resolved agreement in K1, K2, K3 and E2: the
+  Euler's limit lies within 1.2e-4 of the method's mean pressure change
+  (-2.0e-3 to -4.3e-3 of the free stream's pressure), with U_E at most
+  4.8e-4. K5's flat, at Mach 3.0, is unresolved: its changes grow (1.5e-3
+  from level 2 to 3, then 1.7e-3).
+- _The bevel windows._ Unresolved in all five cases. In K1, K2, K3 and
+  K5 the paired difference D_k grows from level 3 to 4 (|d_4| larger than
+  |d_3|). In E2 it shrinks too slowly (U_E 7.6e-4 against |G| / 4 =
+  1.6e-4). No window is a resolved disagreement.
+- _Verdict by 9.13:_ a window of K1, K2, K3 or E2 is unresolved and none
+  disagrees, so the check is unresolved and nothing is served. Level 5 is
+  not granted: this is reported for the owner. The reflected-wave refusal
+  stands as it was.
+
+Readings of the recorded numbers, with no gate (they change nothing
+above):
+
+- _The wall-entropy pairing over-corrects._ The hexagon's wall-cell
+  entropy does not fall with the grid: at levels 2 to 4 it stays 4.2% to
+  14.3% above the shock's (K / K_shock at level 4: 1.0478 in K1, 1.0635
+  in K2, 1.0418 in K3, 1.1429 in K5, 1.0475 in E2). The reference
+  carries it, at the same value, at every level, so E_k minus (H_k - the
+  reference's own error) is the same at every level (2.9e-3 of the drag
+  in K1, about 2.6 times G there). But the hexagon's own bevel pressure
+  does not follow that entropy: the unpaired share H_k moves toward the
+  method at every level in all five cases (H_k - G at levels 2, 3 and 4:
+  K1 -3.3e-3, -1.0e-3, -5.9e-4; K2 -5.2e-3, -2.0e-3, -1.1e-3; K3 -2.4e-3,
+  -5.0e-4, -4.4e-4; K5 -1.06e-2, -5.9e-3, -3.8e-3; E2 -1.3e-3, -8.0e-4,
+  -2.3e-4). The raised entropy sits in the row of cells next to the
+  wall, and a layer that thin does not act on the bevel's pressure as a
+  whole stream of that entropy would. The reference's own error in the
+  window is small at level 4 at Mach 1.8 to 2.0 (at most 1.6e-4 of the
+  drag) and -8.1e-4 at Mach 3.0. If more levels kept that offset
+  constant, the paired bevel would converge to a false difference of
+  about 2.6 times the effect; so level 5 with this pairing would not be a
+  sound way to resolve it.
+- _The unpaired share, read by 9.13's formula, with no gate:_ unresolved
+  in K1, K2 and K5 (U_E 5.4e-4, 1.0e-3, 2.4e-3 against |G| / 4 of 2.8e-4,
+  2.5e-4, 1.3e-4) and in E2 (its change grows, 5.1e-4 then 5.7e-4). In K3
+  it would read as a disagreement: its limit is at about 57% of the
+  method's effect (D* -3.7e-4, U_E 7.2e-5). But K3's change fell from
+  1.9e-3 (level 2 to 3) to 6.0e-5 (level 3 to 4), a fall by a factor of
+  about 30 that is not a settled order, so that reading is doubtful.
+
 ### 9.14 A known weakness of the code: the shock point's iteration (2026-10-30)
 
 **What failed.** At 4 nodes (12 deg, b 0.0141, Mach 1.6; 14 deg, b
