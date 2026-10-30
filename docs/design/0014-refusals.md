@@ -4106,8 +4106,8 @@ its review, below; still before any code or run).
   compared by its part of the drag, the flat by its mean pressure; each
   case solved twice on the same grid, the hexagon and a reference with
   the same rear corner and no leading-edge shock, so that the corner's
-  own Euler error cancels in their difference; levels 0 to 4, the
-  Euler's uncertainty from the changes over levels 2 to 4, and a window
+  own Euler error is meant to cancel in their difference; levels 0 to 4,
+  the Euler's uncertainty from the changes over levels 2 to 4, and a window
   resolved only if that uncertainty is at most a quarter of the gap
   between the method and shock-expansion. A resolved disagreement fails
   the check; an unresolved window serves nothing; only resolved
@@ -4134,6 +4134,41 @@ its review, below; still before any code or run).
   coordinator's word. The shock point's change is made as proposed, with
   its check registered first, and the 4 nodes and 7 check points are
   re-judged as 9.5 and 9.6 register them.
+  _(The first of these rulings, the one-signed check served on the code
+  above Mach 2.0, was withdrawn by the coordinator later the same day:
+  its premise was false. Above Mach 2.0 the effect is not below the
+  margin (eps reaches +0.263% at Mach 2.2 and +0.182% at 3.0, and 167 of
+  the 203 population check points at Mach 2.2 and above exceed 5e-4), and
+  the mechanism differs: at 15 deg and b 0.04 the method's eps stays
+  +0.17% to +0.29% from Mach 1.8 to 3.0, while T3's reflection
+  coefficient turns negative between Mach 2.4 and 2.6; the review reads
+  the entropy-layer term as dominating from about Mach 2.4. The label
+  words quoted above went with it.)_
+- _2026-10-30, later: the shock point's change made and checked_ (0009
+  section 9.14, `w9/shock-fix.out`). The four nodes solve, the planted
+  removal throws, `code-checks.out` is reproduced, and all 3,108
+  completed nodes and check points give the same values to the bit: no
+  value moved. Re-judged as registered, the 4 nodes and 7 check points
+  pass, 26 cells become candidates with 63 new check points, all passing
+  and inside their bands, and the cells that would be served rise from
+  941 to 974.
+- _2026-10-30, later: 9.13 revised after Fable's review (PASS with
+  changes), before any of its solves_ (0009 section 9.13's revision
+  note). The reference takes its hexagon's wall-cell entropy at each
+  level, so that a wall-entropy error from the captured leading-edge
+  shock is meant to cancel with the corner's smearing (at a fixed flat
+  pressure d ln p3 / d ln K is +0.42 to +0.68 for the cases), and the
+  wall entropy is recorded in both solves. K1 is replaced by 15 deg, b
+  0.08, Mach 1.8 (its window farther from the corner's tail), and K5, 15
+  deg, b 0.08, Mach 3.0, is added: cells with a corner at Mach 2.2 or
+  above are served only on K5's resolved agreement, except cells near
+  zero (every corner's |eps| + U below 5e-4, band -0.1% to +0.1%); if
+  K5 is unresolved, 710 of the 974 cells may serve on the other four.
+  The agreement test is |D*| <= max(U_E + U_M, |G| / 4). The unpaired
+  share is recorded beside D_k. 9.9's dated note gives the label's exact
+  half-angles and Mach numbers. Five cases cost about 11 to 21 hours one
+  solve at a time, about 4.5 to 7 hours one solve per core. Nothing has
+  run for this check.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to

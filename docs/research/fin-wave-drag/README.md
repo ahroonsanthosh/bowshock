@@ -80,3 +80,8 @@ judge computes nothing new.
   point's failures (0009 section 9.14). The patch adds logging inside the
   method's shock point and a runner at `tests/tmp-w9/shock.test.ts`;
   apply it only to a scratch checkout.
+- `shock-fix.test.ts` > `shock-fix.out`, `shock-fix-identity.jsonl`,
+  `shock-fix-nodes.jsonl` and `shock-fix-checks.jsonl`: the check of the
+  shock point's change and the re-judgement it registers (0009 section
+  9.14). It reads a re-run of `code-checks.test.ts` saved as
+  `tests/tmp-w9/code-checks-rerun.out`.

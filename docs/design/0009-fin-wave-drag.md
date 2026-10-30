@@ -1060,6 +1060,18 @@ behind them (W9(b)) are not in scope and stay refused.
   stays "a longer bevel or a thinner fin". 0017's rows say the same. The
   exact words are written with the code, after the results are judged.
 
+_2026-10-30, a dated note, with 9.13 (the coordinator's instruction after
+Fable's review)._ If 9.13 serves, the served band text's sentence on
+the Euler check names exactly the half-angles and Mach numbers the
+independent check reached, in place of "a few tenths of a percent of the
+section drag": "checked against an independent flow solver at 13 deg
+(Mach 1.8) and 15 deg (Mach 1.8, 2.0 and 3.0); elsewhere on the same
+method and its exact checks" if K5 agrees, and "checked against an
+independent flow solver at 13 deg (Mach 1.8) and 15 deg (Mach 1.8 and
+2.0); elsewhere on the same method and its exact checks" if K5 is
+unresolved and only 9.13's cells below Mach 2.2 and near zero are
+served. The rest of 9.9 stands.
+
 ### 9.10 How the population run counts it
 
 `evaluate.ts` asks `exactSectionDrag` itself, so `impact.test.ts` counts
@@ -1330,7 +1342,7 @@ nothing above and set nothing):
   the code, recorded as found and not changed: after the results nothing
   in the method or the criteria changes without a ruling.
 
-### 9.13 The corrected Euler check (registered 2026-10-30, after 9.7's results were seen)
+### 9.13 The corrected Euler check (registered 2026-10-30, after 9.7's results were seen; revised the same day after Fable's review, before any of its solves)
 
 **When and why.** This check is registered after the results of 9.7
 were seen, on the owner's decision. It is a second look, and it is
@@ -1349,7 +1361,8 @@ the nodes, the cells, the check points, the bands, what may be served
 and the page's words. Their results are reused unchanged:
 `w9/code-checks.out`, `w9/nodes.jsonl` (1,383 of 1,392 nodes passing
 9.5), `w9/checks.jsonl` (1,727 check points, 9 failing 9.5, none outside
-its band) and the 941 cells they leave (`w9/verdict.out`). Only the
+its band) and the 941 cells they leave (`w9/verdict.out`), with 9.14's
+change and re-judgement on top (974 cells, `w9/shock-fix.out`). Only the
 independent check is new.
 
 **A correction to the note on the runs.** It gives eps over the passing
@@ -1363,87 +1376,125 @@ by the library) eps runs from -0.027% to +0.310%.
 reflected waves change is all on the rear bevel. The decisive window is
 therefore on the rear bevel, compared by its part of the drag. The flat
 is compared too, by its mean pressure, as the evidence that the waves
-arrive where and as strongly as the method says. The Euler's main error
+arrive where and as strongly as the method says. The largest Euler error
 on the bevel at level 3 is the rear corner's expansion smeared over the
 cells behind it (9.12: about 19% above shock-expansion's pressure 0.2 b
 behind the corner in E3, 1.4% in E1). That error belongs to the corner
 and the grid, not to the reflected waves. So each case is solved twice
 on the same grid: the hexagon, and a reference flow with the same rear
 corner and bevel but no leading-edge shock, whose exact bevel pressure is
-shock-expansion's. Their difference, face by face, removes the part of
-the Euler's error the two share. What they do not share (error carried
-from the leading edge and the front corner, and the change in the
-corner's error caused by the reflected waves themselves) stays in the
-difference and in its changes between levels, from which the Euler's
-uncertainty is read. Whether the pairing removes enough is not known
-before the run; if it does not, the check is unresolved, not passed.
+known. A second error would not cancel that way unless the reference is
+built for it: the captured leading-edge shock leaves an error in the
+entropy of the gas next to the wall, and at a fixed flat pressure the
+bevel pressure moves with that entropy (d ln p3 / d ln K, with K = p /
+rho^gamma, is +0.42 to +0.68 for the cases below), so a wall-entropy
+error of 0.006 would move the bevel pressure by about 0.3%, steadily
+with the grid, and could read as a resolved disagreement. The reference
+is therefore given its hexagon's wall entropy at each level (below). The
+difference of the two solves, face by face, is meant to cancel the part
+of the Euler's error they share, the corner's smearing and the wall's
+entropy. What they do not share stays in the difference and in its
+changes between levels, from which the Euler's uncertainty is read, and
+the wall entropy along the flat and the bevel is recorded at every level
+in both solves to settle how much of the rest it explains. Whether the
+pairing removes enough is not known before the run; if it does not, the
+check is unresolved, not passed.
 
 **Cases.** Chosen from the method's own values (`w9/design-scan.out`,
 computed before this section was written and before any of its solves;
-no Euler result enters), among the nodes that can serve, at Mach 1.8 to
-2.0, where 9.7's flats showed the Euler converging (E2's flat moved by
+no Euler result enters), among the nodes that can serve, each with at
+least three level-0 cells on each bevel (section 2.4's grid gives a
+bevel round(b / 0.025) cells at level 0). Four are at Mach 1.8 to 2.0,
+where 9.7's flats showed the Euler converging (E2's flat moved by
 1.75e-4 of the free stream's pressure from level 2 to 3, as a root mean
 square; E3's flat, at Mach 3.0, moved by 1.5e-3 and still differed from
-the method by 2.6e-3),
-and with at least two level-0 cells on each bevel (section 2.4's grid
-gives a bevel round(b / 0.025) cells at level 0). K1 is the largest eps
-under those conditions. K2 and K3 spread the cases over bevel,
-half-angle and Mach: b 0.08 at 15 deg and Mach 2.0, and at 13 deg and
-Mach 1.8. E2 is 9.7's case. K1 to K3 are nodes passing 9.5 and corners
-of served cells; E2 lies on the face between two served cells.
+the method by 2.6e-3). One, K5, is at Mach 3.0, because above Mach 2.0
+the effect is not small and its mechanism differs: nodes that can serve
+reach eps +0.263% at Mach 2.2 and +0.182% at 3.0; at 15 deg and b 0.04
+the method's eps stays +0.17% to +0.29% from Mach 1.8 to 3.0, while T3's
+reflection coefficient at 15 deg turns negative between Mach 2.4
+(+0.0028) and 2.6 (-0.0006); the review reads the entropy-layer term as
+dominating from about Mach 2.4, which no case at Mach 2.0 or below
+reaches.
 
-| case | half-angle | b      | Mach | eps     | bevel window: its part of eps | bevel window: mean pressure change | first landing | flat window: mean pressure change | served cells it is a corner of |
-| ---- | ---------- | ------ | ---- | ------- | ----------------------------- | ---------------------------------- | ------------- | --------------------------------- | ------------------------------ |
-| K1   | 15 deg     | 0.0400 | 1.9  | +0.285% | +0.142%                       | -4.96e-3                           | 0.2049        | -7.47e-3                          | 4                              |
-| K2   | 15 deg     | 0.0800 | 2.0  | +0.200% | +0.100%                       | -3.59e-3                           | 0.4394        | -3.99e-3                          | 4                              |
-| K3   | 13 deg     | 0.0800 | 1.8  | +0.171% | +0.085%                       | -2.47e-3                           | 0.4375        | -2.47e-3                          | 7                              |
-| E2   | 15 deg     | 0.1200 | 1.8  | +0.131% | +0.066%                       | -2.25e-3                           | 0.5476        | -1.99e-3                          | (lies between 2)               |
+- K1, 15 deg, b 0.08, Mach 1.8: the largest eps at Mach 1.8 to 2.0 with
+  three level-0 cells on a bevel. It replaces the first K1 (15 deg, b
+  0.04, Mach 1.9, two level-0 cells), whose window would have started
+  0.01 behind the rear corner, 8 cells at level 4, in the tail of the
+  corner's smeared expansion; at b 0.08 the window starts 0.02 behind
+  it, 12 cells at level 4.
+- K2 and K3 spread the cases over half-angle and Mach: b 0.08 at 15 deg
+  and Mach 2.0, and at 13 deg and Mach 1.8.
+- K5, 15 deg, b 0.08, Mach 3.0: the largest eps at Mach 3.0 with three
+  level-0 cells on a bevel. (There is no K4.)
+- E2, 9.7's case, kept because on its bevel the level-3 Euler lay closer
+  to shock-expansion than to the method (9.12); if the method is wrong
+  there, this check should show it. E1 (eps +0.022%) and E3 (b 0.10,
+  four level-0 cells, eps +0.043%) are not used.
+
+K1 to K3 and K5 are nodes passing 9.5 and corners of cells that would
+be served (974, after 9.14); E2 lies on the face between two of them.
+
+| case | half-angle | b      | Mach | eps     | bevel window: its part of eps | bevel window: mean pressure change | first landing | flat window: mean pressure change | d ln p3 / d ln K | served cells it is a corner of |
+| ---- | ---------- | ------ | ---- | ------- | ----------------------------- | ---------------------------------- | ------------- | --------------------------------- | ---------------- | ------------------------------ |
+| K1   | 15 deg     | 0.0800 | 1.8  | +0.221% | +0.111%                       | -3.79e-3                           | 0.3651        | -4.31e-3                          | +0.498           | 4                              |
+| K2   | 15 deg     | 0.0800 | 2.0  | +0.200% | +0.100%                       | -3.59e-3                           | 0.4394        | -3.99e-3                          | +0.541           | 4                              |
+| K3   | 13 deg     | 0.0800 | 1.8  | +0.171% | +0.085%                       | -2.47e-3                           | 0.4375        | -2.47e-3                          | +0.423           | 8                              |
+| K5   | 15 deg     | 0.0800 | 3.0  | +0.102% | +0.051%                       | -2.59e-3                           | 0.4985        | -2.39e-3                          | +0.676           | 2                              |
+| E2   | 15 deg     | 0.1200 | 1.8  | +0.131% | +0.066%                       | -2.25e-3                           | 0.5476        | -1.99e-3                          | +0.498           | (lies between 2)               |
 
 The pressure changes are over the free stream's pressure, the method's
 minus shock-expansion's, averaged over each window (the windows are
-defined below). E2 is kept because on its bevel the level-3 Euler lay
-closer to shock-expansion than to the method (9.12); if the method is
-wrong there, this check should show it. E1 (eps +0.022%) and E3 (Mach
-3.0) are not used.
+defined below). d ln p3 / d ln K is the change of shock-expansion's
+bevel pressure with the flat's entropy, at the flat's pressure and the
+free stream's total enthalpy (E1's is +0.538).
 
-_Both signs are not possible at a resolvable size._ Inside the family
-that can serve, the most negative eps is -0.027% (10 deg, b 0.113, Mach
-1.5), whose bevel window holds -0.014% of the drag, a mean pressure
-change of +2.9e-4. The rule below would need the Euler's uncertainty
-there below 3.4e-5 of the drag; a case that small would leave the check
-unresolved by its own design, as E1's flat window did. The method's flat
-pressure change has the other sign also only where it is small: at most
-+3.6e-4 among the 42 hexagons scanned (at 10 deg and Mach 1.5; +2.1e-4 at
-15 deg, b 0.113, Mach 3.0). So the check is one-signed: it tests the
-method where its effect is largest, at 13 to 15 deg and Mach 1.8 to 2.0,
-and the cells where eps is near zero or negative are then served on the
-same code's word, with bands that already span zero (9.6). This is a
-limit of the check, stated for the owner's ruling.
+_Cells near zero or negative._ Inside the family that can serve, the
+most negative eps is -0.027% (10 deg, b 0.113, Mach 1.5), whose bevel
+window holds -0.014% of the drag, a mean pressure change of +2.9e-4. The
+rule below would need the Euler's uncertainty there below 3.4e-5 of the
+drag; a case that small would leave the check unresolved by its own
+design, as E1's flat window did. So no case tests a negative effect.
+Cells whose eight corners all have |eps| + U below 5e-4 (9.6's margin)
+have the band -0.1% to +0.1% exactly, spanning zero by more than any
+corner's effect; they may be served on the method's word and its exact
+checks (T1 to T5, and T3's reflection coefficient, which passed at both
+of its signs: R = +0.0047 and +0.0034 at (8 deg, 1.6) and (12 deg, 2.2),
+-0.0066 at (15 deg, 3.0), and T3R's -0.044 at (11 deg, 1.5)), as the
+verdict below says.
 
-**The solves.** For each case, at levels 0 to 4:
+**The solves.** For each case, at levels 0 to 4, each recording its
+wall faces (pressure) and the entropy p / rho^gamma of every wall cell
+(the row next to the wall) on the flat and the bevel:
 
 - _The hexagon_: section 2.4's set-up exactly as 9.7 ran it
   (`w9/euler.test.ts`: the grid, HLLC, van Albada, the shared scaled
   reconstruction, SSPRK2, CFL 0.8, local time steps, the stopping rule
-  and the cap of 40,000 times 2^level), recording the wall faces. E2's
-  levels 0 to 3 are reused from `w9/euler.jsonl` and `w9/euler-walls/`
-  (commit 98d9011, the same set-up); only its level 4 is new.
-- _The reference_: the hexagon's grid nodes at that level, but only the
-  columns from x_s on, where x_s is the level-0 grid line on the flat
-  nearest below 1 - b - 0.1; the wall is the hexagon's from x_s on (the
-  flat at half the thickness, the rear bevel, then y = 0). Inflow at x_s,
-  uniform: the flat's state by shock-expansion (the Mach number and
-  pressure of the library's flat face; the density from the oblique
-  shock's density and pressure ratios and the isentropic expansion to the
-  flat's pressure; the velocity along x). The other boundaries, the scheme
-  and the stopping rule are the hexagon's. Its exact wall pressure is p2
-  on the flat and p3 on the bevel (the library's faces), with no
-  reflected wave.
+  and the cap of 40,000 times 2^level). E2's hexagon is solved again at
+  every level, since 9.7's records hold no wall-cell entropy; its drags
+  at levels 0 to 3 are recorded beside those of `w9/euler.jsonl` and are
+  expected to be equal, the code and the set-up being the same; a
+  difference is reported before any judgement.
+- _The reference_, at level k after its hexagon at level k: the
+  hexagon's grid nodes at that level, but only the columns from x_s on,
+  where x_s is the level-0 grid line on the flat nearest below 1 - b -
+  0.1; the wall is the hexagon's from x_s on (the flat at half the
+  thickness, the rear bevel, then y = 0). Inflow at x_s, uniform, along
+  x: the pressure p2 of the library's flat face; the entropy K_k, the
+  face-length-weighted mean of the hexagon's level-k wall-cell entropy
+  over the wall cells whose centres lie on the flat from x_s to 1 - 1.25
+  b (its smallest and largest values there recorded); the density
+  (p2 / K_k)^(1 / gamma); and the speed from the free stream's total
+  enthalpy. The other boundaries, the scheme and the stopping rule are
+  the hexagon's. Its exact wall pressure is p2 on the flat and, on the
+  bevel, p3_k, the Prandtl-Meyer expansion of that inflow state by the
+  half-angle, with no reflected wave. With K_k equal to the shock's
+  entropy, p3_k is shock-expansion's p3.
 
 **Windows**, at least b / 4 from every corner:
 
 - _Bevel_: from the larger of 1 - 0.75 b and the method's first landing
-  on the bevel, to 1 - 0.25 b. In all four cases the first reflected wave
+  on the bevel, to 1 - 0.25 b. In all five cases the first reflected wave
   lands on the flat, ahead of the rear corner, so the window is
   [1 - 0.75 b, 1 - 0.25 b], and the method's pressure differs from p3
   along all of it. Its ends are grid lines at levels 2 to 4 (the bevel
@@ -1461,7 +1512,10 @@ value with the reflections neglected:
   trapezoid rule on its N = 256 wall pressures. The Euler's E_k is 2 /
   (q cd_SE) times the sum over the window's faces of (p_hexagon -
   p_reference) n_x times the face's length, with n_x as in the drag
-  (9.7's runner), at level k.
+  (9.7's runner), at level k. The reference carries the hexagon's wall
+  entropy, so the bevel-pressure change that entropy causes is in both
+  and drops out of the difference, and E_k estimates the reflected
+  waves' part against shock-expansion, as G does.
 - _Flat_, over the free stream's pressure: the face-length-weighted mean
   over the window's faces at level k of the Euler's pressure minus p2
   (F_k), and of the method's minus p2 at the same face centres
@@ -1485,32 +1539,49 @@ and d_4 = D_4 - D_3:
 
 - _Resolved_ if U_E <= |G| / 4: the Euler's uncertainty in the window is
   at most a quarter of the gap between the method and shock-expansion.
-- _Resolved agreement_ if resolved and |D*| <= U_E + U_M + |G| / 4: the
-  Euler's limit lies within a quarter of the method's effect of the
-  method's value, beyond the two uncertainties.
-- _Resolved disagreement_ if resolved and |D*| > U_E + U_M + |G| / 4.
+- _Resolved agreement_ if resolved and |D*| <= max(U_E + U_M, |G| / 4):
+  the Euler's limit lies within a quarter of the method's effect of the
+  method's value, or within the two uncertainties if they are larger.
+  At the edge of resolution (U_E = |G| / 4) the tolerance is still about
+  a quarter of the effect, so a method error of half its effect cannot
+  pass.
+- _Resolved disagreement_ if resolved and
+  |D*| > max(U_E + U_M, |G| / 4).
 - _Unresolved_ otherwise.
 
-**Verdict.** The check passes only if both windows of all four cases are
-resolved agreements; then 9.8 serves the 941 cells as 9.6 gives them.
-Any resolved disagreement fails it: nothing is served, and the method's
-reflected waves are recorded as contradicted by the Euler there. If there
-is no disagreement but some window is unresolved, the check is
-unresolved and nothing is served. Then, and only if the coordinator
-grants the CPU time before any such solve, a second and last stage may
-run level 5 of both solves for each case with an unresolved window,
-judged by the same rule on levels 3 to 5; its verdict is final. If the
-check passes, 9.9's words about the Euler say what this check showed
-(the cases, the windows, a quarter of the effect), not 9.7's "a few
-tenths of a percent".
+**Verdict.**
+
+- Any resolved disagreement, in any window of any of the five cases,
+  fails the check: nothing is served, and the method's reflected waves
+  are recorded as contradicted by the Euler there.
+- Otherwise, if both windows of K1, K2, K3 and E2 are resolved
+  agreements:
+  - and both windows of K5 too, 9.8 serves the cells 9.6 gives (974,
+    after 9.14);
+  - if a window of K5 is unresolved, 9.8 serves only the cells whose
+    eight corners are all below Mach 2.2 (446) and the cells near zero
+    defined above at any Mach (264 more with a corner at Mach 2.2 or
+    above), 710 in all; the other cells with a corner at Mach 2.2 or
+    above (264) stay refused.
+- Otherwise (a window of K1, K2, K3 or E2 unresolved, and no
+  disagreement), the check is unresolved and nothing is served.
+- Level 5 is not granted now: an unresolved case is reported, and the
+  coordinator puts it to the owner. Only on the owner's decision may a
+  second and last stage run level 5 of both solves for a case with an
+  unresolved window, judged by the same rule on levels 3 to 5; its
+  verdict is final.
+- If the check serves, 9.9's words about the Euler say exactly which
+  half-angles and Mach numbers it reached (9.9's dated note), not 9.7's
+  "a few tenths of a percent".
 
 **Recorded besides, with no gate:** levels 0 and 1; for each window and
-level, D_k and the Euler's values against shock-expansion without the
-pairing; on the bevel, the reference's own error, 2 / (q cd_SE) times
-the sum over the window of (p_reference - p3) n_x times the face's
-length, which is the Euler's error on that grid measured against an
-exact answer; and the drag, iterations, residuals and time of every
-solve.
+level, D_k and, beside it on the bevel, the unpaired share H_k, 2 /
+(q cd_SE) times the sum over the window of (p_hexagon - p3) n_x times
+the face's length, with H_k - G; on the bevel, the reference's own
+error, the same sum of (p_reference - p3_k), which is the Euler's error
+on that grid measured against an exact answer; the wall-cell entropy
+along the flat and the bevel in both solves, with K_k and its range;
+and the drag, iterations, residuals and time of every solve.
 
 **Cost.** One solve at a time, measured on this machine while it was
 shared (load about 5 on 4 cores), so a free machine may be faster.
@@ -1529,20 +1600,24 @@ to 3, twice the iterations, so about eight times the time.
 The reference has 23% to 30% of the hexagon's columns (x from about 1 -
 b - 0.1 to 1.2); its iterations are taken as many as the hexagon's, which
 is not measured. Per case, levels 0 to 4 of both solves: about 2 to 4.5
-hours (E2 about 3.5 to 4, its levels 0 to 3 being reused). The four cases
-one at a time: about 10 to 17 hours. If the coordinator allows one solve
-per core once the screenshot run has ended, the four cases side by side
-would take about 4 to 5 hours (not measured; solves running together may
-slow each other). Stage two, if run: about 15 to 30 hours per case.
+hours (K5, at Mach 3.0, likely near the lower end: E3's level 3 took 13
+minutes). The five cases one at a time: about 11 to 21 hours. With one
+solve per core once the screenshot run has ended (the coordinator's
+ruling), about 4.5 to 7 hours: five hexagons at level 4 on four cores
+take two rounds, the references fitting between (not measured; solves
+running together may slow each other). Level 5, if the owner grants it:
+about 15 to 30 hours per case.
 
 **Order and records.** After this section's review: the runner
 (`w9/paired.test.ts`); its records, `w9/paired.jsonl` (one line per
-solve as it finishes, with the commit; resumable), the wall faces in
+solve as it finishes, with the commit and, for a reference, K_k and its
+range; resumable), the wall faces and wall-cell entropies in
 `w9/paired-walls/<case>-<hexagon or reference>-L<level>.json`; and the
 verdict by this section's rule in `w9/paired-verdict.out`, written by a
-judge that computes nothing new. No solve runs until the coordinator
-says so. Nothing in 9.1 to 9.12 changes. If this check passes, the code
-of 9.8 to 9.10 follows as 9.11 says.
+judge that computes nothing new. A reference at level k runs only after
+its hexagon at level k. No solve runs until the coordinator says so.
+Nothing in 9.1 to 9.12 changes but by dated notes. If this check serves,
+the code of 9.8 to 9.10 follows as 9.11 says.
 
 **2026-10-30, the coordinator's rulings on 9.13 (8a53aa7), recorded
 before acting on them.** Fable's review of 9.13, 9.14 and these rulings
@@ -1562,12 +1637,24 @@ and any change the review asks for comes first.
   Stated besides, so as not to overstate it: above Mach 2.0 eps reaches
   +0.263% (15 deg, b 0.01, Mach 2.2), more than that margin; there the
   band rests on the method's convergence and its exact checks, not on
-  the Euler.
+  the Euler. _(Withdrawn by the coordinator later on 2026-10-30, after
+  Fable's review: its premise was false. Above Mach 2.0 the effect is not
+  below the margin: nodes that can serve reach eps +0.263% at Mach 2.2
+  and +0.182% at 3.0, and 167 of the 203 population check points at Mach
+  2.2 and above have eps above 5e-4. The mechanism there also differs:
+  at 15 deg and b 0.04 the method's eps stays +0.17% to +0.29% from Mach
+  1.8 to 3.0, while T3's reflection coefficient at 15 deg turns negative
+  between Mach 2.4 and 2.6, and the review reads the entropy-layer term
+  as dominating from about Mach 2.4, which no case at Mach 2.0 or below
+  reaches. The revised 9.13 adds K5 at Mach 3.0 for those cells and
+  serves on the method's word only the cells near zero it defines.)_
 - _The served label says so._ If the check passes, the served label's
   words about the independent check are: "checked against an independent
   flow solver at Mach 1.8 to 2.0, where the effect is largest; elsewhere
   on the same method and its exact checks". They take the place of 9.9's
-  sentence on the Euler check (the few tenths of a percent).
+  sentence on the Euler check (the few tenths of a percent). _(Withdrawn
+  with the ruling above; the label's words are now in 9.9's dated note,
+  naming the half-angles and Mach numbers the check reached.)_
 - _The eps range is corrected where it appears_ (9.12's note on the
   runs, marked in place): -0.027% to +0.310% inside the family that can
   serve; -0.305% only at the near-sonic nodes, which serve nothing.
@@ -1580,6 +1667,37 @@ and any change the review asks for comes first.
 - _The cells 9.13 would serve_ are those 9.6 gives once 9.14's change has
   been checked and the 4 nodes and 7 check points re-judged (below); 941
   if that re-judgement changes nothing.
+
+**2026-10-30, later: 9.13 revised after Fable's review of 9.13 and 9.14
+(PASS with changes), before any of its solves; the coordinator's
+instructions.** Changed in place above:
+
+1. _Wall entropy._ The reference takes its hexagon's wall-cell entropy
+   at each level (the review's option (a)), with the Mach number from the
+   total enthalpy and its exact bevel pressure from the Prandtl-Meyer
+   expansion of that state, so that a wall-entropy error from the
+   captured leading-edge shock is meant to cancel with the corner's
+   smearing; the wall-cell entropy along the flat and the bevel is
+   recorded at every level in both solves, and d ln p3 / d ln K per case
+   (+0.42 to +0.68; the review's +0.5 for E1, E2 and K2 checks: +0.538,
+   +0.498, +0.541). E2's hexagon is therefore solved again at every
+   level.
+2. _Above Mach 2.0._ K5 (15 deg, b 0.08, Mach 3.0) is added and judged by
+   the same rule; cells with a corner at Mach 2.2 or above are served
+   only on its resolved agreement, except the cells near zero.
+3. _K1 replaced_ by 15 deg, b 0.08, Mach 1.8, so that its window starts
+   farther from the corner's tail (the reason is given with the cases).
+4. _The edge of resolution._ The agreement test uses
+   max(U_E + U_M, |G| / 4) in place of U_E + U_M + |G| / 4, which at
+   U_E = |G| / 4 would have let a method error of half its effect pass.
+5. _Wording._ The corner's smearing is the largest bevel error at level
+   3, not the main one, and the pairing is meant to cancel what the two
+   solves share; the wall entropy is recorded to settle the rest.
+6. _The unpaired share_ H_k is recorded beside D_k at every level.
+
+The cost is given for five cases. The verdict now counts the cells
+after 9.14's re-judgement (974), and its K5 rule leaves 710 if K5 is
+unresolved. Nothing has run for this check.
 
 ### 9.14 A known weakness of the code: the shock point's iteration (2026-10-30)
 
