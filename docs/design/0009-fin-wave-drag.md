@@ -387,7 +387,8 @@ bound.
   (four did not reach the asymptotic range on 15% bevels) or a
   characteristics solution, before any of them is served. (2026-10-30:
   registered as section 9, by a characteristics solution with the planar
-  Euler solves as its check; not yet run.)
+  Euler solves as its check; not yet run.) (2026-10-30, later: run as
+  registered; the Euler check failed, and nothing is served; section 9.12.)
 - TN D-4014 fig. 4 (the ARCAS chamber force), to be digitised, as the audit
   asked, before the ARCAS increments are used to set a fin band.
 
@@ -1242,3 +1243,87 @@ approaches it at (14 deg, 1.6). Recorded besides:
   whether the node's nu run converged by 9.5 and, where both converged,
   whether the two agreed within the larger of their U, so that the
   safeguard's coverage is on record when the results are judged.
+
+**2026-10-30, later: the runs and the verdict, as registered. The Euler
+check fails, so nothing is served; the refusal stands as it was.** The
+nodes ran on commit 023abba (`w9/nodes.jsonl`, `w9/diagnostic-r.out`);
+the Euler solves (`w9/euler.jsonl`, the wall faces in `w9/euler-walls/`),
+the method at E1 to E3 (`w9/ecases.jsonl`) and the check points
+(`w9/checks.jsonl`) on 98d9011, which differs from 023abba only in the
+records and in runners outside `src`. The verdict is generated from those
+records by `w9/judge.test.ts` into `w9/verdict.out`, with every failure
+listed there. Nothing stopped the runs: the 447 nodes the library calls
+exact gave |eps| at most 1e-12 at every level, and the nu diagnostic
+agreed within the larger U at all 1,278 nodes where both runs converged
+(at 114 the nu run did not converge; at 105 of those the pressure run
+passes, with no second run to check it).
+
+- _The nodes (9.5)._ 1,383 of 1,392 pass, 1,381 by (a) and 2 by (b);
+  eps over them runs from -0.305% to +0.310%, U at most 3.6e-6. Nine
+  fail. Five fail because the changes from N = 64 to 256 do not shrink,
+  each change below 7e-8 (6 deg, b 0.113, Mach 1.5; 7 deg, b 0.08,
+  Mach 2.0; 8 deg, b 0.08, Mach 2.4 and 2.8; 12 deg, b 0.16, Mach 1.8).
+  Four fail because a shock point did not converge at N = 256 (12 deg,
+  b 0.0141, Mach 1.6; 14 deg, b 0.0141, 0.0283 and 0.0566, Mach 2.4).
+  Each removes its cells, as registered. R_N at 10 deg and Mach 1.5 (no
+  gate) approaches R at about first order, |R_N - R| 1.85e-3 at N = 16
+  to 1.61e-4 at N = 256.
+- _Cells and check points (9.6)._ 950 candidate cells; 1,727 check
+  points: 577 of the population's refused hexagons, 200 drawn at random
+  and the 950 centres. Nine fail 9.5 (0.52%, under the 2% cap), seven
+  because a shock point did not converge at N = 128 or 256 and two
+  because the changes do not shrink; each removes its cell. None that
+  converged lies outside its cell's band; the closest comes within
+  5.5e-4 of eps of an edge. The bands are 0.2% to 0.4% of the
+  shock-expansion value wide. 941 cells would have been served had the
+  Euler check passed.
+- _The Euler check (9.7) fails, on (E-b), in all three cases._ All
+  twelve Euler solves met both stopping tests below the cap, and the
+  method passes 9.5 at E1 to E3, with eps +0.022%, +0.131% and +0.043%.
+  (E-a) passes in all three: the drags at levels 1 to 3 converge
+  monotonically with shrinking differences, and the intervals, 0.53%
+  below to 0.57% above, 0.46% below to 0.81% above, and 1.48% below to
+  0.32% above the shock-expansion value, hold the method's drag. (E-b)
+  passes in one window of six, E2's flat (e_3 1.20e-4 against s_3
+  2.12e-3). On every bevel window e_3 is above s_3 (E1 4.46e-3 against
+  4.16e-3, E2 2.75e-3 against 1.10e-3, E3 2.83e-2 against 2.73e-2), and
+  on E1's and E3's flats e_3 is above s_3 / 2 (2.66e-4 against 2.66e-4,
+  and 2.62e-3 against 3.02e-3). By 9.7 and 9.8 nothing is served:
+  `src/fins`, the page's words and 0017's rows are unchanged, and
+  `served-cells.json` is not written.
+
+What the failure says, read after the results (these readings change
+nothing above and set nothing):
+
+- _E1's flat window holds no reflected wave by the method._ It starts at
+  the library's bound x_1 = 0.698, but the method's flat pressure first
+  changes between x = 0.8275 and 0.8342, past the window's end at 0.82.
+  There the method's pressure is shock-expansion's (they differ by
+  2e-15), e_k equals s_k at every level, and e_3 <= s_3 / 2 could not
+  hold whatever the Euler gave. This is a flaw of the registration, seen
+  only now: the window should have started where the method's first
+  reflection lands, not at the library's bound.
+- _Elsewhere the Euler's own error at level 3 is larger than what it
+  was to resolve._ The root mean square of the method's pressure minus
+  shock-expansion's is 4.0e-4 of the free stream's pressure on E1's
+  bevel, 2.25e-3 on E2's, 6.55e-4 on E3's flat and 1.09e-3 on E3's bevel;
+  the Euler's wall pressure moved between levels 2 and 3 by 4.8e-3,
+  6.2e-3, 1.5e-3 and 2.0e-2 there (root mean squares too). On E3's bevel, 0.2 b behind the
+  corner, the level-3 Euler stands about 19% above both (0.333 against
+  0.280 and 0.281), and falls along the window toward them, as if the
+  rear corner's expansion were smeared into it.
+  On E3's flat it falls from 1.0159 to 1.0077 of the free stream's
+  pressure across the window, away from the method (1.0111 to 1.0135)
+  and from shock-expansion (1.0132). On E2's flat, where the Euler moved
+  by only 1.75e-4 between levels 2 and 3, it lies 18 times closer to the
+  method than to shock-expansion.
+- _So, at the registered resolution, the check confirms the method's
+  flat pressures in E2 and neither confirms nor refutes it elsewhere._
+  On E2's bevel the level-3 Euler lies closer to shock-expansion than to
+  the method, but the Euler's change from level 2 to 3 there is nearly
+  three times the gap between the two, so this does not show the method
+  wrong.
+- _The shock point's iteration failed_ at four nodes and seven check
+  points, at 11.5 to 14.4 deg and N = 128 or 256. That is a weakness of
+  the code, recorded as found and not changed: after the results nothing
+  in the method or the criteria changes without a ruling.

@@ -48,3 +48,28 @@ its output file there.
 - `arcas.test.ts`: the ARCAS fins' own drag over the measured increments.
 - `euler.test.ts`: planar Euler solutions of two sections on nested grids
   (`euler.jsonl`; `CASE=dw` or `hex`, `LEVELS=0,1,2`), one solve at a time.
+
+## W9(a): the reflected waves on hexagons (`w9/`, 0009 section 9)
+
+Run from the repository root with `ONLY=./<name>.test.ts npx vitest run
+--config docs/research/fin-wave-drag/w9/vitest.config.ts` (one worker, no
+time limit). The runs record the commit they ran on; the code checks,
+the nodes, the Euler and the check points refuse to run with `src`
+changed, and the last three resume from their records (the nodes and the
+check points also log every solve in `tests/tmp-w9/`, gitignored). The
+judge computes nothing new.
+
+- `code-checks.test.ts` > `code-checks.out`: T1 to T5, the quadrature and
+  T3R (9.3, 9.12), and the gate.
+- `interpolation.test.ts` > `interpolation.out`: the trace in nu against
+  the pressure on six cases (9.12).
+- `family.ts`: the grid, the cases E1 to E3, the judgement by 9.5, the
+  cells and bands by 9.6 and the drawn check points, shared by the runs.
+- `nodes.test.ts` > `nodes.jsonl` (one line per node) and
+  `diagnostic-r.out`.
+- `euler.test.ts` > `euler.jsonl` (one line per solve) and
+  `euler-walls/<case>-L<level>.json` (the wall faces).
+- `checks.test.ts` > `ecases.jsonl` (the method at E1 to E3) and
+  `checks.jsonl` (one line per check point).
+- `judge.test.ts` > `verdict.out` (and `served-cells.json` only where the
+  verdict serves; on 2026-10-30 it did not).

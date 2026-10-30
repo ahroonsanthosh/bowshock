@@ -566,7 +566,8 @@ nested grids; there the linear 3D factor (subsonic leading edges) is the
 larger unknown and stays labelled. Effort medium, and CPU-heavy (one
 hexagon's fourth grid took 28 minutes). _2026-10-30: (a) registered in
 0009 section 9 with another measuring method (a planar method of
-characteristics, the Euler solves its check); 10.7 (aj)._
+characteristics, the Euler solves its check); 10.7 (aj). Later the same
+day: run as registered; the Euler check failed, and nothing is served._
 
 **W11. Square-cut leading edges and rounded trailing edges.** No opened
 source isolates either at these conditions. The owner has allowed them
@@ -4073,6 +4074,21 @@ its review, below; still before any code or run).
   comparison on six cases); nu stays as a diagnostic on every node, and
   where both converge they must agree within the larger of their U, or
   the runs stop for a report.
+- _2026-10-30, later: the runs and the verdict, as registered; nothing is
+  served_ (0009 section 9.12, `docs/research/fin-wave-drag/w9/verdict.out`).
+  Nothing stopped the runs. 1,383 of 1,392 nodes pass 9.5; 950 candidate
+  cells; of 1,727 check points 9 fail 9.5 (0.52%) and none that converged
+  lies outside its band, so 941 cells would have been served. The Euler
+  check fails: (E-a) passes in all three cases, but (E-b) passes in one
+  window of six (E2's flat). E1's flat window, registered from the
+  library's bound x_1, ends before the method's first reflection lands,
+  so it could not pass (a flaw of the registration, seen only now); in
+  the other windows the Euler's change from level 2 to 3 is larger than
+  the difference between the method and shock-expansion it was to
+  resolve. The reflected-wave refusal stands as it was; `src/fins`, the
+  page's words, 0017's rows and the README's count line are unchanged.
+  The shock point's iteration failed at four nodes and seven check
+  points (11.5 to 14.4 deg), recorded and not changed.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
