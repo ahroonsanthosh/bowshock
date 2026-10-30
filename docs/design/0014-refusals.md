@@ -4122,6 +4122,18 @@ its review, below; still before any code or run).
   reaches the round-off floor and then cycles until its 60th iterate),
   with a proposed change, not made, that keeps every passing value the
   same to the bit and has its own check. Nothing has run for this check.
+- _2026-10-30, the coordinator's rulings on 8a53aa7_ (0009 sections
+  9.13 and 9.14, recorded there before acting on them). The one-signed
+  check is accepted and disclosed: cells near zero or negative, and above
+  Mach 2.0, are served on the same method and its exact checks, and the
+  served label says "checked against an independent flow solver at Mach
+  1.8 to 2.0, where the effect is largest; elsewhere on the same method
+  and its exact checks" (above Mach 2.0 eps reaches +0.263%, more than
+  the band's 5e-4 margin, which is stated). Level 5 is not granted now.
+  The four cases run one solve per core when the CPU is free, on the
+  coordinator's word. The shock point's change is made as proposed, with
+  its check registered first, and the 4 nodes and 7 check points are
+  re-judged as 9.5 and 9.6 register them.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to

@@ -1259,8 +1259,10 @@ agreed within the larger U at all 1,278 nodes where both runs converged
 passes, with no second run to check it).
 
 - _The nodes (9.5)._ 1,383 of 1,392 pass, 1,381 by (a) and 2 by (b);
-  eps over them runs from -0.305% to +0.310%, U at most 3.6e-6. Nine
-  fail. Five fail because the changes from N = 64 to 256 do not shrink,
+  eps over them runs from -0.305% to +0.310% _(corrected 2026-10-30,
+  9.13: -0.027% to +0.310% inside the family that can serve; -0.305%
+  only at the near-sonic nodes, which serve nothing)_, U at most 3.6e-6.
+  Nine fail. Five fail because the changes from N = 64 to 256 do not shrink,
   each change below 7e-8 (6 deg, b 0.113, Mach 1.5; 7 deg, b 0.08,
   Mach 2.0; 8 deg, b 0.08, Mach 2.4 and 2.8; 12 deg, b 0.16, Mach 1.8).
   Four fail because a shock point did not converge at N = 256 (12 deg,
@@ -1542,6 +1544,43 @@ judge that computes nothing new. No solve runs until the coordinator
 says so. Nothing in 9.1 to 9.12 changes. If this check passes, the code
 of 9.8 to 9.10 follows as 9.11 says.
 
+**2026-10-30, the coordinator's rulings on 9.13 (8a53aa7), recorded
+before acting on them.** Fable's review of 9.13, 9.14 and these rulings
+runs in parallel; no Euler solve runs before the coordinator says so,
+and any change the review asks for comes first.
+
+- _The one-signed check is accepted, and disclosed._ The check tests the
+  method where its effect is largest (13 to 15 deg, Mach 1.8 to 2.0).
+  The cells where eps is near zero or negative, and those above Mach
+  2.0, are served on the same code, its exact checks T1 to T5, and T3's
+  analytic reflection coefficient, which covers the change of sign: T3
+  passed at (8 deg, Mach 1.6) and (12 deg, Mach 2.2), where R is
+  positive (0.0047 and 0.0034), and at (15 deg, Mach 3.0), where R =
+  -0.0066; T3R passed at (11 deg, Mach 1.5), where R = -0.044
+  (`w9/code-checks.out`). Their bands carry 9.6's margin of 5e-4, which
+  is larger than |eps| wherever eps is negative (at most 0.027% there).
+  Stated besides, so as not to overstate it: above Mach 2.0 eps reaches
+  +0.263% (15 deg, b 0.01, Mach 2.2), more than that margin; there the
+  band rests on the method's convergence and its exact checks, not on
+  the Euler.
+- _The served label says so._ If the check passes, the served label's
+  words about the independent check are: "checked against an independent
+  flow solver at Mach 1.8 to 2.0, where the effect is largest; elsewhere
+  on the same method and its exact checks". They take the place of 9.9's
+  sentence on the Euler check (the few tenths of a percent).
+- _The eps range is corrected where it appears_ (9.12's note on the
+  runs, marked in place): -0.027% to +0.310% inside the family that can
+  serve; -0.305% only at the near-sonic nodes, which serve nothing.
+- _Level 5 is not granted now._ If a case is unresolved at level 4, it is
+  reported, and the coordinator puts it to the owner; the second stage
+  runs only on that decision.
+- _How the four cases run._ When the screenshot run has freed the CPU,
+  on the coordinator's word: one solve per core, each single-threaded and
+  at normal priority, each solve recorded as it finishes, resumable.
+- _The cells 9.13 would serve_ are those 9.6 gives once 9.14's change has
+  been checked and the 4 nodes and 7 check points re-judged (below); 941
+  if that re-judgement changes nothing.
+
 ### 9.14 A known weakness of the code: the shock point's iteration (2026-10-30)
 
 **What failed.** At 4 nodes (12 deg, b 0.0141, Mach 1.6; 14 deg, b
@@ -1596,3 +1635,50 @@ residual below 1e-12; if that fails too, throw as now.
   points that fail because their changes do not shrink are not touched by
   the change and still fail. The four cases of 9.13 are not affected:
   none of their solves has a failing shock point.
+
+**2026-10-30, the coordinator's ruling on 9.14: the change is made,
+exactly as proposed, as a separate change with its own check.
+Registered here before its code is written.**
+
+- _The change._ In the shock point's solve the secant loop is unchanged.
+  Besides, the solve keeps the iterate with the smallest |residual| it
+  has met (the two starting values included). If the last iterate fails
+  the 1e-12 test, the point is computed again at that best iterate, which
+  must pass the same test, or the solve throws as now. A planted removal,
+  `no-best-iterate` (a new value of the existing planted-error option,
+  passed through `hexagonCharacteristics`), skips the new branch.
+- _Its check_, on the change's commit, all of which must hold:
+  1. `tests/validation/planar-characteristics.test.ts`: the four failing
+     nodes (12 deg, b 0.0141, Mach 1.6; 14 deg, b 0.0141, 0.0283 and
+     0.0566, Mach 2.4) solve at N = 256. Every shock point must pass the
+     1e-12 test or the solve throws, so a solve that completes has every
+     shock point's residual below 1e-12.
+  2. The same four with the planted removal must each throw "a shock
+     point did not converge".
+  3. `w9/code-checks.test.ts` re-run must reproduce
+     `w9/code-checks.out` exactly, every line but the one naming the
+     commit. The comparison is recorded in `w9/shock-fix.out`;
+     `w9/code-checks.out` keeps its original content.
+  4. Every node and check point whose registered run completed all five
+     levels (all but the 4 nodes and 7 check points, so the 5 nodes and
+     2 check points whose changes do not shrink are included) is re-run
+     at its five levels with the pressure interpolation, the registered
+     run, and must give the same eps and mass balance at every level, to
+     the bit (`w9/shock-fix-identity.jsonl`, one line per case,
+     resumable). Any difference stops the work for a report, and the
+     change is not used.
+- _The re-judgement, as 9.5 and 9.6 register it._ The 4 nodes are re-run
+  with both interpolations, as `w9/nodes.test.ts` ran them, the exact-node
+  rule and the nu agreement applying (`w9/shock-fix-nodes.jsonl`); the 7
+  check points are re-run (`w9/shock-fix-checks.jsonl`). The candidate
+  cells are recomputed with those 4 node records in place of the old
+  ones. A cell that becomes a candidate gets the check points 9.6 gives
+  every candidate cell: its centre, and the population's refused
+  hexagons in it. The 200 random points stay as drawn on 2026-10-30,
+  since a new draw over a new list of cells would change all of them.
+  Each check point is judged by 9.5 and against its cell's band: a
+  converged one outside its band refuses everything; one failing 9.5
+  removes its cell; and the 2% cap applies to all the check points
+  together. The served cells before and after are recorded in
+  `w9/shock-fix.out`. The records of 2026-10-30 (`w9/nodes.jsonl`,
+  `w9/checks.jsonl`, `w9/verdict.out`) stay as they are.
