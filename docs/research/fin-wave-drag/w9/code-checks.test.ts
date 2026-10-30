@@ -1,7 +1,9 @@
 /**
- * The record of 0009 section 9.3's code checks, T1 to T5, with every number
- * (the committed test, tests/validation/planar-characteristics.test.ts,
- * asserts the same predicates). Writes code-checks.out beside this file.
+ * The record of 0009 section 9.3's code checks, T1 to T5, and of the re-test
+ * T3R that 9.12 registers, with every number (the committed test,
+ * tests/validation/planar-characteristics.test.ts, asserts the same
+ * predicates), and the gate for the family as 9.12 rules it. Writes
+ * code-checks.out beside this file.
  *
  *   ONLY=./code-checks.test.ts npx vitest run --config docs/research/fin-wave-drag/w9/vitest.config.ts
  */
@@ -15,6 +17,9 @@ import {
   LEVELS,
   PAIRS,
   T2_CASES,
+  T3R_LEVELS,
+  T3R_PAIR,
+  t3rPasses,
   analyticReflection,
   convergesAsRegistered,
   exactLanding,
@@ -69,8 +74,27 @@ test('0009 section 9.3: T1 to T5, recorded', () => {
     const err = rn.map((v) => v - R);
     // Decreasing from N = 32 to 256, the last at most a sixth of N = 32's, or all below 1e-10.
     const pass = convergesAsRegistered(err.slice(1), err[1]!, 1 / 6, 1e-10);
+    // By 9.12's ruling the gate takes T3 at its three pairs inside the family; 14 deg at Mach 1.6 is
+    // recorded as failed at the registered levels and kept as a finding.
+    const inGate = !(t === 14 && m === 1.6);
+    if (inGate) all &&= pass;
+    out.push(`| ${t} deg, ${m}${inGate ? '' : ' (recorded, outside the gate by 9.12)'} | ${R.toFixed(6)} | ${rn.map((v) => v.toFixed(6)).join(', ')} | ${err.map((v) => e(Math.abs(v))).join(', ')} | ${pass} |`);
+  }
+
+  out.push('', '## T3R: the first reflection at 11 deg and Mach 1.5, N = 16 to 8192 (registered in 9.12 before it ran)', '');
+  {
+    const [t, m] = T3R_PAIR;
+    const R = analyticReflection(t, m);
+    const err = T3R_LEVELS.map((N) => methodReflection(t, m, N) - R);
+    const pass = t3rPasses(err);
     all &&= pass;
-    out.push(`| ${t} deg, ${m} | ${R.toFixed(6)} | ${rn.map((v) => v.toFixed(6)).join(', ')} | ${err.map((v) => e(Math.abs(v))).join(', ')} | ${pass} |`);
+    out.push(`- R = ${R.toFixed(6)}`);
+    out.push('', '| N | R_N | |R_N - R| | reduction from the previous N |', '| --- | --- | --- | --- |');
+    T3R_LEVELS.forEach((N, i) => {
+      const red = i === 0 ? '' : (Math.abs(err[i - 1]!) / Math.abs(err[i]!)).toFixed(3);
+      out.push(`| ${N} | ${(err[i]! + R).toFixed(6)} | ${e(Math.abs(err[i]!))} | ${red} |`);
+    });
+    out.push('', `- T3R (decreasing at every doubling from N = 64, each of the last three doublings by 1.7 or more): ${pass}`);
   }
 
   out.push('', '## T4: the parallel shear flow (p = 1, theta = 0, ln K to 0.044), and its four planted errors', '');
@@ -107,6 +131,6 @@ test('0009 section 9.3: T1 to T5, recorded', () => {
   const qPass = Math.abs(q.method / q.exact - 1) <= 1e-14;
   all &&= qPass;
   out.push('', `- the rear bevel's quadrature on a planted linear Cp: ${q.method} against ${q.exact}, relative ${e(Math.abs(q.method / q.exact - 1))}: ${qPass}`);
-  out.push('', `- every check as registered: ${all}`, '');
+  out.push('', `- the gate for the family as 9.12 rules it (T1, T2, T4 with its plants, T5, the quadrature, T3 at its three pairs inside the family, T3R): ${all}`, '');
   writeFileSync(join(here, 'code-checks.out'), out.join('\n'));
 });

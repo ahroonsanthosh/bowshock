@@ -3,6 +3,9 @@ import {
   LEVELS,
   PAIRS,
   T2_CASES,
+  T3R_LEVELS,
+  T3R_PAIR,
+  t3rPasses,
   analyticReflection,
   convergesAsRegistered,
   exactLanding,
@@ -60,6 +63,13 @@ describe('0009 section 9.3: the code checks of the planar method of characterist
   // put to the owner in 0009 section 9's note of 2026-10-30.
   it.fails('T3: the first reflection at 14 deg, Mach 1.6, approaches R as registered', () => {
     expect(t3(14, 1.6)).toBe(true);
+  });
+  // T3R, registered in 0009 section 9.12 after that failure and before it ran: the other node below
+  // Mach 1.1 behind the shock, to N = 8192.
+  it('T3R: the first reflection at 11 deg, Mach 1.5, approaches R at first order by N = 8192', () => {
+    const [t, m] = T3R_PAIR;
+    const R = analyticReflection(t, m);
+    expect(t3rPasses(T3R_LEVELS.map((N) => methodReflection(t, m, N) - R))).toBe(true);
   });
 
   it('T4: a parallel shear flow stays parallel at uniform pressure, and each planted error fails', () => {

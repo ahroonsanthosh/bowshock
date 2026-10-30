@@ -43,12 +43,16 @@
  * and the reflections from the bevel. The step is computed on demand, as
  * far as the trace needs it.
  *
- * Interpolation, fixed by the registration: the trace's state at each
- * crossing of a C- line of the step is linear in nu, theta and psi along
- * the segment it crosses, ln K from ln K(psi); the data points, b / N apart
- * in arc length along the trace, are linear in arc length between its
- * crossings, in the same variables. The rear corner's wall state is the
- * step's, nu linear in x between its wall points.
+ * Interpolation (0009 section 9.2, as ruled in its note of 2026-10-30,
+ * 9.12): the trace's state at each crossing of a C- line of the step is
+ * linear in the pressure, theta and psi along the segment it crosses, ln K
+ * from ln K(psi) and nu from the pressure and K; the data points, b / N
+ * apart in arc length along the trace, are linear in arc length between its
+ * crossings, in the same variables. The pressure and theta are continuous
+ * across the streamline through P, where K(psi) has a kink, and nu is not.
+ * Interpolating nu instead (as first registered) is kept as a diagnostic.
+ * The rear corner's wall state is the step's, nu linear in x between its
+ * wall points (the wall's entropy is constant).
  *
  * Resolution: N, each fan's turn in N equal steps; the data b / N apart.
  * A case fails (CharacteristicsFailure) where a point is not supersonic,
@@ -629,11 +633,11 @@ export interface Crossing {
 }
 
 /**
- * Which variable the trace interpolates beside theta and psi: nu, as 0009
- * section 9.2 registers; or the pressure, nu then taken from the pressure
- * and K(psi), only as the comparison of 0009 section 9's note of 2026-10-30,
- * put to the owner (across the streamline through P, where K(psi) has a
- * kink, nu has one too and the pressure does not).
+ * Which variable the trace interpolates beside theta and psi: the pressure,
+ * nu then taken from the pressure and K(psi), as ruled in 0009 section
+ * 9.12 (across the streamline through P, where K(psi) has a kink, the
+ * pressure has none and nu has one); or nu, as first registered, kept as
+ * the diagnostic run beside it on every node.
  */
 export type TraceInterpolation = 'nu' | 'pressure';
 
@@ -646,10 +650,10 @@ export function rearData(
   step: Step,
   xCorner: number,
   intervals: number,
-  interpolation: TraceInterpolation = 'nu',
+  interpolation: TraceInterpolation = 'pressure',
 ): DataSource & { readonly crossings: readonly Readonly<Crossing>[] } {
   const { gas, wallPoints } = step;
-  /** The interpolated variable (Crossing.nu holds it): nu, or the pressure. */
+  /** The interpolated variable (Crossing.nu holds it): the pressure, or nu. */
   const pOf = (pt: NetPoint) => (interpolation === 'nu' ? pt.nu : pt.p);
   const spacing = step.bevel / intervals;
   // The corner's state: uniform if no C- line of the step has landed ahead of it.

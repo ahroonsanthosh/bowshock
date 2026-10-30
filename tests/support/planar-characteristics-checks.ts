@@ -284,3 +284,22 @@ export function quadratureCheck(): { method: number; exact: number } {
   const exact = -Math.tan(delta) * (F(1) - F(x0));
   return { method, exact };
 }
+
+/** T3R's levels (0009 section 9.12): N = 16 to 8192. */
+export const T3R_LEVELS = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192] as const;
+
+/** T3R's pair: 11 deg at Mach 1.5 (Mach 1.055 behind the shock). */
+export const T3R_PAIR = [11, 1.5] as const;
+
+/**
+ * T3R's predicate on |R_N - R| over T3R_LEVELS: decreasing at every doubling
+ * from N = 64 on, and each of the last three doublings reducing it by a
+ * factor of at least 1.7.
+ */
+export function t3rPasses(errors: readonly number[]): boolean {
+  const a = errors.map(Math.abs);
+  if (!a.every(Number.isFinite)) return false;
+  for (let i = 3; i < a.length; i++) if (!(a[i]! < a[i - 1]!)) return false;
+  for (let i = a.length - 3; i < a.length; i++) if (!(a[i - 1]! / a[i]! >= 1.7)) return false;
+  return true;
+}
