@@ -48,13 +48,6 @@ safe.
 
 **Not built yet:** viscous (RANS) flow, angle of attack, motor plume.
 
-## What's next
-
-The work that would unlock the most totals: rounded nose tips (half of the
-test rockets have them), then fins at the base with untested sweeps, square
-or rounded fin edges, and fin shock reflections. Each is lifted only when
-theory or wind-tunnel data covers it.
-
 ## How we keep it honest
 
 - Tests are written down before they're run, against data held back for
