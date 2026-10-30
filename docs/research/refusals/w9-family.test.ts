@@ -4,10 +4,11 @@
  * impact.test.ts's own cases, the sections the reflected-wave refusal holds, by Mach band, and which of
  * them lie inside the registered family (equal bevels; half-angle 5 to 15 deg; bevel 0.01 to 0.4525 of the
  * chord; Mach 1.5 to 3.0) and inside a cell of its grid whose eight corners all have an attached
- * leading-edge shock with supersonic flow behind it. That is an upper bound on what the registration can
- * serve: a cell is served only if its corners also pass the convergence criteria, which no run has tested
- * yet. Uses only the shock-expansion code as it stands (no characteristics or Euler value). Writes
- * out/w9-family.out (or into OUT_DIR).
+ * leading-edge shock with supersonic flow behind it, and, since the coordinator's ruling of 2026-10-30
+ * (0009 section 9.4), a Mach number of at least 1.1 behind it. That is an upper bound on what the
+ * registration can serve: a cell is served only if its corners also pass the convergence criteria, which
+ * no run has tested yet. Uses only the shock-expansion code as it stands (no characteristics or Euler
+ * value). Writes out/w9-family.out (or into OUT_DIR).
  *
  *   ONLY=./w9-family.test.ts npx vitest run --config docs/research/refusals/vitest.config.ts
  */
@@ -31,6 +32,8 @@ const DEG = Math.PI / 180;
 const THETA = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 const BEVEL = Array.from({ length: 12 }, (_, k) => 0.01 * 2 ** (k / 2));
 const MACH = [1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0];
+/** The coordinator's ruling of 2026-10-30: no cell with a corner below this Mach number behind the shock is served. */
+const NEAR_SONIC = 1.1;
 
 /** The cell's lower index in a grid, the last cell taking its upper face; -1 outside. */
 function cellIndex(grid: readonly number[], v: number): number {
@@ -126,9 +129,11 @@ test('the family of W9(a) against the population', () => {
       else if (k < 0) where = 'Mach outside 1.5 to 3.0';
       else {
         const corners = [THETA[i]!, THETA[i + 1]!].flatMap((t) => [MACH[k]!, MACH[k + 1]!].map((m) => nodes.get(`${t}|${m}`)!));
-        where = corners.every((c) => typeof c === 'number')
-          ? 'inside a cell whose corners all have an attached shock'
-          : 'in a cell with a corner whose shock is detached or subsonic behind';
+        where = !corners.every((c) => typeof c === 'number')
+          ? 'in a cell with a corner whose shock is detached or subsonic behind'
+          : corners.every((c) => (c as number) >= NEAR_SONIC)
+            ? 'inside a cell whose corners all have an attached shock, Mach 1.1 or more behind it'
+            : 'in a cell with a corner below Mach 1.1 behind the shock (excluded by the ruling of 2026-10-30)';
       }
       cases.push({
         band,
@@ -155,7 +160,7 @@ test('the family of W9(a) against the population', () => {
     "- the registered grid (0009 section 9.4): half-angle " +
       `${THETA.join(', ')} deg; bevel over chord ${BEVEL.map((b) => b.toFixed(4)).join(', ')}; Mach ${MACH.join(', ')}`,
     '',
-    '## The grid: Mach number behind the straight leading-edge shock at each half-angle and Mach node (- where the shock is detached or the flow behind it subsonic: the cells it bounds are not served)',
+    '## The grid: Mach number behind the straight leading-edge shock at each half-angle and Mach node (- where the shock is detached or the flow behind it subsonic; * below 1.1, computed but serving nothing by the ruling of 2026-10-30: the cells either bounds are not served)',
     '',
     `| Half-angle | ${MACH.map((m) => `M ${m.toFixed(1)}`).join(' | ')} |`,
     `| --- | ${MACH.map(() => '---').join(' | ')} |`,
@@ -163,7 +168,7 @@ test('the family of W9(a) against the population', () => {
       (t) =>
         `| ${t} deg | ${MACH.map((m) => {
           const v = nodes.get(`${t}|${m}`)!;
-          return typeof v === 'number' ? v.toFixed(3) : '-';
+          return typeof v === 'number' ? `${v.toFixed(3)}${v < NEAR_SONIC ? '*' : ''}` : '-';
         }).join(' | ')} |`,
     ),
     '',
@@ -191,7 +196,12 @@ test('the family of W9(a) against the population', () => {
         `- ${{ theta: 'half-angle, deg', bevel: 'bevel over chord', tc: 't/c', mach: 'Mach number', m1: 'Mach number behind the leading-edge shock' }[k]}: ${quantiles(cases.filter((c) => c.mach >= 1.5).map((c) => c[k]))}`,
     ),
     '',
-    '## The refused cases at Mach 1.5 and above that lie outside every cell with attached corners',
+    ...[...new Set(cases.filter((c) => c.mach >= 1.5).map((c) => c.where))].sort().map((w) => {
+      const m1 = cases.filter((c) => c.where === w).map((c) => c.m1);
+      return `- Mach behind the shock, ${w}: ${Math.min(...m1).toFixed(3)} to ${Math.max(...m1).toFixed(3)}`;
+    }),
+    '',
+    '## The refused cases at Mach 1.5 and above that lie outside every cell the family can serve',
     '',
     '| Half-angle, deg | Bevel over chord | t/c | Mach | Mach behind the shock | Where |',
     '| --- | --- | --- | --- | --- | --- |',

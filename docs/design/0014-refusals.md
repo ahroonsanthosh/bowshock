@@ -566,8 +566,7 @@ nested grids; there the linear 3D factor (subsonic leading edges) is the
 larger unknown and stays labelled. Effort medium, and CPU-heavy (one
 hexagon's fourth grid took 28 minutes). _2026-10-30: (a) registered in
 0009 section 9 with another measuring method (a planar method of
-characteristics, the Euler solves its check); 10.7, the entry of that
-date._
+characteristics, the Euler solves its check); 10.7 (aj)._
 
 **W11. Square-cut leading edges and rounded trailing edges.** No opened
 source isolates either at these conditions. The owner has allowed them
@@ -3977,11 +3976,12 @@ applied as registered). The band becomes **0.77 to 1.17** at Mach 1.5 to
   (`basic-finner.test.ts`, `hold-out-run.test.ts`). The gate table's
   caption names both widenings.
 
-**2026-10-30 (letter not yet allocated; the coordinator's to give):
-W9(a), the reflected waves on hexagonal fin sections, registered before
-any run** (0009 section 9; the owner's instruction to lift this refusal
-only if it can be done accurately). Written and committed before the
-code it describes exists and before any computed value of its runs.
+**2026-10-30 (aj): W9(a), the reflected waves on hexagonal fin sections,
+registered before any run** (0009 section 9; the owner's instruction to
+lift this refusal only if it can be done accurately). Written and
+committed before the code it describes exists and before any computed
+value of its runs (first at 0f1a69f, then revised the same day after
+its review, below; still before any code or run).
 
 - _What changes in 6.2's plan for W9(a)._ 6.2 planned planar Euler solves
   on the bevelled family as the measurement. 0009 section 2.4 found such
@@ -3992,32 +3992,66 @@ code it describes exists and before any computed value of its runs.
   every reflected wave carried by the net (0009 sections 9.1 and 9.2),
   and the captured Euler solves are its independent check (9.7), setting
   nothing.
-- _What is registered there._ The checks of the code (9.3); the family:
-  hexagons with equal bevels at both edges, half-angle 5 to 15 deg, bevel
-  0.01 to 0.4525 of the chord, Mach 1.5 to 3.0, on a grid of 1,392
-  computed nodes (9.4); the convergence ladder (N = 16 to 256) and when a
-  case passes (9.5); the rule: a case is served only inside a cell whose
-  eight corners pass, at the shock-expansion value times one plus the
-  midpoint of its corners' envelope (each corner's uncertainty and 5e-4
-  added, rounded outward to 0.1%), the band that envelope; at most 898
-  check points held out (the population's refused hexagons in served
-  cells and 200 drawn at random), any failure of which refuses all (9.6);
-  the Euler cases and criteria (9.7); what stays refused, W9(b) among it
-  (9.8); the page's words (9.9); the population's count (9.10); the order
-  and files of the runs (9.11).
+- _What is registered there._ The checks of the code, T1 to T5 (9.3);
+  the family: hexagons with equal bevels at both edges, half-angle 5 to
+  15 deg, bevel 0.01 to 0.4525 of the chord, Mach 1.5 to 3.0, on a grid
+  of 1,392 computed nodes, no cell served with a corner below Mach 1.1
+  behind the leading-edge shock, and every node the library calls exact
+  held to |eps| <= 1e-12 (9.4); the convergence ladder (N = 16 to 256)
+  and when a case passes (9.5); the rule: a case is served only inside a
+  cell whose eight corners pass, at the shock-expansion value times one
+  plus the midpoint of its corners' envelope (each corner's uncertainty
+  and 5e-4 added, rounded outward to 0.1%), the band that envelope, a
+  computed band of convergence and interpolation; at most 1,852 check
+  points held out (the population's refused hexagons in candidate cells,
+  200 drawn at random and the centre of every candidate cell): one that
+  converges outside its band refuses all, one that does not converge
+  removes its cell, and more than 2% of those refuse all (9.6); the Euler
+  cases and criteria (9.7); what stays refused, W9(b) among it (9.8);
+  the page's words (9.9); the population's count (9.10); the order and
+  files of the runs (9.11).
 - _No data enter._ The band is a computed one (inviscid, two-dimensional:
   the reflected waves alone), as the nose's grid band is; no held-back
   set of 10.1 is opened or used, no figure sets anything, and the fins'
   own-drag band (1.01 to 1.59, 0008 section 4.3) applies on top as now.
+  The independent Euler check confirms the method only to a few tenths
+  of a percent of the section drag, not to the band's width.
 - _What the population holds_ (`docs/research/refusals/out/w9-family.out`,
   from the shock-expansion code as it stands): the reflected-wave reason
   refuses 811 hexagons, 762 at Mach 1.5 and above; 698 of those lie in
   cells whose corners all have an attached shock, 64 in cells next to the
-  attachment limit, 49 below Mach 1.5. The 38 cases where it alone
-  refuses the total (235 totals to 273 if all are served) and the 86
-  where it is the only reason left with the nose assumed served (from
-  622 to 708) all lie in the first group. Which cells are served is
-  known only after the runs.
+  attachment limit, 49 below Mach 1.5; the ruling on near-sonic corners
+  takes 58 of the 698 out, leaving 640. The 38 cases where the reason
+  alone refuses the total (235 totals to 273 if all are served) all lie
+  among the 640, and 83 of the 86 where it is the only reason left with
+  the nose assumed served (from 622 to 705). Which cells are served is
+  known only after the runs. The size to expect (`out/w9-plateau.out`):
+  carrying the flat's fully developed change onto the rear bevel gives
+  |eps| at most 0.25%, a median of 0.05% over the nodes, so the served
+  band will often span zero.
+- _Revised the same day after Fable's review of 0f1a69f (PASS with
+  changes) and the coordinator's rulings, before any code or run._ The
+  letter (aj) named. 9.3: T4 added (the rotational terms: a parallel
+  shear flow at uniform pressure, with four planted errors that must each
+  fail it), T5 added (the landing of the first reflected characteristic
+  against its exact place, and the rear bevel's quadrature), T1's cases
+  named, T3 given the near-sonic pair (14 deg, Mach 1.6) and tightened
+  from a quarter to a sixth, and the statement that T1 and T2 test
+  bookkeeping, not accuracy. 9.2: how far the step is computed (on
+  demand, until the rear region's last line lands past the trailing edge)
+  and the interpolation onto the rear corner's characteristic (linear, in
+  nu, theta and psi) fixed; the list of what carries the discretisation
+  error completed. 9.4: the coordinator's ruling on near-sonic corners,
+  the exact-node rule, and the size to expect. 9.5: the changes must
+  shrink at every doubling from N = 64, and the coarser order is
+  recorded. 9.6: centre check points, the two kinds of failure, the 2%
+  cap, and the band's label. 9.7: (E-a) needs the Euler's differences to
+  shrink; (E-b) is judged on the flat and the bevel windows separately,
+  with all four numbers recorded at every level. The review read the 64
+  cases next to the attachment limit as reaching Mach 1.14 behind the
+  shock; `w9-family.out` gives 1.008 to 1.167 (the highest at 14.08 deg
+  and Mach 1.696, in a cell with the detached corner 15 deg at Mach 1.6),
+  so 9.4's "1.01 to 1.17" stands.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
