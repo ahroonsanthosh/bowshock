@@ -4052,6 +4052,27 @@ its review, below; still before any code or run).
   shock; `w9-family.out` gives 1.008 to 1.167 (the highest at 14.08 deg
   and Mach 1.696, in a cell with the detached corner 15 deg at Mach 1.6),
   so 9.4's "1.01 to 1.17" stands.
+- _2026-10-30, later: the code written, its checks run, and the
+  coordinator's rulings, made after the code-check numbers were seen;
+  still before any run of the family_ (0009 section 9.12). A defect in
+  the step's net was found and fixed before any run of the family: the C+
+  characteristics from the stretch of flat before the first landing were
+  missing, and the mass balance stalled near 1.6e-4. T1, T2, T4 with its
+  four planted errors, T5 and the bevel quadrature passed; T3 passed at
+  three pairs and is recorded as failed at 14 deg and Mach 1.6 at the
+  registered levels (a quarter, not a sixth, by N = 256; first order only
+  from about N = 512), its threshold not loosened, the failure kept as a
+  finding about convergence near the sonic limit. One re-test, T3R (T3 at
+  11 deg and Mach 1.5, N = 16 to 8192, decreasing from N = 64 on and
+  falling by at least 1.7 at each of the last three doublings), is
+  registered before it runs; the family runs only if T1, T2, T4, T5, the
+  quadrature, T3 at its three pairs inside the family and T3R pass, and
+  if T3R fails nothing is served. The trace now interpolates the pressure
+  and theta, K from K(psi) and nu derived, since they are continuous
+  across the streamline through P and nu is not (decided after the
+  comparison on six cases); nu stays as a diagnostic on every node, and
+  where both converge they must agree within the larger of their U, or
+  the runs stop for a report.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to

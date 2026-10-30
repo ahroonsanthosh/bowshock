@@ -1159,3 +1159,49 @@ node, check point or Euler case of 9.4 to 9.7 has been run.
   said it would not be changed later; whether to interpolate the pressure
   instead before the runs is put to the owner. Nothing else in the method
   would change.
+
+**2026-10-30, later: the coordinator's rulings on those two points,
+made after the code-check numbers above were seen; still before any run
+of the family.** The registered text above is not reworded; these rulings
+are added to it.
+
+- _The defect in the step's net_ (the missing C+ characteristics from
+  the stretch of flat before the first landing, which held the mass
+  balance near 1.6e-4) is recorded as a defect found and fixed before
+  any run of the family, as the first item of this note says.
+- _T3 at 14 deg and Mach 1.6 is recorded as failed at the registered
+  levels._ The threshold of a sixth is not loosened. The sequence found
+  beyond them (|R_N - R| 9.95e-3, 5.20e-3, 2.66e-3, 1.34e-3 and 6.76e-4
+  at N = 512 to 8192) and the explanation (Mach 1.023 behind the shock;
+  the fan's first step at N = 256 moves the Mach number by about a quarter
+  of its distance from 1) are recorded as found. The failure stays on
+  record as a finding about convergence near the sonic limit. It is
+  consistent with 9.4's exclusion of cells with a corner below Mach 1.1
+  behind the shock, which was ruled before it.
+- _One re-test, T3R, registered here before it runs_ (as the precedent of
+  V1b: one re-test, registered after a failure and before it runs). T3R
+  is T3 at 11 deg and Mach 1.5, the other node below Mach 1.1 behind the
+  shock (1.055), whose first reflection has not been computed, at N = 16,
+  32, 64, ..., 8192 (ten levels). It passes if |R_N - R| decreases at
+  every doubling from N = 64 on, and each of the last three doublings
+  (1024 to 2048, 2048 to 4096, 4096 to 8192) reduces it by a factor of
+  at least 1.7 (first order gives 2). It is run only after this note is
+  pushed.
+- _The gate for running the family_ is now: T1, T2, T4 with its four
+  planted errors, T5 and the bevel quadrature pass; T3 passes at its
+  three pairs inside the served family, (8 deg, 1.6), (12 deg, 2.2) and
+  (15 deg, 3.0); and T3R passes. If T3R fails, nothing is served: that is
+  recorded and the work stops.
+- _The trace's interpolation is switched_ from nu to the pressure and
+  theta (with psi), K taken from K(psi) and nu derived from the pressure
+  and K. The reason is physical: the pressure and theta are continuous
+  across the streamline through P, where the entropy history has a kink,
+  and nu is not. It was decided after the comparison on six cases above
+  (`w9/interpolation.out`). The rear corner's wall state is unchanged
+  (nu linear in x between the step's wall points): along the wall the
+  entropy is constant, so there is no kink there.
+- _nu kept as a diagnostic._ Every node is also run with nu interpolated,
+  beside the registered run, which now interpolates the pressure. Where
+  both converge by 9.5 they must agree within the larger of their two U;
+  any disagreement beyond that stops the runs for a report. A node is
+  judged, and serves, by the registered run alone.
