@@ -6,6 +6,7 @@
  * (the verdict).
  */
 
+import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { Euler2D } from '../../../../src/engine-cpu/euler2d';
 import { gridFromFunction, type StructuredGrid } from '../../../../src/grid/structured';
 import { hexagonal, type SymmetricSection } from '../../../../src/fins/section';
@@ -94,11 +95,34 @@ export interface SolveResult {
   readonly change: number;
   readonly converged: boolean;
   readonly cd: number;
+  /** Seconds over every session of the solve. */
   readonly seconds: number;
+  /** How many times the solve was resumed from its checkpoint. */
+  readonly resumed: number;
+}
+
+/**
+ * Where a solve saves its state, so that a restart of the machine loses at
+ * most `everySeconds` of it. The state is the cells' conserved variables
+ * and the loop's counters (iterations, the last drag, the starting
+ * residual); the solver keeps nothing else between iterations, so a
+ * resumed solve follows the same iterates, to the bit, as one never
+ * stopped. `abortAfterSave` is for the check of that only.
+ */
+export interface Checkpoint {
+  readonly path: string;
+  readonly everySeconds: number;
+  readonly abortAfterSave?: boolean;
 }
 
 /** 9.7's solve: HLLC, van Albada, shared scaled reconstruction, SSPRK2, CFL 0.8, local steps; its stopping rule and cap. */
-export function solveEuler(grid: StructuredGrid, inflow: Primitive, mach: number, level: number): SolveResult {
+export function solveEuler(
+  grid: StructuredGrid,
+  inflow: Primitive,
+  mach: number,
+  level: number,
+  checkpoint?: Checkpoint,
+): SolveResult {
   const q = 0.5 * GAMMA * mach * mach;
   const s = new Euler2D({
     grid,
@@ -118,7 +142,7 @@ export function solveEuler(grid: StructuredGrid, inflow: Primitive, mach: number
     },
   });
   s.setInitialCondition(() => inflow);
-  const r0 = s.densityResidualNorm();
+  let r0 = s.densityResidualNorm();
   const drag = () => {
     let d = 0;
     for (const f of s.boundaryFluxes('jMin')) {
@@ -127,22 +151,58 @@ export function solveEuler(grid: StructuredGrid, inflow: Primitive, mach: number
     }
     return (2 * d) / q;
   };
-  const t0 = performance.now();
   let previous = NaN;
   let its = 0;
+  let earlier = 0;
+  let resumed = 0;
+  if (checkpoint !== undefined && existsSync(checkpoint.path)) {
+    const b = readFileSync(checkpoint.path);
+    const all = new Float64Array(b.byteLength / 8);
+    for (let i = 0; i < all.length; i++) all[i] = b.readDoubleLE(8 * i);
+    const n = all[5]!;
+    if (all.length !== 6 + n) throw new Error(`${checkpoint.path} is cut: ${all.length} values, ${6 + n} expected`);
+    its = all[0]!;
+    previous = all[1]!;
+    r0 = all[2]!;
+    earlier = all[3]!;
+    resumed = all[4]! + 1;
+    s.setConserved(all.slice(6));
+  }
+  const t0 = performance.now();
+  let lastSave = t0;
+  const save = () => {
+    if (checkpoint === undefined || performance.now() - lastSave < 1000 * checkpoint.everySeconds) return;
+    const state = s.conserved();
+    const all = new Float64Array(6 + state.length);
+    all.set([its, previous, r0, earlier + (performance.now() - t0) / 1000, resumed, state.length]);
+    all.set(state, 6);
+    writeFileSync(checkpoint.path + '.tmp', new Uint8Array(all.buffer));
+    renameSync(checkpoint.path + '.tmp', checkpoint.path);
+    lastSave = performance.now();
+    if (checkpoint.abortAfterSave) throw new Error('aborted after a save (the check of resuming)');
+  };
   const chunk = 100 * 2 ** level;
+  const sub = 100;
   const cap = 40000 * 2 ** level;
   let res = NaN;
   let change = NaN;
   let d = NaN;
   for (;;) {
-    s.iterate(chunk);
-    its += chunk;
+    // Iterations in steps of 100 up to the next multiple of the chunk: the
+    // same iterates as one call of `chunk` iterations, with a save between.
+    const end = its + chunk - (its % chunk);
+    while (its < end) {
+      const n = Math.min(sub, end - its);
+      s.iterate(n);
+      its += n;
+      if (its < end) save();
+    }
     d = drag();
     res = s.densityResidualNorm() / r0;
     change = Math.abs(d / previous - 1);
     previous = d;
     if ((res < 1e-11 && change < 1e-11) || its >= cap) break;
+    save();
   }
   return {
     solver: s,
@@ -151,7 +211,8 @@ export function solveEuler(grid: StructuredGrid, inflow: Primitive, mach: number
     change,
     converged: res < 1e-11 && change < 1e-11,
     cd: d,
-    seconds: Math.round((performance.now() - t0) / 1000),
+    seconds: Math.round(earlier + (performance.now() - t0) / 1000),
+    resumed,
   };
 }
 

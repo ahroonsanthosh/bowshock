@@ -6,8 +6,12 @@
  * flow with the hexagon's level-k wall entropy. One line per solve in
  * paired.jsonl as it finishes; the wall faces, with each wall cell's
  * p / rho^gamma, in paired-walls/<case>-<hexagon or reference>-L<level>.json.
- * A restart skips the solves recorded. Each process runs one solve at a
- * time; to run one solve per core, start one process per case (CASES).
+ * A restart skips the solves recorded, and a solve in progress resumes from
+ * its checkpoint in tests/tmp-w9/checkpoints/ (saved every 5 minutes; the
+ * same iterates to the bit as a solve never stopped), so a restart of the
+ * machine loses at most 5 minutes of it. Each process runs one solve at a
+ * time; to run one solve per core, start one process per case (CASES), as
+ * paired-launch.sh does.
  *
  *   CASES=K1 LEVELS=0,1,2,3,4 ONLY=./paired.test.ts npx vitest run --config docs/research/fin-wave-drag/w9/vitest.config.ts
  *
@@ -15,7 +19,7 @@
  */
 
 import { execSync } from 'node:child_process';
-import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'vitest';
@@ -40,6 +44,11 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '../../../..');
 const OUT = join(here, 'paired.jsonl');
 const WALLS = join(here, 'paired-walls');
+const CHECKPOINTS = join(root, 'tests/tmp-w9/checkpoints');
+const checkpoint = (name: string, kind: string, level: number) => ({
+  path: join(CHECKPOINTS, `${name}-${kind}-L${level}.bin`),
+  everySeconds: 300,
+});
 
 interface SolveLine {
   readonly case: string;
@@ -56,6 +65,7 @@ test("W9(a): 9.13's solves", () => {
   for (const n of names) if (!(n in P_CASES)) throw new Error(`no case ${n}`);
   for (const l of levels) if (!(Number.isInteger(l) && l >= 0 && l <= 4)) throw new Error(`level ${l} is not registered (0 to 4)`);
   mkdirSync(WALLS, { recursive: true });
+  mkdirSync(CHECKPOINTS, { recursive: true });
 
   // The method's own values, as 9.13 uses them (no Euler).
   const nodes = new Map(readJsonl<NodeRecord>(join(here, 'nodes.jsonl')).map((n) => [n.key, n]));
@@ -98,7 +108,8 @@ test("W9(a): 9.13's solves", () => {
       const hexFile = join(WALLS, `${name}-hexagon-L${level}.json`);
       if (!done.has(`${name}|hexagon|${level}`)) {
         const grid = gridFrom(section, level, 0);
-        const r = solveEuler(grid, freeStream(c.mach), c.mach, level);
+        const ck = checkpoint(name, 'hexagon', level);
+        const r = solveEuler(grid, freeStream(c.mach), c.mach, level, ck);
         writeFileSync(hexFile, JSON.stringify(wallFaces(r.solver)));
         const old = name === 'E2' ? euler97.find((e) => e.case === 'E2' && e.level === level) : undefined;
         appendFileSync(
@@ -118,9 +129,11 @@ test("W9(a): 9.13's solves", () => {
             cd97: old?.cd ?? null,
             same97: old === undefined ? null : old.cd === r.cd,
             seconds: r.seconds,
+            resumed: r.resumed,
             commit,
           }) + '\n',
         );
+        rmSync(ck.path, { force: true });
         console.log(`${name} hexagon level ${level}: ${r.iterations} iterations, ${r.seconds} s`);
       }
       if (!done.has(`${name}|reference|${level}`)) {
@@ -132,7 +145,8 @@ test("W9(a): 9.13's solves", () => {
         const K = sample.reduce((a, f) => a + f.K * f.length, 0) / len;
         const inflow = referenceInflow(c.theta, c.mach, se.p2, K);
         const grid = gridFrom(section, level, start.column);
-        const r = solveEuler(grid, inflow.state, c.mach, level);
+        const ck = checkpoint(name, 'reference', level);
+        const r = solveEuler(grid, inflow.state, c.mach, level, ck);
         writeFileSync(join(WALLS, `${name}-reference-L${level}.json`), JSON.stringify(wallFaces(r.solver)));
         appendFileSync(
           OUT,
@@ -158,9 +172,11 @@ test("W9(a): 9.13's solves", () => {
             converged: r.converged,
             cd: r.cd,
             seconds: r.seconds,
+            resumed: r.resumed,
             commit,
           }) + '\n',
         );
+        rmSync(ck.path, { force: true });
         console.log(`${name} reference level ${level}: ${r.iterations} iterations, ${r.seconds} s`);
       }
     }

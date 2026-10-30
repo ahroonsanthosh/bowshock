@@ -1699,6 +1699,20 @@ The cost is given for five cases. The verdict now counts the cells
 after 9.14's re-judgement (974), and its K5 rule leaves 710 if K5 is
 unresolved. Nothing has run for this check.
 
+**2026-10-30, later: the runner checked and the runs started.** After
+Fable's quick look (PASS), the runner and the judge were committed
+(dfc1cab) before any solve of levels 2 to 4, and checked on levels 0
+and 1 only: 20 solves, all within the stopping rule, E2's hexagon equal
+to 9.7's at both levels to the bit. Because the machine restarts every
+few hours, each solve saves its state every 5 minutes and resumes from
+it; the solver keeps nothing else between iterations, and
+`w9/paired-resume.out` shows a solve stopped and resumed 11 times (and a
+reference 3 times) ending the same to the bit as one never stopped. On
+the coordinator's go, after the restart of about 15:40 UTC that freed
+the CPU, levels 2 to 4 run as one process per case, at most four at
+once, K5 last (`w9/paired-launch.sh`, which also resumes them after a
+restart and runs the judge when every case is done).
+
 ### 9.14 A known weakness of the code: the shock point's iteration (2026-10-30)
 
 **What failed.** At 4 nodes (12 deg, b 0.0141, Mach 1.6; 14 deg, b

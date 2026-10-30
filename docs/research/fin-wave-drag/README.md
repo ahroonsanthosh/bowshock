@@ -91,7 +91,16 @@ judge computes nothing new.
   solve's wall faces and wall-cell entropies): the solves of the
   corrected Euler check (0009 section 9.13). Each process runs one solve
   at a time; `CASES` and `LEVELS` choose its work, so one process per
-  case gives one solve per core.
+  case gives one solve per core. A solve saves a checkpoint every 5
+  minutes in `tests/tmp-w9/checkpoints/` and resumes from it after a
+  restart.
+- `paired-launch.sh`: starts or resumes levels 2 to 4, one detached
+  process per case, at most four at once, K5 last; then runs the judge.
+  Safe to run again at any time (`bash
+  docs/research/fin-wave-drag/w9/paired-launch.sh`).
+- `paired-resume.test.ts` > `paired-resume.out`: the check that a solve
+  stopped and resumed from its checkpoint is the same to the bit as one
+  never stopped.
 - `paired-judge.test.ts` > `paired-verdict.out` (and `served-cells.json`
   only where the verdict serves): 9.13's rule and verdict, written before
   any solve of levels 2 to 4.
