@@ -7,7 +7,7 @@
 
 import { appendFileSync, existsSync, readFileSync } from 'node:fs';
 import { exactSectionDrag } from '../../../../src/fins/section-drag';
-import { hexagonal } from '../../../../src/fins/section';
+import { hexagonal, type SymmetricSection } from '../../../../src/fins/section';
 import { obliqueShock } from '../../../../src/validation/gas-dynamics';
 import {
   CharacteristicsFailure,
@@ -20,6 +20,12 @@ export const DEG = Math.PI / 180;
 export const THETA = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] as const;
 export const BEVEL = Array.from({ length: 12 }, (_, k) => 0.01 * 2 ** (k / 2));
 export const MACH = [1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0] as const;
+/** 9.7's Euler cases. */
+export const E_CASES: Record<string, { section: SymmetricSection; mach: number; theta: number; bevel: number }> = {
+  E1: { section: hexagonal(0.08, 0.15), mach: 2.0, theta: Math.atan(0.04 / 0.15) / DEG, bevel: 0.15 },
+  E2: { section: hexagonal(2 * 0.12 * Math.tan(15 * DEG), 0.12), mach: 1.8, theta: 15, bevel: 0.12 },
+  E3: { section: hexagonal(2 * 0.1 * Math.tan(15 * DEG), 0.1), mach: 3.0, theta: 15, bevel: 0.1 },
+};
 /** 9.5's levels. */
 export const LEVELS = [16, 32, 64, 128, 256] as const;
 /** 9.4's ruling: no cell with a corner below this Mach number behind the shock is served. */
