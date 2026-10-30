@@ -1979,7 +1979,8 @@ shock's:
   cells start from the same state, row by row. So the hexagon's
   numerical wall layer is carried cell for cell on the same grid, while
   the physical entropy gradient from the curved shock (K below K_shock,
-  far above the wall, which the method computes) is not. As the layer
+  above the wall layer and higher than a Mach line from x_s can reach the
+  window, which the method computes) is not. As the layer
   thins with the grid, the reference's bevel pressure tends to p3,
   shock-expansion's, so E_k, the sum over the bevel window of
   (p_hexagon - p_reference) n_x times the face's length, estimates the
