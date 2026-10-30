@@ -1072,6 +1072,15 @@ independent flow solver at 13 deg (Mach 1.8) and 15 deg (Mach 1.8 and
 unresolved and only 9.13's cells below Mach 2.2 and near zero are
 served. The rest of 9.9 stands.
 
+_2026-10-30, later, a dated note with 9.15 (the owner's decision)._ If
+the last check (9.15) serves, the sentence on the Euler check also says
+that it was the third design of that check: "checked against an
+independent flow solver at 13 deg (Mach 1.8) and 15 deg (Mach 1.8, 2.0
+and 3.0), in the third design of that check (0009 section 9.15);
+elsewhere on the same method and its exact checks" if K5 agrees, and
+the same without "and 3.0" if K5 is unresolved and only the cells below
+Mach 2.2 and near zero are served.
+
 ### 9.10 How the population run counts it
 
 `evaluate.ts` asks `exactSectionDrag` itself, so `impact.test.ts` counts
@@ -1919,3 +1928,122 @@ registered above; it holds, and no value moved**
   failing 9.5 (0.11%), none outside its band. The cells that would be
   served if the independent check passes are 974, not 941: the 26 new
   cells and the 7 that the check points had removed; none is removed.
+
+### 9.15 The last Euler check (registered 2026-10-30, after 9.13's results were seen)
+
+**When and why.** The owner decided at 22:13 UTC on 2026-10-30 to
+register one last independent check, as designed by Fable's review of
+ed6d58b (9.13's review note). It is registered after 9.7's and 9.13's
+results were seen. This is the third design of the independent check:
+9.7 had a flawed window (E1's flat window ended before the method's
+first reflected wave landed), and 9.13 a wrong entropy transfer (it gave
+the reference, as a whole stream, the entropy of the hexagon's wall
+cells, a numerical layer a few cells thick made at the sharp tip). It is
+defensible only because each flaw was diagnosed from recorded numbers
+with a physical reason, and because the pass criteria do not move: the
+cases, the windows, the quantities, the uncertainty, the rule and the
+verdict tree are 9.13's. It is the last look. If it is unresolved, or if
+any window is a resolved disagreement, W9(a) is closed with the
+reflected-wave refusal kept for good, and no further design of this
+check is registered. 9.9's label and 0014's (aj) entry say that the
+Euler check that served, if one does, was the third design.
+
+**What stays as 9.13 registered it.** The five cases K1, K2, K3, K5 and
+E2; the bevel and flat windows; the method's values and U_M; E_k, H_k,
+F_k, G_k and D_k as defined there; the Euler's uncertainty from levels 2
+to 4 (|d_4| >= |d_3| unresolved; D* and U_E as there); the rule
+(resolved if U_E <= |G| / 4; agreement if |D*| <= max(U_E + U_M, |G| /
+4); disagreement otherwise); and the verdict tree: any resolved
+disagreement fails the check; the four cases K1, K2, K3 and E2 must be
+resolved agreements in both windows for anything to be served; K5 gates
+every cell with a corner at Mach 2.2 or above, so the cells served are
+974 if K5 agrees too and 710 (446 below Mach 2.2 and 264 near zero) if it
+is unresolved. Everything else of section 9 stands, with 9.14's change
+and re-judgement. Level 5 is not granted at all.
+
+**What changes: the reference's inflow.** 9.13's reference took a
+uniform inflow with the entropy of the hexagon's wall cells. Here it
+takes, row by row, the hexagon's own entropy where that is above the
+shock's:
+
+- _The hexagon_ is solved again at each level as in 9.13 (its final
+  states were not kept), with section 2.4's set-up, and records besides
+  its column of cell states at x_s: the cells whose right faces lie on
+  the grid line x_s (9.13's reference start), one per row j, with their
+  p / rho^gamma, K_hex(j).
+- _The reference_ is 9.13's grid from x_s on, but its inflow is a
+  `faceStates` boundary (`src/engine-cpu/euler2d.ts`, already used for
+  fitted shocks, so no change to the engine): on the face of row j, the
+  pressure p2 of the library's flat face, flow along x, the free
+  stream's total enthalpy, and the entropy max(K_hex(j), K_shock). Its
+  cells start from the same state, row by row. So the hexagon's
+  numerical wall layer is carried cell for cell on the same grid, while
+  the physical entropy gradient from the curved shock (K below K_shock,
+  far above the wall, which the method computes) is not. As the layer
+  thins with the grid, the reference's bevel pressure tends to p3,
+  shock-expansion's, so E_k, the sum over the bevel window of
+  (p_hexagon - p_reference) n_x times the face's length, estimates the
+  reflected waves' share of the bevel drag as G does, with the corner's
+  smearing and the wall layer shared at every finite level. The maximum
+  also carries any rise of entropy in the captured leading-edge shock
+  where it crosses x_s, far from the wall; the rows carried are
+  recorded.
+
+**Two predictions, registered before any solve of levels 2 to 4:**
+
+1. _Gated._ The reference's own deviation from p3 in the bevel window,
+   R_k = 2 / (q cd_SE) times the sum over the window of (p_reference -
+   p3) n_x times the face's length, shrinks in size from level 2 to 3
+   and from 3 to 4 (|R_2| > |R_3| > |R_4|), as the layer thins. If it
+   does not in a case, that case's bevel window is unresolved, whatever
+   D_k does.
+2. _Recorded, with no gate._ R_k should be near H_k - G, the hexagon's
+   own deviation from the method (in 9.13, K1's H_k - G was -3.3e-3,
+   -1.0e-3 and -5.9e-4 at levels 2 to 4). Both are recorded side by side
+   at every level.
+
+**An exactness check of the profile inflow, before any case.** A
+parallel rotational flow at uniform pressure must be held to round-off
+over 1,000 iterations, as T4 holds the method's: on the reference's
+columns and rows at levels 2 and 3 for K1 (b 0.08) and E2 (b 0.12), with
+the wall held at half the thickness from x_s to the end (a parallel flow
+is an exact solution only over a straight wall, so the bevel is left out
+of this check; this is the one point where the design as proposed had
+to be made concrete), the inflow a `faceStates` boundary with a profile
+of pressure p2, flow along x, the free stream's total enthalpy and an
+entropy that varies with the row (a layer at the wall and a streak in
+the stream), and every cell started from its row's state. After 1,000
+iterations of the reference's scheme, the largest relative change of
+density, of x velocity and of pressure, and the largest |v| over the
+speed, must each be at most 1e-12. It must pass before any case runs
+(`w9/last-exact.out`).
+
+**The flat windows** come from the hexagons alone. If `src` is unchanged
+since 9.13's runs, the hexagons' solves are the same arithmetic and must
+give 9.13's wall pressures to the bit; that is checked at every level,
+and then the flat windows carry over unchanged. If any differs, the flat
+windows are judged again from the new solves by the same rule.
+
+**Recorded besides, with no gate:** for each case and level, R_k beside
+H_k - G; the hexagon's column profile (the rows where K_hex is above
+K_shock and its largest value); the reference's wall-cell entropy along
+the flat and the bevel; whether each hexagon's wall pressures equal
+9.13's; and the drag, iterations, residuals and time of every solve.
+
+**Cost.** As 9.13's runs: the hexagons at level 4 took 0.9 to 2.2 hours
+each and the references at level 4 10 to 15 minutes, with a Chromium
+sharing the machine; the five cases took 3.6 hours on four cores. Levels
+0 and 1 may run first as a check of the code, with no gate.
+
+**Order and records.** (1) This registration and a dated note in 0014's
+(aj) entry, pushed. (2) The runner (`w9/last.test.ts`), the exactness
+check (`w9/last-exact.test.ts`, run, its output committed) and the
+judge (`w9/last-judge.test.ts`), all committed before any solve of
+levels 2 to 4; levels 0 and 1 may run as a check of the code. Then a
+review. (3) On the coordinator's go, levels 2 to 4, four cases at once,
+detached and resumable from their checkpoints (`w9/last-launch.sh`,
+safe to run at any time). (4) The judge (`w9/last-verdict.out`), the
+records and a dated note. The records: `w9/last.jsonl` (one line per
+solve), `w9/last-walls/` (each solve's wall faces and wall-cell
+entropies, each hexagon's column at x_s, and the method's values per
+case), `w9/last-verdict.out`.

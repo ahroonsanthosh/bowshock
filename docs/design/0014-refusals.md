@@ -4186,6 +4186,25 @@ its review, below; still before any code or run).
   abrupt to trust. Fable's review of ed6d58b (2026-10-30, 0009 section
   9.13) re-ran the judge byte-identical and found that K3 reading to come
   from the reference's own error, not from the method.
+- _2026-10-30, later still: the last check registered, 0009 section
+  9.15 (the owner's decision at 22:13 UTC, as designed by Fable's review
+  of ed6d58b)._ It is the third design of the independent check, after
+  9.7's flawed window and 9.13's wrong entropy transfer, each diagnosed
+  from recorded numbers with a physical reason; the cases, windows,
+  quantities, uncertainty, rule and verdict tree are 9.13's and do not
+  move. The hexagons are solved again, recording their column of cell
+  states at x_s, and the reference's inflow becomes a face-by-face
+  profile at the flat's pressure and the free stream's total enthalpy
+  with the entropy max(K_hex, K_shock), so the hexagon's numerical wall
+  layer is shared cell for cell and the physical entropy gradient is
+  not. Registered before any run: the reference's own bevel deviation
+  from p3 must shrink from level 2 to 3 to 4 (gated; if not, that bevel
+  window is unresolved), and should be near the hexagon's deviation from
+  the method (recorded); and the profile inflow must hold a parallel
+  rotational flow to round-off for 1,000 iterations before any case
+  runs. Level 5 is not granted at all. It is the last look: unresolved
+  or a disagreement closes W9(a) with the refusal kept for good, and if
+  it serves, the label says the Euler check was the third design.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
