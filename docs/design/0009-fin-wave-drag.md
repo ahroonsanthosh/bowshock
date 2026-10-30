@@ -1120,8 +1120,12 @@ node, check point or Euler case of 9.4 to 9.7 has been run.
   level. T4 holds as written (|p - 1| 6.3e-10, 1.6e-10, 4.0e-11 and
   9.95e-12 at N = 32 to 256, |theta| and the mass balance at order 2 as
   well), and each of its four planted errors fails it. T5 holds at the
-  four pairs (the landing's error at N = 256 between 1.4e-8 and 7.5e-6,
-  falling at order 2), and the bevel's quadrature within 2.3e-16. T3
+  four pairs (the landing's error at N = 256 between 1.4e-8 and 7.5e-6),
+  falling at order 2 at three of them and approaching it at the fourth,
+  (14 deg, 1.6), where it falls by 2.45, 3.0, 3.5 and 3.8 per doubling,
+  meeting the registered twelfth but not yet at order 2 (corrected after
+  the quick look below, which found "falling at order 2" said of all
+  four); the bevel's quadrature holds within 2.3e-16. T3
   holds at (8 deg, 1.6), (12 deg, 2.2) and (15 deg, 3.0), and does not at
   (14 deg, 1.6): |R_N - R| is 9.66e-2, 7.41e-2, 5.12e-2, 3.20e-2 and
   1.84e-2 at N = 16 to 256, falling at every doubling, but at N = 256 a
@@ -1146,7 +1150,8 @@ node, check point or Euler case of 9.4 to 9.7 has been run.
   nu that belongs to another entropy. On short bevels the step's cells
   near the rear corner are larger than the bevel (about 0.03 of the chord
   at N = 256, against a bevel of 0.01), and eps then moves by up to about
-  5% of itself between levels before it settles, so that such nodes would
+  7% of itself between levels before it settles (this said 5% until the
+  quick look below), so that such nodes would
   fail 9.5 (`w9/interpolation.out`: 12 deg, b 0.01, Mach 1.6, eps
   1.659e-3, 1.677e-3, 1.760e-3, 1.637e-3, 1.559e-3 at N = 16 to 256 and
   1.559e-3 at 512). Interpolating the pressure instead, which has no kink
@@ -1217,3 +1222,23 @@ planted errors, T5, the quadrature and T3, and for T2 values that differ
 only in round-off (all within 3.3e-14, as before), so the gate as ruled
 passes. The family has not been run: it waits for the quick look of this
 note.
+
+**2026-10-30, after Fable's quick look of 43b8ab3..78e953b (PASS: the
+family may run), before any run of the family.** Two statements above
+are corrected in place, each saying so: eps on short bevels with nu
+interpolated moves by up to about 7% of itself between levels, not 5%
+(1.760e-3 to 1.637e-3 is 7.0%; 2.433e-3 to 2.295e-3 at 15 deg, b 0.01,
+Mach 1.7, is 5.7%); and T5 converges at order 2 at three pairs and only
+approaches it at (14 deg, 1.6). Recorded besides:
+
+- _The nu diagnostic is a partial safeguard._ It can check a node only
+  where its nu run converges by 9.5. Where the nu run fails 9.5 (on short
+  bevels, by the comparison above, it may well), the node is judged by
+  its pressure run with no second run to check it.
+- _Two diagnostics adopted, with no gate:_ R_N at 10 deg and Mach 1.5,
+  the served corner with the lowest Mach number behind the shock (1.114),
+  is recorded over the five levels beside the node runs
+  (`w9/diagnostic-r.out`); and every line of `w9/nodes.jsonl` records
+  whether the node's nu run converged by 9.5 and, where both converged,
+  whether the two agreed within the larger of their U, so that the
+  safeguard's coverage is on record when the results are judged.
