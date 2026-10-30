@@ -1092,3 +1092,70 @@ run, dated. The most it can add (`w9-family.out`, with 9.4's ruling):
 5. The verdict by 9.5 to 9.7, recorded below this registration with every
    failure. If it passes: the code of 9.8 to 9.10, its tests with planted
    errors, and the population run; then the reviews.
+
+### 9.12 Notes, dated
+
+**2026-10-30: the code written and its checks run; the family not run;
+two points put to the owner.** The method is
+`src/validation/planar-characteristics.ts`, its checks
+`tests/validation/planar-characteristics.test.ts` (on
+`tests/support/planar-characteristics-checks.ts`), their numbers
+`docs/research/fin-wave-drag/w9/code-checks.out` (commit 2cacc90). No
+node, check point or Euler case of 9.4 to 9.7 has been run.
+
+- _A defect found and fixed while writing the code._ The first form of
+  the step's net started its march from the line from P with only the
+  fan's rays and that line's landing on the flat. The C+ characteristics
+  leaving the flat between the front corner and the landing, in the
+  uniform flow, were not in the net, so a strip of it of fixed width never
+  refined as N grew, against 9.2's "every spacing of the net scales as 1
+  / N". It showed, in a scratch run of that first form, as a mass balance
+  that stopped falling (1.65e-4, 1.63e-4 and 1.63e-4 at N = 64, 128 and
+  256 on a bevel of 0.01 at 5 deg and Mach 3). Fixed by putting N - 1
+  points of the uniform flow, equally
+  spaced, on the line from P between the fan's tail ray and the flat;
+  the mass balance then falls at about order 2 (6.1e-5, 1.4e-5, 3.6e-6).
+  The registered method is unchanged; the code now does what 9.2 says.
+- _The checks._ T1 holds within 4.6e-15 and T2 within 3.3e-14 at every
+  level. T4 holds as written (|p - 1| 6.3e-10, 1.6e-10, 4.0e-11 and
+  9.95e-12 at N = 32 to 256, |theta| and the mass balance at order 2 as
+  well), and each of its four planted errors fails it. T5 holds at the
+  four pairs (the landing's error at N = 256 between 1.4e-8 and 7.5e-6,
+  falling at order 2), and the bevel's quadrature within 2.3e-16. T3
+  holds at (8 deg, 1.6), (12 deg, 2.2) and (15 deg, 3.0), and does not at
+  (14 deg, 1.6): |R_N - R| is 9.66e-2, 7.41e-2, 5.12e-2, 3.20e-2 and
+  1.84e-2 at N = 16 to 256, falling at every doubling, but at N = 256 a
+  quarter of its value at N = 32 against the sixth registered. Taken
+  further for this note (outside the registered levels), it is 9.95e-3,
+  5.20e-3, 2.66e-3, 1.34e-3 and 6.76e-4 at N = 512 to 8192, falling by
+  0.54, 0.52, 0.51, 0.51 and 0.50 per doubling: R_N approaches R =
+  -0.1434 at first order, from about N = 512. Behind a shock at Mach
+  1.023 the fan's first step (14 deg over 256) moves the Mach number by
+  about a quarter of its distance from 1, so the first reflection is not
+  yet in its asymptotic range at the registered levels. No defect of the
+  code was found. By 9.3 and 9.6 the runs do not start while a check
+  fails; the owner rules. (The node at 14 deg and Mach 1.6 serves nothing
+  under 9.4's ruling, but T3 tests the code there, as registered.) The
+  committed test marks that one case as an expected failure, so that the
+  suite stays usable and the failure stays visible.
+- _A weakness of the registered interpolation, found while testing the
+  code._ Along the rear corner's C+ characteristic nu has a kink where it
+  crosses the streamline through P, since K(psi) has one there.
+  Interpolated linearly in nu across a cell of the step that straddles
+  that streamline, with K taken from K(psi), the data near the wall get a
+  nu that belongs to another entropy. On short bevels the step's cells
+  near the rear corner are larger than the bevel (about 0.03 of the chord
+  at N = 256, against a bevel of 0.01), and eps then moves by up to about
+  5% of itself between levels before it settles, so that such nodes would
+  fail 9.5 (`w9/interpolation.out`: 12 deg, b 0.01, Mach 1.6, eps
+  1.659e-3, 1.677e-3, 1.760e-3, 1.637e-3, 1.559e-3 at N = 16 to 256 and
+  1.559e-3 at 512). Interpolating the pressure instead, which has no kink
+  there, with nu then taken from the pressure and K(psi), converges
+  smoothly to the same values (1.5575e-3, 1.5583e-3, 1.5585e-3,
+  1.5586e-3, 1.5586e-3 and 1.5586e-3). On the six cases compared the two
+  agree within 2.2e-9 in eps from N = 64 on in four, and from N = 256 on
+  in the two short bevels where nu jumps: once a crossing lies between
+  the rear region and the kink they coincide. 9.2 fixed nu and
+  said it would not be changed later; whether to interpolate the pressure
+  instead before the runs is put to the owner. Nothing else in the method
+  would change.
