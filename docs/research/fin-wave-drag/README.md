@@ -85,3 +85,13 @@ judge computes nothing new.
   shock point's change and the re-judgement it registers (0009 section
   9.14). It reads a re-run of `code-checks.test.ts` saved as
   `tests/tmp-w9/code-checks-rerun.out`.
+- `paired.ts` and `paired.test.ts` > `paired.jsonl` (one line per solve)
+  and `paired-walls/` (`<case>-method.json`, the method's wall pressures
+  at N = 128 and 256; `<case>-<hexagon or reference>-L<level>.json`, each
+  solve's wall faces and wall-cell entropies): the solves of the
+  corrected Euler check (0009 section 9.13). Each process runs one solve
+  at a time; `CASES` and `LEVELS` choose its work, so one process per
+  case gives one solve per core.
+- `paired-judge.test.ts` > `paired-verdict.out` (and `served-cells.json`
+  only where the verdict serves): 9.13's rule and verdict, written before
+  any solve of levels 2 to 4.
