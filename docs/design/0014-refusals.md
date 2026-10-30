@@ -567,7 +567,9 @@ larger unknown and stays labelled. Effort medium, and CPU-heavy (one
 hexagon's fourth grid took 28 minutes). _2026-10-30: (a) registered in
 0009 section 9 with another measuring method (a planar method of
 characteristics, the Euler solves its check); 10.7 (aj). Later the same
-day: run as registered; the Euler check failed, and nothing is served._
+day: run as registered; the Euler check failed, and nothing is served.
+A corrected Euler check is then registered (0009 section 9.13), not yet
+run._
 
 **W11. Square-cut leading edges and rounded trailing edges.** No opened
 source isolates either at these conditions. The owner has allowed them
@@ -4089,6 +4091,37 @@ its review, below; still before any code or run).
   page's words, 0017's rows and the README's count line are unchanged.
   The shock point's iteration failed at four nodes and seven check
   points (11.5 to 14.4 deg), recorded and not changed.
+- _2026-10-30, later still: a corrected Euler check registered, after
+  the first check's results were seen_ (0009 sections 9.13 and 9.14; the
+  owner's decision). It is a second look and is recorded as one. The
+  first check failed because E1's flat window ended before the method's
+  first reflected wave lands there, and because level 3 was too coarse
+  for the difference it had to resolve. The new check replaces 9.7 as
+  the independent check 9.8 requires; everything else of the
+  registration stands, and the results of the gate, the nodes, the cells
+  and the check points are reused unchanged. Four cases where the
+  method's effect is largest at Mach 1.8 to 2.0 (eps +0.285%, +0.200%,
+  +0.171% and E2's +0.131%); windows that start where the method's first
+  reflected wave lands and stay b / 4 from every corner; the bevel window
+  compared by its part of the drag, the flat by its mean pressure; each
+  case solved twice on the same grid, the hexagon and a reference with
+  the same rear corner and no leading-edge shock, so that the corner's
+  own Euler error cancels in their difference; levels 0 to 4, the
+  Euler's uncertainty from the changes over levels 2 to 4, and a window
+  resolved only if that uncertainty is at most a quarter of the gap
+  between the method and shock-expansion. A resolved disagreement fails
+  the check; an unresolved window serves nothing; only resolved
+  agreement in every window serves. Level 5 is a second and last stage,
+  only with the coordinator's grant of the CPU. Estimated cost: about 10
+  to 17 hours one solve at a time, about 4 to 5 hours with one solve per
+  core. The check is one-signed: inside the family that can serve, the
+  most negative eps is -0.027%, too small to resolve (the -0.305% the
+  note on the runs quotes lies at nodes that serve nothing), which is
+  stated for the owner's ruling. The shock point's failures are recorded
+  as a known weakness of the code (a stopping-rule defect: the secant
+  reaches the round-off floor and then cycles until its 60th iterate),
+  with a proposed change, not made, that keeps every passing value the
+  same to the bit and has its own check. Nothing has run for this check.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to

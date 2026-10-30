@@ -73,3 +73,10 @@ judge computes nothing new.
   `checks.jsonl` (one line per check point).
 - `judge.test.ts` > `verdict.out` (and `served-cells.json` only where the
   verdict serves; on 2026-10-30 it did not).
+- `design-scan.test.ts` > `design-scan.out`: the method's own values at
+  42 hexagons that chose the cases of the corrected Euler check (0009
+  section 9.13); no Euler solve.
+- `shock-point.patch` > `shock-point.out`: the diagnosis of the shock
+  point's failures (0009 section 9.14). The patch adds logging inside the
+  method's shock point and a runner at `tests/tmp-w9/shock.test.ts`;
+  apply it only to a scratch checkout.
