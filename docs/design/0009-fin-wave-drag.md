@@ -1726,8 +1726,8 @@ rule below the cap, and none had to be resumed. E2's hexagon equals
   4.8e-4. K5's flat, at Mach 3.0, is unresolved: its changes grow (1.5e-3
   from level 2 to 3, then 1.7e-3).
 - _The bevel windows._ Unresolved in all five cases. In K1, K2, K3 and
-  K5 the paired difference D_k grows from level 3 to 4 (|d_4| larger than
-  |d_3|). In E2 it shrinks too slowly (U_E 7.6e-4 against |G| / 4 =
+  K5 the paired difference's change grows from level 3 to 4 (|d_4| larger
+  than |d_3|). In E2 it shrinks too slowly (U_E 7.6e-4 against |G| / 4 =
   1.6e-4). No window is a resolved disagreement.
 - _Verdict by 9.13:_ a window of K1, K2, K3 or E2 is unresolved and none
   disagrees, so the check is unresolved and nothing is served. Level 5 is
@@ -1742,13 +1742,14 @@ above):
   14.3% above the shock's (K / K_shock at level 4: 1.0478 in K1, 1.0635
   in K2, 1.0418 in K3, 1.1429 in K5, 1.0475 in E2). The reference
   carries it, at the same value, at every level, so E_k minus (H_k - the
-  reference's own error) is the same at every level (2.9e-3 of the drag
-  in K1, about 2.6 times G there). But the hexagon's own bevel pressure
-  does not follow that entropy: the unpaired share H_k moves toward the
-  method at every level in all five cases (H_k - G at levels 2, 3 and 4:
-  K1 -3.3e-3, -1.0e-3, -5.9e-4; K2 -5.2e-3, -2.0e-3, -1.1e-3; K3 -2.4e-3,
-  -5.0e-4, -4.4e-4; K5 -1.06e-2, -5.9e-3, -3.8e-3; E2 -1.3e-3, -8.0e-4,
-  -2.3e-4). The raised entropy sits in the row of cells next to the
+  reference's own error), which by construction is the window's integral
+  of p3 minus p3_k, is the same at every level (2.9e-3 of the drag in K1,
+  about 2.6 times G there). But the hexagon's own bevel pressure does
+  not follow that entropy: the unpaired share H_k moves toward the method
+  at each of levels 2 to 4 in all five cases (H_k - G at levels 2, 3 and
+  4: K1 -3.3e-3, -1.0e-3, -5.9e-4; K2 -5.2e-3, -2.0e-3, -1.1e-3; K3
+  -2.4e-3, -5.0e-4, -4.4e-4; K5 -1.06e-2, -5.9e-3, -3.8e-3; E2 -1.3e-3,
+  -8.0e-4, -2.3e-4). The raised entropy sits in the row of cells next to the
   wall, and a layer that thin does not act on the bevel's pressure as a
   whole stream of that entropy would. The reference's own error in the
   window is small at level 4 at Mach 1.8 to 2.0 (at most 1.6e-4 of the
@@ -1763,6 +1764,26 @@ above):
   method's effect (D* -3.7e-4, U_E 7.2e-5). But K3's change fell from
   1.9e-3 (level 2 to 3) to 6.0e-5 (level 3 to 4), a fall by a factor of
   about 30 that is not a settled order, so that reading is doubtful.
+
+_Review, 2026-10-30 (Fable, of ed6d58b):_ the judge is unchanged since
+1cd82ba and follows 9.13 as registered; re-run, `w9/paired-verdict.out`
+is byte-identical, and every judged number was recomputed independently
+from `w9/paired.jsonl` and agrees to the printed digits. The verdict,
+unresolved and nothing served, stands. On the readings above: (1) the
+wall-entropy transfer, which that review had required (option (a)), was
+a mistake: it treated a numerical layer a few cells thick, made at the
+sharp tip, as a property of the stream. It did not cause the verdict: a
+reference at the shock's entropy shifts D_k by a near-constant amount,
+so d_3, d_4 and every status would be the same. Withholding level 5
+stopped a converged false difference of about 2.6 times G. (2) The
+unpaired share moves away from the method from level 0 to 1 in K1, K2,
+K3 and K5, hence "levels 2 to 4" above; and at level 4 it shows 47%,
+-13%, 48%, -650% and 65% of the method's effect (K1, K2, K3, K5, E2), on
+an unsettled order, so it is not agreement either. (3) K3's 30-fold fall
+comes from the reference's own error, which swings from +7.8e-4 at level
+3 to +2.5e-5 at level 4; with it removed, K3's residual (-1.80e-3,
+-1.28e-3, -4.6e-4 at levels 2 to 4) falls the way K1's, K2's and E2's
+do. The 57% reading is not evidence of an error in the method.
 
 ### 9.14 A known weakness of the code: the shock point's iteration (2026-10-30)
 

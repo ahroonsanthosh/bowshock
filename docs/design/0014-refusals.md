@@ -4180,10 +4180,12 @@ its review, below; still before any code or run).
   from the hexagon's wall cells (4% to 14% above the shock's and not
   falling with the grid), over-corrects the bevel by a constant amount
   (about 2.6 times the effect in K1), while the unpaired Euler moves
-  toward the method at every level in all five cases; by 9.13's formula
-  the unpaired share is unresolved in four cases and in K3 would read as
-  57% of the method's effect, on a change from level 3 to 4 too abrupt
-  to trust.
+  toward the method at each of levels 2 to 4 in all five cases; by 9.13's
+  formula the unpaired share is unresolved in four cases and in K3 would
+  read as 57% of the method's effect, on a change from level 3 to 4 too
+  abrupt to trust. Fable's review of ed6d58b (2026-10-30, 0009 section
+  9.13) re-ran the judge byte-identical and found that K3 reading to come
+  from the reference's own error, not from the method.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
