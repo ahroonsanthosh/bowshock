@@ -61,11 +61,13 @@ export function gridLines(section: SymmetricSection, level: number) {
 }
 
 /** The grid from column `from` on (0 for the hexagon; the reference's x_s column for the reference). */
-export function gridFrom(section: SymmetricSection, level: number, from: number): StructuredGrid {
+export function gridFrom(section: SymmetricSection, level: number, from: number, flatWall = false): StructuredGrid {
   const { xNodes, wall, nj } = gridLines(section, level);
+  // flatWall (9.15's exactness check only): the wall held at the flat's height throughout.
+  const flat = section.halfThickness[1]!;
   return gridFromFunction(xNodes.length - 1 - from, nj, (i, j) => {
     const x = xNodes[from + i]!;
-    const y0 = wall(x);
+    const y0 = flatWall ? flat : wall(x);
     return [x, y0 + ((HEIGHT - y0) * j) / nj];
   });
 }
@@ -115,15 +117,13 @@ export interface Checkpoint {
   readonly abortAfterSave?: boolean;
 }
 
-/** 9.7's solve: HLLC, van Albada, shared scaled reconstruction, SSPRK2, CFL 0.8, local steps; its stopping rule and cap. */
-export function solveEuler(
-  grid: StructuredGrid,
-  inflow: Primitive,
-  mach: number,
-  level: number,
-  checkpoint?: Checkpoint,
-): SolveResult {
-  const q = 0.5 * GAMMA * mach * mach;
+/**
+ * 9.7's solver on a grid: HLLC, van Albada, shared scaled reconstruction,
+ * SSPRK2, CFL 0.8, local steps, a wall below and outflow above and behind;
+ * a uniform inflow (9.7, 9.13) or one state per row on a faceStates side
+ * (9.15), every cell started from the inflow (its row's state).
+ */
+export function makeSolver(grid: StructuredGrid, inflow: Primitive | readonly Primitive[]): Euler2D {
   const s = new Euler2D({
     grid,
     geometry: 'planar',
@@ -135,13 +135,32 @@ export function solveEuler(
     cfl: 0.8,
     timeStepping: 'local',
     boundaries: {
-      iMin: { kind: 'inflow', state: inflow },
+      iMin: Array.isArray(inflow) ? { kind: 'faceStates', states: inflow } : { kind: 'inflow', state: inflow as Primitive },
       iMax: { kind: 'outflow' },
       jMin: { kind: 'wall' },
       jMax: { kind: 'outflow' },
     },
   });
-  s.setInitialCondition(() => inflow);
+  if (Array.isArray(inflow)) {
+    const rows = inflow as readonly Primitive[];
+    s.setCellPrimitives((_, j) => rows[j]!);
+  } else {
+    const uniform = inflow as Primitive;
+    s.setInitialCondition(() => uniform);
+  }
+  return s;
+}
+
+/** 9.7's solve: HLLC, van Albada, shared scaled reconstruction, SSPRK2, CFL 0.8, local steps; its stopping rule and cap. */
+export function solveEuler(
+  grid: StructuredGrid,
+  inflow: Primitive | readonly Primitive[],
+  mach: number,
+  level: number,
+  checkpoint?: Checkpoint,
+): SolveResult {
+  const q = 0.5 * GAMMA * mach * mach;
+  const s = makeSolver(grid, inflow);
   let r0 = s.densityResidualNorm();
   const drag = () => {
     let d = 0;
@@ -276,3 +295,18 @@ export const bevelWindow = (b: number) => [1 - 0.75 * b, 1 - 0.25 * b] as const;
 export const flatWindow = (landing: number, b: number) => [landing, 1 - 1.25 * b] as const;
 /** Where the reference's entropy is sampled: wall cells with centres on the flat from x_s to 1 - 1.25 b. */
 export const entropyStretch = (xs: number, b: number) => [xs, 1 - 1.25 * b] as const;
+
+/** The cell states of a solve's column i (one per row), with each cell's p / rho^gamma. */
+export function columnStates(s: Euler2D, i: number) {
+  const out: { j: number; rho: number; u: number; v: number; p: number; K: number }[] = [];
+  for (let j = 0; ; j++) {
+    let c: Primitive;
+    try {
+      c = s.primitive(i, j);
+    } catch {
+      break;
+    }
+    out.push({ j, rho: c.rho, u: c.u, v: c.v, p: c.p, K: c.p / c.rho ** GAMMA });
+  }
+  return out;
+}

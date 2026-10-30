@@ -101,6 +101,15 @@ judge computes nothing new.
 - `paired-resume.test.ts` > `paired-resume.out`: the check that a solve
   stopped and resumed from its checkpoint is the same to the bit as one
   never stopped.
+- The last Euler check (0009 section 9.15): `last.test.ts` > `last.jsonl`
+  and `last-walls/` (as 9.13's, plus each hexagon's column of cell
+  states at x_s in `<case>-column-L<level>.json`); the reference's inflow
+  is a faceStates profile. `last-exact.test.ts` > `last-exact.out`, the
+  profile inflow's exactness check, run before any case.
+  `last-judge.test.ts` > `last-verdict.out` (and `served-cells.json` only
+  where it serves). `last-launch.sh` starts or resumes levels 2 to 4,
+  one process per case, and runs the judge; safe to run again at any
+  time.
 - `paired-judge.test.ts` > `paired-verdict.out` (and `served-cells.json`
   only where the verdict serves): 9.13's rule and verdict, written before
   any solve of levels 2 to 4.
