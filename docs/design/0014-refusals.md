@@ -3980,3 +3980,178 @@ allocate. _(Corrected 2026-10-28, the re-review's R4: this branch's
 text here said (w) to (ac) were allocated on other branches; (ac) is this
 branch's F4 entry, above, and on merging main at 3e026a8 main's sentence
 replaces that one.)_
+
+**2026-10-30 (ai): measured forward-region pressures for W6's rounded
+tips, named before any is read** (route (b) of W6's pause, its first
+candidate, by the owner's choice; the letter claimed in the coordinator's
+registry, for the coordinator to confirm). Written on
+`claude/wip/w6-sources` before any source below was obtained or read and
+before any W6 value was computed for any of their cases. W6's README
+section 12, on the same branch, holds the search, the files and the
+coverage in full.
+
+- _Why._ W6 was paused on 2026-10-27 (`claude/wip/w6-build`, its README
+  sections 10.2 and 11). The forward region of the capped noses, the cap
+  and the body behind it ahead of the lines where the first march passes
+  W5's criterion, has no independent reference: the marches that would
+  carry its embedded shock failed V2 and V3. So W6 serves nothing. (x),
+  with its addenda on `claude/wip/w6-build`'s 0014, named TR 1386 as the
+  measured check; its rounded tips are all hemisphere-cones, so it checks
+  the cap and serves no shape. This entry names measured pressures for
+  the forward region of the noses W6 offers a tip radius on (the tangent
+  ogive, the Von Karman nose, the parabola K = 1), and the rules by which
+  they could let W6 serve.
+- _What the search found._ NTRS (the NACA RM, TN and TR and the NASA TN,
+  TM X and TR series), ARC papers, AGARD's validation compilations, DTIC
+  and AIAA records. **No NACA or NASA report found gives measured
+  pressures on a sphere-capped ogive, Haack or parabolic nose at r_n/R
+  0.03 to 0.2 and Mach 1.3 to 3, and none was found anywhere for a
+  blunted Von Karman or other Haack nose.** Four candidates fit in part.
+  C1, C2 and C4 are DTIC reports, and DTIC refused every download from
+  this session (HTTP 403, "The request is blocked"); C2's journal form and
+  C3 are AIAA papers behind a paywall. They are known only by their
+  abstracts:
+  - C1: Gray, Dolling and Bogdonoff, May 1981, DTIC ADA101513: a tangent
+    ogive-cylinder of nose fineness about 3, six hemispherical and flat
+    tips of various sizes and a pointed one, Mach 2.94, surface pressures
+    at 0 and 2.9 deg;
+  - C2: Dolling, 30 September 1985, DTIC ADA163736, and Dolling and Gray,
+    AIAA Journal 24 (5), 1986 (doi 10.2514/3.9347): a tangent-ogive
+    cylinder at Mach 3 with pointed, tangent-hemisphere and flat tips,
+    surface pressures at 0 to 4.5 deg (probably C1's tunnel and models);
+  - C3: Guidos, Weinacht and Dolling, AIAA paper 90-0587, 1990: computation
+    against C1 and C2's tests, a second print of their measurements;
+  - C4: Markarian, August 1972, DTIC AD0749934: one ogive-cylinder, sharp
+    and with two spherical tips, Mach 0.7 to 2.02, surface pressures;
+  - C5, not confirmed: NAVWEPS Reports 8448 and 8048 (a blunt-nosed body
+    of revolution; a spherical-tipped tangent ogive), named by a web
+    search at a DTIC address.
+
+  Their tip radii, finenesses (C4's), tap stations, stated accuracies,
+  and whether they tabulate, are unknown. The measured drags found (NASA
+  TM X-3128; NACA RM L51E25 and RM L53D14a; other flight totals) are
+  balance forces or flight totals with friction, base and fins, which
+  (x)'s rule excludes; they are not named.
+
+- _What is named._ C1, C2 (report and paper) and C4. C3 only where C1's
+  or C2's own figures cannot be read, never as a separate set. C5 under
+  the same rule if a neutral party confirms it is what the search said.
+  In each, every figure or table that gives, at zero incidence, the
+  measured surface pressure along a model whose tip is a hemisphere or
+  sphere cap tangent to an ogive, Haack, power-law or parabolic nose; and
+  the same body with its pointed tip, as the control. Not named: flat
+  tips, incidence other than zero, boundary-layer surveys, shadowgraphs
+  and schlieren, forces, computed curves, and any drag.
+- _How the figure numbers are fixed._ A neutral party (not a reader, not
+  W6's agent, having seen no W6 computed value for these cases) obtains
+  each report, records its address, size and SHA-256, opens only its list
+  of figures and tables and their captions, and lists the named numbers
+  in a dated addendum to this entry before any reader sees a figure. A
+  caption that does not say whether the tip is rounded, or what the
+  pressures are, is named, and the readers say what it shows.
+- _Two readings and a neutral pairing_, as (x) and rounds 19 and 20 of
+  (ah): every named item read twice, the second blind, by readers who
+  never see each other's readings or any W6 value; tables transcribed
+  twice the same way; every meridian at zero incidence read; the pressure
+  taken as printed and converted to Cp by the pairer with the printed
+  Mach number. A station pairs when the two readings agree within their
+  summed stated errors in station and Cp; its envelope holds both
+  readings and every meridian; a partly hidden symbol keeps every
+  reading; an unpaired station is recorded and not used. The models'
+  geometry (the parent's shape and fineness, the tip radius and how the
+  tip joins, the diameter, the stations) is read and paired the same way,
+  before any run. The readers' files, the brief, the pairing script and
+  its output are committed verbatim with their hashes. The W6 agent does
+  not open the readers' folder before the coordinator sends the pairing.
+- _The runs._ W6's fitted solver from `claude/wip/w6-build`, from a frozen
+  tree of a named commit as the TR 1386 runs were: the families on nj =
+  20, 40 and 80, the wall pressures, and the first march's lines chosen
+  by its rule (README section 3). W6's capped tangent ogive with the
+  source's parent and tip radius, the geometry checked and recorded before
+  any run. The pointed control on main's sharp-nose path. Inviscid, gamma
+  1.4, the source's Mach number as printed, only at Mach 1.3 to 3. The
+  page's checks on every grid are recorded. A tip that does not meet its
+  ogive tangentially is not compared. The comparison script is committed
+  before any computed value exists; nothing is compared before the
+  pairing.
+- _The comparison._ Over each capped case's forward region: from the
+  cap's sonic point on the computed wall to the wall point of the first
+  line where the first march passes W5's criterion on every grid, or to
+  the nose's end if none does. At each station the computed wall Cp on
+  nj = 80 over the station's paired envelope in x, with a band of 1.25
+  |Cp(80) - Cp(40)| where the three grids change monotonically and their
+  range where not (first order assumed, since the embedded shock is
+  captured). A station agrees when that overlaps the paired envelope
+  widened by the source's stated accuracy (by nothing if none is stated,
+  and said so). The control is compared the same way along its whole
+  nose. A case passes when its control agrees at every station and every
+  station of its forward region agrees. Where the control fails at a Mach
+  number, the capped cases there are not decided and cannot pass. No
+  viscous correction is made. A difference beyond both envelopes goes to
+  0022 (w) as evidence, under that record's rules.
+- _The measured allowance._ For each passing case, a bound E on the error
+  of the forward region's pressure drag, over the nose's computed drag,
+  the sum of three parts integrated over the forward region's wall as
+  pressure drag on the base area: between paired stations, the larger
+  distance from the computed Cp to either edge of the widened envelope,
+  linear in x between stations; the sampling error, the computed nj = 80
+  wall pressure integrated in full against the same pressure sampled at
+  the paired stations and taken linearly between them; and outside the
+  paired stations, the larger distance from the computed Cp to the pitot
+  pressure above and vacuum below. The allowance is twice the largest E
+  over the passing cases, rounded up to one significant figure. A served
+  capped nose carries its family's band, this allowance, and W6's
+  allowance (README section 3) for the region behind the first passing
+  line.
+- _What a pass serves._ Per shape, the convex hull in (r_n/R, fineness,
+  Mach) of the passing cases, within W6's box (3 to 5 calibers, r_n/R
+  0.03 to 0.15, Mach 1.3 to 3) where W6's families have three converged
+  grids passing the page's checks. A point on the hull counts as inside.
+  A hull with no extent in any of the three serves nothing. One shape's
+  cases serve no other shape. A failed case inside the hull of the passing
+  ones holds everything until the owner decides. Inside the hull, W6's
+  condition that referenced lines carry half the drag (README section 6
+  item 4) is met by the forward-region check.
+- _What stays refused._ Capped cones and secant ogives (a corner with the
+  body, new grid work, out of scope), even where measured: TR 1386 and TM
+  X-1730 stay checks. LV-Haack and power-series noses with a tip radius.
+  Flat tips. Every capped nose outside the hull. Tips below r_n/R 0.03 (not
+  served as sharp). Mach below 1.3.
+- _Not a hold-out._ Once the addendum names them, these figures are
+  band-setting tunnel data under 10.1 rule 2. None is held back, and no
+  held-back set is touched.
+- _What it could unlock_ (a probe of the audit, not committed; README
+  section 12.2). Of the 994 rockets with a rounded tip (r_n/R 0.03 to
+  0.15), W6's three shapes could give at most 261 totals of 8000 (the
+  tangent ogive 101, the Von Karman nose 153, the parabola 7), all at Mach
+  1.5 to 3.0; within W6's box 204. C1 and C2 are one ogive of one
+  fineness at one Mach number, and C4 one ogive of one fineness, so by
+  the hull above each serves nothing even if every case passes. Together
+  they could give a hull with extent only if their finenesses differ, at
+  most 99 totals (the ogive's box from Mach 1.5 to 2.94). Nothing named
+  reaches the Von Karman nose.
+- _What it can show._ Measured pressures carry errors of about 0.004 to
+  0.02 in Cp (TR 1386 states 0.004 in P; its paired readings spanned 0.034
+  to 0.036). An error e in Cp over the whole frontal area moves the
+  pressure drag coefficient by e, and the forward region is nearly the
+  whole nose on most of W6's families; against nose drags of about 0.042
+  (the 5-caliber ogive at Mach 1.3) to 0.091 (the 3-caliber ogive at Mach
+  3), that is about 4% to 50% of the nose's drag: an estimate made before
+  any reading. The gap in question is 2.6% to 3.6%. A pass cannot resolve
+  it; it can reject the fitted solver where it is off by more than the
+  measurement's error, or give a measured band of that size.
+- _Before anything runs, for the owner and the coordinator._ (1) Whether
+  C1, C2 and C4 (and C5) may be obtained from an ordinary connection and
+  used; until then nothing is read. (2) Whether to keep this strict hull,
+  which most likely serves nothing from these sources, or to register a
+  looser one (a policy change) before any reading. (3) Whether a band of
+  the measurement's size is worth serving. (4) The Von Karman nose has no
+  measured source; the independent Euler solver or W6's option (c) would
+  be needed for it. (5) The letter and the reading rounds.
+- _Disclosed._ Search engines displayed parts of some summaries: TR
+  1386's, RM L51E25's abstract, RM L53D14a's summary with one paragraph
+  of its drag results (in words and percentages), TM X-1730's summary and
+  stated accuracy, and a flared body's abstract (NTRS 19980227823, not
+  relevant) with its largest drag. No figure or table of measured
+  pressures of any report was viewed. The files opened and screened out,
+  with their SHA-256, are listed in README section 12.1.
