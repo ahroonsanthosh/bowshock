@@ -26,28 +26,34 @@ rather than guessing.
 **Solid:**
 
 - **Nose drag** for cones, ogives, parabolic and ellipsoid noses from Mach
-  1.2 to 5, and Von Kármán noses from Mach 1.5 to 3. The band covers the
-  numerical error; tunnel tests sit from a few percent to about a third off the
-  inviscid answer, and that gap isn't on the page yet.
+  1.2 to 5, and Von Kármán noses from Mach 1.5 to 3 (1 to 5 calibers long,
+  up to 6 at Mach 3). The band covers the numerical error; tunnel tests sit
+  from a few percent to about a third off the inviscid answer, and that gap
+  isn't on the page yet.
 - **Skin friction**, within -12% to +19% of 23 measurements.
+- **Fins and base**, wherever wind-tunnel data or exact theory covers the
+  shape.
 - **The solver itself**, against exact shock, expansion and cone solutions.
 
 **The honest catch:** a total needs every part checked, and most real
-rockets have at least one part that isn't yet. Rounded nose tips, swept
-fins, Von Karman noses outside the lengths and speeds checked and other
-Haack noses, boat-tails, square or rounded fin edges and anything below
-Mach 1.5 are the usual blockers. In our test set of 2,000 typical rockets, each
-flown at four speeds (8,000 cases), only 235 cases get a total today. For those, bowshock still shows the parts it can work out, and a
-"drag is at least this much" floor where that is safe.
+rockets have at least one part that isn't yet. The usual blockers are
+anything below Mach 1.5, rounded nose tips, Haack and power-series noses
+outside the range above, fins at the base swept in ways no test has
+measured, fins that end just ahead of the base, boat-tails, and square or
+rounded fin edges. In our test set of 2,000 typical rockets, each flown at
+four speeds (8,000 cases), 235 cases get a total today. For the rest,
+bowshock lists every reason, says what you could change, shows the parts it
+can work out, and gives a "drag is at least this much" floor where that is
+safe.
 
 **Not built yet:** viscous (RANS) flow, angle of attack, motor plume.
 
 ## What's next
 
-Checking the parts that block the most rockets, starting with base drag
-behind swept fins, fin shock reflections and square fin edges, then the fins
-below Mach 1.5. Each fix is measured against theory or wind-tunnel data
-before it goes live.
+The work that would unlock the most totals: rounded nose tips (half of the
+test rockets have them), then fins at the base with untested sweeps, square
+or rounded fin edges, and fin shock reflections. Each is lifted only when
+theory or wind-tunnel data covers it.
 
 ## How we keep it honest
 
