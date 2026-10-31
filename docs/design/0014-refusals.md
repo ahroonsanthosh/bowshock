@@ -569,7 +569,8 @@ hexagon's fourth grid took 28 minutes). _2026-10-30: (a) registered in
 characteristics, the Euler solves its check); 10.7 (aj). Later the same
 day: run as registered; the Euler check failed, and nothing is served.
 A corrected Euler check is then registered (0009 section 9.13), not yet
-run._
+run._ _2026-10-31: 9.13 and then a last check, 0009 section 9.15, both
+unresolved; W9(a) is closed with the refusal kept (10.7 (aj))._
 
 **W11. Square-cut leading edges and rounded trailing edges.** No opened
 source isolates either at these conditions. The owner has allowed them
@@ -4205,6 +4206,20 @@ its review, below; still before any code or run).
   runs. Level 5 is not granted at all. It is the last look: unresolved
   or a disagreement closes W9(a) with the refusal kept for good, and if
   it serves, the label says the Euler check was the third design.
+- _2026-10-31: 9.15 run; unresolved; W9(a) closed with the refusal
+  kept for good_ (0009 section 9.15's note on the runs,
+  `w9/last-verdict.out`). 50 solves, all within the stopping rule; every
+  hexagon equal to 9.13's to the bit. The gated prediction holds in all
+  five cases (the reference's own bevel deviation shrinks from level 2 to
+  4), and that deviation lies near the hexagon's deviation from the
+  method, as predicted. K5's bevel window is a resolved agreement; the
+  flat windows of K1, K2, K3 and E2 are resolved agreements as in 9.13;
+  the bevel windows of K1, K2, K3 and E2, and K5's flat, are unresolved,
+  and none disagrees. So nothing is served, and by 9.15 this was the
+  last look. Read with no gate: in K1, K2, K3 and E2 the paired bevel
+  difference stays below a quarter of the method's effect at every level
+  from 2 to 4 but E2's level 2, but barely changes from level 2 to 3, so
+  the rule cannot extrapolate it.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to

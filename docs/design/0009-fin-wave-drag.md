@@ -2048,3 +2048,42 @@ records and a dated note. The records: `w9/last.jsonl` (one line per
 solve), `w9/last-walls/` (each solve's wall faces and wall-cell
 entropies, each hexagon's column at x_s, and the method's values per
 case), `w9/last-verdict.out`.
+
+**2026-10-31: the runs and the verdict of 9.15. The check is unresolved:
+nothing is served, and W9(a) is closed with the reflected-wave refusal
+kept for good** (`w9/last-verdict.out`). Levels 2 to 4 ran from 22:39 UTC
+on 2026-10-30 to 01:25 UTC on 2026-10-31 on 34610ce (levels 0 and 1 on
+0ae021e), four cases at once, K5 from 00:12. All 50 solves met the
+stopping rule below the cap, and none had to be resumed. All 25
+hexagon solves gave 9.13's wall pressures to the bit, so the flat windows
+are 9.13's.
+
+- _Prediction (i), gated, holds in all five cases:_ |R_k| shrinks from
+  level 2 to 3 to 4 (K1 3.4e-3, 1.2e-3, 6.7e-4; K2 5.4e-3, 2.2e-3,
+  1.3e-3; K3 2.6e-3, 6.4e-4, 5.1e-4; K5 1.10e-2, 6.2e-3, 4.1e-3; E2
+  1.5e-3, 9.2e-4, 2.7e-4).
+- _Prediction (ii), recorded:_ R_k lies near H_k - G at every level. At
+  level 4: K1 -6.7e-4 against -5.9e-4; K2 -1.26e-3 against -1.13e-3; K3
+  -5.1e-4 against -4.4e-4; K5 -4.06e-3 against -3.85e-3; E2 -2.7e-4
+  against -2.3e-4.
+- _The flat windows:_ as in 9.13, resolved agreements in K1, K2, K3 and
+  E2; K5's is unresolved.
+- _The bevel windows:_ K5's is a resolved agreement (D* 1.2e-4, U_E
+  9.0e-5, against a tolerance of 1.27e-4 and G 5.1e-4). K1, K2, K3 and
+  E2 are unresolved by the rule that |d_4| >= |d_3| is unresolved: their
+  paired differences barely change from level 2 to 3 (d_3 7.0e-6,
+  -3.3e-5, -5.2e-6 and -5.4e-5) and then change by more from 3 to 4
+  (d_4 -6.8e-5, -7.3e-5, -7.2e-5 and -8.4e-5).
+- _Verdict by 9.15 (9.13's tree):_ windows of K1, K2, K3 and E2 are
+  unresolved and none disagrees, so the check is unresolved. Nothing is
+  served. 9.15 was the last look, so W9(a) is closed with the refusal
+  kept, and no further design of the check follows.
+
+A reading with no gate, which changes nothing above: in K1, K2, K3 and
+E2 the paired difference stays small at each of levels 2 to 4. As a
+share of the method's bevel effect G it is 12%, 13% and 7% in K1; 24%,
+20% and 13% in K2; 17%, 17% and 8% in K3; and 27%, 19% and 6% in E2.
+So it is below a quarter of the effect at every level but E2's level 2.
+But it does not settle in the way the rule requires: its change from
+level 2 to 3 is nearly zero, so the rule cannot extrapolate it and reads
+it as unresolved. The verdict stands as registered.
