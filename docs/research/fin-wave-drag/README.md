@@ -107,9 +107,9 @@ judge computes nothing new.
   is a faceStates profile. `last-exact.test.ts` > `last-exact.out`, the
   profile inflow's exactness check, run before any case.
   `last-judge.test.ts` > `last-verdict.out` (and `served-cells.json` only
-  where it serves). `last-launch.sh` starts or resumes levels 2 to 4,
-  one process per case, and runs the judge; safe to run again at any
-  time.
+  where it serves; it served nothing: unresolved, W9(a) closed).
+  `last-launch.sh` starts or resumes levels 2 to 4, one process per case,
+  and runs the judge; safe to run again at any time.
 - `paired-judge.test.ts` > `paired-verdict.out` (and `served-cells.json`
-  only where the verdict serves): 9.13's rule and verdict, written before
-  any solve of levels 2 to 4.
+  only where the verdict serves; it served nothing: unresolved): 9.13's
+  rule and verdict, written before any solve of levels 2 to 4.

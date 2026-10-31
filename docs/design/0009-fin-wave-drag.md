@@ -389,6 +389,9 @@ bound.
   registered as section 9, by a characteristics solution with the planar
   Euler solves as its check; not yet run.) (2026-10-30, later: run as
   registered; the Euler check failed, and nothing is served; section 9.12.)
+  (2026-10-31: a corrected check, section 9.13, and a last check, section
+  9.15, were both unresolved; W9(a) is closed with the reflected-wave
+  refusal kept for good, and no further design of the check follows.)
 - TN D-4014 fig. 4 (the ARCAS chamber force), to be digitised, as the audit
   asked, before the ARCAS increments are used to set a fin band.
 
@@ -2056,7 +2059,12 @@ on 2026-10-30 to 01:25 UTC on 2026-10-31 on 34610ce (levels 0 and 1 on
 0ae021e), four cases at once, K5 from 00:12. All 50 solves met the
 stopping rule below the cap, and none had to be resumed. All 25
 hexagon solves gave 9.13's wall pressures to the bit, so the flat windows
-are 9.13's.
+are 9.13's. Before the runs, Fable's review of 9.15 as registered and
+coded (8492d31 to 375c98f) passed it with nothing to fix, and its one
+optional wording note was taken in place before any level 2 to 4 run
+(34610ce): the entropy gradient the reference leaves out lies "above the
+wall layer and higher than a Mach line from x_s can reach the window",
+not "far above the wall". No rule, number or code changed.
 
 - _Prediction (i), gated, holds in all five cases:_ |R_k| shrinks from
   level 2 to 3 to 4 (K1 3.4e-3, 1.2e-3, 6.7e-4; K2 5.4e-3, 2.2e-3,
@@ -2065,25 +2073,31 @@ are 9.13's.
 - _Prediction (ii), recorded:_ R_k lies near H_k - G at every level. At
   level 4: K1 -6.7e-4 against -5.9e-4; K2 -1.26e-3 against -1.13e-3; K3
   -5.1e-4 against -4.4e-4; K5 -4.06e-3 against -3.85e-3; E2 -2.7e-4
-  against -2.3e-4.
+  against -2.3e-4. By construction R_k = H_k - G - D_k, with D_k the
+  bevel's paired difference, so this shows that the pairing removes most
+  of the hexagon's own error on each grid; it is not a separate test of
+  the method, and says nothing about agreement that D_k does not.
 - _The flat windows:_ as in 9.13, resolved agreements in K1, K2, K3 and
   E2; K5's is unresolved.
 - _The bevel windows:_ K5's is a resolved agreement (D* 1.2e-4, U_E
   9.0e-5, against a tolerance of 1.27e-4 and G 5.1e-4). K1, K2, K3 and
   E2 are unresolved by the rule that |d_4| >= |d_3| is unresolved: their
-  paired differences barely change from level 2 to 3 (d_3 7.0e-6,
-  -3.3e-5, -5.2e-6 and -5.4e-5) and then change by more from 3 to 4
-  (d_4 -6.8e-5, -7.3e-5, -7.2e-5 and -8.4e-5).
+  paired differences change more from level 3 to 4 (d_4 -6.8e-5,
+  -7.3e-5, -7.2e-5 and -8.4e-5) than from level 2 to 3 (d_3 7.0e-6,
+  -3.3e-5, -5.2e-6 and -5.4e-5), by factors of 9.7, 2.2, 13.8 and 1.6,
+  so the changes are not shrinking.
 - _Verdict by 9.15 (9.13's tree):_ windows of K1, K2, K3 and E2 are
   unresolved and none disagrees, so the check is unresolved. Nothing is
   served. 9.15 was the last look, so W9(a) is closed with the refusal
   kept, and no further design of the check follows.
 
-A reading with no gate, which changes nothing above: in K1, K2, K3 and
-E2 the paired difference stays small at each of levels 2 to 4. As a
-share of the method's bevel effect G it is 12%, 13% and 7% in K1; 24%,
-20% and 13% in K2; 17%, 17% and 8% in K3; and 27%, 19% and 6% in E2.
-So it is below a quarter of the effect at every level but E2's level 2.
-But it does not settle in the way the rule requires: its change from
-level 2 to 3 is nearly zero, so the rule cannot extrapolate it and reads
-it as unresolved. The verdict stands as registered.
+A reading with no gate, which changes nothing above and is no ground to
+reopen W9(a): in K1, K2, K3 and E2 the paired bevel difference D_k, as a
+share of the method's bevel effect G, is 12%, 13% and 7% at levels 2, 3
+and 4 in K1; 24%, 20% and 13% in K2; 17%, 17% and 8% in K3; and 27%, 19%
+and 6% in E2. These are values on the grids run, not the Euler's limit,
+and they do not show where that limit lies: in all four cases D_k
+changes more from level 3 to 4 than from level 2 to 3, so no order of
+convergence can be read from them and the Euler's uncertainty in these
+windows has no bound. That is what unresolved records here; it is not a
+near agreement. The verdict stands as registered.

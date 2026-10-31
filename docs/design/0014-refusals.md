@@ -626,6 +626,9 @@ atmosphere).
   limit** (F10, F11): rare, and outside every method's verification.
 - **Blunt noses far from the measured** (N11): near-flat faces and
   untangent blunt noses until corners on C grids are measured (W6).
+- **Reflected waves on hexagonal fin sections** (F9, W9(a)): kept for
+  good on 2026-10-31, after the third and last design of the Euler check
+  (0009 section 9.15) left the method's values unconfirmed; 10.7 (aj).
 - **Beyond the data**: thin-layer parameters past 4.5, Re_D outside 6.7e3
   to 1e6, Mach above 3.0 for the bases (the page's nose goes to 5; the
   bands are stated to 3.0).
@@ -4211,15 +4214,18 @@ its review, below; still before any code or run).
   `w9/last-verdict.out`). 50 solves, all within the stopping rule; every
   hexagon equal to 9.13's to the bit. The gated prediction holds in all
   five cases (the reference's own bevel deviation shrinks from level 2 to
-  4), and that deviation lies near the hexagon's deviation from the
-  method, as predicted. K5's bevel window is a resolved agreement; the
-  flat windows of K1, K2, K3 and E2 are resolved agreements as in 9.13;
-  the bevel windows of K1, K2, K3 and E2, and K5's flat, are unresolved,
-  and none disagrees. So nothing is served, and by 9.15 this was the
-  last look. Read with no gate: in K1, K2, K3 and E2 the paired bevel
-  difference stays below a quarter of the method's effect at every level
-  from 2 to 4 but E2's level 2, but barely changes from level 2 to 3, so
-  the rule cannot extrapolate it.
+  4); that deviation lies near the hexagon's deviation from the method,
+  as predicted, but the two differ by exactly the paired bevel
+  difference, so this is not separate evidence of agreement. K5's bevel
+  window is a resolved agreement; the flat windows of K1, K2, K3 and E2
+  are resolved agreements as in 9.13; the bevel windows of K1, K2, K3
+  and E2, and K5's flat, are unresolved, and none disagrees. So nothing
+  is served, and by 9.15 this was the last look. Read with no gate,
+  which changes nothing: in K1, K2, K3 and E2 the paired bevel
+  difference is 6% to 27% of the method's effect on the grids run, but
+  in all four it changes more from level 3 to 4 than from level 2 to 3,
+  so it shows no convergence and bounds nothing. It is not a near
+  agreement and no ground to reopen W9(a).
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
