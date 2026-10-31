@@ -48,3 +48,68 @@ its output file there.
 - `arcas.test.ts`: the ARCAS fins' own drag over the measured increments.
 - `euler.test.ts`: planar Euler solutions of two sections on nested grids
   (`euler.jsonl`; `CASE=dw` or `hex`, `LEVELS=0,1,2`), one solve at a time.
+
+## W9(a): the reflected waves on hexagons (`w9/`, 0009 section 9)
+
+Run from the repository root with `ONLY=./<name>.test.ts npx vitest run
+--config docs/research/fin-wave-drag/w9/vitest.config.ts` (one worker, no
+time limit). The runs record the commit they ran on; the code checks,
+the nodes, the Euler and the check points refuse to run with `src`
+changed, and the last three resume from their records (the nodes and the
+check points also log every solve in `tests/tmp-w9/`, gitignored). The
+judge computes nothing new.
+
+- `code-checks.test.ts` > `code-checks.out`: T1 to T5, the quadrature and
+  T3R (9.3, 9.12), and the gate.
+- `interpolation.test.ts` > `interpolation.out`: the trace in nu against
+  the pressure on six cases (9.12).
+- `family.ts`: the grid, the cases E1 to E3, the judgement by 9.5, the
+  cells and bands by 9.6 and the drawn check points, shared by the runs.
+- `nodes.test.ts` > `nodes.jsonl` (one line per node) and
+  `diagnostic-r.out`.
+- `euler.test.ts` > `euler.jsonl` (one line per solve) and
+  `euler-walls/<case>-L<level>.json` (the wall faces).
+- `checks.test.ts` > `ecases.jsonl` (the method at E1 to E3) and
+  `checks.jsonl` (one line per check point).
+- `judge.test.ts` > `verdict.out` (and `served-cells.json` only where the
+  verdict serves; on 2026-10-30 it did not).
+- `design-scan.test.ts` > `design-scan.out`: the method's own values at
+  42 hexagons that chose the cases of the corrected Euler check (0009
+  section 9.13); no Euler solve.
+- `shock-point.patch` > `shock-point.out`: the diagnosis of the shock
+  point's failures (0009 section 9.14). The patch adds logging inside the
+  method's shock point and a runner at `tests/tmp-w9/shock.test.ts`;
+  apply it only to a scratch checkout.
+- `shock-fix.test.ts` > `shock-fix.out`, `shock-fix-identity.jsonl`,
+  `shock-fix-nodes.jsonl` and `shock-fix-checks.jsonl`: the check of the
+  shock point's change and the re-judgement it registers (0009 section
+  9.14). It reads a re-run of `code-checks.test.ts` saved as
+  `tests/tmp-w9/code-checks-rerun.out`.
+- `paired.ts` and `paired.test.ts` > `paired.jsonl` (one line per solve)
+  and `paired-walls/` (`<case>-method.json`, the method's wall pressures
+  at N = 128 and 256; `<case>-<hexagon or reference>-L<level>.json`, each
+  solve's wall faces and wall-cell entropies): the solves of the
+  corrected Euler check (0009 section 9.13). Each process runs one solve
+  at a time; `CASES` and `LEVELS` choose its work, so one process per
+  case gives one solve per core. A solve saves a checkpoint every 5
+  minutes in `tests/tmp-w9/checkpoints/` and resumes from it after a
+  restart.
+- `paired-launch.sh`: starts or resumes levels 2 to 4, one detached
+  process per case, at most four at once, K5 last; then runs the judge.
+  Safe to run again at any time (`bash
+  docs/research/fin-wave-drag/w9/paired-launch.sh`).
+- `paired-resume.test.ts` > `paired-resume.out`: the check that a solve
+  stopped and resumed from its checkpoint is the same to the bit as one
+  never stopped.
+- The last Euler check (0009 section 9.15): `last.test.ts` > `last.jsonl`
+  and `last-walls/` (as 9.13's, plus each hexagon's column of cell
+  states at x_s in `<case>-column-L<level>.json`); the reference's inflow
+  is a faceStates profile. `last-exact.test.ts` > `last-exact.out`, the
+  profile inflow's exactness check, run before any case.
+  `last-judge.test.ts` > `last-verdict.out` (and `served-cells.json` only
+  where it serves; it served nothing: unresolved, W9(a) closed).
+  `last-launch.sh` starts or resumes levels 2 to 4, one process per case,
+  and runs the judge; safe to run again at any time.
+- `paired-judge.test.ts` > `paired-verdict.out` (and `served-cells.json`
+  only where the verdict serves; it served nothing: unresolved): 9.13's
+  rule and verdict, written before any solve of levels 2 to 4.

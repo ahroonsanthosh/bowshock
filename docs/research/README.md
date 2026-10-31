@@ -54,7 +54,9 @@ The runners and outputs of the measurements quoted in
 fin scripts re-run, a resolution study of the audit's area-rule code, the
 throwaway vitest runs (quadrature convergence, the strip-theory table, the
 planar Euler sections), and `compare.py`, which derives the summaries the
-record quotes. Its README says how to re-run each.
+record quotes. `w9/` holds W9(a)'s runs (0009 section 9): the method's
+code checks, nodes and check points, and its three Euler checks, closed
+on 2026-10-31 with nothing served. Its README says how to re-run each.
 
 ## `base-and-total/`: measurements behind 0010
 

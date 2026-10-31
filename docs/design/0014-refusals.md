@@ -564,7 +564,13 @@ case, sign unresolved, against a fins' own band of 1.01 to 1.59). (b)
 Detached bevel shocks at Mach 1.0 to 1.6: the captured planar solve on
 nested grids; there the linear 3D factor (subsonic leading edges) is the
 larger unknown and stays labelled. Effort medium, and CPU-heavy (one
-hexagon's fourth grid took 28 minutes).
+hexagon's fourth grid took 28 minutes). _2026-10-30: (a) registered in
+0009 section 9 with another measuring method (a planar method of
+characteristics, the Euler solves its check); 10.7 (aj). Later the same
+day: run as registered; the Euler check failed, and nothing is served.
+A corrected Euler check is then registered (0009 section 9.13), not yet
+run._ _2026-10-31: 9.13 and then a last check, 0009 section 9.15, both
+unresolved; W9(a) is closed with the refusal kept (10.7 (aj))._
 
 **W11. Square-cut leading edges and rounded trailing edges.** No opened
 source isolates either at these conditions. The owner has allowed them
@@ -620,6 +626,9 @@ atmosphere).
   limit** (F10, F11): rare, and outside every method's verification.
 - **Blunt noses far from the measured** (N11): near-flat faces and
   untangent blunt noses until corners on C grids are measured (W6).
+- **Reflected waves on hexagonal fin sections** (F9, W9(a)): kept for
+  good on 2026-10-31, after the third and last design of the Euler check
+  (0009 section 9.15) left the method's values unconfirmed; 10.7 (aj).
 - **Beyond the data**: thin-layer parameters past 4.5, Re_D outside 6.7e3
   to 1e6, Mach above 3.0 for the bases (the page's nose goes to 5; the
   bands are stated to 3.0).
@@ -3973,6 +3982,250 @@ applied as registered). The band becomes **0.77 to 1.17** at Mach 1.5 to
   +25.9% without the wall) at one decimal; recomputed by running
   (`basic-finner.test.ts`, `hold-out-run.test.ts`). The gate table's
   caption names both widenings.
+
+**2026-10-30 (aj): W9(a), the reflected waves on hexagonal fin sections,
+registered before any run** (0009 section 9; the owner's instruction to
+lift this refusal only if it can be done accurately). Written and
+committed before the code it describes exists and before any computed
+value of its runs (first at 0f1a69f, then revised the same day after
+its review, below; still before any code or run).
+
+- _What changes in 6.2's plan for W9(a)._ 6.2 planned planar Euler solves
+  on the bevelled family as the measurement. 0009 section 2.4 found such
+  a solve not converged on the one hexagon run (observed order 1.63
+  falling to 0.67, extrapolations -0.38% to +0.25% about the
+  shock-expansion value with the reflections neglected). The measurement
+  is now a planar method of characteristics with the shock fitted and
+  every reflected wave carried by the net (0009 sections 9.1 and 9.2),
+  and the captured Euler solves are its independent check (9.7), setting
+  nothing.
+- _What is registered there._ The checks of the code, T1 to T5 (9.3);
+  the family: hexagons with equal bevels at both edges, half-angle 5 to
+  15 deg, bevel 0.01 to 0.4525 of the chord, Mach 1.5 to 3.0, on a grid
+  of 1,392 computed nodes, no cell served with a corner below Mach 1.1
+  behind the leading-edge shock, and every node the library calls exact
+  held to |eps| <= 1e-12 (9.4); the convergence ladder (N = 16 to 256)
+  and when a case passes (9.5); the rule: a case is served only inside a
+  cell whose eight corners pass, at the shock-expansion value times one
+  plus the midpoint of its corners' envelope (each corner's uncertainty
+  and 5e-4 added, rounded outward to 0.1%), the band that envelope, a
+  computed band of convergence and interpolation; at most 1,852 check
+  points held out (the population's refused hexagons in candidate cells,
+  200 drawn at random and the centre of every candidate cell): one that
+  converges outside its band refuses all, one that does not converge
+  removes its cell, and more than 2% of those refuse all (9.6); the Euler
+  cases and criteria (9.7); what stays refused, W9(b) among it (9.8);
+  the page's words (9.9); the population's count (9.10); the order and
+  files of the runs (9.11).
+- _No data enter._ The band is a computed one (inviscid, two-dimensional:
+  the reflected waves alone), as the nose's grid band is; no held-back
+  set of 10.1 is opened or used, no figure sets anything, and the fins'
+  own-drag band (1.01 to 1.59, 0008 section 4.3) applies on top as now.
+  The independent Euler check confirms the method only to a few tenths
+  of a percent of the section drag, not to the band's width.
+- _What the population holds_ (`docs/research/refusals/out/w9-family.out`,
+  from the shock-expansion code as it stands): the reflected-wave reason
+  refuses 811 hexagons, 762 at Mach 1.5 and above; 698 of those lie in
+  cells whose corners all have an attached shock, 64 in cells next to the
+  attachment limit, 49 below Mach 1.5; the ruling on near-sonic corners
+  takes 58 of the 698 out, leaving 640. The 38 cases where the reason
+  alone refuses the total (235 totals to 273 if all are served) all lie
+  among the 640, and 83 of the 86 where it is the only reason left with
+  the nose assumed served (from 622 to 705). Which cells are served is
+  known only after the runs. The size to expect (`out/w9-plateau.out`):
+  carrying the flat's fully developed change onto the rear bevel gives
+  |eps| at most 0.25%, a median of 0.05% over the nodes, so the served
+  band will often span zero.
+- _Revised the same day after Fable's review of 0f1a69f (PASS with
+  changes) and the coordinator's rulings, before any code or run._ The
+  letter (aj) named. 9.3: T4 added (the rotational terms: a parallel
+  shear flow at uniform pressure, with four planted errors that must each
+  fail it), T5 added (the landing of the first reflected characteristic
+  against its exact place, and the rear bevel's quadrature), T1's cases
+  named, T3 given the near-sonic pair (14 deg, Mach 1.6) and tightened
+  from a quarter to a sixth, and the statement that T1 and T2 test
+  bookkeeping, not accuracy. 9.2: how far the step is computed (on
+  demand, until the rear region's last line lands past the trailing edge)
+  and the interpolation onto the rear corner's characteristic (linear, in
+  nu, theta and psi) fixed; the list of what carries the discretisation
+  error completed. 9.4: the coordinator's ruling on near-sonic corners,
+  the exact-node rule, and the size to expect. 9.5: the changes must
+  shrink at every doubling from N = 64, and the coarser order is
+  recorded. 9.6: centre check points, the two kinds of failure, the 2%
+  cap, and the band's label. 9.7: (E-a) needs the Euler's differences to
+  shrink; (E-b) is judged on the flat and the bevel windows separately,
+  with all four numbers recorded at every level. The review read the 64
+  cases next to the attachment limit as reaching Mach 1.14 behind the
+  shock; `w9-family.out` gives 1.008 to 1.167 (the highest at 14.08 deg
+  and Mach 1.696, in a cell with the detached corner 15 deg at Mach 1.6),
+  so 9.4's "1.01 to 1.17" stands.
+- _2026-10-30, later: the code written, its checks run, and the
+  coordinator's rulings, made after the code-check numbers were seen;
+  still before any run of the family_ (0009 section 9.12). A defect in
+  the step's net was found and fixed before any run of the family: the C+
+  characteristics from the stretch of flat before the first landing were
+  missing, and the mass balance stalled near 1.6e-4. T1, T2, T4 with its
+  four planted errors, T5 and the bevel quadrature passed; T3 passed at
+  three pairs and is recorded as failed at 14 deg and Mach 1.6 at the
+  registered levels (a quarter, not a sixth, by N = 256; first order only
+  from about N = 512), its threshold not loosened, the failure kept as a
+  finding about convergence near the sonic limit. One re-test, T3R (T3 at
+  11 deg and Mach 1.5, N = 16 to 8192, decreasing from N = 64 on and
+  falling by at least 1.7 at each of the last three doublings), is
+  registered before it runs; the family runs only if T1, T2, T4, T5, the
+  quadrature, T3 at its three pairs inside the family and T3R pass, and
+  if T3R fails nothing is served. The trace now interpolates the pressure
+  and theta, K from K(psi) and nu derived, since they are continuous
+  across the streamline through P and nu is not (decided after the
+  comparison on six cases); nu stays as a diagnostic on every node, and
+  where both converge they must agree within the larger of their U, or
+  the runs stop for a report.
+- _2026-10-30, later: the runs and the verdict, as registered; nothing is
+  served_ (0009 section 9.12, `docs/research/fin-wave-drag/w9/verdict.out`).
+  Nothing stopped the runs. 1,383 of 1,392 nodes pass 9.5; 950 candidate
+  cells; of 1,727 check points 9 fail 9.5 (0.52%) and none that converged
+  lies outside its band, so 941 cells would have been served. The Euler
+  check fails: (E-a) passes in all three cases, but (E-b) passes in one
+  window of six (E2's flat). E1's flat window, registered from the
+  library's bound x_1, ends before the method's first reflection lands,
+  so it could not pass (a flaw of the registration, seen only now); in
+  the other windows the Euler's change from level 2 to 3 is larger than
+  the difference between the method and shock-expansion it was to
+  resolve. The reflected-wave refusal stands as it was; `src/fins`, the
+  page's words, 0017's rows and the README's count line are unchanged.
+  The shock point's iteration failed at four nodes and seven check
+  points (11.5 to 14.4 deg), recorded and not changed.
+- _2026-10-30, later still: a corrected Euler check registered, after
+  the first check's results were seen_ (0009 sections 9.13 and 9.14; the
+  owner's decision). It is a second look and is recorded as one. The
+  first check failed because E1's flat window ended before the method's
+  first reflected wave lands there, and because level 3 was too coarse
+  for the difference it had to resolve. The new check replaces 9.7 as
+  the independent check 9.8 requires; everything else of the
+  registration stands, and the results of the gate, the nodes, the cells
+  and the check points are reused unchanged. Four cases where the
+  method's effect is largest at Mach 1.8 to 2.0 (eps +0.285%, +0.200%,
+  +0.171% and E2's +0.131%); windows that start where the method's first
+  reflected wave lands and stay b / 4 from every corner; the bevel window
+  compared by its part of the drag, the flat by its mean pressure; each
+  case solved twice on the same grid, the hexagon and a reference with
+  the same rear corner and no leading-edge shock, so that the corner's
+  own Euler error is meant to cancel in their difference; levels 0 to 4,
+  the Euler's uncertainty from the changes over levels 2 to 4, and a window
+  resolved only if that uncertainty is at most a quarter of the gap
+  between the method and shock-expansion. A resolved disagreement fails
+  the check; an unresolved window serves nothing; only resolved
+  agreement in every window serves. Level 5 is a second and last stage,
+  only with the coordinator's grant of the CPU. Estimated cost: about 10
+  to 17 hours one solve at a time, about 4 to 5 hours with one solve per
+  core. The check is one-signed: inside the family that can serve, the
+  most negative eps is -0.027%, too small to resolve (the -0.305% the
+  note on the runs quotes lies at nodes that serve nothing), which is
+  stated for the owner's ruling. The shock point's failures are recorded
+  as a known weakness of the code (a stopping-rule defect: the secant
+  reaches the round-off floor and then cycles until its 60th iterate),
+  with a proposed change, not made, that keeps every passing value the
+  same to the bit and has its own check. Nothing has run for this check.
+- _2026-10-30, the coordinator's rulings on 8a53aa7_ (0009 sections
+  9.13 and 9.14, recorded there before acting on them). The one-signed
+  check is accepted and disclosed: cells near zero or negative, and above
+  Mach 2.0, are served on the same method and its exact checks, and the
+  served label says "checked against an independent flow solver at Mach
+  1.8 to 2.0, where the effect is largest; elsewhere on the same method
+  and its exact checks" (above Mach 2.0 eps reaches +0.263%, more than
+  the band's 5e-4 margin, which is stated). Level 5 is not granted now.
+  The four cases run one solve per core when the CPU is free, on the
+  coordinator's word. The shock point's change is made as proposed, with
+  its check registered first, and the 4 nodes and 7 check points are
+  re-judged as 9.5 and 9.6 register them.
+  _(The first of these rulings, the one-signed check served on the code
+  above Mach 2.0, was withdrawn by the coordinator later the same day:
+  its premise was false. Above Mach 2.0 the effect is not below the
+  margin (eps reaches +0.263% at Mach 2.2 and +0.182% at 3.0, and 167 of
+  the 203 population check points at Mach 2.2 and above exceed 5e-4), and
+  the mechanism differs: at 15 deg and b 0.04 the method's eps stays
+  +0.17% to +0.29% from Mach 1.8 to 3.0, while T3's reflection
+  coefficient turns negative between Mach 2.4 and 2.6; the review reads
+  the entropy-layer term as dominating from about Mach 2.4. The label
+  words quoted above went with it.)_
+- _2026-10-30, later: the shock point's change made and checked_ (0009
+  section 9.14, `w9/shock-fix.out`). The four nodes solve, the planted
+  removal throws, `code-checks.out` is reproduced, and all 3,108
+  completed nodes and check points give the same values to the bit: no
+  value moved. Re-judged as registered, the 4 nodes and 7 check points
+  pass, 26 cells become candidates with 63 new check points, all passing
+  and inside their bands, and the cells that would be served rise from
+  941 to 974.
+- _2026-10-30, later: 9.13 revised after Fable's review (PASS with
+  changes), before any of its solves_ (0009 section 9.13's revision
+  note). The reference takes its hexagon's wall-cell entropy at each
+  level, so that a wall-entropy error from the captured leading-edge
+  shock is meant to cancel with the corner's smearing (at a fixed flat
+  pressure d ln p3 / d ln K is +0.42 to +0.68 for the cases), and the
+  wall entropy is recorded in both solves. K1 is replaced by 15 deg, b
+  0.08, Mach 1.8 (its window farther from the corner's tail), and K5, 15
+  deg, b 0.08, Mach 3.0, is added: cells with a corner at Mach 2.2 or
+  above are served only on K5's resolved agreement, except cells near
+  zero (every corner's |eps| + U below 5e-4, band -0.1% to +0.1%); if
+  K5 is unresolved, 710 of the 974 cells may serve on the other four.
+  The agreement test is |D*| <= max(U_E + U_M, |G| / 4). The unpaired
+  share is recorded beside D_k. 9.9's dated note gives the label's exact
+  half-angles and Mach numbers. Five cases cost about 11 to 21 hours one
+  solve at a time, about 4.5 to 7 hours one solve per core. Nothing has
+  run for this check.
+- _2026-10-30, later: 9.13 run; unresolved, nothing served_ (0009
+  section 9.13's note on the runs, `w9/paired-verdict.out`). 50 solves,
+  all within the stopping rule; E2 equal to 9.7 to the bit. The flat
+  windows of K1, K2, K3 and E2 are resolved agreements (the Euler within
+  1.2e-4 of the method's flat pressure change of -2.0e-3 to -4.3e-3);
+  K5's flat and every bevel window are unresolved; none disagrees. So
+  nothing is served, the refusal stands, and level 5, not granted, is
+  for the owner. Read with no gate: the reference's wall entropy, taken
+  from the hexagon's wall cells (4% to 14% above the shock's and not
+  falling with the grid), over-corrects the bevel by a constant amount
+  (about 2.6 times the effect in K1), while the unpaired Euler moves
+  toward the method at each of levels 2 to 4 in all five cases; by 9.13's
+  formula the unpaired share is unresolved in four cases and in K3 would
+  read as 57% of the method's effect, on a change from level 3 to 4 too
+  abrupt to trust. Fable's review of ed6d58b (2026-10-30, 0009 section
+  9.13) re-ran the judge byte-identical and found that K3 reading to come
+  from the reference's own error, not from the method.
+- _2026-10-30, later still: the last check registered, 0009 section
+  9.15 (the owner's decision at 22:13 UTC, as designed by Fable's review
+  of ed6d58b)._ It is the third design of the independent check, after
+  9.7's flawed window and 9.13's wrong entropy transfer, each diagnosed
+  from recorded numbers with a physical reason; the cases, windows,
+  quantities, uncertainty, rule and verdict tree are 9.13's and do not
+  move. The hexagons are solved again, recording their column of cell
+  states at x_s, and the reference's inflow becomes a face-by-face
+  profile at the flat's pressure and the free stream's total enthalpy
+  with the entropy max(K_hex, K_shock), so the hexagon's numerical wall
+  layer is shared cell for cell and the physical entropy gradient is
+  not. Registered before any run: the reference's own bevel deviation
+  from p3 must shrink from level 2 to 3 to 4 (gated; if not, that bevel
+  window is unresolved), and should be near the hexagon's deviation from
+  the method (recorded); and the profile inflow must hold a parallel
+  rotational flow to round-off for 1,000 iterations before any case
+  runs. Level 5 is not granted at all. It is the last look: unresolved
+  or a disagreement closes W9(a) with the refusal kept for good, and if
+  it serves, the label says the Euler check was the third design.
+- _2026-10-31: 9.15 run; unresolved; W9(a) closed with the refusal
+  kept for good_ (0009 section 9.15's note on the runs,
+  `w9/last-verdict.out`). 50 solves, all within the stopping rule; every
+  hexagon equal to 9.13's to the bit. The gated prediction holds in all
+  five cases (the reference's own bevel deviation shrinks from level 2 to
+  4); that deviation lies near the hexagon's deviation from the method,
+  as predicted, but the two differ by exactly the paired bevel
+  difference, so this is not separate evidence of agreement. K5's bevel
+  window is a resolved agreement; the flat windows of K1, K2, K3 and E2
+  are resolved agreements as in 9.13; the bevel windows of K1, K2, K3
+  and E2, and K5's flat, are unresolved, and none disagrees. So nothing
+  is served, and by 9.15 this was the last look. Read with no gate,
+  which changes nothing: in K1, K2, K3 and E2 the paired bevel
+  difference is 6% to 27% of the method's effect on the grids run, but
+  in all four it changes more from level 3 to 4 than from level 2 to 3,
+  so it shows no convergence and bounds nothing. It is not a near
+  agreement and no ground to reopen W9(a).
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
