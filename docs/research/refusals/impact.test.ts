@@ -21,6 +21,7 @@ import {
   type Weights,
 } from './population';
 import {
+  PAGE_ONLY,
   REASONS,
   libraryRefused,
   noseReasons,
@@ -72,6 +73,11 @@ export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
   'W10 boat-tails': ['boatTail'],
   'W11 square-cut leading edges and rounded trailing edges': ['squareLe', 'roundedTe'],
   'W12 page: the wedge-flat section with a blunt trailing edge': ['pageSection'],
+  // Since 2026-11-20 (0014 section 10.7 (ak)): the page's refusal of sharp sections on fins of varying chord,
+  // which the audit did not mirror before; not in 0014's ranked list of 2026-10-20.
+  'W13 page: sharp sections (bevelled, double wedge) on fins of varying chord, at the fin\'s own thickness along the span': [
+    'pageTaperedSection',
+  ],
 };
 
 interface Evaluation {
@@ -240,6 +246,8 @@ const PLAN_ORDER: readonly (readonly string[])[] = [
   ['W10'],
   ['W8'],
   ['W12'],
+  // Not in 0014's ranked list of 2026-10-20; last, since 2026-11-20 (0014 section 10.7 (ak)).
+  ['W13'],
 ];
 
 /** Totals per band after each step of the plan's order, cumulatively. */
@@ -383,7 +391,7 @@ test('refusal impact on a population of supersonic amateur rockets', () => {
     const lib = libraryRefused(e.rocket, e.condition);
     if (lib === undefined) continue;
     checked++;
-    const mine = e.total.some((k) => k !== 'pageSection');
+    const mine = e.total.some((k) => !PAGE_ONLY.has(k));
     if (lib === mine) agree++;
     else disagreements.push(`rocket ${e.rocket.id} at M ${e.condition.mach.toFixed(3)}: library ${lib}, decomposition ${mine} (${e.total.join(', ')})`);
   }

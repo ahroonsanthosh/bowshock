@@ -1,8 +1,8 @@
 {
  "baseline": {
   "all bands": {
-   "total": 235,
-   "nose only": 1803,
+   "total": 163,
+   "nose only": 1875,
    "nothing": 5962
   },
   "M 1.0-1.2": {
@@ -16,22 +16,23 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 75,
-   "nose only": 651,
+   "total": 54,
+   "nose only": 672,
    "nothing": 1274
   },
   "M 1.8-3.0": {
-   "total": 160,
-   "nose only": 675,
+   "total": 109,
+   "nose only": 726,
    "nothing": 1165
   }
  },
  "order": [
   "W6 blunted nose tips",
-  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
   "W11 square-cut leading edges and rounded trailing edges",
-  "W9 sharp sections: reflected waves and detached bevel shocks",
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
   "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
+  "W13 page: sharp sections (bevelled, double wedge) on fins of varying chord, at the fin's own thickness along the span",
+  "W9 sharp sections: reflected waves and detached bevel shocks",
   "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
   "W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)",
   "W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0",
@@ -42,8 +43,8 @@
  "noseServed": {
   "all bands": {
    "cases": 8000,
-   "noseServed": 622,
-   "withPageSection": 798
+   "noseServed": 439,
+   "withPageSection": 452
   },
   "M 1.0-1.2": {
    "cases": 2000,
@@ -57,19 +58,19 @@
   },
   "M 1.5-1.8": {
    "cases": 2000,
-   "noseServed": 217,
-   "withPageSection": 287
+   "noseServed": 156,
+   "withPageSection": 160
   },
   "M 1.8-3.0": {
    "cases": 2000,
-   "noseServed": 405,
-   "withPageSection": 511
+   "noseServed": 283,
+   "withPageSection": 292
   }
  },
  "lenientTip": {
   "all bands": {
-   "total": 492,
-   "nose only": 3559,
+   "total": 339,
+   "nose only": 3712,
    "nothing": 3949
   },
   "M 1.0-1.2": {
@@ -83,20 +84,20 @@
    "nothing": 1082
   },
   "M 1.5-1.8": {
-   "total": 156,
-   "nose only": 1298,
+   "total": 110,
+   "nose only": 1344,
    "nothing": 546
   },
   "M 1.8-3.0": {
-   "total": 336,
-   "nose only": 1343,
+   "total": 229,
+   "nose only": 1450,
    "nothing": 321
   }
  },
  "altitude0": {
   "all bands": {
-   "total": 239,
-   "nose only": 1799,
+   "total": 167,
+   "nose only": 1871,
    "nothing": 5962
   },
   "M 1.0-1.2": {
@@ -110,20 +111,20 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 78,
-   "nose only": 648,
+   "total": 57,
+   "nose only": 669,
    "nothing": 1274
   },
   "M 1.8-3.0": {
-   "total": 161,
-   "nose only": 674,
+   "total": 110,
+   "nose only": 725,
    "nothing": 1165
   }
  },
  "altitude20": {
   "all bands": {
-   "total": 183,
-   "nose only": 1855,
+   "total": 111,
+   "nose only": 1927,
    "nothing": 5962
   },
   "M 1.0-1.2": {
@@ -137,20 +138,20 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 51,
-   "nose only": 675,
+   "total": 30,
+   "nose only": 696,
    "nothing": 1274
   },
   "M 1.8-3.0": {
-   "total": 132,
-   "nose only": 703,
+   "total": 81,
+   "nose only": 754,
    "nothing": 1165
   }
  },
  "more four-fin, sharp-edged, high-power fins (four fins 70%; bevelled or double-wedge sections 60%; boat-tails 5%)": {
   "all bands": {
-   "total": 296,
-   "nose only": 1742,
+   "total": 121,
+   "nose only": 1917,
    "nothing": 5962
   },
   "M 1.0-1.2": {
@@ -164,17 +165,18 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 92,
-   "nose only": 634,
+   "total": 41,
+   "nose only": 685,
    "nothing": 1274
   },
   "M 1.8-3.0": {
-   "total": 204,
-   "nose only": 631,
+   "total": 80,
+   "nose only": 755,
    "nothing": 1165
   }
  },
  "more four-fin, sharp-edged, high-power fins (four fins 70%; bevelled or double-wedge sections 60%; boat-tails 5%) order": [
+  "W13 page: sharp sections (bevelled, double wedge) on fins of varying chord, at the fin's own thickness along the span",
   "W6 blunted nose tips",
   "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
   "W9 sharp sections: reflected waves and detached bevel shocks",
@@ -189,8 +191,8 @@
  ],
  "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%)": {
   "all bands": {
-   "total": 441,
-   "nose only": 3535,
+   "total": 325,
+   "nose only": 3651,
    "nothing": 4024
   },
   "M 1.0-1.2": {
@@ -204,23 +206,24 @@
    "nothing": 902
   },
   "M 1.5-1.8": {
-   "total": 146,
-   "nose only": 1245,
+   "total": 110,
+   "nose only": 1281,
    "nothing": 609
   },
   "M 1.8-3.0": {
-   "total": 295,
-   "nose only": 1192,
+   "total": 215,
+   "nose only": 1272,
    "nothing": 513
   }
  },
  "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%) order": [
   "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
   "W11 square-cut leading edges and rounded trailing edges",
+  "W6 blunted nose tips",
+  "W13 page: sharp sections (bevelled, double wedge) on fins of varying chord, at the fin's own thickness along the span",
   "W9 sharp sections: reflected waves and detached bevel shocks",
   "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
   "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
-  "W6 blunted nose tips",
   "W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)",
   "W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0",
   "W10 boat-tails",

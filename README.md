@@ -39,9 +39,10 @@ rather than guessing.
 rockets have at least one part that isn't yet. The usual blockers are
 anything below Mach 1.5, rounded nose tips, Haack and power-series noses
 outside the range above, fins at the base swept in ways no test has
-measured, fins that end just ahead of the base, boat-tails, and square or
-rounded fin edges. In our test set of 2,000 typical rockets, each flown at
-four speeds (8,000 cases), 235 cases get a total today. For the rest,
+measured, fins that end just ahead of the base, boat-tails, square or
+rounded fin edges, and bevelled or diamond fins whose chord changes along
+the span. In our test set of 2,000 typical rockets, each flown at four
+speeds (8,000 cases), 163 cases get a total today. For the rest,
 bowshock lists every reason, says what you could change, shows the parts it
 can work out, and gives a "drag is at least this much" floor where that is
 safe.

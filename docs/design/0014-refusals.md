@@ -4227,6 +4227,47 @@ its review, below; still before any code or run).
   so it shows no convergence and bounds nothing. It is not a near
   agreement and no ground to reopen W9(a).
 
+**2026-11-20 (ak): the refusal audit corrected to the page's refusal of
+sections in chord units on fins of varying chord.** Nothing the page or
+the libraries serve changes; only what the audit counts, and the README's
+count, which quotes it.
+
+- _What was missed._ Since the rocketeer page went live (36a4284,
+  2026-10-23), its adapter (`src/rocket/adapter.ts`, `sectionOf`; 0017
+  section 4.2) refuses a bevelled, wedge or diamond section on fins of
+  varying chord, because the drag logic holds such a section in chord
+  units and would thin it toward the tip, while a real fin's thickness and
+  bevels are the same at every station. The audit
+  (`docs/research/refusals/evaluate.ts`) did not mirror that refusal: it
+  asked the library with the section scaled with the chord, which the
+  library takes, so it counted as served 72 cases the page refuses (sheet
+  stock fins, as the population draws them, with bevelled or double-wedge
+  sections on tapered planforms). The cross-check against `src/total`
+  could not see it, since the library makes no such refusal. Found on
+  2026-11-20 by comparing the page's adapter with the audit's reasons.
+- _The correction._ `evaluate.ts` now gives the page's reason
+  (`pageTaperedSection`), a page-only reason left out of the cross-check
+  as `pageSection` is, and `impact.test.ts` puts it in a package of its
+  own, W13 (below). The audit as committed at d19df51 was first re-run and
+  reproduced byte for byte (`out/2026-11-20-before-page-taper/`).
+- _What moved_ (`out/impact.out`): totals the page serves, 235 to 163 of
+  8000 cases (Mach 1.5 to 1.8: 75 to 54; 1.8 to 3.0: 160 to 109); with
+  the nose assumed served, 622 to 439; with the page's wedge-flat section
+  offered too (W12), 798 to 452. The cross-check agrees on 1200 of 1200.
+  The new reason applies to 38.5% of cases and is the sole blocker of 72
+  (0.90%). Counts quoted before this date (the README; 0009 section 9 and
+  (aj), "235 to 273"; the two-scale noses' README) stand as written and
+  are corrected here: W9(a)'s 38 counted hexagons on tapered fins that the
+  page refuses.
+- _W13, a new work package._ Sharp sections (bevelled, double wedge) on
+  fins of varying chord, at the fin's own thickness along the span. The
+  fin wave drag (0009: the exact section drag times the linear 3D ratio,
+  formed for a section the same in chord units at every station) and the
+  trailing-edge term of a bevelled section would need the section as the
+  fin has it, its t/c and bevel fractions changing along the span, with
+  that method verified before anything is served. Not planned in this
+  entry. Lifted alone it would restore the 72 totals.
+
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
 allocate. _(Corrected 2026-10-28, the re-review's R4: this branch's

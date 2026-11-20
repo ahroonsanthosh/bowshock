@@ -101,6 +101,8 @@ export const REASONS = {
   sectionDetached: 'fins: sharp section, leading-edge shock detached or subsonic behind it',
   sectionReflected: 'fins: sharp section, a wave reflected from the leading-edge shock reaches the surface',
   pageSection: 'page: section not offered (wedge-flat with a blunt trailing edge; the library takes it)',
+  pageTaperedSection:
+    'page: a bevelled or double-wedge section on fins of varying chord (the drag logic takes a section in chord units, which would thin toward the tip while the fin\'s thickness and bevels do not; src/rocket/adapter.ts, 0017 section 4.2; mirrored here since 2026-11-20)',
   finsOwnDragMach:
     "fins: below Mach 1.5, fin friction and the wave drag of sharp sections (the fins' own-drag band, ARCAS, is measured at Mach 1.5 to 2.96 only, 0014 section 10.7 (f))",
   // Body base.
@@ -134,6 +136,9 @@ export const REASONS = {
 } as const;
 
 export type ReasonKey = keyof typeof REASONS;
+
+/** The page's own refusals, which the library does not make (left out of the cross-check against it). */
+export const PAGE_ONLY: ReadonlySet<ReasonKey> = new Set<ReasonKey>(['pageSection', 'pageTaperedSection']);
 
 export function noseShape(kind: NoseKind): NoseShape {
   switch (kind) {
@@ -290,6 +295,13 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
     }
   }
   if (r.section === 'bevel-le-square-te') out.push('pageSection');
+  // The page (src/rocket/adapter.ts, sectionOf; 0017 section 4.2) takes a sharp section in chord units, so it
+  // refuses one on fins of varying chord: the population's fins are sheet stock, their thickness and bevels the
+  // same at every station, which a section in chord units is not. The library takes the section scaled with the
+  // chord, so `libraryRefused` does not see this refusal (a page-only reason, as pageSection is).
+  if ((r.section === 'bevel-both' || r.section === 'bevel-le-square-te' || r.section === 'double-wedge') && !constantChord) {
+    out.push('pageTaperedSection');
+  }
   // 0014 section 10.7 (f): below Mach 1.5 fin friction (every fin) and the wave drag of sharp sections
   // carry a band measured only at Mach 1.5 to 2.96, and are refused.
   if (mach < 1.5) out.push('finsOwnDragMach');
