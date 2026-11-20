@@ -244,7 +244,19 @@ before it is used (section 5).
   PARD standard body (an ogive-cylinder); that it is not the RM-10 (TN
   3320, held back whole) is to be confirmed from a geometry-only source
   before any of its figures is opened. Its drag figures were not opened.
-  The one candidate found for F1.
+  The one candidate found for F1. _Confirmed 2026-11-20_ (0014 section
+  10.7, the entry of that date, from the two reports' text, symbol
+  lists, tables of geometry and model drawings only): the body is RM
+  L9I30's configuration 3 (fineness 12.5, maximum diameter at 0.60 of
+  the length, base 0.437 of the maximum diameter), neither the PARD body
+  nor the RM-10, though its nose is the RM-10's nose shape (computed);
+  three untapered 45 deg swept fins of 2.8% (flight) to 3.1% (tunnel)
+  hexagonal section, sharp-edged, untripped in the tunnel, ending 0.99
+  of a chord ahead of the base. Its fins' increment is a
+  **pressure-drag-rise** increment of net drag (each configuration's
+  rise from Mach 0.9, base drag removed), so it holds no fin friction
+  level; the free-flight increment beside it is unpublished data on
+  other bodies and sets nothing.
 - **Jorgensen, Spahr and Hill**, NASA TM X-653 (NTRS 19720065133): fins
   and flares on low-fineness bodies, M 0.6 to 3.8, including fin
   leading-edge bluntness. Not opened for this record. Named in 0014
@@ -261,7 +273,10 @@ before it is used (section 5).
   **Katz and Stoney**, RM L51F29 (NTRS 19930086750) and **Hart and
   Katz**, RM L9I30 (NTRS 20050019251) (fin-stabilized parabolic bodies in
   free flight, M 0.8 to 1.4, base pressures; named for F1 in 0014 section
-  10.7 (p), 2026-10-22, before they are opened); **Vincenti and Wagoner**, TR 1095 (the PDF download failed;
+  10.7 (p), 2026-10-22, before they are opened; RM L9I30's text, table
+  of body parameters and fig. 1 opened for geometry on 2026-11-20, RM
+  L51F29 still unopened and not needed, 0014 10.7, the entry of that
+  date); **Vincenti and Wagoner**, TR 1095 (the PDF download failed;
   its text is held); Valensi and Pruden (R&M 2482), Liepmann, Ashkenas and
   Cole, and Griffith (cited by Bryson). Not opened.
 
@@ -312,6 +327,20 @@ RM-10 flight points at Mach 1.04 to 1.20 and is stated for Mach 1.0 to
    was), and its Reynolds numbers. If it serves, the band is formed as
    ARCAS's was (0008 section 4.3): measured over modelled fins' own drag,
    the model being friction plus F3 to F5's terms for its fins.
+   _Opened for geometry 2026-11-20 and registered_ (0014 section 10.7,
+   the entry of that date). The tunnel base pressure is measured through
+   the sting and taken out of both configurations, but the published
+   increment (fig. 10) is the rise from Mach 0.9, so it carries no fin
+   friction level and sets nothing for F1 (a candidate for F5). The band
+   is formed only on an absolute fins-on minus fins-off net-drag
+   difference from fig. 6 at 50 psia, if a neutral party's look at fig.
+   6's legend shows fins-off tunnel points there; otherwise this route
+   fails and the refusal stands. If it holds: against the code's own
+   fins' own drag (0009's hexagon wave drag and turbulent van Driest II
+   friction), one band, served for friction and flat-plate faces only,
+   at Mach 1.0 to 1.04 and 1.13 to 1.41 within the points' span; 1.04
+   to 1.13 and 1.41 to 1.5 stay refused, and so does sharp-section wave
+   drag until F5.
 2. **The bump wings' subsonic drag** (TR 1253, TN 3529, RM L54B25 at Mach
    0.6 to 0.7, where the reports take the minimum drag as friction): a
    fin alone, no body, at fin Reynolds numbers (0.75e6 to 2.05e6, inside
@@ -1711,7 +1740,11 @@ of it (M_n 0.8 at 45 deg), to be found from its geometry (0014 section
    drag of sharp sections refused below Mach 1.5 (0014 10.7 (f), commit
    7411c70, on the main line); above Mach 2.96 the band carried and
    labelled (0014 10.7 (j)). Next, F1's data: RM L55H09, once its body is
-   confirmed to be neither the RM-10 nor the PARD body.
+   confirmed to be neither the RM-10 nor the PARD body. _Confirmed and
+   registered 2026-11-20_ (0014 10.7, the entry of that date): fig. 6 is
+   named, conditionally on its legend showing fins-off tunnel points at
+   50 psia; fig. 10 sets nothing for F1; R&M 3348 tables 4 and 5 and fig.
+   59 set nothing for F1.
 2. **Rounded leading edges below M_n 1.0 (F2): bounded, not measured**,
    both orderings written in section 3.2, reviewed independently before
    anything is served (0014 10.7 (k), item 1). Writing the ordering out
@@ -1814,6 +1847,15 @@ F2 last.
    neither the RM-10 nor the PARD standard body; name its increment and
    base-pressure figures, and RM L51F29's, in 0014 10.7 before reading
    them; read them; form the band as 0008 section 4.3 formed ARCAS's.
+   _Done to the naming, 2026-11-20_ (0014 10.7, the entry of that date):
+   neither held-back body; RM L51F29 not needed and not opened. Next, in
+   order: a neutral party records whether fig. 6's legend shows fins-off
+   tunnel points at 50 psia (no value read); if it does, fig. 6 is read
+   twice blind (a numbered round, as round 20) and paired by a neutral
+   party; the code's fins' own drag computed for the tunnel fins at 0.030
+   and 0.027 in, after F5's convergence check near beta = 0 at those Mach
+   numbers; the band formed by that entry's items 3 to 6. If the legend
+   shows no such points, the route fails and is recorded.
 4. **F3, bevelled leading edges.** Readings: TR 1094 figs. 13, 14, 15 and
    16, R&M 3348 figs. 31a, 31b and 32 (31b and 32 read blind by round 10,
    and once by W7 at 818d9f2 and 3c5a9f5, to pair; CR-149372 fig. 8a, F2's
@@ -1848,29 +1890,30 @@ and after.
 Opened for this record (NTRS ids; AERADE handles under
 `reports.aerade.cranfield.ac.uk/handle/`):
 
-| Source                                                                     | Id                 |
-| -------------------------------------------------------------------------- | ------------------ |
-| Bryson, NACA TR 1094 (1952)                                                | NTRS 19930092136   |
-| Rogers, Berry and Quincey, ARC R&M 3348 (1963)                             | AERADE 1826.2/3929 |
-| Nash, Quincey and Callinan, ARC R&M 3427                                   | AERADE 1826.2/4011 |
-| Nash, ARC R&M 3323 (1963)                                                  | AERADE 1826.2/3903 |
-| Nash, ARC R&M 3344 (turbulent base flow and the approaching layer; theory) | AERADE 1826.2/3925 |
-| Morrow and Katz, NACA TN 3548 (1955)                                       | NTRS 19930084307   |
-| Johnston, NASA Memo 4-30-59L (1959)                                        | NTRS 19980228287   |
-| Sawyer and Daum, NACA RM L8B13 (1948)                                      | NTRS 19930085324   |
-| Humphreys, NACA TN 3306 (1954)                                             | NTRS 19930084050   |
-| McDevitt, NACA TR 1253 (1955)                                              | NTRS 19930092253   |
-| Nelson, Allen and Krumm, NACA TN 3529 (1955)                               | NTRS 19930084232   |
-| Few and Fournier, NACA RM L54B25 (1954)                                    | NTRS 19930093723   |
-| Polhamus, NACA TN 3469 (1955)                                              | NTRS 19930084231   |
-| Spreiter and Alksne, NACA TR 1359                                          | NTRS 19930091016   |
-| Vincenti, Dugan and Phelps, NACA TN 3225 (1954)                            | NTRS 19930084152   |
-| Lindsey, Daley and Humphreys, NACA TN 1211 (1947)                          | NTRS 19930081941   |
-| Graham, ARC R&M 3465                                                       | AERADE 1826.2/4044 |
-| Wilby, ARC CP 921                                                          | AERADE 1826.2/934  |
-| Randall, ARC CP 456                                                        | AERADE 1826.2/469  |
-| Lawrence and Kell, ARC CP 145 (1954)                                       | AERADE 1826.2/158  |
-| Kyle and Feryn, NASA TN D-3634 (1966)                                      | NTRS 19660028010   |
-| Howell and Braslow, NACA RM L55H09 (text only, no figure)                  | NTRS 20050019382   |
-| Stoney and Sandahl, NACA RM L53L24a                                        | NTRS 19930088058   |
-| Katz, Marley and Pepper, NACA RM L50G31 (abstract and body description)    | NTRS 19930086334   |
+| Source                                                                                           | Id                 |
+| ------------------------------------------------------------------------------------------------ | ------------------ |
+| Bryson, NACA TR 1094 (1952)                                                                      | NTRS 19930092136   |
+| Rogers, Berry and Quincey, ARC R&M 3348 (1963)                                                   | AERADE 1826.2/3929 |
+| Nash, Quincey and Callinan, ARC R&M 3427                                                         | AERADE 1826.2/4011 |
+| Nash, ARC R&M 3323 (1963)                                                                        | AERADE 1826.2/3903 |
+| Nash, ARC R&M 3344 (turbulent base flow and the approaching layer; theory)                       | AERADE 1826.2/3925 |
+| Morrow and Katz, NACA TN 3548 (1955)                                                             | NTRS 19930084307   |
+| Johnston, NASA Memo 4-30-59L (1959)                                                              | NTRS 19980228287   |
+| Sawyer and Daum, NACA RM L8B13 (1948)                                                            | NTRS 19930085324   |
+| Humphreys, NACA TN 3306 (1954)                                                                   | NTRS 19930084050   |
+| McDevitt, NACA TR 1253 (1955)                                                                    | NTRS 19930092253   |
+| Nelson, Allen and Krumm, NACA TN 3529 (1955)                                                     | NTRS 19930084232   |
+| Few and Fournier, NACA RM L54B25 (1954)                                                          | NTRS 19930093723   |
+| Polhamus, NACA TN 3469 (1955)                                                                    | NTRS 19930084231   |
+| Spreiter and Alksne, NACA TR 1359                                                                | NTRS 19930091016   |
+| Vincenti, Dugan and Phelps, NACA TN 3225 (1954)                                                  | NTRS 19930084152   |
+| Lindsey, Daley and Humphreys, NACA TN 1211 (1947)                                                | NTRS 19930081941   |
+| Graham, ARC R&M 3465                                                                             | AERADE 1826.2/4044 |
+| Wilby, ARC CP 921                                                                                | AERADE 1826.2/934  |
+| Randall, ARC CP 456                                                                              | AERADE 1826.2/469  |
+| Lawrence and Kell, ARC CP 145 (1954)                                                             | AERADE 1826.2/158  |
+| Kyle and Feryn, NASA TN D-3634 (1966)                                                            | NTRS 19660028010   |
+| Howell and Braslow, NACA RM L55H09 (text, symbol list, error table, fig. 1 only; no data figure) | NTRS 20050019382   |
+| Hart and Katz, NACA RM L9I30 (text, table of body parameters, fig. 1 only; no data figure)       | NTRS 20050019251   |
+| Stoney and Sandahl, NACA RM L53L24a                                                              | NTRS 19930088058   |
+| Katz, Marley and Pepper, NACA RM L50G31 (abstract and body description)                          | NTRS 19930086334   |
