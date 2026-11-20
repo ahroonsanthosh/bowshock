@@ -1,0 +1,61 @@
+source,quantity,a_value,b_value,unit,a_page,b_page,result,note
+TN 3716,title,,"Comparison of experimental and theoretical normal-force distributions (including Reynolds number effects) on an ogive-cylinder body at Mach number 1.98",,,2,only B,A did not record a title row
+TN 3716,nose shape,fineness-ratio-3 tangent ogive nose (in the nose length note),fineness-ratio-3 tangent ogive nose with a cylindrical afterbody,,5,5,agree,B also records that the summary (p. 2) calls it a circular-arc ogival nose
+TN 3716,nose length l_n,3,3,d,26,26,agree,
+TN 3716,ogive radius,9.25,9.25,d,26,26,agree,
+TN 3716,body diameter d,1.125,1.125,in.,26,26,agree,
+TN 3716,body length l,10,10,d,26,26,agree,
+TN 3716,afterbody length,,7,d,,2,only B,
+TN 3716,orifice diameter,0.030,0.030,in.,26,26,agree,both: single longitudinal row of 23 orifices
+TN 3716,orifice stations 1 to 23,0.22 0.56 0.89 1.22 1.61 2.06 2.50 2.95 3.62 4.06 4.50 4.95 5.39 5.84 6.28 6.72 7.17 7.61 8.06 8.50 8.95 9.39 9.83,0.22 0.56 0.89 1.22 1.61 2.06 2.50 2.95 3.62 4.06 4.50 4.95 5.39 5.84 6.28 6.72 7.17 7.61 8.06 8.50 8.95 9.39 9.83,x/d,26,26,agree,all 23 equal
+TN 3716,free-stream Mach number,1.98,1.98,,6,6,agree,
+TN 3716,Reynolds number (zero incidence),0.39x10^6,0.39x10^6,per inch,6,6,agree,both also note 0.45x10^6 based on body diameter
+TN 3716,Cp uncertainty,+-0.005,+-0.005,,7,7,agree,
+TN 3716,circumferential Cp variation at alpha=0,less than +-0.002,less than +-0.002,,6,6,agree,
+TN 3716,angle of attack uncertainty,+-0.1,+-0.1,deg,7,7,agree,
+TN 3716,tunnel,Ames 1- by 3-foot supersonic wind tunnel No. 1,Ames 1- by 3-foot supersonic wind tunnel No. 1,,5,5,agree,
+TN 3716,boundary-layer transition at alpha=0,7.5 (6 with turbulence grid),7.5 (6 with the grid),d from vertex,6,6,agree,
+RM A53E01,title,Comparison of the experimental and theoretical distributions of lift on a slender inclined body of revolution at M = 2,Comparison of the experimental and theoretical distributions of lift on a slender inclined body of revolution at M=2,,1,2,agree,same words; A took it from PDF p1 (cover) and B from PDF p2
+RM A53E01,nose shape,33-1/3-caliber tangent ogive (fineness ratio 5.75),"33-1/3-caliber tangent ogive nose (fineness ratio 5.75), circular-arc ogival nose tangent to a cylindrical afterbody",,5,5,agree,
+RM A53E01,nose length,5.75,5.75,d,26,26,agree,
+RM A53E01,ogive radius,33-1/3,33-1/3,d,26,26,agree,
+RM A53E01,model 2 body length,14.2,14.2,d,26,26,agree,
+RM A53E01,model 2 diameter d,1.125,1.125,in.,26,26,agree,
+RM A53E01,orifice diameter,0.030,0.030,in.,26,26,agree,
+RM A53E01,model 2 orifice row,single row at theta=0; spacing 0.444d for 0.44<x/d<10.67 and 0.667d for 10.67<x/d<14.00,single row at theta=0; spacing 0.444d for 0.44<x/d<10.67 and 0.667d for 10.67<x/d<14.00,,26,26,agree,both: other theta columns are roll positions (model rotated)
+RM A53E01,free-stream Mach number,1.98,1.98,,5,5,agree,
+RM A53E01,Reynolds number,0.5x10^6,0.5x10^6,per inch,5,5,agree,"B also records that the summary (p. 2) says approximately 0.5x10^6 based on body diameter, which conflicts with per inch; A does not record the summary statement. Unresolved, see pairing.txt"
+RM A53E01,Cp uncertainty (plane of symmetry),+-0.004,+-0.004,,6,6,agree,
+RM A53E01,Cp uncertainty (other than plane of symmetry),+-0.006,+-0.006,,6,6,agree,
+RM A53E01,angle of attack uncertainty,+-0.1,,deg,6,,only A,
+RM A53E01,model surface slope deviation,about 0.25 deg at x=2.7d and 0.12 deg at x=1.4d,about 0.25 deg at x=2.7d and 0.12 deg at x=1.4d,,9,9,agree,contour projector
+RM A53E01,nose angle remark,model nose angle slightly smaller than assumed for theory (low Cp for x/d<1),same,,9,9,agree,B: no tip bluntness value stated
+RM A53E01,tunnel,Ames 1- by 3-foot supersonic wind tunnel No. 1,Ames 1- by 3-foot supersonic wind tunnel No. 1,,5,5,agree,
+TN 4233,title,,Experimental study of the equivalence of transonic flow about slender cone-cylinders of circular and elliptic cross section,,,3,only B,
+TN 4233,cone half-angle,6 deg 59 min,6 deg 59 min,,6,35,agree,both cite the text (p. 6) and figure 1 (p. 35); they list the pages in the other order
+TN 4233,cone length l,5.50,5.50,in.,35,35,agree,
+TN 4233,cylinder diameter,1.347,1.347,in.,35,35,agree,
+TN 4233,overall length,15.15,15.15,in.,35,35,agree,
+TN 4233,orifice diameter,0.016,0.016,in.,6,6,agree,
+TN 4233,orifice stations (circular model),1 .082; 2 .183; 3 .285; 4 .385; 5 .486; 6 .589; 7 .688; 8 .790; 9 .891; 10 .942; 11 .994; 12 1.043; 13 1.094; 14 1.195; 15 1.398; 16* .385; 17* .688,1 .082; 2 .183; 3 .285; 4 .385; 5 .486; 6 .589; 7 .688; 8 .790; 9 .891; 10 .942; 11 .994; 12 1.043; 13 1.094; 14 1.195; 15 1.398; 16* .385; 17* .688,x/l,35,35,agree,all 17 equal; * = opposite surface (check)
+TN 4233,tunnel for table I(a),Ames 2- by 2-foot transonic wind tunnel (0.25-percent blockage),Ames 2- by 2-foot transonic wind tunnel (0.25-percent blockage),,6,6,agree,
+TN 4233,tunnel for table I(b),Ames 14-foot transonic wind tunnel (0.005-percent blockage),Ames 14-foot transonic wind tunnel (0.005-percent blockage),,18,18,agree,
+TN 4233,Reynolds number,2.4x10^6,2.4x10^6,based on 5.50-in. cone length,7,7,agree,B: the text does not say whether the 14-foot tunnel run used the same value
+TN 4233,Mach number uncertainty,+-0.003 / +-0.004 / +-0.002 at M=0.8 / 1.0 / 1.2,+-0.003 / +-0.004 / +-0.002 at M=0.8 / 1.0 / 1.2,,8,8,agree,random
+TN 4233,Cp uncertainty,+-0.002,+-0.002,,8,8,agree,random
+TN 4233,angle of attack uncertainty,+-0.1,+-0.1,deg,8,8,agree,
+TN 4233,Mach number note,indicated Mach number; data influenced by wall interference,,,8,,only A,
+RM E51H17,title,Aerodynamic characteristics of a slender cone-cylinder body of revolution at a Mach number of 3.85,Aerodynamic characteristics of a slender cone-cylinder body of revolution at a Mach number of 3.85,,3,3,agree,both readers give the author as John R. Jack (the brief says C. E. Jack)
+RM E51H17,cone half-angle,4.77,4.77,deg,4,4,agree,
+RM E51H17,body length,42,42,in.,4,4,agree,
+RM E51H17,cone length,21,21,in.,16,16,agree,
+RM E51H17,maximum body diameter,3.50,3.50,in.,4,4,agree,
+RM E51H17,fineness ratio,12,12,,4,4,agree,
+RM E51H17,orifice stations,3 5 6 9 11 12 15 18 19 19.5 20 20.5 21.5 22 22.5 23 25 27 29 31 33 35 37 39 41,3 5 6 9 11 12 15 18 19 19.5 20 20.5 21.5 22 22.5 23 25 27 29 31 33 35 37 39 41,in.,16,16,agree,all 25 equal; theta 0 and 90 at every station
+RM E51H17,Mach number,3.85+-0.04,3.85+-0.04,,4,4,agree,
+RM E51H17,Reynolds number,3.85x10^6 (basis not stated),3.85x10^6 (basis not stated),,3,3,agree,
+RM E51H17,Reynolds number per foot,1.1x10^6 (in the note of the row above),1.1x10^6,per ft,4,4,agree,
+RM E51H17,Cp uncertainty,not stated,not stated,,,,agree,A searched PDF p1 to 14; B p3 to 13 (text layer) and key pages on the image
+RM E51H17,model surface finish,16 microinch,16 microinch,,4,4,agree,
+RM E51H17,tunnel,NACA Lewis 2- by 2-foot supersonic tunnel,NACA Lewis 2- by 2-foot supersonic wind tunnel,,4,4,agree,wording only
+RM E51H17,boundary-layer remark,,displacement thickness raises half-angle by about 0.09 deg and cone Cp to about 0.025,,,7,only B,

@@ -1,0 +1,56 @@
+source,quantity,value,unit,page,note
+TN 3716,body diameter d,1.125,in.,26,"figure 1 (printed page 25): d=1.125"""
+TN 3716,body length l,10,d,26,figure 1: l=10d
+TN 3716,nose length l_n,3,d,26,figure 1: l_n=3d; text PDF p5 (printed 4): fineness-ratio-3 tangent ogive nose
+TN 3716,ogive radius,9.25,d,26,figure 1: radius dimension 9.25d
+TN 3716,orifice diameter,0.030,in.,26,figure 1: 0.030 in. dia. orifices in a single longitudinal row; 23 orifices (text PDF p5)
+TN 3716,orifice stations 1-12,0.22 0.56 0.89 1.22 1.61 2.06 2.50 2.95 3.62 4.06 4.50 4.95,x/d,26,figure 1 orifice table
+TN 3716,orifice stations 13-23,5.39 5.84 6.28 6.72 7.17 7.61 8.06 8.50 8.95 9.39 9.83,x/d,26,figure 1 orifice table
+TN 3716,free-stream Mach number,1.98,,6,text printed page 5; also table I caption (PDF p21) M0=1.98
+TN 3716,Reynolds number (zero incidence data),0.39x10^6,per inch,6,text printed page 5 and table I(a) caption (PDF p21); text gives 0.45x10^6 based on body diameter
+TN 3716,Cp uncertainty,+-0.005,,7,text printed page 6 (root-sum-square of possible errors)
+TN 3716,circumferential Cp variation at alpha=0,less than +-0.002,,6,text printed page 5: average Cp listed for each x/d at zero angle of attack
+TN 3716,angle of attack uncertainty,+-0.1,deg,7,text printed page 6
+TN 3716,tunnel,Ames 1- by 3-foot supersonic wind tunnel No. 1,,5,text printed page 4
+TN 3716,boundary-layer transition at alpha=0,7.5 (6 with turbulence grid),d from vertex,6,text printed page 5 (schlieren); table I(a) caption does not say whether grid was in place
+RM A53E01,title,Comparison of the experimental and theoretical distributions of lift on a slender inclined body of revolution at M = 2,,1,cover page; Perkins and Kuehn; August 25 1953
+RM A53E01,nose shape,33-1/3-caliber tangent ogive (fineness ratio 5.75),,5,text printed page 4; figure 1 (PDF p26) shows ogive radius 33 1/3 d and nose length 5.75d
+RM A53E01,nose length,5.75,d,26,figure 1 (printed page 25)
+RM A53E01,ogive radius,33-1/3,d,26,figure 1
+RM A53E01,model 2 body length,14.2,d,26,figure 1 (model 1: 21.1d)
+RM A53E01,model 2 diameter d,1.125,in.,26,figure 1 (model 1: 0.75 in.)
+RM A53E01,orifice diameter,0.030,in.,26,figure 1
+RM A53E01,model 2 orifice row,single longitudinal row at theta=0,,26,figure 1: spacing 0.444d for 0.44<x/d<10.67 and 0.667d for 10.67<x/d<14.00; text: 29 axial stations on model 2 (PDF p6)
+RM A53E01,free-stream Mach number,1.98,,5,text printed page 4; table II caption (PDF p22)
+RM A53E01,Reynolds number,0.5x10^6,per inch,5,text printed page 4; table II caption (PDF p22)
+RM A53E01,Cp uncertainty (in plane of symmetry),+-0.004,,6,text printed page 5
+RM A53E01,Cp uncertainty (other than in plane of symmetry),+-0.006,,6,text printed page 5
+RM A53E01,angle of attack uncertainty,+-0.1,deg,6,text printed page 5
+RM A53E01,model surface slope deviation,approx. 0.25 deg at x=2.7d and approx. 0.12 deg at x=1.4d,,9,text printed page 8: measured by contour projector; waviness of nose pressures attributed to slope irregularities
+RM A53E01,nose angle remark,slightly smaller nose angle on the model than assumed for theory,,9,text printed page 8: apparently low Cp for x/d<1 attributed to this
+RM A53E01,tunnel,Ames 1- by 3-foot supersonic wind tunnel No. 1,,5,text printed page 4
+TN 4233,cone half-angle,6 59',deg min,6,text printed page 4 (cone half-angle be 6 59'); figure 1 (PDF p35) dimension 6 59'; also PDF p18 and p11
+TN 4233,cone length l,5.50,in.,35,figure 1 (printed page 33); text PDF p7: 5.50-inch length of the conical part
+TN 4233,cylinder diameter,1.347,in.,35,figure 1
+TN 4233,overall length,15.15,in.,35,figure 1
+TN 4233,orifice diameter,0.016,in.,6,text printed page 4
+TN 4233,orifice stations (circular model),1 .082; 2 .183; 3 .285; 4 .385; 5 .486; 6 .589; 7 .688; 8 .790; 9 .891; 10 .942; 11 .994; 12 1.043; 13 1.094; 14 1.195; 15 1.398; 16* .385; 17* .688,x/l,35,figure 1 table of orifice locations; * = opposite surface (check orifices)
+TN 4233,tunnel for table I(a),Ames 2- by 2-foot transonic wind tunnel (0.25-percent blockage),,6,text printed page 4 (tunnel and 0.25 percent blockage); appendix PDF p18
+TN 4233,tunnel for table I(b),Ames 14-foot transonic wind tunnel (0.005-percent blockage),,18,appendix printed page 16; text PDF p7 (printed 5)
+TN 4233,Reynolds number,2.4x10^6,based on 5.50-in. cone length,7,text printed page 5: held constant
+TN 4233,Mach number uncertainty,+-0.003 / +-0.004 / +-0.002,,8,text printed page 6 at M=0.8 / 1.0 / 1.2 (random)
+TN 4233,Cp uncertainty,+-0.002,,8,text printed page 6 at M=0.8 1.0 1.2 (random)
+TN 4233,angle of attack uncertainty,+-0.1,deg,8,text printed page 6
+TN 4233,Mach number note,indicated Mach number; data influenced by wall interference,,8,text printed page 6 and appendix PDF p18
+RM E51H17,title,Aerodynamic characteristics of a slender cone-cylinder body of revolution at a Mach number of 3.85,,3,printed page 1; John R. Jack
+RM E51H17,cone half-angle epsilon,4.77,deg,4,text printed page 2 table
+RM E51H17,body length l,42,in.,4,text printed page 2; figure 2 (PDF p16) stations 0 and 42 in.
+RM E51H17,cone length,21,in.,16,figure 2 (printed page 14): cone-cylinder junction at station 21 in.
+RM E51H17,maximum body diameter,3.50,in.,4,text printed page 2; figure 2 shows 3.5 in.
+RM E51H17,fineness ratio,12,,4,text printed page 2
+RM E51H17,orifice stations,3 5 6 9 11 12 15 18 19 19.5 20 20.5 21.5 22 22.5 23 25 27 29 31 33 35 37 39 41,in.,16,figure 2 table; all at theta=0 and 90; 5 11 19 23 31 41 also at 22.5 45 67.5
+RM E51H17,Mach number,3.85+-0.04,,4,text printed page 2 (test section Mach number); summary PDF p3
+RM E51H17,Reynolds number,3.85x10^6,,3,summary printed page 1 (basis not stated there); text printed page 2: 1.1x10^6 per foot
+RM E51H17,Cp uncertainty,not stated,,,no stated uncertainty of Cp found in text pages searched (PDF p1-14)
+RM E51H17,model surface finish,16 microinch (pressure model; steel),,4,text printed page 2
+RM E51H17,tunnel,NACA Lewis 2- by 2-foot supersonic tunnel,,4,text printed page 2

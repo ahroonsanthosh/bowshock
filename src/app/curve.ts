@@ -292,7 +292,7 @@ export class CurveRun {
         );
         break;
       }
-      const nose = noseStateOf(outcome);
+      const nose = noseStateOf(outcome, { nose: form.body.nose, mach: form.mach });
       if (nose === null && later) {
         // The GPU failed: the point keeps its refusal, and nothing more can be solved.
         this.set(k, { state: before.state, nose: outcome, seconds, cellUpdates });

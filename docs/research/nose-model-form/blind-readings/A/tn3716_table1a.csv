@@ -1,0 +1,16 @@
+source,item,mach,tunnel,orifice,station,station_unit,cp,alternatives,flag,page,note
+TN 3716,table I(a),1.98,,,0.22,x/d,0.260,,ok,21,Re=0.39x10^6 per inch; orifice 1 per figure 1 (not printed in table); 
+TN 3716,table I(a),1.98,,,0.56,x/d,0.222,,ok,21,Re=0.39x10^6 per inch; orifice 2 per figure 1 (not printed in table); 
+TN 3716,table I(a),1.98,,,0.89,x/d,0.165,,ok,21,Re=0.39x10^6 per inch; orifice 3 per figure 1 (not printed in table); 
+TN 3716,table I(a),1.98,,,1.22,x/d,0.115,,ok,21,Re=0.39x10^6 per inch; orifice 4 per figure 1 (not printed in table); station digits blurred (2 glyphs print like e); 1.22 per figure 1 list
+TN 3716,table I(a),1.98,,,1.61,x/d,0.074,0.076,ambiguous,21,Re=0.39x10^6 per inch; orifice 5 per figure 1 (not printed in table); last digit printed like h; this typeface prints 4 that way (compare 4.06) so 4 most likely
+TN 3716,table I(a),1.98,,,2.06,x/d,0.026,0.036;0.028,ambiguous,21,Re=0.39x10^6 per inch; orifice 6 per figure 1 (not printed in table); two middle digits run together in the scan; station prints as e.06
+TN 3716,table I(a),1.98,,,2.5,x/d,-0.014,,ok,21,Re=0.39x10^6 per inch; orifice 7 per figure 1 (not printed in table); station printed with one decimal (2.5); figure 1 lists 2.50
+TN 3716,table I(a),1.98,,,2.95,x/d,-0.036,-0.038,ambiguous,21,Re=0.39x10^6 per inch; orifice 8 per figure 1 (not printed in table); last digit blotted: 6 or 8
+TN 3716,table I(a),1.98,,,3.62,x/d,-0.030,,ok,21,Re=0.39x10^6 per inch; orifice 9 per figure 1 (not printed in table); 
+TN 3716,table I(a),1.98,,,4.06,x/d,-0.017,,ok,21,Re=0.39x10^6 per inch; orifice 10 per figure 1 (not printed in table); 
+TN 3716,table I(a),1.98,,,4.50,x/d,-0.012,-0.018,ambiguous,21,Re=0.39x10^6 per inch; orifice 11 per figure 1 (not printed in table); last digit prints like e (this typeface 2); could be 8
+TN 3716,table I(a),1.98,,,5.39,x/d,-0.009,,ok,21,Re=0.39x10^6 per inch; orifice 13 per figure 1 (not printed in table); 
+TN 3716,table I(a),1.98,,,6.28,x/d,-0.001,,ok,21,Re=0.39x10^6 per inch; orifice 15 per figure 1 (not printed in table); station prints as 6.e8
+TN 3716,table I(a),1.98,,,7.17,x/d,0.000,,ok,21,Re=0.39x10^6 per inch; orifice 17 per figure 1 (not printed in table); station prints as 7.1T style glyphs
+TN 3716,table I(a),1.98,,,8.06,x/d,0.006,,ok,21,Re=0.39x10^6 per inch; orifice 19 per figure 1 (not printed in table); 

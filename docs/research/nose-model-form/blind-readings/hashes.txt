@@ -1,0 +1,13 @@
+Source PDFs used by both blind readers (the PDFs are not committed)
+
+Each reader fetched each file on its own from
+https://ntrs.nasa.gov/api/citations/<id>/downloads/<id>.pdf
+The SHA-256 and byte size below were stated by reader A and by reader B in
+their method notes, and recomputed by the pairing party from both readers'
+downloaded copies on 2026-10-24. All four match across A, B and the recompute.
+
+report     NTRS id      bytes     pages  SHA-256
+TN 3716    19930084497  2148283   51     0b5f1da7945b5203be19d65900270622b03ff25d7b2e591f645943c136f16f97
+RM A53E01  19930087544  22695843  41     24983fa022fced0de61bfa6f4e8c2813f868db2c9997d50cef23ef049a9aa8d1
+TN 4233    19930085182  25053005  48     ab5d001895ba72462c8ecb028ed581710dc7f81c90bbfb3e79a94feef7354173
+RM E51H17  19930086899  11154898  26     dfc06a390f8bb73d7a33a54b7ecdb57f273264802b259d685ea8ee15df48132f

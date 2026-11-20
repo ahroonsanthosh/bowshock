@@ -1,0 +1,103 @@
+# 0022 integration script on the blind readings A and B (2026-10-24)
+# Seen sets (0014 10.7 (w) item 3): widening only, never a test or a validation; formed from data seen before registration.
+# Inputs: docs/research/nose-model-form/blind-readings/{A,B} (paired: 601 of 601 agree), and the
+# repository's earlier typings as 0022 4.2's earlier readings (labelled EARLIER READING; lower limits).
+# Inviscid side as the seen runs: method of characteristics, 640 intervals, start 1e-3 of the nose.
+# Unchanged: the script, the one-tenth rule, the floors, the boxes, the quadrature.
+
+TN 3716, 3-caliber tangent ogive, Mach 1.98, 3.000 cal
+  Re: 0.39x10^6 per inch (0.45e6 on the body diameter, as the text states)
+  geometry (A and B agree): nose 3 d, ogive radius 9.25 d (tangent ogive: (R^2 + L^2) / 2R = 9.2500 d), body 10 d, Mach 1.98, Cp uncertainty +-0.005 (p. 7). The afterbody length 7 d (B only) agrees with body 10 d less nose 3 d; the cylinder used is 7 d.
+  stations: fig. 1 (both readers, clear print). B flags the table stations 1.22, 2.95 (and 3.62, off the nose) as blotted; 0022 4.3 item 1 takes x/d from the model figure, so those flags change nothing.
+  fig. 3: 0022 4.1 and (w) item 3 name "fig. 3, zero incidence" with table I(a) as the set; each reader's fig. 3 is a reading of its own, each point at its nearest fig. 1 orifice (all within 0.02 x/d). Read errors (A +-0.001, B +-0.003 in Cp) are not alternatives: neither reader flagged a fig. 3 point ambiguous.
+  earlier readings (0022 4.2): the file's typing (0.222 or 0.212 at x/d 0.56) and 5fcc92b's -0.038 at 2.95. The file header's fig. 3 value at 0.56 (about 0.213) lies between 0.212 and 0.222; r is linear and |Cp - Cp_inv| convex in each cell, so it cannot exceed those two.
+  stations on the nose (x/d): 0.22, 0.56, 0.89, 1.22, 1.61, 2.06, 2.50, 2.95
+  inviscid nose drag (fine quadrature) 0.098804; at the stations 0.099011
+  uncovered share of the inviscid drag 5.81% (limit 10.00%): not refused by the one-tenth rule
+  covered area 97.85%; bias area (first orifice to shoulder) 97.91%
+  per reading and combination (values at the nose stations, in order):
+    r        u_meas   u_unc    |r|+u    reading; Cp values
+      8.98%   4.94%   0.47%  14.39%   reader A, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.074 0.026 -0.014 -0.036
+      8.93%   4.94%   0.42%  14.29%   reader A, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.074 0.026 -0.014 -0.038
+     10.61%   4.94%   0.47%  16.02%   reader A, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.074 0.036 -0.014 -0.036
+     10.56%   4.94%   0.42%  15.92%   reader A, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.074 0.036 -0.014 -0.038
+      9.31%   4.94%   0.47%  14.72%   reader A, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.074 0.028 -0.014 -0.036
+      9.25%   4.94%   0.42%  14.62%   reader A, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.074 0.028 -0.014 -0.038
+      9.37%   4.94%   0.47%  14.79%   reader A, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.076 0.026 -0.014 -0.036
+      9.32%   4.94%   0.42%  14.69%   reader A, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.076 0.026 -0.014 -0.038
+     11.00%   4.94%   0.47%  16.41%   reader A, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.076 0.036 -0.014 -0.036
+     10.95%   4.94%   0.42%  16.32%   reader A, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.076 0.036 -0.014 -0.038
+      9.70%   4.94%   0.47%  15.11%   reader A, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.076 0.028 -0.014 -0.036
+      9.65%   4.94%   0.42%  15.01%   reader A, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.076 0.028 -0.014 -0.038
+      8.98%   4.94%   0.47%  14.39%   reader B, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.074 0.026 -0.014 -0.036
+      8.93%   4.94%   0.42%  14.29%   reader B, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.074 0.026 -0.014 -0.038
+      9.01%   4.94%   0.49%  14.44%   reader B, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.074 0.026 -0.014 -0.035
+      9.31%   4.94%   0.47%  14.72%   reader B, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.074 0.028 -0.014 -0.036
+      9.25%   4.94%   0.42%  14.62%   reader B, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.074 0.028 -0.014 -0.038
+      9.33%   4.94%   0.49%  14.77%   reader B, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.165 0.115 0.074 0.028 -0.014 -0.035
+      8.67%   4.94%   0.47%  14.08%   reader B, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.163 0.115 0.074 0.026 -0.014 -0.036
+      8.61%   4.94%   0.42%  13.98%   reader B, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.163 0.115 0.074 0.026 -0.014 -0.038
+      8.70%   4.94%   0.49%  14.13%   reader B, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.163 0.115 0.074 0.026 -0.014 -0.035
+      8.99%   4.94%   0.47%  14.41%   reader B, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.163 0.115 0.074 0.028 -0.014 -0.036
+      8.94%   4.94%   0.42%  14.31%   reader B, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.163 0.115 0.074 0.028 -0.014 -0.038
+      9.02%   4.94%   0.49%  14.45%   reader B, table I(a) (blind reading, 2026-10-24); 0.26 0.222 0.163 0.115 0.074 0.028 -0.014 -0.035
+      9.97%   4.94%   0.47%  15.38%   reader B, table I(a) (blind reading, 2026-10-24); 0.28 0.222 0.165 0.115 0.074 0.026 -0.014 -0.036
+      9.91%   4.94%   0.45%  15.30%   reader B, table I(a) (blind reading, 2026-10-24); 0.28 0.222 0.165 0.115 0.074 0.026 -0.014 -0.038
+     10.00%   4.94%   0.49%  15.43%   reader B, table I(a) (blind reading, 2026-10-24); 0.28 0.222 0.165 0.115 0.074 0.026 -0.014 -0.035
+     10.30%   4.94%   0.47%  15.71%   reader B, table I(a) (blind reading, 2026-10-24); 0.28 0.222 0.165 0.115 0.074 0.028 -0.014 -0.036
+     10.24%   4.94%   0.45%  15.63%   reader B, table I(a) (blind reading, 2026-10-24); 0.28 0.222 0.165 0.115 0.074 0.028 -0.014 -0.038
+     10.32%   4.94%   0.49%  15.76%   reader B, table I(a) (blind reading, 2026-10-24); 0.28 0.222 0.165 0.115 0.074 0.028 -0.014 -0.035
+      9.66%   4.94%   0.47%  15.07%   reader B, table I(a) (blind reading, 2026-10-24); 0.28 0.222 0.163 0.115 0.074 0.026 -0.014 -0.036
+      9.60%   4.94%   0.45%  14.99%   reader B, table I(a) (blind reading, 2026-10-24); 0.28 0.222 0.163 0.115 0.074 0.026 -0.014 -0.038
+      9.68%   4.94%   0.49%  15.12%   reader B, table I(a) (blind reading, 2026-10-24); 0.28 0.222 0.163 0.115 0.074 0.026 -0.014 -0.035
+      9.98%   4.94%   0.47%  15.39%   reader B, table I(a) (blind reading, 2026-10-24); 0.28 0.222 0.163 0.115 0.074 0.028 -0.014 -0.036
+      9.93%   4.94%   0.45%  15.32%   reader B, table I(a) (blind reading, 2026-10-24); 0.28 0.222 0.163 0.115 0.074 0.028 -0.014 -0.038
+     10.01%   4.94%   0.49%  15.44%   reader B, table I(a) (blind reading, 2026-10-24); 0.28 0.222 0.163 0.115 0.074 0.028 -0.014 -0.035
+      8.09%   4.94%   0.42%  13.46%   reader A, fig. 3 points at their fig. 1 orifices (blind reading); 0.261 0.2133 0.165 0.1143 0.0743 0.0267 -0.0126 -0.038
+      8.89%   4.94%   0.45%  14.28%   reader B, fig. 3 points at their fig. 1 orifices (blind reading); 0.261 0.214 0.166 0.115 0.075 0.028 -0.012 -0.037
+      8.98%   4.94%   0.47%  14.39%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b; 0.26 0.222 0.165 0.115 0.074 0.026 -0.014 -0.036
+      8.93%   4.94%   0.42%  14.29%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b; 0.26 0.222 0.165 0.115 0.074 0.026 -0.014 -0.038
+      7.76%   4.94%   0.47%  13.17%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b; 0.26 0.212 0.165 0.115 0.074 0.026 -0.014 -0.036
+      7.71%   4.94%   0.42%  13.07%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b; 0.26 0.212 0.165 0.115 0.074 0.026 -0.014 -0.038
+  largest |r| + u per reading:
+    16.41%  reader A, table I(a) (blind reading, 2026-10-24)
+    15.76%  reader B, table I(a) (blind reading, 2026-10-24)
+    13.46%  reader A, fig. 3 points at their fig. 1 orifices (blind reading)
+    14.28%  reader B, fig. 3 points at their fig. 1 orifices (blind reading)
+    14.39%  EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b
+  a = max |r| + u over every reading and combination: 16.41%
+  floor ((w) item 4, a lower limit): registered 14.40%, from the published figures unrounded 14.37%; the floor used is the registered 14.40%
+  a exceeds the floor by 2.01%: the readings set the half-width
+
+RM A53E01, 5.75-caliber tangent ogive (model 2), Mach 1.98, 5.750 cal
+  Re: 0.5x10^6 per inch (text p. 5 and table II heading); the summary (p. 2) says about 0.5e6 on the body diameter: UNRESOLVED, recorded only; the script uses Re for nothing
+  geometry (A and B agree): nose 5.75 d, ogive radius 33-1/3 d (tangent ogive: (R^2 + L^2) / 2R = 33.3125 d, within 0.1% of the printed nominal), model 2 body 14.2 d, Mach 1.98, Cp uncertainty +-0.004 in the plane of symmetry (p. 6; +-0.006 elsewhere: the theta = 0 row is in the plane of symmetry). The angle-of-attack uncertainty +-0.1 deg (A only) is not used.
+  stations: as printed in table II(a) (both readers agree), which are k (4/9) d to print precision, the 0.444 d spacing of fig. 1.
+  Reynolds number: the summary says about 0.5e6 on the body diameter (B), the text and the table heading 0.5e6 per inch (A and B). Recorded, not resolved; the script does not use Re.
+  earlier readings (0022 4.2): none. The table was read once on 2026-10-17 and not typed; no value of it is on record, so none can enter the envelope; the published floor stands for that reading.
+  only the theta = 0 column was read (both readers, under the brief's zero-roll rule); the 18 other roll columns at alpha = 0 are open (see the questions file).
+  stations on the nose (x/d): 0.44, 0.89, 1.33, 1.78, 2.22, 2.67, 3.11, 3.56, 4.00, 4.44, 4.89, 5.33
+  inviscid nose drag (fine quadrature) 0.030742; at the stations 0.030826
+  uncovered share of the inviscid drag 7.72% (limit 10.00%): not refused by the one-tenth rule
+  covered area 96.75%; bias area (first orifice to shoulder) 97.81%
+  per reading and combination (values at the nose stations, in order):
+    r        u_meas   u_unc    |r|+u    reading; Cp values
+     -7.61%  12.69%   0.96%  21.26%   reader A, table II(a), theta = 0 column (blind reading, 2026-10-24); 0.081 0.072 0.064 0.048 0.035 0.023 0.018 0.008 -0.003 -0.011 -0.017 -0.026
+     -7.61%  12.69%   0.96%  21.26%   reader B, table II(a), theta = 0 column (blind reading, 2026-10-24); 0.081 0.072 0.064 0.048 0.035 0.023 0.018 0.008 -0.003 -0.011 -0.017 -0.026
+  largest |r| + u per reading:
+    21.26%  reader A, table II(a), theta = 0 column (blind reading, 2026-10-24)
+    21.26%  reader B, table II(a), theta = 0 column (blind reading, 2026-10-24)
+  a = max |r| + u over every reading and combination: 21.26%
+  floor ((w) item 4, a lower limit): registered 16.10%, from the published figures unrounded 16.07%; the floor used is the registered 16.10%
+  a exceeds the floor by 5.16%: the readings set the half-width
+
+TN 4233, tables I(a) and I(b): NOT RUN. Stopped on question 1 (the check orifices); see blind-run-questions.txt.
+RM E51H17, fig. 4(a): NOT RUN. Stopped on question 2 (no stated Cp uncertainty); see blind-run-questions.txt.
+
+Allowance boxes (0022 4.4: union of boxes, largest a_b or floor; symmetric about the served value):
+  tangent ogive, 2.75 to 3.25 cal, Mach 1.93 to 2.03 (TN 3716, 3-caliber tangent ogive): allowance 16.41% (a_b 16.41%, floor 14.40%), formed from data seen before registration
+  tangent ogive, 5.50 to 6.00 cal, Mach 1.93 to 2.03 (RM A53E01, 5.75-caliber tangent ogive (model 2)): allowance 21.26% (a_b 21.26%, floor 16.10%), formed from data seen before registration
+  cones: none from this run (TN 4233 and RM E51H17 stopped); outside every box the nose stays
+  "numerical error of the inviscid solve; the model's own error is not in this band".
+
+# Seen sets (0014 10.7 (w) item 3): widening only, never a test or a validation; formed from data seen before registration.

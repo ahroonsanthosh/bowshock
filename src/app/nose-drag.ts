@@ -77,6 +77,7 @@ import {
   type DisplayBlock,
   type TotalDragFields,
 } from './total-drag-display';
+import { noseModelAllowance } from './nose-model-allowance';
 import { renderBlocks } from './total-drag-render';
 import { h } from '../ui/dom';
 
@@ -700,8 +701,14 @@ async function run(gpu: GPUDevice): Promise<void> {
             ? ''
             : ` The grids have ${outcome.columnDensity} times the usual columns along the body: the usual grid at refinement ${failed.refinement} fails the quality checks of fitted grids.`);
         if (outcome.uncertainty !== undefined) {
+          // Where a measured nose's box holds this one, the model-form allowance the total carries (0022).
+          const model = noseModelAllowance(body.nose, mach);
+          const modelWords =
+            model === null
+              ? ''
+              : ` The total carries also the inviscid model against measured wind-tunnel pressures, +-${(100 * model.halfWidth).toFixed(1)}% of the value (${model.sources.join('; ')}; design record 0022).`;
           show(
-            `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${allowanceText(outcome.floor)} of the value.${stopped}${bandCaveat(outcome.floor, outcome.levels.length) === '' ? '' : ` ${bandCaveat(outcome.floor, outcome.levels.length)}`}`,
+            `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${allowanceText(outcome.floor)} of the value.${stopped}${bandCaveat(outcome.floor, outcome.levels.length) === '' ? '' : ` ${bandCaveat(outcome.floor, outcome.levels.length)}`}${modelWords}`,
             VERIFIED,
             withBand(e.value, outcome.uncertainty),
           );
@@ -722,7 +729,7 @@ async function run(gpu: GPUDevice): Promise<void> {
         break;
       }
     }
-    result(noseStateOf(outcome));
+    result(noseStateOf(outcome, { nose: body.nose, mach }));
   } catch (error) {
     // Bodies the solver does not serve yet (detached shocks, subsonic tip
     // flow) are refused with the reason; a failure of the GPU says so.

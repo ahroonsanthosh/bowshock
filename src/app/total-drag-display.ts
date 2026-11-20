@@ -10,11 +10,13 @@
 
 import type { VerifiedDrag } from '../analysis/verified-drag';
 import { bodyLength, type Body } from '../geometry/body';
+import type { Nose } from '../geometry/nose';
 import { BASIC_FINNER_GEOMETRY, BASIC_FINNER_LENGTHS } from '../validation/basic-finner';
 import type { RefusedTotalParts } from '../total/refused-floor';
 import { outward, outwardPercent } from './band';
 import { floorText, notShownLine, PARTS_CAPTION } from './refused-parts';
 import { FOOT, flightConditionOf, type AltitudeUnit } from './flight-condition';
+import { noseModelAllowance } from './nose-model-allowance';
 import {
   BAND_CAVEAT,
   BASIC_FINNER_CLASS,
@@ -336,7 +338,11 @@ export interface NoseSolveError {
  * refused, and null (no result: the total waits) when stopped or when the
  * GPU failed.
  */
-export function noseStateOf(outcome: VerifiedDrag | NoseSolveError): NoseState | null {
+export function noseStateOf(
+  outcome: VerifiedDrag | NoseSolveError,
+  /** The nose solved and its Mach number: with them, the model-form allowance where a measured box holds it (0022). */
+  solved?: { readonly nose: Nose; readonly mach: number },
+): NoseState | null {
   switch (outcome.kind) {
     case 'cancelled':
       return null;
@@ -367,12 +373,15 @@ export function noseStateOf(outcome: VerifiedDrag | NoseSolveError): NoseState |
           }
         : {
             kind: 'solved',
-            component: noseComponentOf({
-              value: outcome.estimate.value,
-              uncertainty: outcome.uncertainty,
-              grids: outcome.levels.length,
-              floor: outcome.floor,
-            }),
+            component: noseComponentOf(
+              {
+                value: outcome.estimate.value,
+                uncertainty: outcome.uncertainty,
+                grids: outcome.levels.length,
+                floor: outcome.floor,
+              },
+              solved === undefined ? null : noseModelAllowance(solved.nose, solved.mach),
+            ),
             verified: outcome.verified,
           };
   }

@@ -29,7 +29,9 @@ rather than guessing.
   1.2 to 5, and Von Kármán noses from Mach 1.5 to 3 (1 to 5 calibers long,
   up to 6 at Mach 3). The band covers the numerical error; tunnel tests sit
   from a few percent to about a third off the inviscid answer, and that gap
-  isn't on the page yet.
+  is on the page only near the noses measured: cones of about 4 calibers at
+  Mach 1.2 to 1.45 and 6 calibers at Mach 3.8 to 3.9, and tangent ogives of
+  about 3 and 5.75 calibers near Mach 2.
 - **Skin friction**, within -12% to +19% of 23 measurements.
 - **Fins and base**, wherever wind-tunnel data or exact theory covers the
   shape.

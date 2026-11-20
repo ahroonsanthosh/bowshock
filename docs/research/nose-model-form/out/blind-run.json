@@ -1,0 +1,1020 @@
+[
+ {
+  "label": "Seen sets (0014 10.7 (w) item 3): widening only, never a test or a validation; formed from data seen before registration",
+  "result": {
+   "id": "TN 3716, 3-caliber tangent ogive",
+   "family": "tangent ogive",
+   "fineness": 3,
+   "mach": 1.98,
+   "reynolds": "0.39x10^6 per inch (0.45e6 on the body diameter, as the text states)",
+   "seen": true,
+   "stations": [
+    0.22,
+    0.56,
+    0.89,
+    1.22,
+    1.61,
+    2.06,
+    2.5,
+    2.95
+   ],
+   "inviscidNoseDrag": 0.09880353128581403,
+   "uncoveredShare": 0.05808372455252701,
+   "coveredArea": 0.9785135494253846,
+   "biasArea": 0.9790540208673298,
+   "sets": true,
+   "evaluations": [
+    {
+     "reading": "reader A, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.1079026173985101,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08980208250214328,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.14392009572160114,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader A, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10784871486017734,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08925767403510632,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.1429416666692189,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "reader A, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.036,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.10951584695423112,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.10609548642288136,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.16021349964233922,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader A, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.036,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10946194441589836,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.1055510779558444,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.15923507058995698,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "reader A, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.1082252633096543,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09306076328629098,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.14717877650574884,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader A, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10817136077132154,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09251635481925402,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.1462003474533666,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "reader A, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.076,
+      0.026,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.1082922163706103,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09373698029583988,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.14785499351529774,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader A, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.076,
+      0.026,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10823831383227754,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09319257182880314,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.14687656446291572,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "reader A, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.076,
+      0.036,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.10990544592633134,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.11003038421657818,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.16414839743603604,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader A, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.076,
+      0.036,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10985154338799857,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.10948597574954122,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.1631699683836538,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "reader A, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.076,
+      0.028,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.1086148622817545,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09699566107998758,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.15111367429944544,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader A, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.076,
+      0.028,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10856095974342174,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09645125261295062,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.1501352452470632,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.1079026173985101,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08980208250214328,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.14392009572160114,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10784871486017734,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08925767403510632,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.1429416666692189,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.035
+     ],
+     "measuredDrag": 0.10792956866767649,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09007428673566187,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004893446627914663,
+     "halfWidth": 0.14440931024779238,
+     "largestStationDifference": 0.02254937573535412
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.1082252633096543,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09306076328629098,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.14717877650574884,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10817136077132154,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09251635481925402,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.1462003474533666,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.035
+     ],
+     "measuredDrag": 0.10825221457882069,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09333296751980935,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004893446627914663,
+     "halfWidth": 0.14766799103193987,
+     "largestStationDifference": 0.02254937573535412
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.163,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.10759345067412644,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08667953971127362,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.14079755293073148,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.163,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10753954813579368,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08613513124423666,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.13981912387834924,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.163,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.035
+     ],
+     "measuredDrag": 0.10762040194329282,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08695174394479221,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004893446627914663,
+     "halfWidth": 0.14128676745692273,
+     "largestStationDifference": 0.02254937573535412
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.163,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.10791609658527064,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08993822049542133,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.1440562337148792,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.163,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10786219404693788,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08939381202838437,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.14307780466249695,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.26,
+      0.222,
+      0.163,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.035
+     ],
+     "measuredDrag": 0.10794304785443702,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.0902104247289397,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004893446627914663,
+     "halfWidth": 0.1445454482410702,
+     "largestStationDifference": 0.02254937573535412
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.28,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.10888177933606706,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.0996914878231967,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.15380950104265456,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.28,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.1088278767977343,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09914707935615974,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004457431638822536,
+     "halfWidth": 0.15304608787919813,
+     "largestStationDifference": 0.020540185370591824
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.28,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.035
+     ],
+     "measuredDrag": 0.10890873060523344,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09996369205671507,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004893446627914663,
+     "halfWidth": 0.15429871556884558,
+     "largestStationDifference": 0.02254937573535412
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.28,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.10920442524721126,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.10295016860734418,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.15706818182680204,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.28,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.1091505227088785,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.10240576014030722,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004457431638822536,
+     "halfWidth": 0.1563047686633456,
+     "largestStationDifference": 0.020540185370591824
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.28,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.035
+     ],
+     "measuredDrag": 0.10923137651637764,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.10322237284086255,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004893446627914663,
+     "halfWidth": 0.15755739635299307,
+     "largestStationDifference": 0.02254937573535412
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.28,
+      0.222,
+      0.163,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.1085726126116834,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09656894503232705,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.1506869582517849,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.28,
+      0.222,
+      0.163,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10851871007335064,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09602453656529009,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004457431638822536,
+     "halfWidth": 0.14992354508832847,
+     "largestStationDifference": 0.020540185370591824
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.28,
+      0.222,
+      0.163,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.035
+     ],
+     "measuredDrag": 0.10859956388084978,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09684114926584542,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004893446627914663,
+     "halfWidth": 0.15117617277797593,
+     "largestStationDifference": 0.02254937573535412
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.28,
+      0.222,
+      0.163,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.1088952585228276,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09982762581647453,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.1539456390359324,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.28,
+      0.222,
+      0.163,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10884135598449483,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.09928321734943757,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004457431638822536,
+     "halfWidth": 0.15318222587247596,
+     "largestStationDifference": 0.020540185370591824
+    },
+    {
+     "reading": "reader B, table I(a) (blind reading, 2026-10-24)",
+     "cps": [
+      0.28,
+      0.222,
+      0.163,
+      0.115,
+      0.074,
+      0.028,
+      -0.014,
+      -0.035
+     ],
+     "measuredDrag": 0.10892220979199398,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.1000998300499929,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004893446627914663,
+     "halfWidth": 0.15443485356212341,
+     "largestStationDifference": 0.02254937573535412
+    },
+    {
+     "reading": "reader A, fig. 3 points at their fig. 1 orifices (blind reading)",
+     "cps": [
+      0.261,
+      0.2133,
+      0.165,
+      0.1143,
+      0.0743,
+      0.0267,
+      -0.0126,
+      -0.038
+     ],
+     "measuredDrag": 0.1070193874010814,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.0808815770155038,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.13456556964961638,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "reader B, fig. 3 points at their fig. 1 orifices (blind reading)",
+     "cps": [
+      0.261,
+      0.214,
+      0.166,
+      0.115,
+      0.075,
+      0.028,
+      -0.012,
+      -0.037
+     ],
+     "measuredDrag": 0.10781261712766547,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08889309173846249,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004459426042569372,
+     "halfWidth": 0.14279409466524773,
+     "largestStationDifference": 0.020549375735354126
+    },
+    {
+     "reading": "EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.1079026173985101,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08980208250214328,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.14392009572160114,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10784871486017734,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08925767403510632,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.1429416666692189,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b",
+     "cps": [
+      0.26,
+      0.212,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.10669528300210003,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.07760816569820927,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.13172617891766714,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b",
+     "cps": [
+      0.26,
+      0.212,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10664138046376727,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.07706375723117231,
+     "uMeas": 0.04944157688421586,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.1307477498652849,
+     "largestStationDifference": 0.019549375735354126
+    }
+   ],
+   "halfWidth": 0.16414839743603604
+  },
+  "floorRegistered": 0.144,
+  "floorComputed": 0.1437246963562754
+ },
+ {
+  "label": "Seen sets (0014 10.7 (w) item 3): widening only, never a test or a validation; formed from data seen before registration",
+  "result": {
+   "id": "RM A53E01, 5.75-caliber tangent ogive (model 2)",
+   "family": "tangent ogive",
+   "fineness": 5.75,
+   "mach": 1.98,
+   "reynolds": "0.5x10^6 per inch (text p. 5 and table II heading); the summary (p. 2) says about 0.5e6 on the body diameter: UNRESOLVED, recorded only; the script uses Re for nothing",
+   "seen": true,
+   "stations": [
+    0.44,
+    0.89,
+    1.33,
+    1.78,
+    2.22,
+    2.67,
+    3.11,
+    3.56,
+    4,
+    4.44,
+    4.89,
+    5.33
+   ],
+   "inviscidNoseDrag": 0.030742268805522544,
+   "uncoveredShare": 0.07715260918783698,
+   "coveredArea": 0.9674909132844988,
+   "biasArea": 0.9780539107902352,
+   "sets": true,
+   "evaluations": [
+    {
+     "reading": "reader A, table II(a), theta = 0 column (blind reading, 2026-10-24)",
+     "cps": [
+      0.081,
+      0.072,
+      0.064,
+      0.048,
+      0.035,
+      0.023,
+      0.018,
+      0.008,
+      -0.003,
+      -0.011,
+      -0.017,
+      -0.026
+     ],
+     "measuredDrag": 0.02847937963915451,
+     "inviscidDrag": 0.030826423407952663,
+     "r": -0.07613740127220403,
+     "uMeas": 0.12691111100977284,
+     "uUnc": 0.009575655572927649,
+     "halfWidth": 0.2126241678549045,
+     "largestStationDifference": 0.009080021708485514
+    },
+    {
+     "reading": "reader B, table II(a), theta = 0 column (blind reading, 2026-10-24)",
+     "cps": [
+      0.081,
+      0.072,
+      0.064,
+      0.048,
+      0.035,
+      0.023,
+      0.018,
+      0.008,
+      -0.003,
+      -0.011,
+      -0.017,
+      -0.026
+     ],
+     "measuredDrag": 0.02847937963915451,
+     "inviscidDrag": 0.030826423407952663,
+     "r": -0.07613740127220403,
+     "uMeas": 0.12691111100977284,
+     "uUnc": 0.009575655572927649,
+     "halfWidth": 0.2126241678549045,
+     "largestStationDifference": 0.009080021708485514
+    }
+   ],
+   "halfWidth": 0.2126241678549045
+  },
+  "floorRegistered": 0.161,
+  "floorComputed": 0.1607026675341575
+ },
+ {
+  "allowances": [
+   {
+    "box": {
+     "id": "TN 3716, 3-caliber tangent ogive",
+     "family": "tangent ogive",
+     "fineness": 3,
+     "mach": 1.98,
+     "reynolds": "0.39x10^6 per inch (0.45e6 on the body diameter, as the text states)",
+     "seen": true,
+     "halfWidth": 0.16414839743603604,
+     "floor": 0.144
+    },
+    "allowance": {
+     "halfWidth": 0.16414839743603604,
+     "boxes": [
+      {
+       "id": "TN 3716, 3-caliber tangent ogive",
+       "family": "tangent ogive",
+       "fineness": 3,
+       "mach": 1.98,
+       "reynolds": "0.39x10^6 per inch (0.45e6 on the body diameter, as the text states)",
+       "seen": true,
+       "halfWidth": 0.16414839743603604,
+       "floor": 0.144
+      }
+     ],
+     "seenOnly": true
+    }
+   },
+   {
+    "box": {
+     "id": "RM A53E01, 5.75-caliber tangent ogive (model 2)",
+     "family": "tangent ogive",
+     "fineness": 5.75,
+     "mach": 1.98,
+     "reynolds": "0.5x10^6 per inch (text p. 5 and table II heading); the summary (p. 2) says about 0.5e6 on the body diameter: UNRESOLVED, recorded only; the script uses Re for nothing",
+     "seen": true,
+     "halfWidth": 0.2126241678549045,
+     "floor": 0.161
+    },
+    "allowance": {
+     "halfWidth": 0.2126241678549045,
+     "boxes": [
+      {
+       "id": "RM A53E01, 5.75-caliber tangent ogive (model 2)",
+       "family": "tangent ogive",
+       "fineness": 5.75,
+       "mach": 1.98,
+       "reynolds": "0.5x10^6 per inch (text p. 5 and table II heading); the summary (p. 2) says about 0.5e6 on the body diameter: UNRESOLVED, recorded only; the script uses Re for nothing",
+       "seen": true,
+       "halfWidth": 0.2126241678549045,
+       "floor": 0.161
+      }
+     ],
+     "seenOnly": true
+    }
+   }
+  ],
+  "notRun": [
+   "TN 4233 (question 1)",
+   "RM E51H17 (question 2)"
+  ]
+ }
+]

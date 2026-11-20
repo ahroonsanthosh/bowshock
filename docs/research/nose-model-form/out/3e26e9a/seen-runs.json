@@ -1,0 +1,386 @@
+[
+ {
+  "label": "RUN ON SEEN DATA (0022 section 5 (b)): a check of the script, not a reading or a test",
+  "result": {
+   "id": "TN 3716, 3-caliber tangent ogive",
+   "family": "tangent ogive",
+   "fineness": 3,
+   "mach": 1.98,
+   "reynolds": "0.44e6 on the diameter",
+   "seen": true,
+   "stations": [
+    0.22,
+    0.56,
+    0.89,
+    1.22,
+    1.61,
+    2.06,
+    2.5,
+    2.95
+   ],
+   "inviscidNoseDrag": 0.09880353128581403,
+   "uncoveredShare": 0.05808372455252701,
+   "coveredArea": 0.9785135494253846,
+   "sets": true,
+   "evaluations": [
+    {
+     "reading": "the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.1079026173985101,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08980208250214328,
+     "uMeas": 0.0494142834358656,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.14389280227325088,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b",
+     "cps": [
+      0.26,
+      0.222,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10784871486017734,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.08925767403510632,
+     "uMeas": 0.0494142834358656,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.14291437322086864,
+     "largestStationDifference": 0.019549375735354126
+    },
+    {
+     "reading": "the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b",
+     "cps": [
+      0.26,
+      0.212,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.036
+     ],
+     "measuredDrag": 0.10669528300210003,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.07760816569820927,
+     "uMeas": 0.0494142834358656,
+     "uUnc": 0.004676436335242019,
+     "halfWidth": 0.13169888546931688,
+     "largestStationDifference": 0.021549375735354127
+    },
+    {
+     "reading": "the typing in src/validation/ogive-cylinder-tn3716.ts (2026-10-15), with 5fcc92b",
+     "cps": [
+      0.26,
+      0.212,
+      0.165,
+      0.115,
+      0.074,
+      0.026,
+      -0.014,
+      -0.038
+     ],
+     "measuredDrag": 0.10664138046376727,
+     "inviscidDrag": 0.09901120499859009,
+     "r": 0.07706375723117231,
+     "uMeas": 0.0494142834358656,
+     "uUnc": 0.004242415749896726,
+     "halfWidth": 0.13072045641693464,
+     "largestStationDifference": 0.019549375735354126
+    }
+   ],
+   "halfWidth": 0.14389280227325088
+  },
+  "floor": 0.1437246963562754
+ },
+ {
+  "label": "RUN ON SEEN DATA (0022 section 5 (b)): a check of the script, not a reading or a test",
+  "result": {
+   "id": "TN 4233, 7 deg cone, 14ft tunnel",
+   "family": "cone",
+   "fineness": 4.081989276071384,
+   "mach": 1.078,
+   "reynolds": "2.4e6 on the cone length",
+   "seen": true,
+   "stations": [
+    0.3347231206378535,
+    0.7470040375210631,
+    1.1633669436803442,
+    1.5715658712874827,
+    1.9838467881706925,
+    2.404291683606045,
+    2.8084086219371116,
+    3.2247715280963933,
+    3.6370524449796027,
+    3.8452338980592433,
+    4.0574973404149555
+   ],
+   "inviscidNoseDrag": 0.0990158440988294,
+   "uncoveredShare": 0.018687999999999916,
+   "coveredArea": 0.9813120000000001,
+   "sets": true,
+   "evaluations": [
+    {
+     "reading": "the typing in src/validation/cone-cylinder-tn4233.ts",
+     "cps": [
+      0.098,
+      0.096,
+      0.096,
+      0.096,
+      0.096,
+      0.096,
+      0.096,
+      0.096,
+      0.096,
+      0.094,
+      0.008
+     ],
+     "measuredDrag": 0.09037048853572052,
+     "inviscidDrag": 0.09901584409882941,
+     "r": -0.08731285019880064,
+     "uMeas": 0.019821312617817725,
+     "uUnc": 0.0171781002323347,
+     "halfWidth": 0.12431226304895306,
+     "largestStationDifference": 0.09101584409882943
+    }
+   ],
+   "halfWidth": 0.12431226304895306
+  },
+  "floor": null
+ },
+ {
+  "label": "RUN ON SEEN DATA (0022 section 5 (b)): a check of the script, not a reading or a test",
+  "result": {
+   "id": "TN 4233, 7 deg cone, 14ft tunnel",
+   "family": "cone",
+   "fineness": 4.081989276071384,
+   "mach": 1.1,
+   "reynolds": "2.4e6 on the cone length",
+   "seen": true,
+   "stations": [
+    0.3347231206378535,
+    0.7470040375210631,
+    1.1633669436803442,
+    1.5715658712874827,
+    1.9838467881706925,
+    2.404291683606045,
+    2.8084086219371116,
+    3.2247715280963933,
+    3.6370524449796027,
+    3.8452338980592433,
+    4.0574973404149555
+   ],
+   "inviscidNoseDrag": 0.09449757998052279,
+   "uncoveredShare": 0.018687999999999934,
+   "coveredArea": 0.9813120000000001,
+   "sets": true,
+   "evaluations": [
+    {
+     "reading": "the typing in src/validation/cone-cylinder-tn4233.ts",
+     "cps": [
+      0.098,
+      0.096,
+      0.095,
+      0.095,
+      0.094,
+      0.094,
+      0.093,
+      0.092,
+      0.091,
+      0.09,
+      0.016
+     ],
+     "measuredDrag": 0.08816449772778902,
+     "inviscidDrag": 0.09449757998052262,
+     "r": -0.06701845966890307,
+     "uMeas": 0.020769039804030182,
+     "uUnc": 0.015523813149271804,
+     "halfWidth": 0.10331131262220505,
+     "largestStationDifference": 0.07849757998052263
+    }
+   ],
+   "halfWidth": 0.10331131262220505
+  },
+  "floor": null
+ },
+ {
+  "label": "RUN ON SEEN DATA (0022 section 5 (b)): a check of the script, not a reading or a test",
+  "result": {
+   "id": "TN 4233, 7 deg cone, 2ft tunnel",
+   "family": "cone",
+   "fineness": 4.081989276071384,
+   "mach": 1.1,
+   "reynolds": "2.4e6 on the cone length",
+   "seen": true,
+   "stations": [
+    0.3347231206378535,
+    0.7470040375210631,
+    1.1633669436803442,
+    1.5715658712874827,
+    1.9838467881706925,
+    2.404291683606045,
+    2.8084086219371116,
+    3.2247715280963933,
+    3.6370524449796027,
+    3.8452338980592433,
+    4.0574973404149555
+   ],
+   "inviscidNoseDrag": 0.09449757998052279,
+   "uncoveredShare": 0.018687999999999934,
+   "coveredArea": 0.9813120000000001,
+   "sets": true,
+   "evaluations": [
+    {
+     "reading": "the typing in src/validation/cone-cylinder-tn4233.ts",
+     "cps": [
+      0.092,
+      0.091,
+      0.094,
+      0.089,
+      0.093,
+      0.097,
+      0.099,
+      0.098,
+      0.095,
+      0.093,
+      0.022
+     ],
+     "measuredDrag": 0.09061675172778903,
+     "inviscidDrag": 0.09449757998052262,
+     "r": -0.041068017334766505,
+     "uMeas": 0.020769039804030182,
+     "uUnc": 0.014337243080248762,
+     "halfWidth": 0.07617430021904545,
+     "largestStationDifference": 0.07249757998052264
+    }
+   ],
+   "halfWidth": 0.07617430021904545
+  },
+  "floor": null
+ },
+ {
+  "label": "RUN ON SEEN DATA (0022 section 5 (b)): a check of the script, not a reading or a test",
+  "result": {
+   "id": "TN 4233, 7 deg cone, 2ft tunnel",
+   "family": "cone",
+   "fineness": 4.081989276071384,
+   "mach": 1.151,
+   "reynolds": "2.4e6 on the cone length",
+   "seen": true,
+   "stations": [
+    0.3347231206378535,
+    0.7470040375210631,
+    1.1633669436803442,
+    1.5715658712874827,
+    1.9838467881706925,
+    2.404291683606045,
+    2.8084086219371116,
+    3.2247715280963933,
+    3.6370524449796027,
+    3.8452338980592433,
+    4.0574973404149555
+   ],
+   "inviscidNoseDrag": 0.08753144192746158,
+   "uncoveredShare": 0.018687999999999986,
+   "coveredArea": 0.9813120000000001,
+   "sets": true,
+   "evaluations": [
+    {
+     "reading": "the typing in src/validation/cone-cylinder-tn4233.ts",
+     "cps": [
+      0.084,
+      0.085,
+      0.084,
+      0.085,
+      0.085,
+      0.086,
+      0.086,
+      0.089,
+      0.087,
+      0.087,
+      0.034
+     ],
+     "measuredDrag": 0.08312462741552025,
+     "inviscidDrag": 0.0875314419274617,
+     "r": -0.050345503454557905,
+     "uMeas": 0.022421931557193457,
+     "uUnc": 0.011428985570344424,
+     "halfWidth": 0.0841964205820958,
+     "largestStationDifference": 0.05353144192746172
+    }
+   ],
+   "halfWidth": 0.0841964205820958
+  },
+  "floor": null
+ },
+ {
+  "label": "RUN ON SEEN DATA (0022 section 5 (b)): a check of the script, not a reading or a test",
+  "result": {
+   "id": "TN 4233, 7 deg cone, 2ft tunnel",
+   "family": "cone",
+   "fineness": 4.081989276071384,
+   "mach": 1.2,
+   "reynolds": "2.4e6 on the cone length",
+   "seen": true,
+   "stations": [
+    0.3347231206378535,
+    0.7470040375210631,
+    1.1633669436803442,
+    1.5715658712874827,
+    1.9838467881706925,
+    2.404291683606045,
+    2.8084086219371116,
+    3.2247715280963933,
+    3.6370524449796027,
+    3.8452338980592433,
+    4.0574973404149555
+   ],
+   "inviscidNoseDrag": 0.08301133806421779,
+   "uncoveredShare": 0.01868799999999999,
+   "coveredArea": 0.9813120000000001,
+   "sets": true,
+   "evaluations": [
+    {
+     "reading": "the typing in src/validation/cone-cylinder-tn4233.ts",
+     "cps": [
+      0.079,
+      0.078,
+      0.079,
+      0.081,
+      0.08,
+      0.079,
+      0.08,
+      0.083,
+      0.081,
+      0.082,
+      0.039
+     ],
+     "measuredDrag": 0.0780862007371438,
+     "inviscidDrag": 0.08301133806421783,
+     "r": -0.05933089915095613,
+     "uMeas": 0.02364284260159387,
+     "uUnc": 0.009908090929793511,
+     "halfWidth": 0.09288183268234351,
+     "largestStationDifference": 0.04401133806421783
+    }
+   ],
+   "halfWidth": 0.09288183268234351
+  },
+  "floor": null
+ }
+]

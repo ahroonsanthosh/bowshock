@@ -1,0 +1,138 @@
+Pairing of the two blind readings of the measured nose pressures (0014 10.7 (w))
+
+Paired 2026-10-24 by a neutral party that read only the two readers' folders
+and the readers' brief (../reader-brief.md). The pairing is reader A against
+reader B only. No earlier typing in the repository was opened or compared, and
+nothing was compared with a computed solution. No winner was picked and no
+value was averaged: every reading stays as each reader gave it, in A/ and B/.
+
+Files
+  A/, B/        each reader's method.md, geometry.csv and six reading CSVs,
+                copied unchanged. The PDFs, rendered images and the readers'
+                scripts and text layers are not committed.
+  hashes.txt    the four source PDFs (same for both readers).
+  pairing/      one pairing CSV per reading CSV, geometry_pairing.csv, and
+                pair.py (the script that wrote the reading pairings;
+                run: python3 -I pair.py <folder holding A and B> <out folder>).
+
+Rules used
+  Tables (TN 3716 table I(a), RM A53E01 table II(a), TN 4233 tables I(a) and
+  I(b)): station and Cp agree only on an exact match of the printed number.
+  A leading zero added or left off (.072 against 0.072) is the same printed
+  number and counts as a match; reader A wrote leading zeros, reader B kept
+  the printed form.
+  Figures (TN 3716 fig. 3, RM E51H17 fig. 4(a)): station and Cp agree when
+  the difference is no larger than A's stated read error plus B's stated read
+  error for that point.
+    TN 3716 fig. 3: A +-0.02 x/d, +-0.001 Cp; B +-0.02 x/d, +-0.003 Cp;
+      summed +-0.04 x/d, +-0.004 Cp.
+    RM E51H17 fig. 4(a): A +-0.05 in., +-0.0003 Cp for clear symbols and
+      +-0.08 in., +-0.0006 Cp for partly hidden ones; B +-0.07 in., +-0.0005
+      Cp for clear symbols and +-0.001 Cp for overlapping ones. Summed per
+      point (0.0008 to 0.0016 Cp, 0.12 to 0.15 in.).
+  Matching: tables by station (TN 4233 by Mach row and orifice number);
+  TN 3716 fig. 3 by order along x; RM E51H17 fig. 4(a) by symbol (circle =
+  meridian 0 deg, square = meridian 90 deg) then by order along x.
+  Flags and alternatives are copied into the pairing CSVs as each reader gave
+  them. A cell flagged by one or both readers is still "agree" when the two
+  main readings match; the flags are listed below and stay open.
+
+Source PDFs
+  Both readers report the same SHA-256, byte size and NTRS address for all
+  four reports, and the pairing party recomputed the same hashes from both
+  readers' downloaded copies. See hashes.txt.
+
+Counts (pairs of values; "flagged" = ambiguous or typo? by that reader)
+
+  item                     pairs  agree  disagree  A flagged  B flagged  either
+  TN 3716 table I(a)          15     15         0          4          6       8
+  TN 3716 fig. 3              15     15         0          0          0       0
+  RM A53E01 table II(a)       29     29         0          0          0       0
+  TN 4233 table I(a)         299    299         0          2          0       2
+  TN 4233 table I(b)         195    195         0          0          0       0
+  RM E51H17 fig. 4(a)         48     48         0          2         20      20
+  total                      601    601         0          8         26      30
+
+  Both readers flagged the same TN 4233 check orifices (16 and 17, opposite
+  surface) as "check": 46 cells in I(a) and 30 in I(b). No cell was flagged
+  illegible by either reader. Nothing is "untraced" in RM E51H17 fig. 4(a)
+  for either reader.
+
+  Geometry and conditions (pairing/geometry_pairing.csv): 60 quantities;
+  54 agree, 0 disagree, 4 recorded only by B (TN 3716 title, TN 3716
+  afterbody length 7d, TN 4233 title, RM E51H17 boundary-layer remark), 2
+  recorded only by A (RM A53E01 angle of attack uncertainty +-0.1 deg, TN 4233
+  "indicated Mach number, wall interference" note). Differences in wording or
+  in which page was cited first (TN 4233 half-angle: A p6, B p35; RM A53E01
+  title: A p1, B p2) are noted there, not counted as disagreements.
+
+Disagreements
+
+  None. Every station and every Cp in all six items agrees under the rules
+  above, and every geometry quantity both readers recorded agrees.
+
+  Closest calls (still within tolerance, listed so they are not lost):
+  - RM E51H17 fig. 4(a), circle at about 6 in.: A 0.0349 at 6.07 in., B 0.0339
+    at 6.03 in. (B alternative 0.0334 from a half-symbol fit). Difference
+    0.0010 against a summed error of 0.0016; B's alternative is 0.0015 from A.
+  - TN 3716 fig. 3, about x/d 4.50: A -0.0124, B -0.011 (difference 0.0014
+    against 0.004); x/d 2.04 to 2.05: A 0.0267, B 0.028; x/d 3.59: A -0.0263,
+    B -0.025 (0.0013 each).
+
+Flagged cells (main readings agree; flags and alternatives stay open)
+
+  TN 3716 table I(a), Cp (station x/d: A reading [A alternatives] / B reading
+  [B alternatives]):
+    0.22: 0.260 ok / 0.260 ambiguous [0.280]
+    0.89: 0.165 ok / 0.165 ambiguous [0.163]
+    1.22: 0.115 ok / 0.115 ambiguous (B: station digits a blob, 1.28 or 1.23
+          possible; fig. 1 prints 1.22. A: station blurred, read 1.22 per
+          fig. 1, not flagged)
+    1.61: 0.074 ambiguous [0.076] / 0.074 ok (both: the 4 prints like h)
+    2.06: 0.026 ambiguous [0.036; 0.028] / 0.026 ambiguous [0.028]
+    2.95: -0.036 ambiguous [-0.038] / -0.036 ambiguous [-0.038; -0.035]
+          (B also: station 2.93 or 2.97 possible)
+    3.62: -0.030 ok / -0.030 ambiguous (B: station 3.68 or 3.82 possible)
+    4.50: -0.012 ambiguous [-0.018] / -0.012 ok
+  TN 4233 table I(a), A only:
+    M 1.031, orifice 3: .120 ambiguous [0.130]; B .120 ok.
+    M 1.400, orifice 4: .079 typo? (A: out of line with .072 on both
+    neighbours, copied as printed); B .079 ok.
+  RM E51H17 fig. 4(a):
+    A flags both symbols at about 15 in. ambiguous (circle and square almost
+    coincide; either centre could belong to either symbol). B flags them
+    ambiguous too and reads both at 0.0316. A: circle 0.0314, square 0.0315.
+    The pairing holds whichever way A's two centres are assigned.
+    B flags 18 more points ambiguous for overlapping symbols (at about 6, 9,
+    11, 12, 18, 19.5, 29, 33 and 37 in., both symbols), with alternatives for
+    the circle at 6.03 (0.0334), 19.56 (0.0295) and 29.00 (-0.0080). A did
+    not flag these but notes 22 rows as partly hidden with the larger error.
+    Both readers: figure 2 lists stations 19 and 19.5 in., and only one
+    symbol pair is plotted near 19.5 in. A says nothing is plotted at 19 in.;
+    B says one listed station has no plotted point and did not infer which.
+
+Readers' notes carried forward (unresolved; for the coordinator)
+
+  1. RM A53E01 Reynolds number unit conflict. The summary (PDF p2) says a
+     Reynolds number of approximately 0.5x10^6 based on body diameter; the
+     Tests text (PDF p5) and the table II heading (PDF p22) say 0.5x10^6 per
+     inch. Recorded by B; A recorded per inch only, from the text and the
+     table heading. Not resolved here.
+  2. RM E51H17 states no Cp uncertainty. Neither reader found one (A searched
+     PDF p1 to 14, B read p3 to 13 through the text layer and checked key
+     pages on the image; B notes a statement the OCR missed cannot be ruled
+     out). This matters for the u_meas term: there is no stated measurement
+     uncertainty to use for this set.
+  3. RM A53E01's other 18 theta columns were not read. Table II(a) has 19
+     radial-angle columns (0 to 270 deg). Both readers found that model 2 has
+     one orifice row at theta = 0 and was rolled for the other angles, so the
+     columns are roll positions; under the brief's zero-roll rule both read
+     only the theta = 0 column. B notes the other columns are clear and easy
+     to read if they are wanted.
+  4. Also recorded by both readers, for completeness: RM E51H17 Reynolds
+     number 3.85x10^6 in the summary with no basis stated, and 1.1x10^6 per
+     foot in the text; TN 4233 states 2.4x10^6 on the 5.50 in. cone length
+     and does not say whether the 14-foot tunnel run used the same value (B);
+     both readers name the RM E51H17 author John R. Jack, where the brief
+     says C. E. Jack; RM E51H17 fig. 4(a) prints no Mach number, so both put
+     3.85 from the text.

@@ -60,6 +60,8 @@ import {
   BASIC_FINNER_SHOTS,
   basicFinnerBody,
 } from '../validation/basic-finner';
+import { noseBand } from '../validation/nose-model-form';
+import type { NoseModelAllowance } from './nose-model-allowance';
 
 const DEG = Math.PI / 180;
 
@@ -552,7 +554,9 @@ export const BAND_CAVEAT =
 /** The breakdown, as 0010 section 7 allows it to be claimed. */
 export const BREAKDOWN_NOTE =
   'The breakdown: the nose wave drag is solved, its band the numerical error measured from the ' +
-  "grids, without the inviscid model's own error (docs/validation/sources.md); body " +
+  "grids, without the inviscid model's own error (docs/validation/sources.md) except where a " +
+  'measured wind-tunnel nose of the same shape lies within 0.25 calibers and 0.05 in Mach, ' +
+  'whose measured difference it then carries too (0022); body ' +
   "friction's band is validated on wind-tunnel and flight data of friction (0007); the bands " +
   'of the fin and base terms are estimated on data of each component and tested only in the ' +
   'total (0010 section 7).';
@@ -823,23 +827,41 @@ export interface NoseSolve {
   readonly floor?: number;
 }
 
-/** The nose term src/total is given: the page's solved value and band, unchanged. */
-export function noseComponentOf(solve: NoseSolve): DragComponent {
+/**
+ * The nose term src/total is given: the page's solved value and band. With
+ * the model-form allowance of a measured box that holds this nose (design
+ * record 0022, 0014 10.7 (w) and (am)), the band is widened by it,
+ * symmetric about the value, D (1 - a) - n to D (1 + a) + n, and its words
+ * name both parts; without one, the band is the numerical error alone and
+ * says so.
+ */
+export function noseComponentOf(
+  solve: NoseSolve,
+  model: NoseModelAllowance | null = null,
+): DragComponent {
+  const numerical =
+    'numerical error of the inviscid solve, measured from the grids, with an allowance of ' +
+    `${allowanceText(solve.floor ?? FITTED_DRAG_FLOOR)} of the value (0006)`;
+  const caveat = bandCaveat(solve.floor ?? FITTED_DRAG_FLOOR, solve.grids);
+  const band = model === null ? null : noseBand(solve.value, model.halfWidth, solve.uncertainty);
   return {
     name: 'nose wave drag',
     cd: solve.value,
-    low: solve.value - solve.uncertainty,
-    high: solve.value + solve.uncertainty,
+    low: band?.low ?? solve.value - solve.uncertainty,
+    high: band?.high ?? solve.value + solve.uncertainty,
     label:
       'solved on this page: the inviscid forebody pressure drag, bow shock fitted, finest of ' +
       `${solve.grids} grids (0006)`,
     band:
-      'numerical error of the inviscid solve, measured from the grids, with an allowance of ' +
-      `${allowanceText(solve.floor ?? FITTED_DRAG_FLOOR)} of the value (0006); the model's own error ` +
-      'is not in this band (docs/validation/sources.md)' +
-      (bandCaveat(solve.floor ?? FITTED_DRAG_FLOOR, solve.grids) === ''
-        ? ''
-        : `. ${bandCaveat(solve.floor ?? FITTED_DRAG_FLOOR, solve.grids)}`),
+      (model === null
+        ? `${numerical}; the model's own error is not in this band (docs/validation/sources.md)`
+        : `${numerical}; and the inviscid model against measured wind-tunnel pressures, ` +
+          `+-${(100 * model.halfWidth).toFixed(1)}% of the value, the widest of the measured ` +
+          `noses within 0.25 calibers and 0.05 in Mach of this one: ${model.sources.join('; ')}` +
+          (model.seenOnly
+            ? '; formed from data seen before registration, so it can only widen the band, and ' +
+              'is not a test (design record 0022)'
+            : ' (design record 0022)')) + (caveat === '' ? '' : `. ${caveat}`),
   };
 }
 

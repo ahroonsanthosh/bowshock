@@ -1831,6 +1831,112 @@ range A has been run; it depends on no result of that range. The rest of
 (u) stays recorded as written, and applies again only if a later record
 resumes Stage A, which would then need a held-back test of its own.
 
+**2026-10-24 (w): measured nose pressures, named for the nose's
+model-form allowance before they are read** (rule 2 of 10.1; design
+record 0022 as adopted at commit 305557f; the advisor's report of
+2026-10-22, section 6 item 4; the owner's choice of 0022's Route 1). The
+nose's band (0006) is the numerical error of the inviscid solve. An
+allowance "inviscid model against measured pressures" is formed per nose
+family and Mach number by 0022 sections 4.3 and 4.4, fixed and reviewed
+before any value below is read. It is symmetric about the served value
+(one body per box cannot show the error's direction; a one-sided band or
+a sign per family only by a later dated entry, before any reading, for a
+family with several bodies in one box), half-width a times the nose
+term, a the largest |r| + u of every measured case whose box (+-0.05
+Mach, +-0.25 calibers; the union of boxes, not their hull) contains the
+case; it enters the total's model-form band linearly, as its own line,
+beside the numerical band. Outside every box the nose is labelled
+"numerical error of the inviscid solve; the model's own error is not in
+this band".
+
+1. _Band-setting, no value recorded:_ NACA TR 1386 (Perkins, Jorgensen
+   and Sommer, 1958; NTRS 19930091022), its zero-incidence pressure
+   distributions and foredrags of blunted cones and Karman ogives, the
+   figures and tables named by a later dated entry when it is opened to
+   see what it covers, before any value is read (not read before); NACA
+   RM E52C10 (Jack and Gould), its zero-incidence plotted pressures on
+   the five cone-cylinders at Mach 3.12, the figure named likewise
+   (opened by the first session; whether its plots were looked at for values is not
+   recorded, so it is disclosed as possibly seen); NASA TN D-3516
+   (Czarnecki and Monta), fig. 5 and table II, the smooth model at Mach
+   1.1 and 1.2, used only once the nose is served there (fig. 5 was read
+   for the transonic work and its stagnation pressures' scatter, about
+   0.005 in Cp, noted; no value recorded or compared with the model).
+   This widens 10.1's "a check of the nose solve" for TR 1386 to
+   band-setting for this allowance only.
+2. _Each is read twice_, the second reading blind, paired by a neutral
+   party; ambiguous cells keep every reading; the envelope, never
+   resolved toward the narrower.
+3. _Seen before this entry, widening only:_ NACA TN 3716 (table I(a) and
+   fig. 3, zero incidence; typed once 2026-10-15, integrated once
+   2026-10-17; every value public in the repository), NACA RM A53E01
+   (table II(a), zero incidence; read once 2026-10-17) and NACA TN 4233
+   (tables I(a) and (b); typed and compared in 0013). Registered after
+   they were seen, as (g) records NSWCDD/TR-92/509. Each is read again
+   twice, the second blind, by readers who work from the source file
+   alone, without this repository, and whose briefs name no earlier
+   value. The result may only widen the allowance of its box. It is never
+   a test or a validation, and no claim rests on it as one. Where a box
+   rests only on these sets the label says "formed from data seen before
+   registration". This departs from (r)'s "not a band's end, not an
+   allowance" for these sets only, because their use can only widen.
+4. _The floor, a lower limit only:_ in TN 3716's box the half-width is
+   never below 14.4% (published 0.1068 to 0.1080 against 0.09880, plus
+   0.005 / 0.09880), and in RM A53E01's never below 16.1% (0.0298
+   against 0.03074, plus 0.004 / 0.03074). Fresh readings enter under
+   0022 section 4.3 beside the floor and can raise the half-width; they
+   never replace or lower it. TN 4233 has no published integrated
+   figure; its existing typing is carried in the envelope and does the
+   floor's job. In TN 3716 the shoulder cell (x/d 2.95) counts as
+   ambiguous, its first typing's -0.038 (5fcc92b) kept beside -0.036.
+5. _Fixed first:_ the quantity, the integration script, the coverage
+   threshold (a tenth of the drag outside the orifices, with its own
+   term below that), the boxes and the sign rule are committed and
+   reviewed before any reading reaches them. The script's first run is
+   on the existing TN 3716 typing and is recorded as a run on seen data.
+6. _Not settled here:_ NACA RM E51H17 (fig. 4(a); one value digitised
+   and seen). Whether it sets anything is the owner's open question,
+   decided by a later dated entry before it is read again.
+7. _Never used:_ every held-back set of 10.1, the PARD standard body's
+   fore drag (RM L52E06 figs. 9 to 12) included.
+8. _Not changed:_ the nose's numerical band and its floor (0006), every
+   other component's band, and every registered test.
+
+_Added 2026-10-24 to (w): the owner settled its item 6._ NACA RM E51H17
+counts like the other seen sets of item 3: fig. 4(a) is re-read twice,
+the second blind, by readers working without the repository; its result
+may only widen the allowance, and only inside its own measured box (its
+nose shape, Mach number and fineness, 0022 section 4.4); its label names
+its stated tunnel Reynolds number as far below flight and says "formed
+from data seen before registration"; it is never a test. Recorded in
+0022 section 8, item 6. By 0022 section 4.2 its one digitised value on
+record (`docs/validation/sources.md`, Cp about 0.031) stays in the
+envelope as an earlier reading. Nothing of it has been read again. Also
+before any reading, on the independent review of the integration script
+(3e26e9a), 0022 section 4.3 item 5 was revised (revision 4): the
+measurement term acts over the area from the first orifice to the
+shoulder, since the value held behind the last orifice carries the same
+bias.
+
+_Added 2026-10-24 to (w): the owner's decisions after the blind readings
+were paired (6019bbd) and before TN 4233 and RM E51H17 were run (cce5621
+stopped on both)._ Widening only, recorded in 0022 section 8, items 7 and
+8: two values at one station (TN 4233's check orifices, RM E51H17's two
+meridian symbols) enter as alternatives, every combination taken and the
+widest counting; every TN 4233 row of tables I(a) and I(b) is run; RM
+E51H17, which states no Cp uncertainty, takes the largest stated among
+TN 3716, RM A53E01 and TN 4233. (w)'s registered text above is unchanged.
+
+_Added 2026-10-24 to (w), after the second blind run (944f46f) and
+before the rows below were run._ The owner clarified that RM E51H17's e is
+the literal largest stated, +-0.006 (a clarification, not a change), and
+decided that TN 4233's 30 rows below indicated Mach 1.078 are run against
+the transonic solver of 0013 on its finest grid (0022 section 4.3 item 2),
+widening only. Recorded in 0022 section 8, item 8's note and item 9.
+(w)'s registered text above is unchanged.
+
+_(Brought to this line on 2026-11-20 from `claude/wip/nose-model-form`, where it was registered on 2026-10-24, unchanged; (am) below wires it. The same branch's (y), the transonic solver below Mach 1, is not on this line.)_
+
 **2026-10-26 (z): flat-faced fins at the base served at every
 leading-edge sweep with the trailing edge unswept (A1 of the refusal
 plan)** (the owner's decision of 2026-10-26 to lift refusals by verified
@@ -4307,6 +4413,52 @@ leading edge with a square trailing edge to it (`src/rocket/adapter.ts`;
   arises. The cross-check agrees on 1200 of 1200.
 - _Not done:_ the older drag page (`demos/nose-drag.html`) does not offer
   the section; its inputs are unchanged.
+
+**2026-11-20 (am): the nose's model-form allowance carried on the pages**
+(design record 0022 section 9, step 7; registered as (w), above, with the
+owner's Route 1 and the decisions of 0022 section 8). Until now the nose's
+band was the numerical error of the inviscid solve everywhere, labelled
+so; the measured allowance existed only on its branch.
+
+- _What it does._ Where a measured nose of the same family lies within
+  0.25 calibers and 0.05 in Mach of the nose solved (0022 section 4.4, the
+  union of boxes, never their hull), the nose term's band is widened by
+  the widest such box's half-width a, symmetric about the value: D (1 - a)
+  - n to D (1 + a) + n, with n the numerical band. The band's words name
+    both parts, the size of a, every source that holds the case with its
+    tunnel Reynolds number, and, since every box rests on sets seen before
+    their registration, that it can only widen and is not a test.
+    Outside every box the band and its words are unchanged: "the model's own
+    error is not in this band".
+- _The boxes_ (`src/app/nose-model-allowance.ts`, tested to the bit
+  against `docs/research/nose-model-form/out/blind-run.json` and
+  `blind-run-2.json`; both runs made again on this line on 2026-11-20,
+  their tables byte for byte): tangent ogives 2.75 to 3.25 calibers at
+  Mach 1.93 to 2.03, +-16.4% (TN 3716; its floor 14.4%); 5.5 to 6.0
+  calibers at Mach 1.93 to 2.03, +-21.3% (RM A53E01; floor 16.1%); cones
+  of 3.832 to 4.332 calibers at Mach 1.028 to 1.45, +-5.6% to +-12.8% by
+  Mach (TN 4233's eight rows, the widest that holds the case); cones of
+  5.742 to 6.242 calibers at Mach 3.80 to 3.90, +-66.5% (RM E51H17, its
+  tunnel Reynolds number far below flight).
+- _Which noses._ The page's cone, and its ogive at parameter 1 (the
+  tangent ogive the reports measured). A secant portion of the ogive, and
+  every other shape, has no box and keeps "numerical error only".
+- _Not carried._ TN 4233's rows below Mach 1.05 ((y) on its branch, not
+  released). The pages serve the nose from Mach 1.2, so the boxes below
+  that hold nothing served; the cones at Mach 3.8 to 3.9 are reachable
+  only on the drag page, whose Mach number goes to 5.
+- _How it is carried._ In the nose term itself, named in its band's words
+  as its own part, not as a separate term, so that every display and the
+  floor of a refused total (0011 section 10) take it without change.
+  `noseStateOf` applies it on the rocketeer page (`src/app/curve.ts`) and
+  the drag page (`src/app/nose-drag.ts`, which names it in its nose line
+  too); the flow page shows the numerical band alone, and its note and the
+  help say where the second band is carried.
+- _What moves._ No case is refused or served differently, so the refusal
+  audit's counts do not move. The bands of the nose term and of the total
+  widen by a D wherever a box holds the nose. The Basic Finner's nose (a
+  2.84-caliber cone) and its BRL sub-class lie in no box: nothing tested
+  or validated changes.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to

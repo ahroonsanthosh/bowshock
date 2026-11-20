@@ -1,0 +1,40 @@
+Questions stopped on (0022 and (w) do not settle them for this data), blind run of 2026-10-24.
+Each set named here was NOT run: no r, no allowance and no box was computed for it.
+
+1. TN 4233 (tables I(a) and I(b)): the check orifices. Both readers give orifices 16 and 17
+   (flagged "check", on the opposite surface) at x/l .385 and .688, the same stations as orifices
+   4 and 7, in every row (46 cells in I(a), 30 in I(b)). 0022 4.3 item 1 takes "the orifices on
+   the nose (from the tip to the shoulder) at zero incidence", which includes them, but its
+   quadrature (the trapezoid in r^2 between stations) is not defined for two orifices at one
+   station. 0022 does not say whether they are left out (as the seen run left them out, the earlier
+   typing holding them apart), taken as alternatives of orifices 4 and 7 (every combination, which
+   can only widen), averaged with them, or something else. Left out gives the narrower a by
+   construction, so it is not chosen here. Question: how do the check orifices enter?
+   Also for the answer: which rows run (the seen run took indicated Mach 1.078 and above, where
+   Taylor-Maccoll exists; the fresh tables have 2-foot rows to 1.400 and the 2-foot 1.080 row);
+   A flags M 1.400 orifice 4 (.079) as "typo?" with no alternative; B notes the report does not
+   say whether the 14-foot tunnel ran at the same Reynolds number (2.4e6 on the cone length).
+
+2. RM E51H17 (fig. 4(a)): no stated Cp uncertainty. Neither reader found one (A searched PDF
+   pages 1 to 14; B read 3 to 13 through the text layer, and says one the OCR missed cannot be
+   ruled out). 0022 4.3 item 5 uses "the report's stated uncertainty e in Cp" and says nothing
+   for a report that states none; section 8 item 6 and the dated addition to (w) do not either.
+   Question: what e enters u_meas for this set (and should the PDF be searched once more by eye)?
+   Also for the answer, not resolved here: (a) fig. 4(a) has two symbols per station (circle,
+   meridian 0 deg; square, meridian 90 deg) at zero incidence: two measurements at one station,
+   the same quadrature question as TN 4233's check orifices; (b) figure 2 lists stations 19 and
+   19.5 in. and only one symbol pair is plotted near 19.5 (A: nothing at 19; B: one listed station
+   has no point, not inferred which); (c) the Reynolds number: 3.85e6 in the summary with no basis,
+   1.1e6 per foot in the text; (d) the earlier reading on record (sources.md, Cp about 0.031, one
+   value) must stay in the envelope (0022 section 8 item 6), but it has no station recorded.
+   Its result may only widen, only inside its own box (cones, about 6.0 cal, Mach 3.80 to 3.90),
+   labelled as 0022 section 8 item 6 says, once these are answered.
+
+Open but not stopped on (the run is fully defined on what was read; recorded for the coordinator):
+
+3. RM A53E01: 0022 4.1 names "table II(a) zero-incidence column". Table II(a) is the alpha = 0
+   table with 19 roll (theta) columns; both readers read only theta = 0 under the brief's zero-roll
+   rule. If the other 18 columns are wanted (they are further measurements at the same stations,
+   like TN 4233's check orifices), they must be read twice first and question 1's answer applies.
+4. RM A53E01 Reynolds number: summary "about 0.5e6 based on body diameter", text and table heading
+   "0.5e6 per inch". Recorded in the label; the script needs Re for nothing.
