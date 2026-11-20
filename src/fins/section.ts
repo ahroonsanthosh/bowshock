@@ -122,6 +122,22 @@ export function hexagonal(
   return { x: [0, frontBevel, 1 - rearBevel, 1], halfThickness: [0, h, h, 0] };
 }
 
+/**
+ * A plate bevelled at the leading edge only (wedge-flat): a bevel over
+ * `frontBevel` of the chord to the thickness ratio t/c, then a flat to a
+ * square-cut (blunt) trailing edge of that thickness. Its one sloped face
+ * is the bevel, so no wave reflected from the leading-edge shock can reach
+ * a face with slope (docs/design/0009-fin-wave-drag.md section 8).
+ */
+export function wedgeFlat(thicknessRatio: number, frontBevel: number): SymmetricSection {
+  if (!(thicknessRatio > 0)) throw new RangeError('the thickness ratio must be positive');
+  if (!(frontBevel > 0 && frontBevel < 1)) {
+    throw new RangeError('the bevel must be positive and leave a flat behind it');
+  }
+  const h = thicknessRatio / 2;
+  return { x: [0, frontBevel, 1], halfThickness: [0, h, h], bluntTrailingEdge: true };
+}
+
 /** Checks a symmetric section; throws RangeError with the reason. */
 export function validateSymmetricSection(section: SymmetricSection): void {
   const { x, halfThickness: g } = section;

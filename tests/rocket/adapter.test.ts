@@ -275,9 +275,6 @@ describe('what is named, not mapped', { timeout: 60_000 }, () => {
           trailingEdge: te === 'bevelled' ? { kind: te, length: 0.005 } : { kind: te },
         },
       });
-    expect(named(flat('bevelled', 'square'))).toEqual([
-      'a bevelled leading edge with a square trailing edge',
-    ]);
     expect(named(flat('bevelled', 'rounded'))).toEqual([
       'a bevelled leading edge with a rounded trailing edge',
     ]);
@@ -305,6 +302,34 @@ describe('what is named, not mapped', { timeout: 60_000 }, () => {
       leadingEdge: 'rounded',
       trailingEdge: 'square',
     });
+  });
+
+  it('a bevelled leading edge with a square trailing edge: the wedge-flat section, constant chord only (0014 W12)', () => {
+    const bevelled = (planform?: FinSetDesign['planform']) =>
+      withFins({
+        ...(planform === undefined ? {} : { planform }),
+        section: {
+          kind: 'flat',
+          leadingEdge: { kind: 'bevelled', length: 0.006 },
+          trailingEdge: { kind: 'square' },
+        },
+      });
+    // The Basic Finner's planform: chord 0.03 m, diameter 0.03 m, thickness 0.08 cal.
+    const form = formFor(designForm(bevelled(), 2, NO));
+    expect(form.section).toEqual({ kind: 'wedge-flat', thickness: 0.08, frontBevel: 0.2 });
+    expect(form.leadingEdgeRadius).toBe(0);
+    // Tapered: the section in chord units would thin toward the tip, as for the hexagon.
+    expect(
+      named(
+        bevelled({
+          kind: 'trapezoidal',
+          rootChord: 0.03,
+          tipChord: 0.02,
+          span: 0.03,
+          sweepLength: 0.01,
+        }),
+      ),
+    ).toEqual(['tapered fins with a bevelled leading edge']);
   });
 });
 

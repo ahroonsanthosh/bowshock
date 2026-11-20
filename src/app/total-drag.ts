@@ -32,6 +32,7 @@ import {
   flatPlate,
   hexagonal,
   singleWedge,
+  wedgeFlat,
   type FlatPlate,
   type SymmetricSection,
 } from '../fins/section';
@@ -81,6 +82,11 @@ export type SectionInput =
       readonly frontBevel: number;
       readonly rearBevel: number;
     }
+  /**
+   * A plate bevelled at the leading edge only, to a square-cut trailing edge of the full thickness
+   * (wedge-flat; 0014 W12). In chord units, as the hexagon is.
+   */
+  | { readonly kind: 'wedge-flat'; readonly thickness: number; readonly frontBevel: number }
   /** A flat plate of uniform thickness (sheet stock), its edges rounded (a full radius) or square-cut. */
   | {
       readonly kind: 'flat-plate';
@@ -758,7 +764,9 @@ export function configurationOf(form: TotalDragForm):
           ? doubleWedge(s.thickness / c, s.ridge)
           : s.kind === 'hexagonal'
             ? hexagonal(s.thickness / c, s.frontBevel, s.rearBevel)
-            : flatPlate(s.thickness, s.leadingEdge, s.trailingEdge);
+            : s.kind === 'wedge-flat'
+              ? wedgeFlat(s.thickness / c, s.frontBevel)
+              : flatPlate(s.thickness, s.leadingEdge, s.trailingEdge);
   } catch (e) {
     if (!(e instanceof RangeError)) throw e;
     bad.push(refusal('fin section', e.message));

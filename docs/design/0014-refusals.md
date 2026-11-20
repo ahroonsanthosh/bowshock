@@ -4268,6 +4268,38 @@ count, which quotes it.
   that method verified before anything is served. Not planned in this
   entry. Lifted alone it would restore the 72 totals.
 
+**2026-11-20 (al): W12, the page's wedge-flat section, served on fins of
+constant chord.** A plate bevelled at the leading edge only, to a
+square-cut trailing edge of the full thickness, which the libraries have
+taken since 0009 section 8 (A2), is now an input of the drag logic
+(`SectionInput` `wedge-flat`, `src/app/total-drag.ts`; the library
+section `wedgeFlat`, `src/fins/section.ts`) and the page maps a bevelled
+leading edge with a square trailing edge to it (`src/rocket/adapter.ts`;
+0017 section 4.2).
+
+- _What it rests on._ Nothing new: the faces' drag is shock-expansion
+  theory, exact for this section whatever the reflected waves do, since
+  its one sloped face is the bevel (0009 section 8), tested here against an
+  oblique-shock solution written independently in the test, to 1e-12
+  (`tests/fins/wedge-flat.test.ts`); the linear 3D ratio, the fins' own-drag
+  band (1.01 to 1.59, 0008 section 4.3), the square trailing edge's base
+  term (0016) and the body base, which takes the section as flat-faced at
+  its trailing edge (`baseFinsOf`), are those already served. The page's
+  total equals the library's, asked with the section as the audit builds
+  it, to the bit (`tests/app/wedge-flat-total.test.ts`). Every refusal
+  of those terms still applies (a detached bevel shock, the fins' own-drag
+  band below Mach 1.5, flat-faced fins at the base below Mach 1.62, and
+  the rest).
+- _Constant chord only._ On a tapered fin the section in chord units
+  would thin toward the tip, as for the hexagon, so the page refuses it
+  there with the hexagon's reason ((ak), W13).
+- _What moved_ (`docs/research/refusals/out/impact.out`): 163 to 168
+  totals of 8000 (all at Mach 1.8 to 3.0: 109 to 114); with the nose
+  assumed served 439 to 452. The page-only reason `pageSection` no longer
+  arises. The cross-check agrees on 1200 of 1200.
+- _Not done:_ the older drag page (`demos/nose-drag.html`) does not offer
+  the section; its inputs are unchanged.
+
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
 allocate. _(Corrected 2026-10-28, the re-review's R4: this branch's

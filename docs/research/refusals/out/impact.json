@@ -1,8 +1,8 @@
 {
  "baseline": {
   "all bands": {
-   "total": 163,
-   "nose only": 1875,
+   "total": 168,
+   "nose only": 1870,
    "nothing": 5962
   },
   "M 1.0-1.2": {
@@ -21,29 +21,28 @@
    "nothing": 1274
   },
   "M 1.8-3.0": {
-   "total": 109,
-   "nose only": 726,
+   "total": 114,
+   "nose only": 721,
    "nothing": 1165
   }
  },
  "order": [
   "W6 blunted nose tips",
-  "W11 square-cut leading edges and rounded trailing edges",
-  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
-  "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
   "W13 page: sharp sections (bevelled, double wedge) on fins of varying chord, at the fin's own thickness along the span",
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
+  "W11 square-cut leading edges and rounded trailing edges",
   "W9 sharp sections: reflected waves and detached bevel shocks",
+  "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
   "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
   "W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)",
   "W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0",
   "W10 boat-tails",
-  "W8 steep, detached and subsonic sharp tips",
-  "W12 page: the wedge-flat section with a blunt trailing edge"
+  "W8 steep, detached and subsonic sharp tips"
  ],
  "noseServed": {
   "all bands": {
    "cases": 8000,
-   "noseServed": 439,
+   "noseServed": 452,
    "withPageSection": 452
   },
   "M 1.0-1.2": {
@@ -58,19 +57,19 @@
   },
   "M 1.5-1.8": {
    "cases": 2000,
-   "noseServed": 156,
+   "noseServed": 160,
    "withPageSection": 160
   },
   "M 1.8-3.0": {
    "cases": 2000,
-   "noseServed": 283,
+   "noseServed": 292,
    "withPageSection": 292
   }
  },
  "lenientTip": {
   "all bands": {
-   "total": 339,
-   "nose only": 3712,
+   "total": 348,
+   "nose only": 3703,
    "nothing": 3949
   },
   "M 1.0-1.2": {
@@ -84,20 +83,20 @@
    "nothing": 1082
   },
   "M 1.5-1.8": {
-   "total": 110,
-   "nose only": 1344,
+   "total": 111,
+   "nose only": 1343,
    "nothing": 546
   },
   "M 1.8-3.0": {
-   "total": 229,
-   "nose only": 1450,
+   "total": 237,
+   "nose only": 1442,
    "nothing": 321
   }
  },
  "altitude0": {
   "all bands": {
-   "total": 167,
-   "nose only": 1871,
+   "total": 172,
+   "nose only": 1866,
    "nothing": 5962
   },
   "M 1.0-1.2": {
@@ -116,15 +115,15 @@
    "nothing": 1274
   },
   "M 1.8-3.0": {
-   "total": 110,
-   "nose only": 725,
+   "total": 115,
+   "nose only": 720,
    "nothing": 1165
   }
  },
  "altitude20": {
   "all bands": {
-   "total": 111,
-   "nose only": 1927,
+   "total": 116,
+   "nose only": 1922,
    "nothing": 5962
   },
   "M 1.0-1.2": {
@@ -143,8 +142,8 @@
    "nothing": 1274
   },
   "M 1.8-3.0": {
-   "total": 81,
-   "nose only": 754,
+   "total": 86,
+   "nose only": 749,
    "nothing": 1165
   }
  },
@@ -182,17 +181,16 @@
   "W9 sharp sections: reflected waves and detached bevel shocks",
   "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
   "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
-  "W11 square-cut leading edges and rounded trailing edges",
-  "W8 steep, detached and subsonic sharp tips",
-  "W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0",
   "W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)",
-  "W12 page: the wedge-flat section with a blunt trailing edge",
+  "W11 square-cut leading edges and rounded trailing edges",
+  "W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0",
+  "W8 steep, detached and subsonic sharp tips",
   "W10 boat-tails"
  ],
  "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%)": {
   "all bands": {
-   "total": 325,
-   "nose only": 3651,
+   "total": 336,
+   "nose only": 3640,
    "nothing": 4024
   },
   "M 1.0-1.2": {
@@ -206,29 +204,28 @@
    "nothing": 902
   },
   "M 1.5-1.8": {
-   "total": 110,
-   "nose only": 1281,
+   "total": 114,
+   "nose only": 1277,
    "nothing": 609
   },
   "M 1.8-3.0": {
-   "total": 215,
-   "nose only": 1272,
+   "total": 222,
+   "nose only": 1265,
    "nothing": 513
   }
  },
  "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%) order": [
+  "W13 page: sharp sections (bevelled, double wedge) on fins of varying chord, at the fin's own thickness along the span",
   "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
   "W11 square-cut leading edges and rounded trailing edges",
-  "W6 blunted nose tips",
-  "W13 page: sharp sections (bevelled, double wedge) on fins of varying chord, at the fin's own thickness along the span",
   "W9 sharp sections: reflected waves and detached bevel shocks",
   "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
   "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
   "W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)",
+  "W6 blunted nose tips",
   "W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0",
   "W10 boat-tails",
-  "W8 steep, detached and subsonic sharp tips",
-  "W12 page: the wedge-flat section with a blunt trailing edge"
+  "W8 steep, detached and subsonic sharp tips"
  ],
  "crossCheck": {
   "checked": 1200,

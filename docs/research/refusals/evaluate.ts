@@ -100,7 +100,8 @@ export const REASONS = {
       : 'fins: rounded leading edge outside Re_D 6.7e3 to 1e6',
   sectionDetached: 'fins: sharp section, leading-edge shock detached or subsonic behind it',
   sectionReflected: 'fins: sharp section, a wave reflected from the leading-edge shock reaches the surface',
-  pageSection: 'page: section not offered (wedge-flat with a blunt trailing edge; the library takes it)',
+  pageSection:
+    'page: section not offered (wedge-flat with a blunt trailing edge; the library takes it; offered since 2026-11-20, W12)',
   pageTaperedSection:
     'page: a bevelled or double-wedge section on fins of varying chord (the drag logic takes a section in chord units, which would thin toward the tip while the fin\'s thickness and bevels do not; src/rocket/adapter.ts, 0017 section 4.2; mirrored here since 2026-11-20)',
   finsOwnDragMach:
@@ -294,7 +295,8 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
       }
     }
   }
-  if (r.section === 'bevel-le-square-te') out.push('pageSection');
+  // Since 2026-11-20 (0014 10.7 (al), W12) the page offers the wedge-flat section on fins of constant chord, so
+  // pageSection no longer arises; on fins of varying chord pageTaperedSection refuses it, as the hexagon.
   // The page (src/rocket/adapter.ts, sectionOf; 0017 section 4.2) takes a sharp section in chord units, so it
   // refuses one on fins of varying chord: the population's fins are sheet stock, their thickness and bevels the
   // same at every station, which a section in chord units is not. The library takes the section scaled with the

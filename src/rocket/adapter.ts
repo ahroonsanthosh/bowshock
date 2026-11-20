@@ -260,6 +260,14 @@ function sectionOf(
           leadingEdgeRadius: 0,
         };
       }
+      if (le.kind === 'bevelled' && te.kind === 'square') {
+        // A plate bevelled at the leading edge only (0014 W12): the section in chord units, as the hexagon.
+        if (!inChordUnits('fins with a bevelled leading edge')) return null;
+        return {
+          section: { kind: 'wedge-flat', thickness: t, frontBevel: le.length / root },
+          leadingEdgeRadius: 0,
+        };
+      }
       if (le.kind !== 'bevelled' && te.kind !== 'bevelled') {
         // A flat plate of uniform thickness, on any planform: the logic's own (design record 0016).
         return {
@@ -277,12 +285,11 @@ function sectionOf(
           le.kind === 'bevelled'
             ? `a bevelled leading edge with a ${te.kind} trailing edge`
             : `a ${le.kind} leading edge with a bevelled trailing edge`,
-        reason:
-          le.kind === 'bevelled' && te.kind === 'square'
-            ? 'the fin methods have this section, but the drag logic’s inputs do not yet ' +
-              '(design record 0014, F12)'
-            : 'the drag logic has no section for this pair of edges',
-        change: 'both edges bevelled, or neither',
+        reason: 'the drag logic has no section for this pair of edges',
+        change:
+          le.kind === 'bevelled'
+            ? 'a square trailing edge, both edges bevelled, or neither'
+            : 'both edges bevelled, or neither',
       });
       return null;
     }
