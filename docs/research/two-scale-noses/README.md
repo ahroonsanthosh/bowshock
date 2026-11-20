@@ -306,3 +306,13 @@ the other two option runs on 02549f2; the sentence first named that run
 before it was committed). Against `population/76899f1/option-a-prime`
 the totals are the same (237, 77, 160) and only rows of fin reasons
 differ, moved by main's fin changes between 76899f1 and 02549f2. Merged to main on top of the unswept-plate ruling of the same day (0014 10.7 (z): flat plates with both edges unswept refused below Mach 1.62), the refusal audit's `impact.out` is the run with both: 235 of 8000 (Mach 1.5 to 1.8: 75; 1.8 to 3.0: 160); the ruling's two lost totals are at Mach 1.5 to 1.8.
+
+## `outline/lv-haack/`: the LV-Haack outline (2026-11-20)
+
+The LV-Haack nose (C = 1/3), registered before any run in 0006 ("The
+LV-Haack outline: registration", commit cdf00d96): six cases at 4 to 6
+calibers and Mach 1.5 to 3 ((4, 1.5), (6, 1.5), (4, 3), (6, 3), (5, 2),
+(6, 2)), with the outline's runners and criteria unchanged and the
+allowance fixed at 8e-4. Started 2026-11-20 23:23 UTC in three lanes;
+`outline/lv-haack/README.md` says where they run and how to monitor,
+resume and judge them. No result yet.
