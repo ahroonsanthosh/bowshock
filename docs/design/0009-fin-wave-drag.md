@@ -2101,3 +2101,69 @@ changes more from level 3 to 4 than from level 2 to 3, so no order of
 convergence can be read from them and the Euler's uncertainty in these
 windows has no bound. That is what unresolved records here; it is not a
 near agreement. The verdict stands as registered.
+
+**2026-11-20: Fable's review of 9.15's verdict, and what was done with
+it** (`w9/review-2026-11-20.md`, the report as delivered). It is the
+review d19df51's message said was owed. Its verdict: PASS WITH CHANGES,
+nothing blocking. The judge re-ran to `w9/last-verdict.out` byte for byte;
+its own script, which does not import the judge and has its own
+oblique-shock and Prandtl-Meyer code, gave every number that decides a
+window's status, and every number this section's note on the runs and
+0014 (aj) quote, to the printed digits; the verdict, unresolved with
+nothing served and W9(a) closed, is what 9.13's tree and 9.15 require.
+Disclosed by the reviewer: Fable designed 9.15 and reviewed its
+registration, so this review is independent of the judge's arithmetic,
+not of the design. The review of the verdict before the merge (965e86f,
+435 judged numbers recomputed) was by another reviewer, not Fable; the
+two are kept apart here by name. What its findings change, none of
+which moves a status, a number or the verdict:
+
+- _The note on the runs, read more exactly (finding 8)._ Where it says
+  the Euler's uncertainty in the four bevel windows "has no bound", read
+  "has no bound by the registered rule": each part of D_k (H_k - G and
+  R_k) shrinks at every level; it is their small difference that has no
+  settled trend, which is not divergence of the solves. In K1 and K3 the
+  factors 9.7 and 13.8 are large because d_3 is nearly zero (a stall from
+  level 2 to 3), not because d_4 is large. In all four, D_k is positive at
+  levels 2 to 4 and falls from 3 to 4; that bounds nothing, and the
+  reading of the note stands.
+- _K5's bevel is not a confirmation at Mach 3.0 (finding 9)._ d_4 on the
+  bevel is nearly the same in all five cases (-6.8e-5 to -8.4e-5 of the
+  drag) while G varies 2.2 times: a shift common to the pairing's level 3
+  to 4 step. K5's bevel is resolved only because its d_3 was larger, and
+  agrees by 4% of its tolerance with D_4 at 42% of G. Nothing rested on
+  it, since K5's flat is unresolved.
+- _The carried rows (finding 12; 9.15 promised them as a record)._ The
+  rows the reference carries at max(K_hex, K_shock) double in number with
+  each level (K1: 11, 22 and 45 of 112, 224 and 448), so the region keeps
+  a height of about 0.14 chord in K1, strongest at the wall (4% to 14%
+  above K_shock in row 0). From level 3 or 4 a second, weak band (up to
+  about 1.5e-3 above K_shock) appears about 0.1 chord above the wall, not
+  at the captured shock, so 9.15's phrase "any rise of entropy in the
+  captured leading-edge shock where it crosses x_s, far from the wall"
+  does not describe all that was carried. It is in both solves of each
+  pair and nothing shows it moves D_k.
+- _Loose phrases in d19df51's message (finding 10)._ A commit message
+  cannot be changed; the record reads: 9.7 failed for two reasons (E1's
+  flat window, and level 3 too coarse); 9.13 was unresolved, and the
+  record says its wall-entropy pairing did not cause that verdict; the
+  check never confirmed the method in the four cases that had to agree
+  (K5's bevel window was a resolved agreement by the rule, not cited as a
+  confirmation, above). 0014's W9 paragraph dated both results
+  2026-10-31; 9.13 ran and was judged on 2026-10-30 (finding 11,
+  corrected there).
+- _Where the cited commits live (finding 14)._ Every hash this section
+  cites, and d19df51 itself, is on the project's main line,
+  `claude/eloquent-dirac-ek9hcf` (the repository's default branch), and on
+  `claude/wip/w9-reflections`. The branch named `main` holds W9(a)
+  squashed as one release commit (b29f5ee), whose record files equal
+  d19df51's but for comment lines and the reviewer's name; it does not
+  hold the order of registration before run. Both branches that do are
+  kept; neither is to be deleted while this record cites them.
+- _Not acted on (findings 1, 2, 4, 5)._ Four small differences between
+  the judge's and runner's code and the registered text, none active on
+  these records (the bevel window's lower end not tested against the
+  first landing, which lies on the flat in all five cases; the cap flag
+  counting levels 2 to 4 only; the "same as 9.13" flag's fields; two of
+  9.6's gates printed, not applied, in a serving branch never reached).
+  The code will not run again; they are recorded here.

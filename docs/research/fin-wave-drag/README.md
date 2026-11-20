@@ -113,3 +113,6 @@ judge computes nothing new.
 - `paired-judge.test.ts` > `paired-verdict.out` (and `served-cells.json`
   only where the verdict serves; it served nothing: unresolved): 9.13's
   rule and verdict, written before any solve of levels 2 to 4.
+- `review-2026-11-20.md`: Fable's review of 9.15's verdict (PASS WITH
+  CHANGES, nothing blocking), as delivered; what was done with it is in
+  0009 section 9.15's note of 2026-11-20.

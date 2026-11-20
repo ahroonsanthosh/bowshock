@@ -570,7 +570,9 @@ characteristics, the Euler solves its check); 10.7 (aj). Later the same
 day: run as registered; the Euler check failed, and nothing is served.
 A corrected Euler check is then registered (0009 section 9.13), not yet
 run._ _2026-10-31: 9.13 and then a last check, 0009 section 9.15, both
-unresolved; W9(a) is closed with the refusal kept (10.7 (aj))._
+unresolved; W9(a) is closed with the refusal kept (10.7 (aj))._ _(Corrected
+2026-11-20, Fable's review of 9.15's verdict: 9.13 ran and was judged on
+2026-10-30; only 9.15 ended on 2026-10-31.)_
 
 **W11. Square-cut leading edges and rounded trailing edges.** No opened
 source isolates either at these conditions. The owner has allowed them
@@ -4226,6 +4228,12 @@ its review, below; still before any code or run).
   in all four it changes more from level 3 to 4 than from level 2 to 3,
   so it shows no convergence and bounds nothing. It is not a near
   agreement and no ground to reopen W9(a).
+- _2026-11-20: Fable's review of 9.15's verdict_ (0009 section 9.15's
+  note of that date, `w9/review-2026-11-20.md`): PASS WITH CHANGES,
+  nothing blocking; the verdict and every quoted number reproduced. Read
+  "bounds nothing" above as "no bound by the registered rule"; the record
+  changes it asked for are in 0009's note. The commits cited stay on this
+  line and on `claude/wip/w9-reflections`.
 
 **2026-11-20 (ak): the refusal audit corrected to the page's refusal of
 sections in chord units on fins of varying chord.** Nothing the page or
