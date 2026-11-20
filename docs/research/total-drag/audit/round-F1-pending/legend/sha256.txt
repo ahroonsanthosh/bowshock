@@ -1,0 +1,4 @@
+5b6897abf162dfdd8babdbb40ff4d46ff99ecc5a4eef126b5690c54750e2418b  20050019382.pdf (NACA RM L55H09, NTRS 20050019382, 29 PDF pages, 1029235 bytes; not kept in the repository)
+33692906bc9e430343452f098b5876f67c01d19876bb8434e102cb952b766eba  fig6_legend_crop.png
+4a13be35b618b6541951b0d93bb7741af3958b6cafe77c41d58c549f973108aa  fig6_legend_only_400dpi.png
+936bc13ee7c562a64f37f2dd5879075a54d8fee3efa1df8179d46a95a7f2dfc1  crop_legend.py
