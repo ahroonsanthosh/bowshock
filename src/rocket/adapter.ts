@@ -189,11 +189,22 @@ function planformOf(fins: FinSetDesign, flags: NotModelled[]): PlanformInput | n
     });
     return null;
   }
-  if (p.sweepLength === 0 && p.tipChord === p.rootChord) return { kind: 'rectangular' };
+  // Lengths typed in millimetres or summed from a file leave rounding (0.1 + 0.05 - 0.15 is not 0, so an
+  // unswept trailing edge came out swept by 1e-14 deg, which the logic refuses as swept). Within SAME of
+  // the chord, as `constantChord` takes a chord, a trailing edge unswept is taken as exactly unswept, and a
+  // constant chord as exactly constant (the trailing edge swept as the leading edge is).
+  const constant = sameLength(p.tipChord, p.rootChord);
+  const offset = p.sweepLength + p.tipChord - p.rootChord;
+  const trailing = constant
+    ? p.sweepLength
+    : Math.abs(offset) <= SAME * Math.max(p.rootChord, p.tipChord)
+      ? 0
+      : offset;
+  if (p.sweepLength === 0 && constant) return { kind: 'rectangular' };
   return {
     kind: 'trapezoidal',
     leadingEdgeSweepDegrees: Math.atan2(p.sweepLength, p.span) * DEG,
-    trailingEdgeSweepDegrees: Math.atan2(p.sweepLength + p.tipChord - p.rootChord, p.span) * DEG,
+    trailingEdgeSweepDegrees: Math.atan2(trailing, p.span) * DEG,
   };
 }
 
@@ -263,6 +274,19 @@ function sectionOf(
       if (le.kind === 'bevelled' && te.kind === 'square') {
         // A plate bevelled at the leading edge only (0014 W12): the section in chord units, as the hexagon.
         if (!inChordUnits('fins with a bevelled leading edge')) return null;
+        if (!(le.length > 0 && le.length < root)) {
+          flags.push({
+            feature:
+              le.length > 0
+                ? 'a leading-edge bevel as long as the chord or longer'
+                : 'a leading-edge bevel of no length',
+            reason:
+              'a bevelled leading edge rises to the full thickness and leaves a flat behind it; a ' +
+              'bevel over the whole chord to a square trailing edge is the wedge section',
+            change: 'a bevel longer than zero and shorter than the chord, or the wedge section',
+          });
+          return null;
+        }
         return {
           section: { kind: 'wedge-flat', thickness: t, frontBevel: le.length / root },
           leadingEdgeRadius: 0,
@@ -286,10 +310,16 @@ function sectionOf(
             ? `a bevelled leading edge with a ${te.kind} trailing edge`
             : `a ${le.kind} leading edge with a bevelled trailing edge`,
         reason: 'the drag logic has no section for this pair of edges',
-        change:
-          le.kind === 'bevelled'
+        // A section with a bevel is taken only on fins of constant chord (TAPERED), so on tapered fins
+        // the changes that keep a bevel say so.
+        change: constantChord(fins)
+          ? le.kind === 'bevelled'
             ? 'a square trailing edge, both edges bevelled, or neither'
-            : 'both edges bevelled, or neither',
+            : 'both edges bevelled, or neither'
+          : le.kind === 'bevelled'
+            ? 'neither edge bevelled, or fins of constant chord with a square trailing edge or both ' +
+              'edges bevelled'
+            : 'neither edge bevelled, or fins of constant chord with both edges bevelled',
       });
       return null;
     }

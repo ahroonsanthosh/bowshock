@@ -125,6 +125,8 @@ is not used by the page and is left out.
 | F11 | a leading edge swept forward; a tip chord of zero or less                                                                                   | `validatePlanform`                                 | 0009                   | input                     | 0%                                    |
 | F12 | a wedge-flat section with a blunt trailing edge, which the library takes, is not offered (the page has single wedge, double wedge, hexagon) | `demos/nose-drag.html`, `configurationOf`          | 0011                   | input                     | 9.1%                                  |
 
+_F12 is lifted since 2026-11-20 on fins of constant chord: the rocketeer page and the logic offer the wedge-flat section (10.7 (al))._
+
 ### 2.3 Bases (`src/base`, `src/total`)
 
 | #   | Refused when                                                                                             | Where                                  | Record                 | Kind                                       | Population                           |
@@ -4371,8 +4373,10 @@ count, which quotes it.
   The new reason applies to 38.5% of cases and is the sole blocker of 72
   (0.90%). Counts quoted before this date (the README; 0009 section 9 and
   (aj), "235 to 273"; the two-scale noses' README) stand as written and
-  are corrected here: W9(a)'s 38 counted hexagons on tapered fins that the
-  page refuses.
+  are corrected here: 35 of W9(a)'s 38 (74 of its 86 with the nose assumed
+  served) were hexagons on tapered fins, which the page refuses, so lifting
+  W9(a) alone would now add 3. The 72 are 70 diamonds and 2 hexagons
+  (corrected the same day after the independent review, below (al)).
 - _W13, a new work package._ Sharp sections (bevelled, double wedge) on
   fins of varying chord, at the fin's own thickness along the span. The
   fin wave drag (0009: the exact section drag times the linear 3D ratio,
@@ -4413,6 +4417,43 @@ leading edge with a square trailing edge to it (`src/rocket/adapter.ts`;
   arises. The cross-check agrees on 1200 of 1200.
 - _Not done:_ the older drag page (`demos/nose-drag.html`) does not offer
   the section; its inputs are unchanged.
+- _W13 after W12._ The wedge-flat on tapered fins, now offered on the
+  page's constant-chord fins only, joins W13: it is now the sole blocker
+  of 145 totals (1.81%): 73 tapered wedge-flats, 70 diamonds and 2
+  hexagons.
+- _The independent review of (ak) and (al), the same day: PASS WITH
+  CHANGES._ It re-ran the audit three times (byte for byte), put every one
+  of the 8,000 cases through the page's own path (`designForm`,
+  `configurationOf`, `finnedBodyComponents`) and found the page and the
+  audit agree on all of them (163 at (ak), 168 at (al)), and derived the
+  wedge-flat's linear 3D ratio on a rectangle in closed form, 1 - b / (2
+  pi beta s), which the library meets. What it asked, and what was done:
+  the README's count, left at 163, is 168; the tests could not see a bevel
+  divided by the diameter for the chord (the fin's chord equalled the
+  body's diameter), so tests now use a 0.045 m chord on the 0.03 m body,
+  through the page's own path too, and the closed form is a test; "to the
+  bit" in the second test meant the section, not the page's whole path,
+  which the new test checks to 1e-12; a bevel of no length, or as long as
+  the chord, is now named, with the wedge section offered; the adapter's
+  advice for a bevel paired with a rounded trailing edge keeps a bevel
+  only on fins of constant chord; (ak)'s counts are made exact. Recorded,
+  not changed: below Mach 1.62 at or near the base, the advice to sweep
+  flat fins 45 to 60 deg leads a bevelled leading edge first to the taper
+  refusal, whose own advice (flat plates with square or rounded edges)
+  then applies.
+- _A refusal from rounding, found by that review and fixed._ The page's
+  planform took the trailing edge's sweep from the root chord, the tip
+  chord and the sweep length as typed, so lengths in millimetres (150, 50
+  and 100 mm: 0.1 + 0.05 - 0.15 is 2.8e-17) gave an unswept trailing edge
+  a sweep of about 1e-14 deg, and the logic refused it as a swept square
+  trailing edge (src/base/fin-trailing-edge.ts refuses any sweep but 0).
+  About a quarter of clipped deltas typed in whole millimetres were
+  refused so. Within 1e-9 of the chord (the tolerance the adapter already
+  used for a constant chord), the trailing edge is now taken as exactly
+  unswept, and a constant chord as exactly constant
+  (`src/rocket/adapter.ts`, `planformOf`; tested on 150, 50 and 100 mm).
+  The audit, which draws its planforms exactly, does not move; the page
+  now serves what it counts.
 
 **2026-11-20 (am): the nose's model-form allowance carried on the pages**
 (design record 0022 section 9, step 7; registered as (w), above, with the

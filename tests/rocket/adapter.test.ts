@@ -334,6 +334,183 @@ describe('what is named, not mapped', { timeout: 60_000 }, () => {
 });
 
 describe(
+  'the section in chord units of the root chord, not of the diameter',
+  { timeout: 60_000 },
+  () => {
+    // The Basic Finner's diameter is 0.03 m and its fins 0.08 cal thick; a root chord of 0.045 m tells the
+    // chord apart from the diameter (a bevel divided by the wrong one would show).
+    const rect = {
+      kind: 'trapezoidal',
+      rootChord: 0.045,
+      tipChord: 0.045,
+      span: 0.03,
+      sweepLength: 0,
+    } as const;
+    const bevel = (length: number) => ({ kind: 'bevelled', length }) as const;
+
+    it('the wedge-flat and the hexagon: thickness in calibers, bevels over the root chord', () => {
+      const wf = formFor(
+        designForm(
+          withFins({
+            planform: rect,
+            section: { kind: 'flat', leadingEdge: bevel(0.006), trailingEdge: { kind: 'square' } },
+          }),
+          2,
+          NO,
+        ),
+      );
+      expect(wf.planform).toEqual({ kind: 'rectangular' });
+      expect(wf.rootChord).toBeCloseTo(1.5, 12);
+      expect(wf.section).toEqual({
+        kind: 'wedge-flat',
+        thickness: 0.08,
+        frontBevel: 0.006 / 0.045,
+      });
+      const hex = formFor(
+        designForm(
+          withFins({
+            planform: rect,
+            section: { kind: 'flat', leadingEdge: bevel(0.006), trailingEdge: bevel(0.009) },
+          }),
+          2,
+          NO,
+        ),
+      );
+      expect(hex.section).toEqual({
+        kind: 'hexagonal',
+        thickness: 0.08,
+        frontBevel: 0.006 / 0.045,
+        rearBevel: 0.009 / 0.045,
+      });
+    });
+
+    it('a bevel of no length, or as long as the chord or longer, is named, with the wedge section offered', () => {
+      const one = (length: number) =>
+        designForm(
+          withFins({
+            planform: rect,
+            section: { kind: 'flat', leadingEdge: bevel(length), trailingEdge: { kind: 'square' } },
+          }),
+          2,
+          NO,
+        );
+      for (const [length, feature] of [
+        [0, 'a leading-edge bevel of no length'],
+        [0.045, 'a leading-edge bevel as long as the chord or longer'],
+        [0.05, 'a leading-edge bevel as long as the chord or longer'],
+      ] as const) {
+        const r = one(length);
+        if (r.kind !== 'not-modelled') throw new Error(r.kind);
+        expect(r.features.map((f) => f.feature)).toEqual([feature]);
+        expect(r.features[0]!.change).toContain('the wedge section');
+      }
+    });
+
+    it('a pair of edges with no section: the changes offered keep a bevel only on fins of constant chord', () => {
+      const tapered = { ...rect, tipChord: 0.03, sweepLength: 0.015 } as const;
+      const change = (planform: FinSetDesign['planform']) => {
+        const r = designForm(
+          withFins({
+            planform,
+            section: { kind: 'flat', leadingEdge: bevel(0.006), trailingEdge: { kind: 'rounded' } },
+          }),
+          2,
+          NO,
+        );
+        if (r.kind !== 'not-modelled') throw new Error(r.kind);
+        return r.features.map((f) => f.change);
+      };
+      expect(change(rect)).toEqual(['a square trailing edge, both edges bevelled, or neither']);
+      expect(change(tapered)).toEqual([
+        'neither edge bevelled, or fins of constant chord with a square trailing edge or both edges bevelled',
+      ]);
+    });
+  },
+);
+
+describe(
+  'lengths with rounding in them (millimetres, sums from a file)',
+  { timeout: 60_000 },
+  () => {
+    it('an unswept trailing edge stays unswept: 150 mm root, 50 mm tip, swept 100 mm', () => {
+      // 0.1 + 0.05 - 0.15 is 2.8e-17, not 0: before, the trailing edge came out swept by about 1e-14 deg,
+      // and the logic refused it as a swept square trailing edge.
+      expect(0.1 + 0.05 - 0.15).not.toBe(0);
+      const form = formFor(
+        designForm(
+          withFins({
+            planform: {
+              kind: 'trapezoidal',
+              rootChord: 0.15,
+              tipChord: 0.05,
+              span: 0.06,
+              sweepLength: 0.1,
+            },
+            section: {
+              kind: 'flat',
+              leadingEdge: { kind: 'rounded' },
+              trailingEdge: { kind: 'square' },
+            },
+          }),
+          2,
+          NO,
+        ),
+      );
+      if (form.planform.kind !== 'trapezoidal') throw new Error(form.planform.kind);
+      expect(form.planform.trailingEdgeSweepDegrees).toBe(0);
+      expect(form.planform.leadingEdgeSweepDegrees).toBe((Math.atan2(0.1, 0.06) * 180) / Math.PI);
+      // Not refused for a swept trailing edge (src/base/fin-trailing-edge.ts, its swept-edge refusal).
+      const view = totalDragView(form, { kind: 'pending' });
+      const refusals =
+        view.kind === 'refused' ? view.refusals.map((r) => r.message).join(' | ') : '';
+      expect(refusals).not.toContain('swept blunt trailing edges are refused');
+    });
+
+    it('a chord the same within rounding is constant: the trailing edge swept exactly as the leading edge', () => {
+      const form = formFor(
+        designForm(
+          withFins({
+            planform: {
+              kind: 'trapezoidal',
+              rootChord: 0.03,
+              tipChord: 0.03 * (1 + 1e-12),
+              span: 0.03,
+              sweepLength: 0.01,
+            },
+            section: {
+              kind: 'flat',
+              leadingEdge: { kind: 'bevelled', length: 0.006 },
+              trailingEdge: { kind: 'square' },
+            },
+          }),
+          2,
+          NO,
+        ),
+      );
+      if (form.planform.kind !== 'trapezoidal') throw new Error(form.planform.kind);
+      expect(form.planform.trailingEdgeSweepDegrees).toBe(form.planform.leadingEdgeSweepDegrees);
+      // And with no sweep, the rectangle.
+      const rect = formFor(
+        designForm(
+          withFins({
+            planform: {
+              kind: 'trapezoidal',
+              rootChord: 0.03,
+              tipChord: 0.03 * (1 + 1e-12),
+              span: 0.03,
+              sweepLength: 0,
+            },
+          }),
+          2,
+          NO,
+        ),
+      );
+      expect(rect.planform).toEqual({ kind: 'rectangular' });
+    });
+  },
+);
+
+describe(
   'parts bowshock does not model: computed without them only when chosen',
   { timeout: 60_000 },
   () => {

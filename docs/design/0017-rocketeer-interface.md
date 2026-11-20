@@ -956,6 +956,8 @@ Curve tab).
    labelled an estimate; the SwiftShader hours not shown as typical.
 6. **F12** (a bevelled leading edge with a square trailing edge) goes to
    the logic's agents: `src/app/total-drag.ts` is not changed here.
+   _(Done since 2026-11-20, 0014 10.7 (al): the logic's `wedge-flat`
+   section, on fins of constant chord.)_
 7. **Lengths** shown to 0.01 mm (0.001 in); a preset's exact value kept
    until the field is edited, the calibres beside it to six decimals
    (2.835641 cal), tested.

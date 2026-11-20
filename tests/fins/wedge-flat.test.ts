@@ -6,6 +6,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
+import { finWaveDrag } from '../../src/fins/fin-wave-drag';
+import { trapezoidalPlanform } from '../../src/fins/planform';
 import { exactSectionDrag } from '../../src/fins/section-drag';
 import { validateSymmetricSection, wedgeFlat } from '../../src/fins/section';
 
@@ -82,6 +84,28 @@ describe('wedgeFlat', () => {
       const d = exactSectionDrag(wedgeFlat(tc, bevel), mach);
       expect(d.exact).toBe(true);
       expect(d.cd).toBeCloseTo(wedgeCp(mach, (deg * Math.PI) / 180) * tc, 12);
+    }
+  });
+
+  it('its linear 3D ratio on a rectangle is 1 - b / (2 pi beta s), the tip Mach cone alone (root a wall)', () => {
+    // Linear theory, the bevel's slope constant over b (chords) and the flat's zero: only sources on the
+    // bevel interact, and with beta s >= b the tip Mach cone from the bevel never reaches the root, so the
+    // drag lost to the tip is the bevel's own, b^2 / (pi beta^2) against 2 b s / beta for the strip.
+    for (const [mach, span, b] of [
+      [2, 1, 0.2],
+      [1.5, 0.5, 0.3],
+      [3, 2, 0.1],
+      [1.8, 0.8, 0.25],
+    ] as const) {
+      const beta = Math.sqrt(mach * mach - 1);
+      expect(beta * span).toBeGreaterThanOrEqual(b);
+      const w = finWaveDrag(
+        trapezoidalPlanform({ rootChord: 1, span, leadingEdgeSweep: 0 }),
+        wedgeFlat(0.04, b),
+        mach,
+      );
+      const closed = 1 - b / (2 * Math.PI * beta * span);
+      expect(Math.abs(w.ratio - closed)).toBeLessThanOrEqual(Math.max(1e-6, w.quadratureError));
     }
   });
 });
