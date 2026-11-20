@@ -53,7 +53,9 @@ safe.
 
 - Tests are written down before they're run, against data held back for
   the purpose.
-- Every figure taken from a report is read twice, independently.
+- Figures taken from reports are read twice, the second time blind, and a
+  third party pairs the two readings. Where a number still rests on one
+  reading, its label says so.
 - Every change to the method gets an independent review.
 - No checked band, no number.
 
