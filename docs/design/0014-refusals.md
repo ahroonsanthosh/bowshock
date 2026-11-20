@@ -4227,6 +4227,291 @@ its review, below; still before any code or run).
   so it shows no convergence and bounds nothing. It is not a near
   agreement and no ground to reopen W9(a).
 
+**2026-11-20, RM L55H09 and RM L9I30 seen for their geometry only;
+F1's figures named before any is read** (rule 2 of 10.1; the further
+dated entry (p) asks for; 0019 section 6, step 3). _Not lettered: the
+coordinator's letters registry is not in this checkout, so the letter
+is the coordinator's to give._ Written before any value of any data
+figure of either report was seen.
+
+- _What was opened, and what was not._ Howell and Braslow, NACA RM
+  L55H09 (NTRS 20050019382, 29 PDF pages) and Hart and Katz, NACA RM
+  L9I30 (NTRS 20050019251, 38 PDF pages), each downloaded into its own
+  folder outside the repository with
+  `docs/research/refusals/scripts/fetch_ntrs.py`. Read: the text layer
+  of both (summary, models, apparatus, tests, discussion, references,
+  the captions the text layer holds); as page images, only L55H09's
+  symbol list (PDF p. 4), its table of estimated errors (PDF p. 8) and
+  its fig. 1 (PDF p. 14, the model as mounted in the tunnel), and L9I30's
+  table of body parameters (PDF p. 5), its p. 4 of text (PDF p. 6, the
+  fins) and its fig. 1 (PDF p. 9, the fineness-12.5 bodies). No data
+  figure of either report was rendered or looked at, and no drag, drag
+  rise or base pressure value was seen. RM L51F29 was not opened.
+- _The body: neither held-back body._ L55H09's tunnel model is L9I30's
+  configuration 3 scaled by 0.812/7.50 = 0.1083 (computed): a parabolic
+  body of fineness 12.5 with its maximum diameter at 0.60 of its length,
+  nose and afterbody arcs of different coefficients, a cut-off stern. In
+  flight (L9I30 p. 3 and fig. 1): length 93.72 in, maximum diameter 7.50
+  in at 56.23 in, base diameter 3.28 in (base area 0.0586 sq ft, 0.437 of
+  the maximum diameter), d = D - 2a(KL - x)^2 ahead of the maximum and
+  d = D - 2b(KL - x)^2 behind it, a 0.001186 and b 0.001501 per in; wood
+  finished with clear lacquer. In the tunnel (L55H09 p. 4 and fig. 1):
+  length 10.150 in, maximum diameter 0.812 in, base diameter 0.356 in,
+  r = r_max - a(0.6L - x)^2 with a printed as 0.01097 per in ahead of the
+  maximum and 0.01445 per in behind it, nose fineness 7.50 (p. 9),
+  frontal area 0.511 sq in (the reference area), on a sting of 0.250 in
+  diameter (0.70 of the base diameter). The printed rear coefficient
+  disagrees with both drawings: L9I30's b scaled is 0.01386 per in, which
+  gives a base diameter of 0.355 in, as drawn, while 0.01445 gives 0.336
+  in (computed); the front coefficient agrees with L9I30's a (0.01095
+  scaled). The drawings' base diameter is the one to use; recorded as
+  open. **It is not the Langley PARD standard body** (an ogive-cylinder,
+  L/D 11, a 3.5-calibre nose, a cylindrical afterbody: section 5.2 and
+  0019 section 2.4). **It is not the RM-10**: the RM-10, as RM L54G14
+  describes it (`docs/research/total-drag/data/friction_sources.md`
+  section 2, a source that is neither TN 3320 nor RM L50G24), is 146.5 in
+  long and 12 in in diameter, fineness 12.2 cut from a fineness-15
+  parabolic body, with four untapered 60 deg swept fins of 10%
+  circular-arc section at the base. Read as a symmetric fineness-15 arc
+  cut at 12.2/15 = 81% of its length, the RM-10's maximum diameter lies
+  at 61.5% of its length and its base is 0.61 of its maximum diameter,
+  its afterbody continuing the nose's arc (computed); here the base is
+  0.437 of the maximum diameter, the afterbody's coefficient 1.27 times
+  the nose's, and the fins are three, swept 45 deg, about 3% thick and
+  hexagonal, about a chord ahead of the base. One likeness is recorded:
+  the nose to the maximum diameter (a parabolic arc of fineness 7.50 with
+  its vertex at the maximum diameter) is the RM-10's nose shape, scaled
+  (computed from the same reading of "cut from 15"). Nothing in either
+  report is held back by 10.1; if a band set here is used in TN 3320's
+  range B (10.5), that run's record says the band was measured on a body
+  whose nose is the RM-10's shape, from another model, facility and fin,
+  as 10.1 says of RM L52E06's base pressures for the PARD body.
+- _The fins._ Three, 120 deg apart (fig. 1 rear views of both reports);
+  untapered, the leading and trailing edges both swept 45 deg (L9I30 p.
+  4, "three 45 deg sweptback fins"; L55H09 fig. 1); hexagonal sections,
+  sharp leading and trailing edges as drawn. In flight: dural, streamwise
+  chord 9.00 in, thickness 0.25 in (t/c 0.0278 streamwise, as L9I30
+  states), a 3 in bevel, a 3 in flat and a 3 in bevel (bevel half-angle
+  2.39 deg, computed), 1.69 sq ft total exposed area (about 9.0 in of
+  exposed span each, computed), tip radius 11.84 in, the trailing edge
+  meeting the body at the 90.53% station (84.84 in), 8.88 in (0.99 of a
+  chord) ahead of the base. In the tunnel: chord 0.975 in, thickness
+  0.030 in (t/c 0.031; the flight fin scaled would be 0.027 in), bevels
+  and flat 0.325 in each (bevel half-angle 2.64 deg, computed), tip radius
+  1.282 in; first of glass-reinforced polyester, lost in the first run
+  (flutter, the report presumes) and rebuilt of "a stiffer plastic
+  material" (p. 4); whether fig. 1's 0.030 in is the rebuilt fins' is not
+  stated (open). The fins had no transition strip in the tunnel ("No
+  roughness strips were applied to the tail surfaces of either model",
+  p. 6); the body had a 1/4 in band of 0.001 to 0.002 in carborundum 1 in
+  behind the nose. How the fin slots were closed with the fins off is not
+  stated (open).
+- _The tests._ Tunnel: the Langley transonic blowdown tunnel, slotted,
+  octagonal, 26 in between flats; zero-lift drag on a sting-mounted
+  single-component strain-gauge balance at Mach 0.81 to 1.41; no drag
+  data at about Mach 1.04 to 1.13 (wall-reflected disturbances, p. 6);
+  above about Mach 1.13 a buoyancy correction from the empty-tunnel Mach
+  gradient. Fins on: mostly at 25 psia stagnation pressure (Reynolds
+  number 0.67e6 to 0.75e6 per in, Mach 0.74 to 1.32), with check points
+  at 50 psia (1.3e6 to 1.4e6 per in, Mach 0.8 to 1.4); fins off: all at
+  50 psia (p. 6). Body-length Reynolds number 6.8e6 to 7.6e6 (p. 9, the
+  25 psia tests); fin chord Reynolds number 0.65e6 to 0.73e6 at 25 psia
+  and 1.27e6 to 1.37e6 at 50 psia (computed). Estimated maximum errors of
+  the faired curves (p. 7): C_D of the body of revolution +-0.010, its
+  C_Db +-0.005, M +-0.01. Free flight (L9I30): rocket-boosted models at
+  Wallops, total drag only, body-length Reynolds number 20e6 to 85e6 over
+  the three fineness ratios (30e6 to 70e6 for this body, L55H09 p. 9; fin
+  chord 2.9e6 to 6.7e6, computed); L9I30's own base pressures on this
+  body were in error (burning propellant residue, L55H09 p. 8), and
+  L55H09's free-flight base drag is RM L51F29's, from a body with the
+  same afterbody and fins and another nose.
+- _What the increment is._ L55H09's symbol list (PDF p. 4): C_D is the
+  **net** drag coefficient, C_DT - C_Db; Delta C_D = C_D - C_D at M_0 0.9;
+  and the fins' increment is Delta C_Df = (C_D - C_D at M_0 0.9) fins on
+  minus (C_D - C_D at M_0 0.9) fins off. So: (i) the base drag is out of
+  both configurations, each through its own base pressure (an open tube
+  through the sting's centre into the balance's open section, p. 5), so
+  the fins' effect on the base is removed by construction, as the ARCAS
+  chamber change was removed in 0008 section 4.3; (ii) it is a
+  **pressure-drag-rise increment**: the fins' drag at Mach 0.9, their
+  friction with it, is subtracted out. It holds the fins' wave drag, the
+  rise of the fin-body interference, the fins' effect on the
+  afterbody's pressures ahead of the base, and the change of the fins'
+  friction above Mach 0.9, but **no fin friction level**. Taking the
+  rise at each configuration's own Mach 0.9 also cancels the 25 against
+  50 psia difference in the body's friction, which an absolute fins-on
+  minus fins-off difference would carry (about a tenth of the body's
+  friction, some 0.01 on the reference area, about a fifth of the fins'
+  modelled friction, estimated). The
+  free-flight increment in fig. 10 is "some unpublished results as
+  obtained in free flight by a somewhat different technique ...
+  fin-stabilized cone-cylinder combinations and calculations of the
+  pressure drag associated with the cone" (p. 9): not this body, not
+  published, its base treatment not stated. It sets nothing.
+- _The figures, by caption only_ (L55H09; captions from the text layer;
+  fig. 8's and figs. 11 to 14's captions are not in it, and fig. 8 is
+  described from p. 9 instead). Fig. 1, diagrammatic sketch showing model
+  as mounted in wind tunnel; fig. 2, photograph of the fin-stabilized
+  model; fig. 3, line drawing of the airplane configuration tested; fig.
+  4, photographs of airplane model; fig. 5, the airplane's total-pressure
+  rake; fig. 6, zero-lift drag-coefficient variation with Mach number for
+  a fin-stabilized body of revolution as obtained from measurements in a
+  slotted wind tunnel and in free flight (total, base and net drag, p.
+  8); fig. 7, comparison of drag rise as obtained from wind-tunnel and
+  free-flight data as a function of Mach number; fig. 8, the faired net
+  drag coefficients of the two techniques, the tunnel's also adjusted to
+  the flight Reynolds numbers (p. 9); fig. 9, comparison of total drag
+  coefficient as obtained from wind-tunnel and free-flight tests, data
+  unadjusted for base pressure differences (the flight model of RM
+  L53I01, nose fineness 7.13); fig. 10, drag rise of fins and fin-body
+  interference as a function of Mach number; figs. 11 to 15, the airplane
+  model (fig. 15, design and measured longitudinal area development of
+  the airplane configuration tested). RM L9I30: figs. 1 to 3, general
+  views of the fineness-ratio-12.50, 8.91 and 6.04 configurations; figs.
+  4 to 6, photographs of the test vehicles (p. 3); fig. 7, Reynolds
+  numbers based on body length against Mach number; fig. 8, drag
+  coefficient C_D against Mach number for the fineness-ratio-12.5 models;
+  fig. 9, the same for the 8.91 models; fig. 10, the same for the 6.04
+  models with the maximum diameter at the 80 percent station; fig. 11,
+  the data grouped by fineness ratio (p. 4); fig. 12, the effect of
+  changing fineness ratio for various positions of maximum diameter; fig.
+  13, drag coefficient against position of maximum diameter K for various
+  fineness ratios.
+
+**The registration** (before any value is read):
+
+1. _What the 0008 construction needs, and what L55H09 holds._ ARCAS's
+   band is measured over modelled fins' own drag on an **absolute** fins-on
+   minus fins-off increment with the base change removed (0008 section
+   4.3). Fig. 10 is not one, and setting the Mach 0.9 level from the
+   model's friction would assume the very term F1 is to measure; it is
+   not done. The one figure that could hold the absolute levels is fig.
+   6 (tunnel total, base and net drag). It is named, conditionally: its
+   tunnel **net** drag of the body with fins on and, if plotted, with fins
+   off, at 50 psia, and its tunnel base drag of both, set the band as
+   below. Before anyone reads a value of fig. 6, a neutral third party,
+   who reads no value, looks only at fig. 6's legend and key and records
+   in the round's pairing folder whether tunnel points of the body with
+   fins off are plotted, and at which stagnation pressure. If they are
+   not, or not at the fins-on check points' 50 psia, the absolute
+   increment cannot be formed without a model of the body's friction
+   between the two pressures, and F1 from RM L55H09 fails (item 6).
+2. _The base change._ Removed by construction: both net drags exclude
+   their own measured base drag, on the same sting. The fins' effect on
+   the afterbody's pressures ahead of the base stays in the increment, as
+   it did in ARCAS's. The tunnel base drags (fig. 6) set nothing; read
+   with the rest, they record the size of the base change removed, as
+   0008 section 4.3 records the chamber change. The sting is 0.70 of the
+   base diameter, so the base drag removed is the sting-mounted one; the
+   report attributes the tunnel against flight base-drag difference to
+   the sting (p. 8). RM L51F29 is not needed for the tunnel increment:
+   nothing in it is named and it stays unopened.
+3. _The model the band is formed against._ 0008 section 4.3's, as the
+   code computes it: the three exposed fins' own drag from the functions
+   `src/total` uses (the hexagonal section's wave drag as the exact 2D
+   section drag times the linear 3D ratio, 0009, and fully turbulent van
+   Driest II friction on both faces), on the reference area 0.511 sq in,
+   at each point's Mach number and fin chord Reynolds number (at both
+   ends of the 50 psia range, 1.3e6 and 1.4e6 per in, each ratio
+   spanning both), the
+   Mach guard of 10.7 (f) set aside for this computation only. A point
+   where the code refuses the hexagon's wave drag (a detached 2D shock
+   at these bevels, or the linear ratio near beta = 0 not shown converged
+   by 0019 section 6 step 5's first item) sets nothing: its ratio is not
+   formed against friction alone, since that would carry the hexagon's
+   real wave drag into a factor applied to friction. Because fig. 1's
+   0.030 in may not be the rebuilt fins' thickness, the model is
+   computed at 0.030 in and at the scaled 0.027 in, and each ratio spans
+   both. No other split is needed: ARCAS's fins were modelled the same
+   way.
+4. _The band, and where it applies._ Each qualifying point's measured
+   over modelled ratio is carried with both readings' errors and the
+   report's own maximum error (+-0.010 on each net drag, so +-0.020 on
+   their difference, added linearly; the report gives no error for the
+   increment itself); the band is the envelope of all qualifying points
+   of both readings, one band, as ARCAS's is one band over Mach 1.5 to
+   2.96. It applies only within the span of its qualifying points on each
+   side of the tunnel's gap (below it, the points at or below Mach 1.04;
+   above it, those at or above 1.13 and at or below 1.41), never
+   extrapolated beyond the outermost point of a side, and never below
+   Mach 1.0 (values below 1.0 are not served). **Mach 1.04 to 1.13 stays refused**: the
+   tunnel has no data there, and "bounded, not measured" (10.2) is
+   allowed only for square-cut leading edges and rounded trailing edges.
+   **Mach 1.41 to 1.5 stays refused**: no point lies there, and the
+   measured fins' leading edge turns sonic at Mach 1.414 (45 deg sweep),
+   a change the band measured below cannot be carried through, while
+   ARCAS's band at 1.5 was measured on other fins. The band is applied
+   **to fin friction (every section) and to flat-plate faces**, as the
+   ARCAS band is; the wave drag of sharp sections below Mach 1.5 stays
+   refused until F5 is measured (0019 section 3.5), though its model is in
+   the ratio's denominator. The edge terms (F2 to F4) are not changed. It
+   is measured on one fin set (three 45 deg swept, untapered, 3%
+   hexagonal fins, untripped, at chord Reynolds numbers near 1.3e6, on a
+   boat-tailed parabolic afterbody) and applied to the population's fins
+   as ARCAS's single set is; the served label says on what it was
+   measured, that the fins were untripped, and its Mach range.
+5. _Figures that set nothing for F1._ Fig. 10 carries no friction level
+   (above): it is a check that sets nothing for F1, and a candidate for
+   F5 (the near-sonic pressure-drag rise of a thin hexagonal fin with its
+   interference), what it sets there decided by F5's record before it is
+   read. Figs. 7 to 9 (fins-on totals and rises, the flight values from
+   other reports, and an adjustment by the authors' friction model,
+   which is what F1 tests): nothing. RM L9I30: geometry only; its figs. 7
+   to 13 hold totals of fins-on bodies with no fins-off flight, so no
+   increment can be formed: nothing for F1, and they stay unopened. R&M
+   3348 tables 4 and 5 and fig. 59 (10.7 (l) requires the decision): **they
+   set nothing for F1**. They are half wings on the tunnel wall, with no
+   body and so no fin-body interference but the wall's layer at the root;
+   the single wedge's balance drag holds its base drag, which F4 takes
+   from table 3, and its raked tip; and near Mach 1 friction cannot be
+   taken out of a balance total without a model of the section's
+   pressure drag, which is F5's term itself. They remain candidates for
+   F5, for F5's record to decide before use.
+6. _What fails the registration._ (i) The legend check of item 1 finds
+   no fins-off tunnel net drag at 50 psia: F1 from RM L55H09 fails, the
+   refusal of 10.7 (f) stands as it is, and the failure is recorded; no
+   other route through this report is then tried. (ii) A symbol or
+   curve value on which the two readings disagree (|A - B| > e_A + e_B),
+   or which only one reader gives, sets nothing. (iii) A point whose
+   model is refused or not converged (item 3) sets nothing. (iv) A point
+   whose total uncertainty (both readings' errors and the report's +-0.020)
+   is more than half its modelled own drag sets nothing: such a point
+   cannot tell the model from half or one and a half times itself, and
+   serving it would label a guess as measured. (v) A side of the gap with
+   fewer than two qualifying points stays refused; with none on either
+   side the registration fails as in (i). (vi) A band that is wide but
+   whose points pass (ii) to (v) **is served with its width**: the owner's
+   rule asks that what is served be accurate, and a band that holds the
+   truth with its width stated is accurate, while a narrower one would not
+   be; its width is shown in the served label and in the record of the
+   coverage. If the band's low end falls below 1.0, that is served too:
+   the model is then above a measured increment, which the untripped fins
+   (some laminar flow at chord Reynolds numbers near 1.3e6) may explain,
+   and the label says so.
+7. _The reading procedure._ Fig. 6 (and fig. 10 only if F5's record
+   names it) is read twice, blind, by two readers who have not seen each
+   other's values or any earlier reading, each from a brief that holds no
+   value from the repository and names only the PDF (with its SHA-256)
+   and what to read, each working without the repository in a folder of
+   their own, as round 20's brief sets out
+   (`docs/research/total-drag/audit/round20/brief.md`). Every measured
+   symbol is read as plotted; if a curve has no symbols, it is read at
+   Mach stations the brief fixes before the reading (every 0.02 from 0.82
+   to 1.04 and from 1.14 to 1.40, and each end), with the report's
+   faired-curve error carried. A neutral third party, who neither reads
+   nor sets the band, pairs the two readings with the rule |A - B| <=
+   e_A + e_B, each reader's stated errors as written, nothing averaged or
+   settled by either reader; an item only one reader gives is "read
+   once". The readings, the brief, the hashes, the legend check of item
+   1 and the pairing are kept as the earlier rounds are
+   (`docs/research/total-drag/audit/round<N>/A`, `B`, `brief.md`,
+   `pairing/`), the round number the coordinator's to give. A
+   fins-on 50 psia point takes its fins-off value only where a fins-off
+   symbol lies within the Mach error (+-0.01), or by linear interpolation
+   between two fins-off symbols on the same side of the gap no more than
+   0.05 apart in Mach, the interpolation's error taken as the two
+   symbols' difference; otherwise it sets nothing.
+
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
 allocate. _(Corrected 2026-10-28, the re-review's R4: this branch's
