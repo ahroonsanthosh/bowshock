@@ -1431,6 +1431,113 @@ is what the hold waited for. The served outline now reaches 5 calibers
 at Mach 1.5, about 5.33 at Mach 2, about 5.67 at Mach 2.5 and 6 at Mach
 3; the failed (6, 2) and 6 calibers at Mach 1.5 lie outside it.
 
+**The LV-Haack outline: registration (2026-11-20, before any run).**
+The LV-Haack nose (Haack, C = 1/3) is refused at every length and Mach
+number (`bluntNoseRefusal`; the refusal audit's W5). Its tip, as the Von
+Karman's, has unbounded slope (r ~ x^(3/4)), and the fitted solver
+solves it on the same two-scale grids (0004); the two grids above at 3
+calibers and Mach 2 differ by 2.54e-3, with no reference. In the
+refusal audit's population (`docs/research/refusals`, 2000 rockets,
+8000 cases, its LV-Haack noses drawn at 4 to 6 calibers) 14 LV-Haack
+cases are refused for the nose alone (checked 2026-11-20 on main at
+d1d3673: every other reason, nose and total, absent): 4.12 to 5.94
+calibers at Mach 1.55 to 2.72. New references are run for them by the
+Von Karman outline's procedure above, its criteria unchanged but for one
+stricter rule on the allowance, all fixed here before any LV-Haack run
+(branch `worktree-agent-a64cb35683e662c9f`):
+
+- Cases: the LV-Haack nose (C = 1/3, passed to the runners as
+  0.3333333333333333, the double nearest 1/3, which the page's shape
+  uses) with 2 calibers of cylinder, at six points: the corners (4,
+  1.5), (6, 1.5), (4, 3) and (6, 3) of the region 4 to 6 calibers, Mach
+  1.5 to 3, which holds every one of the 14 cases, and (5, 2) and (6, 2)
+  inside it. Why these: the corners alone would serve the whole region on
+  four points, so (5, 2) checks its middle (10 of the 14 cases lie at
+  4.1 to 4.9 calibers, Mach 1.55 to 2.72); and (6, 2) is where the
+  Von Karman nose failed for want of a passing line, on what would
+  otherwise be this outline's edge between (6, 1.5) and (6, 3), so it is
+  checked rather than taken on trust. Nothing below Mach 1.5 and nothing
+  outside 4 to 6 calibers, for the Von Karman registration's reasons (the
+  criteria were set at Mach 1.5 to 3; the population draws 4 to 6). No
+  case is added after the runs start, under this registration.
+- Code: the src of this registration's commit (main's at d1d3673,
+  unchanged by it), frozen for the runs in a copy (its `COMMIT` file),
+  with the outline's runners unchanged (`fitsave.test.ts`, `seed.mjs`,
+  `moc.test.ts`, `fitdata.ts`, `common.ts`, `fingerprint.ts`); `lane.sh`
+  gains two settings from the environment, the Haack parameter and the
+  lanes' folder, whose defaults are the Von Karman lanes'. Every
+  checkpoint and saved fit carries the fingerprint, and a checkpoint,
+  seed or saved fit with another is refused, as before. Three lanes
+  (`jobs-lvh-a.txt`: 6 calibers at Mach 1.5 and 3; `jobs-lvh-b.txt`: 4
+  calibers at Mach 1.5 and 3; `jobs-lvh-c.txt`: 5 and 6 calibers at Mach
+  2), at `nice -n 10`, one core each. A lane stopped by a restart resumes
+  from its last checkpoint (the same fit, not a re-run).
+- Fits, unchanged: nj = 20, 40 and 80, each finer one started from the
+  coarser saved fit, W5's chunks and early stop, at most 40000 iterations
+  times the refinement. They pass if every fit settles within that, every
+  fitted grid passes the fitted gates (`FITTED_QUALITY_LIMITS`), and the
+  three drags converge monotonically.
+- Lines, unchanged: chosen on the nj = 20 fit before any march by the
+  registered rule (`MOC_LINES=auto`: behind the last line whose least
+  Mach number is below 1.05, ahead of the first whose fitted drag
+  downstream is below 40% of the nose's, seven targets evenly in log x),
+  marched from each grid's fitted flow on 640, 1280 and 2560 intervals.
+- The line criterion, unchanged: on every grid, the march's mass balance
+  on 2560 intervals below 3.5e-5, and its change from 1280 intervals
+  below 3.5e-5 of the nose's drag; a line whose march or upstream part
+  does not converge monotonically over the three grids gives no reference
+  and fails. A march that stops with an error gives no value and so fails
+  its line.
+- References, lowest bound and miss, unchanged (`judge.mjs`). The lines
+  next to a passing line are counted as the owner's decision of
+  2026-10-29 counts them: one marched line on each side that gives a
+  reference.
+- The allowance is fixed at 8e-4 (`TWO_SCALE_DRAG_FLOOR`) and does not
+  rise under this registration. Here this registration is stricter than
+  the Von Karman one, which would have raised the allowance for every
+  two-scale nose: a case whose counted misses would need more, that is
+  twice its largest counted miss (over its passing lines and, for a case
+  resting on one passing line, the lines next to it) rounded up to one
+  significant figure above 8e-4, fails. The allowance is not raised to
+  make a case pass, and a case whose error against the lowest bound of
+  any passing line exceeds its band (three grids) plus 8e-4 fails.
+  `judge.mjs` gains the option `--allowance 8e-4` for this, written and
+  committed with this registration, before any LV-Haack data; without it
+  the file gives the Von Karman verdicts byte for byte as before
+  (checked on the committed fits and marches).
+- A case passes when its fits pass, at least one line passes, twice its
+  largest counted miss rounds up to 8e-4 or less, and its band with the
+  allowance of 8e-4 contains its error against the lowest bound of every
+  passing line. The LV-Haack outline is then the convex hull of the
+  passing LV-Haack cases (`insideOutline`, a point on the outline counted
+  inside), separate from the Von Karman outline: neither shape's
+  references widen the other's.
+- A case that fails is not added and the outline is not extended there;
+  the failure and its numbers are recorded here and in
+  `docs/research/two-scale-noses/outline/lv-haack/`. It is not re-run
+  with other lines or settings under this registration. If a failed case
+  lies inside the hull of the passing ones, or on it, nothing is added
+  until the owner decides.
+- Not criteria, as for the Von Karman nose: a four-grid run to nj = 160,
+  and the body length (the measurement on the 3-caliber Von Karman nose
+  is taken to carry over, as the page's body lengths of 0 to 30 calibers
+  are accepted; the result says so).
+- Code after a pass, and only after the results are recorded here and
+  judged: an `LV_HAACK_REFERENCES` list in `fitted-flow.ts` beside
+  `VON_KARMAN_REFERENCES`, and `bluntNoseRefusal` serving the Haack
+  nose of parameter exactly 1/3 inside its outline (other Haack
+  parameters, between 0 and 1/3, and the power series stay refused: no
+  reference interpolates between shapes); the refusal's wording naming
+  both checked noses, and for an LV-Haack nose outside its outline the
+  LV-Haack points checked; a test holding `LV_HAACK_REFERENCES` to the
+  LV-Haack `judge.json` and to this registration's rule, as
+  `tests/analysis/von-karman-references.test.ts` does; the refusal
+  audit's comment in `docs/research/refusals/evaluate.ts` (its
+  `noseReasons`, which calls `bluntNoseRefusal`) and its served totals
+  re-run; the README's line naming the served noses and its count of the
+  cases that get a total. If nothing passes, none of this changes and
+  the result is recorded.
+
 **Sharp tips whose bow shock detaches** stay refused (the sharp
 problem's message). On the same grids (0004), with 5 calibers of
 cylinder at Mach 1.2:

@@ -1,0 +1,9 @@
+# LV-Haack lane c (0006, "The LV-Haack outline: registration", 2026-11-20): 5 and 6 calibers at Mach 2 (2 of cylinder); nj 20, then 40, then 80 and its marches.
+fam 5 2 2 1
+fam 6 2 2 1
+fam 5 2 2 2
+fam 6 2 2 2
+fam 5 2 2 4
+moc 5 2 2
+fam 6 2 2 4
+moc 6 2 2

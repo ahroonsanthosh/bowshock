@@ -10,7 +10,13 @@
 # Job lines:  fam CAL CYL M MAXREF   (Von Karman nose; nj 20 to 20 * MAXREF)
 #             moc CAL CYL M          (marches on nj 20, 40, 80, lines "auto")
 # Usage: lane.sh JOBFILE NAME
-S=/tmp/scratch/vk
+# Two settings from the environment, added 2026-11-20 for the LV-Haack
+# registration (0006, "The LV-Haack outline: registration"), whose defaults
+# are the Von Karman lanes' as they ran: C, the Haack parameter (0; the
+# LV-Haack lanes pass 0.3333333333333333, which is 1/3 as a double), and
+# S, the lanes' folder (/tmp/scratch/vk).
+C=${C:-0}
+S=${S:-/tmp/scratch/vk}
 TREE=$S/tree
 D=$S/out
 JOBS=$1
@@ -34,7 +40,7 @@ fam() { # CAL CYL M MAXREF
       chunk=500
       [ "$r" -ge 4 ] && chunk=250
       say "start $name"
-      env SHAPE=haack C=0 L=$cal M=$m CYL=$cyl REF=$r UNGATED=1 CHUNK=$chunk SUB=250 \
+      env SHAPE=haack C=$C L=$cal M=$m CYL=$cyl REF=$r UNGATED=1 CHUNK=$chunk SUB=250 \
         CHECKPOINT=$D/ckpt-$name SAVE=$D/$name LOG=$D/log.txt ONLY=tests/vk/fitsave.test.ts \
         npx vitest run --config tests/vk/vitest.config.ts > "$D/run-$name.out" 2>&1 < /dev/null
       say "done $name exit $?"
@@ -53,7 +59,7 @@ moc() { # CAL CYL M
   done
   rm -f "$D/moc-$tag.txt" "$D/moc-$tag.jsonl"
   say "start moc $tag"
-  env SHAPE=haack C=0 L=$cal M=$m CYL=$cyl MOC_R=1,2,4 \
+  env SHAPE=haack C=$C L=$cal M=$m CYL=$cyl MOC_R=1,2,4 \
     MOC_FILES=$D/${tag}r1,$D/${tag}r2,$D/${tag}r4 MOC_LINES=auto MOC_RUN=640,1280,2560 \
     MOC_OUT=$D/moc-$tag.txt MOC_JSONL=$D/moc-$tag.jsonl ONLY=tests/vk/moc.test.ts \
     npx vitest run --config tests/vk/vitest.config.ts > "$D/run-moc-$tag.out" 2>&1 < /dev/null

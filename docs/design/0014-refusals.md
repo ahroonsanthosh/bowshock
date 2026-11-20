@@ -4227,6 +4227,20 @@ its review, below; still before any code or run).
   so it shows no convergence and bounds nothing. It is not a near
   agreement and no ground to reopen W9(a).
 
+**2026-11-20, LV-Haack outline, registered before any run** (no letter:
+letters are the coordinator's to allocate, and the registry was not
+found from this branch, so this entry carries none until one is
+allocated). The LV-Haack nose (Haack, C = 1/3), refused at every length
+and Mach number (W5), is run against the method of characteristics by
+the procedure that widened the Von Karman outline, registered in
+design record 0006 ("The LV-Haack outline: registration"): six cases at
+4 to 6 calibers and Mach 1.5 to 3 (the corners, (5, 2) and (6, 2)), the
+same fits, line rule, line criterion and judging, the allowance fixed
+at 8e-4 and never raised to make a case pass, and the same hold for a
+failed case inside the hull of the passing ones. The 14 population
+cases it concerns lie at 4.12 to 5.94 calibers, Mach 1.55 to 2.72. Code
+changes only after the results are recorded and judged.
+
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
 allocate. _(Corrected 2026-10-28, the re-review's R4: this branch's

@@ -8,9 +8,17 @@
 // of its error against the lowest bound of every passing line.
 //
 // Usage: node judge.mjs <W5 moc.jsonl> <saves dir> [<marches dir>] [--json out.json]
+//        [--allowance A]
 // The saves dir holds the new fits' heads (L<cal>c<cyl>M<mach>r<ref>.json),
 // the marches dir (by default the same) their marches
 // (moc-L<cal>c<cyl>M<mach>.jsonl).
+//
+// --allowance A (added 2026-11-20 for the LV-Haack registration in 0006,
+// before any LV-Haack run): the allowance is fixed at A and never rises.
+// Containment is judged with A, and a new case also fails if twice the
+// largest miss over its own counted lines (as below), rounded up, is above
+// A. The allowance by W5's rule over every case is still reported. Without
+// the flag the output is as before, byte for byte.
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -19,6 +27,10 @@ const MAXIT = 40000;
 const [w5File, newDir, third] = process.argv.slice(2);
 const marchDir = third && !third.startsWith('--') ? third : newDir;
 const jsonOut = process.argv.includes('--json') ? process.argv[process.argv.indexOf('--json') + 1] : undefined;
+const fixedAllowance = process.argv.includes('--allowance')
+  ? Number(process.argv[process.argv.indexOf('--allowance') + 1])
+  : undefined;
+if (fixedAllowance !== undefined && !(fixedAllowance > 0)) throw new Error('--allowance needs a positive number');
 
 const ord = (a, b, c) => Math.log2((a - b) / (b - c));
 const ext = (b, c, p) => c - (b - c) / (2 ** p - 1);
@@ -162,8 +174,10 @@ for (const c of judged) {
     for (const n of [c.lines[k - 1], c.lines[k + 1]]) if (n && n.miss) counted.push(n);
   }
   c.counted = counted.map((l) => l.line);
+  c.largest = 0;
   for (const l of counted) {
     for (const m of l.miss) {
+      if (Math.abs(m) > c.largest) c.largest = Math.abs(m);
       if (Math.abs(m) > largest) {
         largest = Math.abs(m);
         largestAt = `${c.name} line ${l.line} (x ${l.x.toFixed(3)})`;
@@ -172,20 +186,25 @@ for (const c of judged) {
   }
 }
 const allowance = ceil1(2 * largest);
+const used = fixedAllowance ?? allowance;
 
 const f = (v) => (v === undefined || Number.isNaN(v) ? 'n/a' : v.toExponential(2));
 console.log(`Largest miss ${f(largest)} at ${largestAt}; allowance (twice, rounded up) ${allowance.toExponential(0)}`);
+if (fixedAllowance !== undefined)
+  console.log(`Allowance fixed at ${fixedAllowance.toExponential(0)} (--allowance): containment judged with it; a new case fails if twice its largest counted miss, rounded up, is above it`);
 const verdicts = [];
 for (const c of judged) {
   const passing = c.lines.filter((l) => l.passes);
-  const ratios = passing.map((l) => (c.fam.band + allowance) / Math.abs(l.finestMinusLowest));
+  const ratios = passing.map((l) => (c.fam.band + used) / Math.abs(l.finestMinusLowest));
   const fitVerdict = c.tag ? fitVerdicts[c.tag] : undefined;
   const reasons = [...(fitVerdict?.reasons ?? [])];
   if (c.source === 'new' && !c.fam.monotone) reasons.push('family not monotone');
   if (passing.length === 0) reasons.push('no line passes the line criterion');
+  if (fixedAllowance !== undefined && c.source === 'new' && c.counted.length > 0 && ceil1(2 * c.largest) > fixedAllowance)
+    reasons.push(`twice the largest counted miss, ${f(2 * c.largest)}, rounds up above the fixed allowance ${fixedAllowance.toExponential(0)}`);
   if (ratios.some((r) => !(r >= 1))) reasons.push(`band does not contain the error against a lowest bound (ratios ${ratios.map((r) => r.toFixed(2)).join(', ')})`);
   const pass = reasons.length === 0;
-  verdicts.push({ case: c.name, source: c.source, pass, reasons, family: c.fam, lines: c.lines, counted: c.counted, containment: ratios, fits: fitVerdict });
+  verdicts.push({ case: c.name, source: c.source, pass, reasons, family: c.fam, lines: c.lines, counted: c.counted, ...(fixedAllowance !== undefined ? { largestCounted: c.largest } : {}), containment: ratios, fits: fitVerdict });
   console.log(`== ${c.name} (${c.source}): ${pass ? 'PASS' : 'FAIL'}${reasons.length ? ` (${reasons.join('; ')})` : ''}`);
   console.log(`   drags ${[c.fam.T1, c.fam.T2, c.fam.T4].map((v) => v?.toPrecision(10)).join(', ')}, order ${c.fam.order.toFixed(2)}, extrapolation ${f((c.fam.procExt - c.fam.T4) / c.fam.T4)}, band (no allowance) ${f(c.fam.band)}`);
   for (const l of c.lines) {
@@ -195,4 +214,8 @@ for (const c of judged) {
   }
   if (passing.length) console.log(`   containment (band + allowance over the error against each passing line's lowest bound): ${ratios.map((r) => r.toFixed(2)).join(', ')}`);
 }
-if (jsonOut) writeFileSync(jsonOut, JSON.stringify({ largest, largestAt, allowance, verdicts, fits: fitVerdicts }, null, 1));
+if (jsonOut)
+  writeFileSync(
+    jsonOut,
+    JSON.stringify({ largest, largestAt, allowance, ...(fixedAllowance !== undefined ? { fixedAllowance } : {}), verdicts, fits: fitVerdicts }, null, 1),
+  );
