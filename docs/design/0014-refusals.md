@@ -4460,6 +4460,46 @@ so; the measured allowance existed only on its branch.
   2.84-caliber cone) and its BRL sub-class lie in no box: nothing tested
   or validated changes.
 
+**2026-11-20 (an): W6, rounded nose tips: the open calls of route (b)
+decided for accuracy; rounded tips stay refused.** W6's work and records
+are on `claude/wip/w6-build` (paused 2026-10-27, its README section 11)
+and `claude/wip/w6-sources` (route (b) registered 2026-10-30, the same
+README's section 12 and this record's entry (ai) there; nothing read).
+Section 12.4 there left four calls to the owner, who asked on 2026-11-20
+for the most accurate choice at each and for nothing to be served unless
+it is accurate.
+
+- _The sources._ DTIC refused this session again on 2026-11-20 (HTTP 403,
+  a page saying the request is blocked, for ADA101513, ADA163736 and
+  AD0749934), as on 2026-10-30; the journal form of C2 is paywalled. None
+  is read.
+- _The hull stays strict_ (section 12.3 item 6 there): a capped nose is
+  served only inside the convex hull, in tip radius, fineness and Mach, of
+  measured cases that pass, and a hull with no extent in one of them
+  serves nothing. A looser hull would carry a check made at one fineness
+  over finenesses where the forward region was never checked, which is
+  the error the rule exists to prevent; it is not adopted.
+- _So route (b) cannot serve._ Every candidate measures one fineness (C1
+  and C2 about 3 calibers at Mach 2.94; C4 one ogive to Mach 2.02), so
+  even if each were obtained and passed, the strict hull serves 0 of the
+  audit's rounded tips (section 12.2 there; C1 with C4 at most a thin
+  wedge, if their finenesses differ, which is not known), and none
+  reaches the Von Karman nose. Reading them would cost two blind readings
+  and the fitted solver's runs to serve nothing. They stay worth reading
+  as a check, which can reject the fitted solver where it is off by more
+  than the measurement's error, if they are obtained.
+- _The width question_ (a pass gives a band of 4% to 50% of the nose's
+  drag) does not arise.
+- _What would serve rounded tips accurately:_ an independent reference
+  for the forward region across fineness and Mach on each shape, either
+  measured pressures at several finenesses of one shape (none found) or
+  the independent Euler solver of route (b)'s second candidate (another
+  code and grid, shock capturing through the embedded shock, its own
+  convergence shown; estimated 3 to 5 days and 20 to 60 CPU hours). Not
+  started here.
+- _Not changed:_ rounded tips stay refused on every page, with their
+  reason; W6's branches are kept.
+
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
 allocate. _(Corrected 2026-10-28, the re-review's R4: this branch's
