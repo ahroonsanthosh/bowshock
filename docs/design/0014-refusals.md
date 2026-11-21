@@ -4590,6 +4590,46 @@ it is accurate.
 - _Not changed:_ rounded tips stay refused on every page, with their
   reason; W6's branches are kept.
 
+**2026-11-21 (ao): W6, rounded nose tips: the independent Euler reference
+registered, reviewed twice, its checks running; rounded tips stay
+refused.** The owner chose, on 2026-11-21, the route (an) named as the
+accurate one: a second, independent flow solver for the forward region.
+Its record is `docs/research/w6-reference/README.md`.
+
+- _The reference._ SU2 v8.1.0 (an external open-source Euler code; the
+  owner allowed it to run, `.claude/settings.json`) on grids made by a
+  tool written here (`w6ref.py`: the capped geometry within 2e-14 of W6's,
+  nested C grids, the drag integrated here and checked against SU2's own
+  force). Set-up trials 1 to 13 on noses off W6's list chose the scheme
+  (HLLC: Roe left the stagnation pressure 7% low), the limiter
+  (Venkatakrishnan 0.05, the most accurate at the stagnation point), the
+  domain rule and the start of each level from the one below.
+- _The registration_ (the README's R1 to R9, before any check or W6 case
+  ran on SU2): W6 section 3's 24 cases; SU2's value on level 3 (512 x 256)
+  with an uncertainty that bounds cancellation between parts of the nose,
+  adds the cap's measured stagnation error and any iterative cycling, and
+  must be at most 1% of the drag (its grid part 0.5%), level 4 as the
+  fallback; checks with exact answers first (cones against Taylor-Maccoll,
+  the TN 3716 ogive against the method of characteristics, the pitot
+  pressure), a level-4 test of the uncertainty rule on capped noses, and
+  the hemisphere-cylinder against the project's fitted values (blocking
+  only); the fitted solver's three-grid extrapolation as W6 section 3, its
+  eleven missing nj = 80 families fitted by W6's own runners (their
+  coarser grids reproduce W6's lanes to every digit); the allowance twice
+  the largest miss against the far end of SU2's interval, served only if
+  at most 2% of the drag, measured by a hold-out of five noses off the
+  list; the served region the outline of the cases that pass, stopped by
+  any failed case inside it.
+- _The reviews._ An independent review (Fable) of the first form: PASS
+  WITH CHANGES, nine required, among them a real bug (the drag integral
+  stopped at the last wall vertex ahead of the nose's end, leaving out up
+  to 2.3% of the base area on coarse levels) and the cap's stagnation
+  error missing from the uncertainty. All made; the re-review: PASS WITH
+  CHANGES, five required, all made.
+- _Not changed:_ rounded tips stay refused on every page until the verdict
+  (`judge.py`, fixed before any run) serves them and its own review
+  passes.
+
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
 allocate. _(Corrected 2026-10-28, the re-review's R4: this branch's
