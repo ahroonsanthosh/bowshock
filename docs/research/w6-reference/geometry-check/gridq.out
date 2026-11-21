@@ -1,0 +1,15 @@
+cone 3.0 0.0 2.0 level 0 (49, 25) minArea 1.39e-05 maxSkewCos 0.986 tip ds 4.60e-02 dn 4.91e-04
+cone 3.0 0.0 2.0 level 1 (97, 49) minArea 2.12e-06 maxSkewCos 0.986 tip ds 2.28e-02 dn 2.39e-04
+cone 3.0 0.0 2.0 level 2 (193, 97) minArea 3.70e-07 maxSkewCos 0.986 tip ds 1.14e-02 dn 1.18e-04
+cone 3.0 0.0 2.0 level 3 (385, 193) minArea 7.32e-08 maxSkewCos 0.986 tip ds 5.67e-03 dn 5.86e-05
+cone 3.0 0.0 2.0 level 4 (769, 385) minArea 1.59e-08 maxSkewCos 0.986 tip ds 2.83e-03 dn 2.92e-05
+ogive 5.0 0.015 1.3 level 0 (49, 25) minArea 3.10e-06 maxSkewCos 0.917 tip ds 8.29e-03 dn 4.91e-04
+ogive 5.0 0.015 1.3 level 1 (97, 49) minArea 6.90e-07 maxSkewCos 0.903 tip ds 4.09e-03 dn 2.39e-04
+ogive 5.0 0.015 1.3 level 2 (193, 97) minArea 1.62e-07 maxSkewCos 0.913 tip ds 2.03e-03 dn 1.18e-04
+ogive 5.0 0.015 1.3 level 3 (385, 193) minArea 3.91e-08 maxSkewCos 0.911 tip ds 1.01e-03 dn 5.86e-05
+ogive 5.0 0.015 1.3 level 4 (769, 385) minArea 9.72e-09 maxSkewCos 0.911 tip ds 5.03e-04 dn 2.92e-05
+vk 3.0 0.075 3.0 level 0 (49, 25) minArea 5.69e-06 maxSkewCos 0.970 tip ds 1.20e-02 dn 5.89e-04
+vk 3.0 0.075 3.0 level 1 (97, 49) minArea 1.33e-06 maxSkewCos 0.967 tip ds 5.87e-03 dn 2.87e-04
+vk 3.0 0.075 3.0 level 2 (193, 97) minArea 3.12e-07 maxSkewCos 0.967 tip ds 2.91e-03 dn 1.42e-04
+vk 3.0 0.075 3.0 level 3 (385, 193) minArea 7.60e-08 maxSkewCos 0.968 tip ds 1.45e-03 dn 7.03e-05
+vk 3.0 0.075 3.0 level 4 (769, 385) minArea 1.88e-08 maxSkewCos 0.968 tip ds 7.22e-04 dn 3.50e-05
