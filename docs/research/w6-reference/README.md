@@ -494,13 +494,15 @@ Judged by `judge.py`'s functions, exactly as registered:
 | V3, TN 3716 ogive, Mach 1.98 | 0.0988785 | 0.0988034 | +7.5e-5 (+0.076%) | 2.5e-4 (0.25%) | 0.30 | pass |
 | V1(b), cone to 0.8 L, Mach 1.3 | 0.0754283 | 0.0754683 | -4.0e-5 | 1.06e-4 (0.14%) | 0.38 | pass |
 | V1(b), cone to 0.8 L, Mach 3 | 0.0474205 | 0.0474416 | -2.1e-5 | 3.5e-5 (0.07%) | 0.60 | pass |
+| V5, hemisphere-cylinder, Mach 2 | 0.7896048 | 0.788934 (fitted) | +6.7e-4 (+0.085%) | 0.0513 (6.5%) | 0.013 | **fail**: the vertex-level change grows (ratio 1.81) |
 
 V1(a): the worst wall vertex from L/3 to 0.8 L is 4.5e-4 (Mach 1.3) and
 4.2e-4 (Mach 3) from Taylor-Maccoll, against 1e-3: pass. V3's drags on
 levels 1 to 3 are 0.0988049, 0.0988886, 0.0988785 (not monotone, so
 U_total = 3 times the larger change); the cones' converge at orders 1.75
 and 1.43. Still to come: V5 (hemisphere, Mach 3), V2 (the capped
-ogive, Mach 1.3, 2, 3) and V4 (level 4 of two of them).
+ogive, Mach 1.3, 2, 3) and V4 (level 4 of two of them). V5 at Mach 2
+failed (below), so by R5 no W6 case runs.
 
 V5 at Mach 2 fails R3 on level 2, before its level 3 has finished. Level 1
 converged (residual 1e-11 in 4,427 iterations). Level 2 stopped at the
@@ -531,16 +533,47 @@ on the hemisphere (whose whole nose is cap) would be about 6% of the drag
 and the agreement within U_su2 would say little; the difference against
 the grid part alone is the informative number.
 
+V5 at Mach 2's level 3 (512 x 256, 6,139 s) did not converge. Its RMS
+density residual fell to about 1e-6 by iteration 1,500; from iteration
+3,000 to the 8,000-iteration limit it cycled between 1e-6.5 and 1e-7.7
+(the target is 1e-11). Its
+drag ranged over 1.44e-4 (1.8e-4 of its value) in the last quarter, with
+the means of the last two eighths 9.9e-7 apart, so R3 counts the level
+and charges that range. Amendment 1 plays no part: only level 2 needed
+it, and with or without its charge the verdict is the same. Near the
+axis the wall's pressure moved by up to 0.10 in Cp from level 2 (r/R
+below 0.2), and the stagnation vertex went from 6.0% below the pitot
+value to 2.5% above it (1.6988 against 1.6573). In steady inviscid flow
+that vertex sits at the pitot value exactly, so level 3's final state is
+not a steady solution there. V2's 3% test passes on it, by overshooting.
+
+R5 then decides V5 at Mach 2. The registered measure of the pointwise
+change of the wall's drag distribution (no cancellation) was 5.21e-3 from
+level 1 to 2 and 9.24e-3 from level 2 to 3: a ratio of 1.81, where both
+of R4's ratios must be below 1. The regional ratio is 0.20. **V5 at Mach
+2 fails, and by R5 no W6 case runs and the route goes back to the
+owner.** Its drag, 0.789605, is 0.085% from the fitted solver's 0.788934:
+the drag itself agrees, but the agreement licenses nothing (R5), and the
+grid sequence does not show the convergence R4 needs to measure SU2's
+error on a blunt cap. U_su2 would be 0.0513 (6.5% of the drag), almost
+all of it U_cap (0.0472). Of the pointwise change from level 2 to 3, 26%
+is at r/R below 0.2 and 35% at r/R 0.7 to 0.9. Level 3 ran under the
+tool as it was before records carried hashes; its record matches the
+case's result exactly, and its two hashes were added from its files, as
+for levels 0 to 2.
+
 ## State (2026-11-21)
 
 - Done: the tool, the geometry check, the set-up trials 1 to 13, the
   registration, its review and the revision.
 - V5 at Mach 2 failed R3 on level 2; the owner chose Amendment 1, which
-  passed its review with changes, all made and confirmed. Its stagnation vertex is 6.0%
-  low on level 2 (above), so it may yet fail V2's test on level 3. Running: the checks' queue (`queue.sh`: V5 Mach 2's level 3,
-  then V5 Mach 3 and V2), started again in each two-hour window; a case
-  goes on from its first unfinished level (`w6ref.py` keeps each finished
-  level's record in its folder).
+  passed its review with changes, all made and confirmed. Its level 3
+  then did not converge (its residual cycling between 1e-6.5 and 1e-7.7) and its vertex-level change
+  grew (ratio 1.81): **V5 at Mach 2 fails R5, no W6 case runs, and the
+  route is with the owner.** Running as a record only: the checks' queue
+  (`queue.sh`: V5 Mach 3, then V2), started again in each two-hour
+  window; a case goes on from its first unfinished level (`w6ref.py`
+  keeps each finished level's record in its folder).
 - Stopped at the session's two-hour limit for one background job, and
   resumable from their checkpoints: the fitted solver's lanes (the ogive's
   3 calibers, 0.15, Mach 3 has its nj = 80, converged in 14,000
