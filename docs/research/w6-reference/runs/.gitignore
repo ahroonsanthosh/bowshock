@@ -6,3 +6,4 @@ restart_flow.csv
 seed.csv
 surface_flow.csv
 log*.txt
+.lock

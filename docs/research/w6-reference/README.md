@@ -20,7 +20,7 @@ made here. It shares no code, grid or geometry with bowshock's solver.
 | --- | --- |
 | `w6ref.py` | The tool: the capped-nose geometry written here from its definition (W6 README section 1); H grids for sharp noses and C grids for capped ones, nested (each level halves every spacing by sampling the same mappings); SU2's mesh and configuration; the registered settings (`SETTINGS`, `capped_spec`, `sharp_spec`); each level after the first started from the level below (`seed_restart`); the nose's pressure drag integrated here from SU2's surface pressures (trapezoid rule in r^2, on the base area); the change of the drag's distribution between levels (`dist_change`); the boundary checks |
 | `judge.py` | The verdict, as registered below, from the committed records only |
-| `queue.sh` | SU2's cases in order inside one two-hour background window; a case goes on from its first unfinished level (each finished level keeps its record, `L*/record.json`), and no level starts that could not finish before the window closes |
+| `queue.sh` | SU2's cases in order inside one two-hour background window; a case goes on from its first unfinished level (each finished level keeps its record, `L*/record.json`, with the hashes of the case's spec and of the level's solution file, both checked before the next level starts from it; a level whose SU2 was killed keeps none), one process per case (a lock the tool and SU2 hold), and no level starts that the window could not see finish (a start condition only) |
 | `fitted/lane.sh` | The fitted solver's families that W6 left without nj = 80, run with W6's own runners on the lanes' frozen source (ae794e4) |
 | `fitted/lanes-results.jsonl` | W6's lane records, copied unchanged from `claude/wip/w6-build` bf3c739 (`docs/research/w6-build/results/lanes/results.jsonl`, git blob 3bf6e11, SHA-256 `e5f218a9...`) |
 | `geometry-check/` | This geometry against W6's own (`src/geometry/nose.ts` at `claude/wip/w6-build` bf3c739, SHA-256 `e738b187...`, run as it is by `w6geom.ts`): the tangent ogive and the Von Karman nose, 3, 4 and 5 calibers, r_n/R 0.03, 0.05, 0.10 and 0.15, 401 stations each. `compare.out`: the parent's length within 1.8e-14, the offset 5.7e-15, the tangent point 7.7e-16, the radius 4.0e-15 (calibers). `gridq.py`, `gridq.out`: every cell's area positive on five levels for three trial cases (the first C grid, since replaced: trial 2 below) |
@@ -367,24 +367,58 @@ Made after a result, and said so. V5 at Mach 2's level 2 stopped at
 8,000 iterations with an RMS density residual of 1.03e-11 against the
 target 1e-11. Its drag ranged over 3.4e-9 of its value in the last
 quarter, but the means of its last two eighths differ by 0.48 of that
-range against R3's 0.25 (the checks, below). R3's drift test is relative
-to the range and has no floor, so on a level this close to converged it
-compares two round-off-sized numbers. The owner chose to amend the rule,
-reviewed before use, rather than stop the route or rerun the case. When
-it was made, V5 at Mach 2's level 3 and V5 at Mach 3, V2, V4 and every W6
-case had not run; V3 and V1 had passed without it, and it changes
-neither.
+range against R3's 0.25 (the checks, below). The drift is real, not
+round-off: the means of its eight eighths change by 1.77e-8, 7.43e-9,
+3.07e-9, 1.27e-9 over the last four, each 0.420, 0.413, 0.413 of the one
+before, while the residual falls by 0.412 per 1,000 iterations. It is the slow drift
+R3's test was written to catch, decaying with the residual, and the
+geometric remainder puts the level within about 1e-9 of its drag of its
+limit. R3's test is relative to the range with no floor, so it refuses a
+drift this small. The owner chose to amend the rule, reviewed before use,
+rather than stop the route or rerun the case. When it was made, V5 at
+Mach 2's level 3 and V5 at Mach 3, V2, V4 and every W6 case had not run;
+V3 and V1 had passed without it (every one of their levels converged on
+its residual), and it changes neither.
 
 The rule, applied to every level of every run: a level used that stops
-at its limit and fails R3's rule also counts if its drag's range over
-its last quarter and the difference of the means of its last two eighths
-are each at most 1e-8 of its drag. Its iterative error is then the range
-plus 8,000 times that difference: an eighth's drift (1,000 iterations)
-going on, undecayed, for a thousand more runs of 8,000 iterations. At the
-floor that is at most 8e-5 of the drag, a sixtieth of R4's 0.5%; on V5 at
-Mach 2's level 2 it is 1.29e-5 of the drag. It stands in R4's rates and
-in U_su2 as R3's range does (`judge.py`, `SETTLED`). A level that meets
-R3's own rule keeps R3's error.
+at its limit and fails R3's rule also counts if
+- its drag's range over its last quarter and the difference of the means
+  of its last two eighths are each at most 1e-8 of its drag;
+- its RMS density residual is at most 1e-10, a decade from the target;
+- the drift is not growing: the difference of the last two eighths' means
+  is at most that of the two eighths before them, read from the level's
+  committed `history.csv` (whose last two eighths must be the record's).
+Its iterative error is then the range plus 8,000 times that difference:
+an eighth's drift (1,000 iterations) going on, undecayed, for a thousand
+more runs of 8,000 iterations. It is a bound for a drift that does not
+grow, which the third condition asks; at the floor it is at most 8e-5 of
+the drag, a sixtieth of R4's 0.5%. On V5 at Mach 2's level 2 it is
+1.29e-5 of the drag, against a geometric remainder (the drift's own
+decay, 0.413 per eighth, summed) of 9e-10, 1.1e-9 of the drag. It stands
+in R4's rates and in U_su2 as R3's range does (`judge.py`, `SETTLED`). A
+level that meets R3's own rule keeps R3's error. Because a larger U_su2
+makes a check easier to pass, every check that compares with U_su2 (V1,
+V3, V4, V5) passes only if it passes both with the charge and with such
+levels charged only their range, and both are reported (`both_ways`);
+R7 keeps the full charge.
+
+**Its review** (2026-11-21, independent, given the code and the data):
+PASS WITH CHANGES. Required, all made: the residual condition; the
+not-growing condition from the committed history; the checks not to pass
+on the charge; the reason above corrected (the first form called the
+drift round-off); each level's record tied to the case's spec (below).
+Optional, made: no record for a level whose SU2 was killed by a signal;
+a lock held by the tool and SU2 for the case's folder; the level below's
+solution file checked against the hash in its record before seeding; the
+charge stated as a bound for a non-growing drift, with the remainder
+beside it; the level budget stated as a start condition only; V5 at Mach
+2's stagnation deficit recorded before its level 3 finished (the checks,
+below). Declined: scaling the floor by SU2's force rather than the tool's
+drag (R3's own branch uses the tool's; the two differ by 2.3e-4 of the
+drag on this level, which moves the floor by that fraction). The
+review found the resumption itself sound, and the three recovered
+records bit-identical with everything derivable from their files. The
+changes went back to the same reviewer for confirmation (below).
 
 ## The review of the first form (2026-11-21)
 
@@ -473,21 +507,34 @@ ranged over 2.7e-9 (3.4e-9 of its value) in the last quarter, well inside
 0.1%, but the means of the last two eighths differ by 1.27e-9, 0.48 of the
 range, against the registered 0.25. The level does not count, so V5 at
 Mach 2 fails "R3's checks pass" and, by R5, no W6 case runs and the route
-goes back to the owner. The failure is at the 1e-9 level, a millionth of
-R4's 0.5% grid limit: the rule's drift test is relative to the range and
-has no floor, so on a level that is nearly converged it compares two
-round-off-sized numbers. Under R3 as registered the route stops here; the
-owner chose Amendment 1 (above), which counts the level with an iterative
-error of 1.29e-5 of its drag, once reviewed. The case's level 3 then runs
-on from level 2 as it would have (levels 0 to 2 are not run again; their
+goes back to the owner. The drift is real and decaying with the
+residual (0.413 per 1,000 iterations), about 1e-9 of the drag from its
+limit, a millionth of R4's 0.5% grid limit; R3's test is relative to the
+range with no floor. Under R3 as registered the route stops here; the
+owner chose Amendment 1 (above), reviewed, which counts the level with an
+iterative error of 1.29e-5 of its drag. The case's level 3 then runs on
+from level 2 as it would have (levels 0 to 2 are not run again; their
 records, printed when they finished, match their files on disk exactly).
+
+Recorded before V5 at Mach 2's level 3 finished (the review's point 12):
+its stagnation vertex's Cp is 1.6059, 1.5717 and 1.5583 on levels 0 to 2
+against Rayleigh's pitot value 1.6573, that is 3.1%, 5.2% and 6.0% low,
+growing with refinement; near the axis the wall sits at 1.54 to 1.56. V2's
+3% test applies to every capped run on its finest level used and is one
+of V5's hard checks (`su2_case`), so unless level 3 comes back to within
+3% (Cp at least 1.6076), V5 at Mach 2 fails on it, whatever Amendment 1
+says, and by R5 the route goes back to the owner. Were it to pass, U_cap
+on the hemisphere (whose whole nose is cap) would be about 6% of the drag
+and the agreement within U_su2 would say little; the difference against
+the grid part alone is the informative number.
 
 ## State (2026-11-21)
 
 - Done: the tool, the geometry check, the set-up trials 1 to 13, the
   registration, its review and the revision.
-- V5 at Mach 2 failed R3 on level 2; the owner chose Amendment 1, in
-  review. Running: the checks' queue (`queue.sh`: V5 Mach 2's level 3,
+- V5 at Mach 2 failed R3 on level 2; the owner chose Amendment 1, which
+  passed its review with changes, all made. Its stagnation vertex is 6.0%
+  low on level 2 (above), so it may yet fail V2's test on level 3. Running: the checks' queue (`queue.sh`: V5 Mach 2's level 3,
   then V5 Mach 3 and V2), started again in each two-hour window; a case
   goes on from its first unfinished level (`w6ref.py` keeps each finished
   level's record in its folder).

@@ -39,6 +39,7 @@ ITERATIVE = 1e-3  # R3: a level stopped at its limit counts if its drag's range 
 DRIFT = 0.25  # R3: ... and the means of its last two eighths differ by at most a quarter of that range
 SETTLED = 1e-8  # Amendment 1: or that range and that difference are each at most 1e-8 of its drag,
 SETTLED_EIGHTHS = 8000  # its iterative error then the range plus the difference over 8,000 eighths (1,000 runs)
+SETTLED_RESIDUAL = -10  # Amendment 1 (the review's change 1): only with its RMS density residual within a decade of 1e-11
 CEILING = 0.02  # R7
 REFIT = 1e-9  # R6: a refit of a lane's grid within 1e-9 of its drag (the fits' settling tolerance)
 VENKAT_ALLOWED = (0.05,)  # R3: one coefficient; no reruns with another (the re-review's change 5)
@@ -150,8 +151,48 @@ def run_record(run):
     return res["spec"], {rec["level"]: rec for rec in res["levels"]}
 
 
-def level_checks(spec, k, rec):
-    """R3's checks on level k, used; the list of failures and the level's iterative error."""
+def eighth_means(history):
+    """
+    The drag's means (SU2's force on the base area) over the last three
+    eighths, an eighth being half the last quarter as w6ref.history_summary
+    takes it, from the level's committed history: oldest first.
+    """
+    with open(history) as f:
+        head = [h.strip().strip('"') for h in f.readline().split(",")]
+        rows = [line.split(",") for line in f if line.strip()]
+    col = head.index("CD")
+    cds = [float(rw[col]) / (math.pi * R * R) for rw in rows]
+    h = max(1, max(2, len(rows) // 4) // 2)
+    if len(cds) < 3 * h:
+        return None
+    return [sum(cds[-3 * h:-2 * h]) / h, sum(cds[-2 * h:-h]) / h, sum(cds[-h:]) / h]
+
+
+def settled(rec, history, swing, drift):
+    """
+    Amendment 1: the drag's range and the drift of its last eighth each at
+    most SETTLED of the drag, the residual within a decade of 1e-11 (the
+    review's change 1), and the drift not growing: the last eighth's no
+    larger than the eighth's before it (change 2), from the committed
+    history, whose last two eighths must be the record's.
+    """
+    D = abs(rec["drag"])
+    if not (swing <= SETTLED * D and drift <= SETTLED * D and rec.get("rms[Rho]", math.inf) <= SETTLED_RESIDUAL):
+        return False
+    if history is None or not os.path.exists(history):
+        return False
+    m = eighth_means(history)
+    if m is None or m[2] != rec.get("dragMeanLastEighth") or m[1] != rec.get("dragMeanEighthBefore"):
+        return False
+    return abs(m[2] - m[1]) <= abs(m[1] - m[0])
+
+
+def level_checks(spec, k, rec, history=None, charge=True):
+    """
+    R3's checks on level k, used; the list of failures and the level's
+    iterative error. With charge False, a level counted under Amendment 1 is
+    charged only its range (for the checks, the review's change 3).
+    """
     bad = []
     if rec.get("exit") != 0 or "drag" not in rec:
         return ["SU2 failed"], 0.0
@@ -162,11 +203,11 @@ def level_checks(spec, k, rec):
         at_limit = rec.get("Inner_Iter", 0) >= spec["iters"] - 1
         if at_limit and swing <= ITERATIVE * abs(rec["drag"]) and drift <= DRIFT * swing:
             u_it = swing
-        elif at_limit and swing <= SETTLED * abs(rec["drag"]) and drift <= SETTLED * abs(rec["drag"]):
+        elif at_limit and settled(rec, history, swing, drift):
             # Amendment 1 (after V5 Mach 2's level 2): a level whose drag has
-            # settled to 1e-8 of its value, its drift charged as if it went
-            # on undecayed for a thousand more runs.
-            u_it = swing + SETTLED_EIGHTHS * drift
+            # settled to 1e-8 of its value and is not drifting faster, its
+            # drift charged as if it went on undecayed for a thousand more runs.
+            u_it = swing + (SETTLED_EIGHTHS * drift if charge else 0.0)
         else:
             bad.append(f"not converged (residual {rec.get('rms[Rho]')}, {rec.get('Inner_Iter')} iterations, "
                        f"drag range {swing}, drift {drift})")
@@ -218,7 +259,7 @@ def su2_estimate(D, Vreg, Vvert, swings=(0.0, 0.0, 0.0)):
             "uGrid": max(u_total, u_dist)}
 
 
-def su2_case(run, levels, build, x_end=None):
+def su2_case(run, levels, build, x_end=None, charge=True):
     """
     A run's value and uncertainty by R4 on the given levels (to x_end, a vertex
     of every level used, if given; else to the nose's end, closed at r = R),
@@ -237,7 +278,7 @@ def su2_case(run, levels, build, x_end=None):
         if k not in recs:
             hard[k] = ["not run"]
             continue
-        bad, u_it = level_checks(spec, k, recs[k])
+        bad, u_it = level_checks(spec, k, recs[k], os.path.join(run, f"L{k}", "history.csv"), charge)
         u_iter += u_it
         swings.append(u_it)
         if bad:
@@ -302,14 +343,26 @@ def su2_reference(run, build):
 # --------------------------------------------------------- the checks
 
 
+def both_ways(check, run, build):
+    """
+    Amendment 1 (the review's change 3): a check passes only if it passes
+    with every level counted under the amendment charged in full and charged
+    only its range, so that the charge never helps a check pass; both are
+    reported. (Where no level is, the two are the same.)
+    """
+    full = check(run, build, True)
+    bare = check(run, build, False)
+    return dict(full, passCharged=full["pass"], withoutCharge=bare, **{"pass": full["pass"] and bare["pass"]})
+
+
 def check_v1(run, build):
     try:
-        return _check_v1(run, build)
+        return both_ways(_check_v1, run, build)
     except (OSError, ValueError, KeyError) as e:
         return {"name": "V1", "pass": False, "why": f"{type(e).__name__}: {e}"}
 
 
-def _check_v1(run, build):
+def _check_v1(run, build, charge):
     spec, _ = run_record(run)
     L, M = spec["L"], spec["mach"]
     cp_exact, _ = w6ref.cone_cp(M, math.atan(R / L))
@@ -319,7 +372,7 @@ def _check_v1(run, build):
     x1, r1, _ = w6ref.read_surface(os.path.join(run, "L1", "wall.csv"))
     k = max(i for i in range(len(x1)) if x1[i] <= 0.8 * L)
     x_end, r_end = float(x1[k]), float(r1[k])
-    est = su2_case(run, [1, 2, 3], build, x_end)
+    est = su2_case(run, [1, 2, 3], build, x_end, charge)
     out = {"name": "V1", "mach": M, "coneCp": cp_exact, "pointwiseWorst": worst, "vertices": len(window),
            "xEnd": x_end, "estimate": est}
     if "value" in est:
@@ -342,7 +395,11 @@ def check_v2(run, build):
 
 
 def check_v3(run, build):
-    est = su2_case(run, [1, 2, 3], build)
+    return both_ways(_check_v3, run, build)
+
+
+def _check_v3(run, build, charge):
+    est = su2_case(run, [1, 2, 3], build, charge=charge)
     out = {"name": "V3", "exact": TN3716_MOC, "estimate": est}
     out["error"] = est["value"] - TN3716_MOC if "value" in est else None
     out["pass"] = est["reference"] and abs(out["error"]) <= est["u"]
@@ -351,8 +408,12 @@ def check_v3(run, build):
 
 def check_v4(run, build):
     """R5 V4: level 4 against R4's estimate from levels 1 to 3."""
-    a = su2_case(run, [1, 2, 3], build)
-    b = su2_case(run, [2, 3, 4], build)
+    return both_ways(_check_v4, run, build)
+
+
+def _check_v4(run, build, charge):
+    a = su2_case(run, [1, 2, 3], build, charge=charge)
+    b = su2_case(run, [2, 3, 4], build, charge=charge)
     out = {"name": "V4", "levels1to3": a, "levels2to4": b}
     if "value" not in a or "value" not in b or a["failures"].keys() - {"R4"} or b["failures"].keys() - {"R4"}:
         out["pass"] = False
@@ -368,9 +429,13 @@ def check_v4(run, build):
 
 def check_v5(run, build):
     """R5 V5: the hard checks, and the difference within U_su2 plus the fitted band (R4's limits not applied)."""
+    return both_ways(_check_v5, run, build)
+
+
+def _check_v5(run, build, charge):
     spec, _ = run_record(run)
     value, band = HEMISPHERE[spec["mach"]]
-    est = su2_case(run, [1, 2, 3], build)
+    est = su2_case(run, [1, 2, 3], build, charge=charge)
     out = {"name": "V5", "fitted": value, "fittedBand": band * value, "estimate": est}
     hard = {k: v for k, v in est["failures"].items() if k != "R4"}
     if "value" in est and "u" in est and not hard:

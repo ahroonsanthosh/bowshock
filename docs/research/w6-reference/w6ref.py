@@ -17,6 +17,8 @@ tip at x = 0, the axis along x. The drag coefficient is the pressure drag
 of the nose on the base area pi R^2 (the cylinder behind carries none).
 """
 
+import fcntl
+import hashlib
 import json
 import math
 import os
@@ -611,7 +613,9 @@ def region_start(spec):
 
 # The longest a level may take, in seconds, for the session's two-hour
 # background windows: a level is not started unless this much time is left
-# before W6REF_DEADLINE (seconds since the epoch), so that none is cut off.
+# before W6REF_DEADLINE (seconds since the epoch). Only a start condition,
+# not a limit: level 3 at 8,000 iterations took about 6,000 s on 2 threads
+# beside the fitted lanes; a level cut off has no record and runs again.
 LEVEL_BUDGET = {0: 600, 1: 900, 2: 2400, 3: 7000, 4: 7000}
 # What SU2 and the tool write in a level's folder; cleared before a level
 # that was cut off runs again from its start.
@@ -623,21 +627,46 @@ class Deadline(Exception):
     pass
 
 
+def spec_hash(spec):
+    """The case's spec, less which levels a call runs (the level4 command's), as a SHA-256."""
+    keep = {k: v for k, v in spec.items() if k not in ("first_level", "levels")}
+    return hashlib.sha256(json.dumps(keep, sort_keys=True).encode()).hexdigest()
+
+
+def file_hash(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for block in iter(lambda: f.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
 def run_case(spec, run_dir, su2, threads=4, deadline=None):
     """
     Every level of a case, coarsest first, each to convergence, the drag and
     the record of each. A level that finished keeps its record in its folder
-    (record.json) and is not run again: a case stopped between levels goes on
-    from the first level without one, which starts from the level below as
-    it would have (the level below's solution on disk is its final one).
+    (record.json, with the spec's hash and its solution file's) and is not
+    run again: a case stopped between levels goes on from the first level
+    without one, which starts from the level below as it would have, after
+    checking that the level below was made with this spec and that its
+    solution on disk is the one it finished with. One process at a time:
+    the case's lock is held by the tool and by SU2 while it runs.
     """
     os.makedirs(run_dir, exist_ok=True)
+    lock = os.open(os.path.join(run_dir, ".lock"), os.O_CREAT | os.O_RDWR)
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        raise SystemExit(f"{run_dir} is being run by another process")
+    sh = spec_hash(spec)
     out = []
     for level in range(spec.get("first_level", 0), spec["levels"]):
         d = os.path.join(run_dir, f"L{level}")
         done = os.path.join(d, "record.json")
         if os.path.exists(done):
             rec = json.load(open(done))
+            if rec.get("specHash") != sh:
+                raise SystemExit(f"{done} was made with another spec")
             out.append(rec)
             print(json.dumps(rec), flush=True)
             continue
@@ -656,6 +685,9 @@ def run_case(spec, run_dir, su2, threads=4, deadline=None):
         seeded = bool(spec["seed"]) and level > 0
         if seeded and not os.path.exists(prev):
             raise FileNotFoundError(f"level {level} is to start from level {level - 1}, whose solution is missing")
+        below = os.path.join(run_dir, f"L{level - 1}", "record.json")
+        if seeded and os.path.exists(below) and json.load(open(below)).get("restartSha256") != file_hash(prev):
+            raise SystemExit(f"level {level - 1}'s solution on disk is not the one its record finished with")
         if seeded:
             # The finer grid started from the converged coarser one; the converged
             # solution does not depend on its start, only the iterations do.
@@ -668,9 +700,14 @@ def run_case(spec, run_dir, su2, threads=4, deadline=None):
         for k, st in enumerate(stages):
             write_cfg(os.path.join(d, "case.cfg"), st, restart=k > 0, seed=seeded and k == 0)
             with open(os.path.join(d, f"log{k}.txt"), "w") as log:
-                code = subprocess.call([su2, "-t", str(threads), "case.cfg"], cwd=d, stdout=log, stderr=subprocess.STDOUT)
+                code = subprocess.call([su2, "-t", str(threads), "case.cfg"], cwd=d, stdout=log, stderr=subprocess.STDOUT,
+                                       pass_fds=(lock,))
             if code != 0:
                 break
+        if code < 0:
+            # Killed (out of memory, or the window closing): no record, so the
+            # level runs again from its start next time.
+            raise SystemExit(f"SU2 on level {level} was killed by signal {-code}")
         seconds = time.time() - t0
         rec = {"level": level, "ni": x.shape[0] - 1, "nj": x.shape[1] - 1, "minArea": amin, "maxSkewCos": skew,
                "exit": code, "seconds": seconds, "seeded": seeded}
@@ -690,6 +727,9 @@ def run_case(spec, run_dir, su2, threads=4, deadline=None):
                 # SU2's own axisymmetric force on REF_AREA = 1, as a drag on the
                 # base area: a check of the tool's integral (quadratures differ).
                 rec["su2Drag"] = rec["CD"] / (math.pi * R * R)
+        rec["specHash"] = sh
+        if os.path.exists(os.path.join(d, "restart_flow.csv")):
+            rec["restartSha256"] = file_hash(os.path.join(d, "restart_flow.csv"))
         with open(done + ".tmp", "w") as f:
             json.dump(rec, f)
         os.replace(done + ".tmp", done)
