@@ -1,5 +1,6 @@
 {
  "scheme": "HLLC",
+ "limiter": "VENKATAKRISHNAN",
  "venkat": 0.05,
  "cfl": 1.0,
  "cflmax": 10.0,
@@ -7,7 +8,7 @@
  "muscl": "YES",
  "minres": -11,
  "iters1": 4000,
- "iters": 20000,
+ "iters": 8000,
  "levels": 4,
  "seed": true,
  "Lcyl": 2.0,

@@ -102,22 +102,72 @@ scratchpad, summarised here:
    separate gaps of about 3% (the first march's) and the allowance below
    carries U_su2 in full, the limit for a reference is set at 1% of the
    drag, with level 4 as the fallback above it, rather than level 4 on
-   every case (about eight times level 3's cost).
+   every case (about eight times level 3's cost). (Superseded after the
+   review: the regional measure, trial 9 and R4.) The drags of trials 5 to
+   8 were integrated to the last vertex ahead of L, not to L (the bug the
+   review found); on this grid that left out 1.6e-6 of the base area.
+9. Mach 1.3 (an ogive of 4 calibers, r_n/R 0.10, off the list), levels 0
+   to 2, the settings of the first form: the domain holds (the shock's
+   reach 0.71, 0.71, 0.68; |Cp| on the outer boundary 5e-6, 1e-8, 2e-11;
+   outlet Mach 1.27 to 1.25); drag 0.0619752, 0.0625085, 0.0624740; the
+   vertex-level change 1.54e-3 and 9.67e-4 (ratio 0.63), spread along the
+   whole nose, the aft part included (Cp at x = 3 moved from -0.02868 to
+   -0.02975), while the signed change from level 1 to 2 is 3.4e-5; the
+   stagnation vertex 6.3%, 2.4%, 1.0% above pitot. Summed over regions
+   (doubling from the tangent point, then at most half a caliber: R4) the
+   change is 1.10e-3 and 4.70e-4 (ratio 0.43), and on trial 8's Mach 2 run
+   1.14e-4 and 5.94e-5 (ratio 0.52), so still counting trial 7's
+   cancellation (its signed change 2.4e-7). Proposed to the reviewer, who
+   accepted it on conditions (R4).
+10. Mach 3 (the same nose): level 1 did not converge: 20,000 iterations,
+   the residual between 1e-4.6 and 1e-6, the drag swinging by 6.3e-4 of
+   its value over the last quarter (a limit cycle); level 2, started from
+   it, converged to 1e-11 in 1,074 iterations.
+11. The limiter on that level 1, restarted from level 0: Venkatakrishnan's
+   coefficient 0.5 converges (3,038 iterations); Wang's variant (scaled by
+   the solution's range) and coefficient 5 do not (the drag swinging by
+   8.8e-4 and 2.4e-2 of its value).
+12. Coefficient 0.5 on Mach 1.3, 2 and 3 (levels 0 to 2): every level 1 and
+   2 converges (Mach 3's level 0 swings by 1.6e-4); the regional changes
+   fall at ratios 0.41, 0.33, 0.30. The tool's integral, closed at L,
+   against SU2's own axisymmetric force: 0.15% to 0.17% apart on level 1,
+   a quarter of that on level 2, 7e-5 on trial 8's level 3 (the
+   quadratures differ at second order). But the stagnation streamline:
+   its total pressure, uniform along the axis between shock and wall, is
+   at Mach 2 0.15% above pitot on level 1 and 2.5% below on level 2 (the
+   stagnation vertex 3.1% below), growing with refinement; at Mach 3 1.4%
+   below and at Mach 1.3 0.8% above on level 2. With coefficient 0.05
+   (trial 8) it was 0.7% below on level 3. The deficit is confined near
+   the axis: from r = 0.01 out the wall's Cp agrees within 0.4% between
+   every setting and level (about 0.03% of the drag), and U_cap (R4)
+   counts it about tenfold.
+13. Coefficient 0.25 at Mach 2: levels 1 and 2 converge; the stagnation
+   vertex 1.25% and 2.5% below pitot, also growing. So every coefficient
+   tried leaves level 2's stagnation streamline 1.3% to 3.1% low, and 0.05
+   the least, the only one seen to recover on level 3. The coefficient is
+   0.05 (R3), most accurate at the stagnation point; its limit cycles
+   (trial 10, 0.063% of the drag) are carried as an iterative error, and
+   a case whose level swings by more is run again with 0.25, then 0.5.
 
-## Registration (2026-11-21, before any check below and any W6 case runs on SU2)
+## Registration (2026-11-21, revised after its review the same day; before any check below and any W6 case runs on SU2)
 
-Made after the set-up trials above, which ran on a sharp cone and on one
-capped tangent ogive off W6's case list, and before anything below runs.
-Anything changed after this, the review's changes included, is added as
-a dated note saying what changed and whether any result had been seen.
-`judge.py` computes the verdict exactly as written here; the settings
-are `SETTINGS`, `capped_spec` and `sharp_spec` in `w6ref.py`, both as
-committed with this registration.
+Made after the set-up trials above, which ran on a sharp cone and on
+capped tangent ogives off W6's case list, and before anything below
+runs. Its first form (commit 65c8443a) was reviewed independently (the
+review: next section) and revised to it, with the further set-up trials 9
+to 13; the revision is re-reviewed before anything runs. Anything changed
+after that is added as a dated note saying what changed and whether any
+result had been seen. `judge.py` computes the verdict exactly as written
+here; the settings are `SETTINGS`, `capped_spec` and `sharp_spec` in
+`w6ref.py`, both as committed with this registration.
 
 **R1. The quantity.** The nose's pressure drag coefficient on the base
 area (cap included; the cylinder adds none), gamma 1.4, inviscid, zero
-incidence. W6's geometry (its section 1; this tool's within 2e-14 of
-it), with two calibers of cylinder behind, as W6's lanes.
+incidence: the integral of Cp d(r^2) / R^2 from the tip to the nose's
+end, closed there at r = R (`wall_to`: Cp taken linearly in x between
+the wall's vertices either side of x = L). W6's geometry (its section 1;
+this tool's within 2e-14 of it), with two calibers of cylinder behind, as
+W6's lanes.
 
 **R2. The cases.** W6 section 3's, unchanged: for the tangent ogive and
 for the Von Karman nose, the eight corners of 3 and 5 calibers, r_n/R
@@ -125,117 +175,214 @@ for the Von Karman nose, the eight corners of 3 and 5 calibers, r_n/R
 2), (3, 0.15, 2), (5, 0.05, 1.3), (5, 0.05, 3): 24 cases.
 
 **R3. SU2's runs.** For every run: HLLC, MUSCL with Venkatakrishnan's
-limiter (coefficient 0.05), implicit Euler stepping, CFL 1 adapting up
-to 10, each level to an RMS density residual of 1e-11 (a level that
-reaches its iteration limit without it fails). Four nested levels: level
-0 (64 x 32 cells on a C grid) first order from the free stream, then
-second order; levels 1, 2 and 3 (512 x 256) each started from the level
-below (trial 6). C grids for capped noses: along the wall the first cell
-of level 0 a quarter of the tip radius (about five cells on the cap
-there, forty on level 3); the outer boundary at a + k s from the wall,
-a = 4 times Billig's standoff (0.143 r_n exp(3.24 / M^2)), k = 1.5 /
-sqrt(M^2 - 1). H grids for the sharp noses of the checks (`sharp_spec`).
-On each of levels 1 to 3: |Cp| on the outer boundary at most 1e-6; the
-bow shock's reach (the outermost vertex with |Cp| above 1e-3, as a
-fraction of its grid line) at most 0.9; the least Mach number on the
-outlet above 1. A case that fails one of these is run again in full
-with a and k (H grid: the outer line's rise) times 1.25, at most twice;
-after that it gives no reference.
+limiter, coefficient 0.05 (trials 10 to 13), implicit Euler stepping, CFL
+1 adapting up to 10, each level to an RMS density residual of 1e-11 in at
+most 8,000 iterations (converged levels took 270 to 3,100). A level used
+that stops at the limit instead counts only if its drag (SU2's force on
+the base area) ranges over at most 0.1% of its value in its last quarter
+of iterations; that range is then its iterative error, and the levels'
+ranges are added to U_su2 (R4). Four
+nested levels: level 0 (64 x 32 cells on a C grid) first order from the
+free stream, then second order; levels 1, 2 and 3 (512 x 256) each
+started from the level below (trial 6), and none otherwise (the tool
+stops if the level below is missing). C grids for capped noses: along the
+wall the first cell of level 0 a quarter of the tip radius (3 to 4 cells
+on the cap there, 28 to 39 on level 3); the outer boundary at a + k s
+from the wall, a = 4 times Billig's standoff (0.143 r_n exp(3.24 / M^2)),
+k = 1.5 / sqrt(M^2 - 1). H grids for the sharp noses of the checks
+(`sharp_spec`). The largest corner skew (cosine) is 0.86 to 0.87 on the
+Mach 1.3 grids, 0.62 to 0.65 at Mach 2, 0.44 to 0.47 at Mach 3 (trial 2's
+0.24 holds around the cap only). On each level used: |Cp| on the outer
+boundary at most 1e-6; the bow shock's reach (the outermost vertex with
+|Cp| above 1e-3, as a fraction of its grid line) at most 0.9; the least
+Mach number on the outlet above 1; every cell's area positive; the tool's
+drag within 0.5% of SU2's own axisymmetric force on the wall (CD on a
+reference area of 1, over pi R^2) on level 1, a quarter of that on each
+level after (the quadratures differ at second order, trial 12). A case
+that fails the shock's or the
+boundary's checks is run again in full with a and k (H grid: the outer
+line's rise) times 1.25, at most twice; a case with a level used that
+neither converges nor meets the iterative rule is run again in full with
+the limiter's coefficient 0.25, then 0.5. Each rerun goes to a fresh folder, the earlier kept beside it
+renamed, and is listed in the record; the tool never overwrites a run.
+After that the case gives no reference.
 
 **R4. SU2's value and uncertainty.** The value D is the drag on level 3.
-From the drags D1, D2, D3 on levels 1 to 3 and the distribution's
-changes V12 and V23 (trial 7):
+From the drags D1, D2, D3 on levels 1 to 3, and the changes of the drag's
+distribution between them (`changes`, on the finer level's segments, the
+coarser level's Cp linear in r^2, both closed at x = L):
 - from the total: e12 = D2 - D1, e23 = D3 - D2; if they have the same sign
   and |e23| < |e12|, p = log2(e12 / e23) and U_total = 1.25 |e23| /
   (2^min(p, 2) - 1); otherwise U_total = 3 max(|e12|, |e23|);
-- from the distribution: rho = V23 / V12; if rho < 1, U_dist = V23 r /
-  (1 - r) with r = max(rho, 0.5) (the rest of a geometric series, never
-  taken faster than first order); otherwise no reference;
-- U_su2 = max(U_total, U_dist).
-A case gives a reference if every level converges and passes R3's checks,
-V2 holds on its level 3, rho < 1 and U_su2 is at most 1% of D (trial 8).
-If it fails only on rho or on the 1%, level 4 (1024 x 512) is run once,
-and R4 is applied to levels 2 to 4.
+- from the distribution, by regions (trials 7 to 9; the review's
+  conditions): the regions are [0, x0] with x0 the cap's tangent point (L
+  / 128 on a sharp nose), then each next region's end twice the last end
+  but at most half a caliber further, to L (`regions`); a segment belongs
+  to the region holding its midpoint in x; V is the sum over regions of
+  |the change of the drag integral in the region| (cancellation inside a
+  region, none between regions). rho = V23 / V12; if rho < 1, U_dist =
+  V23 r / (1 - r) with r = max(rho, 0.5) (the rest of a geometric series,
+  never taken faster than first order); otherwise no reference;
+- the same change without any cancellation (the sum of every segment's
+  |change|) must fall too: its ratio below 1, or no reference;
+- the cap's term (the review's 1.3): U_cap = |Cp0 / Cp_pitot - 1| times
+  the cap's drag (the integral to the tangent point), both on level 3,
+  with Cp0 the stagnation vertex's;
+- U_su2 = max(U_total, U_dist) + U_cap + the iterative errors of the
+  levels used (R3; zero for a level that converged).
+A case gives a reference if every level used converges and passes R3's
+checks, V2 holds on its level 3, both ratios are below 1, max(U_total,
+U_dist) is at most 0.5% of D and U_su2 at most 1% of D. If it fails only
+on the ratios or these limits, level 4 (1024 x 512, `w6ref.py level4`) is
+run once from level 3 and R4 is applied to levels 2 to 4; level 4 is used
+nowhere else (but in V4).
 
-**R5. The checks with exact answers,** before any W6 case runs. If one
-fails, no W6 case runs and the route goes back to the owner.
+**R5. The checks,** before any W6 case runs. All must pass, or no W6 case
+runs and the route goes back to the owner.
 - V1, sharp cones (H grid), 3 calibers (9.46 deg), Mach 1.3 and 3: (a) on
   level 3, the wall's Cp at every vertex from x = L/3 to 0.8 L within 0.1%
   of the Taylor-Maccoll value (the tip's region and the corner's smearing,
   trial 3, outside that); (b) the drag up to the last vertex of level 1 at
   or ahead of 0.8 L (a vertex of every level), with R4 applied to it,
   within its U_su2 of the exact value (Taylor-Maccoll's Cp times r^2 /
-  R^2 there), and U_su2 at most 1% of it.
+  R^2 there), within R4's limits.
 - V2, the stagnation point: on level 3 of every capped run, the
-  stagnation vertex's Cp within 3% of the Rayleigh pitot value (a check of
-  the bow shock's strength; trial 4's failure was 7%); run before the W6
-  cases on the off-list capped ogive (4 calibers, r_n/R 0.08) at Mach 1.3,
-  2 and 3, and on every W6 case as part of R4.
+  stagnation vertex's Cp within 3% of the Rayleigh pitot value (a gross
+  check of the bow shock's strength; its measured error is in U_su2
+  through U_cap); run on the off-list capped ogive (4 calibers, r_n/R
+  0.08) at Mach 1.3, 2 and 3, and on every W6 case as part of R4.
 - V3, the tangent ogive of NACA TN 3716 (3 calibers, sharp, H grid), Mach
   1.98: the drag within its U_su2 (R4) of the method of characteristics'
-  0.0988034 (0006, converged to 1e-7), and U_su2 at most 1% of it.
-V1(b) and V3 test R4's uncertainty itself against exact values.
+  0.0988034 (0006, converged to 1e-7), within R4's limits.
+- V4, R4 itself on capped noses (the review's condition (a)): level 4 of
+  V2's runs at Mach 2 and 1.3. With D3, U(1 to 3), D4, U(2 to 4) and r the
+  ratio R4 used on levels 1 to 3: |D4 - D3| at most (1 - r) times
+  max(U_total, U_dist) from levels 1 to 3, and D4 +- U(2 to 4) inside D3
+  +- U(1 to 3).
+- V5, a blunt drag on the C grid (blocking only): the hemisphere-cylinder
+  at Mach 2 and 3 against the project's fitted values (0006: 0.788934,
+  band 0.023%; 0.849320, band 0.010%): the difference within U_su2 plus
+  that band. Agreement licenses nothing; a disagreement stops the route.
+V1(b) and V3 test R4 on sharp flows on H grids; V4 and V5 on capped
+flows on C grids. Both solvers capture the embedded shock with
+finite-volume HLLC schemes: different codes, grids and limiters, a
+similar method; the checks with exact answers above have no embedded
+shock.
 
-**R6. The fitted solver's side.** W6 section 3 unchanged, as W6's
-`analysis/references.mjs` computes it: the drags on nj = 20, 40 and 80;
-p from the three, capped at 2 (not finite: 2); D_proc = T80 - (T40 -
-T80) / (2^p - 1), U_proc = 1.25 |T40 - T80| / (2^p - 1); every grid
-converged and passing the page's checks. Added: a family whose order is
-finite and not above 0 gives no reference. The eleven families W6 left
-without nj = 80 are fitted by W6's own runners on the lanes' frozen
-source (`fitted/lane.sh`), started on 2026-11-21 before this
-registration under W6 section 3's own (2026-10-26), which fixes how they
-run; they see nothing of SU2. Their nj = 20 fits so far reproduce the
-lanes' to every digit (0.091072746574589664 and 0.072716489695764344).
-**One departure, proposed for the review to accept or refuse:** the
+**R6. The fitted solver's side.** W6 section 3, as W6's
+`analysis/references.mjs` computes it, with the review's changes: the
+drags on nj = 20, 40 and 80, every grid converged and passing the page's
+checks; if the three are monotone, p from them capped at 2 (not finite:
+2), D_proc = T80 - (T40 - T80) / (2^p - 1), U_proc = 1.25 |T40 - T80| /
+(2^p - 1); if not monotone, the page's rule for oscillation: D_proc =
+T80, U_proc the range of the three; an order finite and not above 0 gives
+no reference. The eleven families W6 left without nj = 80, and the
+hold-out's four (R7), are fitted by W6's own runners on the lanes'
+frozen source (`fitted/lane.sh`), started on 2026-11-21 under W6 section
+3's own registration (2026-10-26), which fixes how they run; they see
+nothing of SU2. Their nj = 20 and 40 refits must reproduce the lanes'
+drags within 1e-9 of their value (so far they do to every digit:
+0.091072746574589664, 0.090914484667827256, 0.072716489695764344,
+0.072594667719958761). **The departure, accepted by the review:** the
 3-caliber ogive at 0.15, Mach 1.3, whose nj = 80 fit oscillated within
-0.100929446 to 0.100929543 (about 1e-6 of its drag) from 6,000 to
-28,000 iterations (W6 section 4), is counted with that whole range added
-to U_proc. By W6 section 3 as written it gives no reference, and the
-ogive's served region would lose that corner.
+0.100929446 to 0.100929543 (about 1e-6 of its drag) from 6,000 to 28,000
+iterations (W6 section 4), is counted with that whole range added to its
+U_proc and to its miss (R7), only from the lanes' own record and only if
+that record's drag lies in the range; it is named in the verdict, and if
+it sets the largest miss or disagrees the allowance is given without it
+too. The page keeps refusing any fit that does not settle.
 
 **R7. The comparison and the allowance.** For each case with both:
 delta = D_proc - D_su2.
-- Agreement, reported for every case: |delta| <= U_proc + U_su2.
-- The miss, against the far end of SU2's interval: m = (|delta| + U_su2)
-  / D_su2.
+- Agreement, reported for every case: |delta| <= U_proc + U_su2. A case
+  that disagrees counts like any other (its miss sets the allowance), and
+  the label says how many disagree.
+- The miss, against the far end of SU2's interval: m = (|delta| + U_su2 +
+  the oscillation's range, R6) / D_su2.
 - The allowance (W6 section 3's rule): A = twice the largest m over every
   case of both shapes, rounded up at two significant figures, and for each
-  shape at least that shape's allowance for its sharp nose (7e-5 for the
-  ogive, 8e-4 for the Von Karman nose). It applies to capped noses only.
-- Every case's band, D_proc +- (U_proc + A D_proc), must contain SU2's
-  interval D_su2 +- U_su2; a case where it does not is reported, and A is
-  not lowered to fit.
-- Rounded tips are served only if A is at most 2% of the drag. Above
-  that, the two solvers disagree by more than any band the fitted solver
-  carries elsewhere (8e-4 at most), and serving on the allowance alone is
-  the owner's call (W6 section 11 (c)), made with the numbers.
+  shape at least its sharp nose's allowance (7e-5 for the ogive, 8e-4 for
+  the Von Karman nose). It applies to capped noses only. The factor 2 is
+  a convention; the hold-out below measures it.
+- Each case's band, D_proc +- (U_proc + A D_proc), contains SU2's
+  interval by construction unless D_proc is under half of D_su2: reported
+  as a consistency check, not a test.
+- Rounded tips are served only if A is at most 2% of the drag; above that
+  the owner decides, with the numbers (W6 section 11 (c)).
+- The hold-out, after the verdict, off W6's list: the ogive of 4 calibers,
+  r_n/R 0.08, at Mach 1.3, 2 and 3 (SU2 from V2's runs, R4 as for any
+  case) and the Von Karman nose of 4 calibers, 0.08, at Mach 2 (its own
+  SU2 run, `runs/H-vk4rn0.08M2`); each fitted by R6. Each band with A must
+  contain SU2's interval; if one does not, that shape goes to the owner.
 
-**R8. The served region.** W6 section 3 and 0014 (an): for each shape,
-the outline (convex hull) in calibers, r_n/R and Mach of the cases that
-give a reference on both sides (the whole box if all eight corners do); a
-hull with no extent in one of the three serves nothing; tips below r_n/R
-0.03 stay refused. Outside it a capped nose is refused with the reason.
-The model's own error (inviscid against measured) is not in this band,
-as for every nose without a measured box, and the label says so.
+**R8. The served region.** For each shape, the outline (convex hull) in
+calibers, r_n/R and Mach of the cases that give a reference on both
+sides; a hull with no extent in one of the three serves nothing; tips
+below r_n/R 0.03 stay refused. If any of the shape's registered cases
+that does not give a reference on both sides lies inside or on that
+outline, the shape is not served (the hardest cases are the likeliest to
+drop out). Outside it a capped nose is refused with the reason. The label
+says: the model's own error (inviscid against measured) is not in the
+band, as for every nose without a measured box; the allowance was set
+from the fitted solver's three-grid extrapolations (nj = 20 to 80) while
+the page serves four or five grids, whose bands on capped noses no
+reference has checked (W6 section 3's nj = 160 families are not run
+here); and how many cases disagree.
 
-**R9. The order.** (1) This registration, `w6ref.py` and `judge.py`
-reviewed independently, by a reviewer given the code and this text;
-(2) V1 to V3; (3) the 24 cases on SU2, and the eleven fitted families;
-(4) `judge.py`'s verdict, recorded with every case, then reviewed; (5)
-only if it serves: W6's geometry and capped families brought to the
-main line, the page's tip-radius input (0014 P4), the refusal lifted
-inside the outline, the refusal audit run again, each reviewed.
+**R9. The order.** (1) This revision reviewed again, by the same
+reviewer; (2) V1 to V5; (3) the 24 cases on SU2 and the hold-out's
+Von Karman run; the fitted families (running); (4) `judge.py`'s verdict,
+recorded with every case and the hold-out, then reviewed; (5) only if it
+serves: W6's geometry and capped families brought to the main line, the
+page's tip-radius input (0014 P4), the refusal lifted inside the outline,
+the label, the refusal audit run again, each reviewed.
+
+## The review of the first form (2026-11-21)
+
+An independent review (Fable, given the code and the text, not the
+author's conclusions) of commit 65c8443a: **PASS WITH CHANGES**, nothing
+to run until its required changes are in. What it found, and what was
+done:
+
+1. _The drag integral stopped short of the base_ (blocking, a bug):
+   `nose_drag` and `dist_change` kept the wall's vertices up to x = L and
+   so ended at the last one ahead of L; no vertex lies at L on the C grids
+   (spaced in arc length), so up to 2.3% of the base area was left out on
+   level 0, 0.46% on level 1 and 0.07% on level 3 of some registered
+   grids (the trials' grids happened to leave out about 2e-6). It biased
+   D and inflated e12, shrinking U_total. Fixed (`wall_to`), and the
+   tool's drag is now checked against SU2's own force on every level.
+2. _The cap's measured stagnation error was not in U_su2._ Added (U_cap).
+3. _Nothing tested R4 on a capped flow._ Added V4 (level 4 on two capped
+   runs) and V5 (the hemisphere-cylinder).
+4. _The regional measure_ (proposed in an addendum after trial 9):
+   accepted on conditions, all adopted: the vertex-level ratio stays a
+   gate, the regions are fixed in the tool for sharp noses too, regions
+   are at most half a caliber, the grid part's limit is 0.5% and U_su2's
+   1%.
+5. _A failed case inside the served outline was served._ R8 now stops the
+   shape.
+6. _judge.py_: it took one run of each check as all of them, judged the
+   cases when the checks failed, gave no single decision, did not check
+   each run's spec against the registered one, used level 4 whenever it
+   existed, took R6's departure as a run-time switch and left the
+   oscillation out of the miss. All fixed.
+7. _A hold-out for the allowance's factor 2:_ added (R7).
+8. _The three-grid caveat_ on the label: added (R8).
+9. Smaller: the cap's cell counts and the skew at Mach 1.3 corrected;
+   minArea and the seeded start checked; no silent defaults in the
+   configuration; runs never overwritten; the refits' tolerance; the
+   oscillatory rule for a non-monotone fitted triple; the containment
+   check relabelled.
+
+Not adopted: tightening V2 to 1.5% (its error now enters U_su2 in full
+through U_cap, so V2 stays a gross check); W6's nj = 160 families (15 to
+50 CPU hours each; the caveat stands on the label instead).
 
 ## State (2026-11-21)
 
-- Done: the tool, the geometry check, the grids, the set-up trials above
-  (the owner allowed SU2 to run; `.claude/settings.json`).
-- Running: the off-list capped ogive with HLLC on four levels, to see how
-  its drag converges and how long each level takes.
-- Next, in order: register the W6 reference (the tool's checks with exact
-  answers and their criteria; the cases, levels, the quantity, SU2's
-  uncertainty, the agreement rule, the allowance, the served hull) with
-  an independent review, before any W6 case runs; then the tool's checks;
-  then the W6 cases, and the fitted solver's third grid where W6's lanes
-  have only two.
+- Done: the tool, the geometry check, the set-up trials 1 to 13, the
+  registration, its review and the revision.
+- Running: the fitted solver's eleven families (`fitted/lane.sh`, two
+  lanes).
+- Next: the revision's re-review; then V1 to V5; then the W6 cases.

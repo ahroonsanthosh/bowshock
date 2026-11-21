@@ -7,6 +7,7 @@ pressures. Nothing in this file uses bowshock's solver, grids or geometry.
 
   python3 -I docs/research/w6-reference/w6ref.py geometry-check <out.json>
   python3 -I docs/research/w6-reference/w6ref.py case <spec.json> <run dir> <SU2_CFD> [threads]
+  python3 -I docs/research/w6-reference/w6ref.py level4 <run dir> <SU2_CFD> [threads]
   python3 -I docs/research/w6-reference/w6ref.py drag <run dir>
   python3 -I docs/research/w6-reference/w6ref.py spec capped <shape> <calibers> <tip ratio> <M> <out.json> [widen]
   python3 -I docs/research/w6-reference/w6ref.py spec sharp <shape> <calibers> <M> <out.json> [widen]
@@ -111,6 +112,11 @@ def _bisect(f, lo, hi, tol=1e-15, it=400):
 
 def capped(shape, L, rn):
     """The capped nose: a function r(x) on [0, L], and its parts, or the pointed nose if rn == 0."""
+    if shape == "hemisphere":
+        # The whole nose a cap of the base radius (check V5 only).
+        if not (L == R and rn == R):
+            raise ValueError("a hemisphere has length and tip radius equal to the base radius")
+        return {"L": L, "Lp": L, "offset": 0.0, "xt": L, "xc": L, "rn": rn, "y": None, "dy": None}
     make = PARENTS[shape]
     if rn == 0:
         y, dy = make(L)
@@ -166,8 +172,8 @@ def wall_table(nose, Lcyl, n=200001):
     else:
         x0 = 0.0
     L = nose["L"]
-    # The parent, densest at its start (x - x0 = (L - x0) u^3).
-    m = n
+    # The parent, densest at its start (x - x0 = (L - x0) u^3); none behind a hemisphere.
+    m = n if x0 < L else 1
     for k in range(1, m):
         u = k / (m - 1)
         x = x0 + (L - x0) * u**3
@@ -370,7 +376,7 @@ LINEAR_SOLVER_ERROR= 1E-6
 LINEAR_SOLVER_ITER= 10
 CONV_NUM_METHOD_FLOW= {scheme}
 MUSCL_FLOW= {muscl}
-SLOPE_LIMITER_FLOW= VENKATAKRISHNAN
+SLOPE_LIMITER_FLOW= {limiter}
 VENKAT_LIMITER_COEFF= {venkat}
 TIME_DISCRE_FLOW= EULER_IMPLICIT
 CONV_FIELD= RMS_DENSITY
@@ -400,14 +406,15 @@ def write_cfg(path, spec, restart=False, seed=False):
                 restart="YES" if restart or seed else "NO",
                 solution="seed.csv" if seed else "restart_flow.dat",
                 binary="NO" if seed else "YES",
-                cfl=spec.get("cfl", 1.0),
-                cflmax=spec.get("cflmax", 50.0),
-                iters=spec.get("iters", 20000),
-                scheme=spec.get("scheme", "ROE"),
-                venkat=spec.get("venkat", 0.05),
-                minres=spec.get("minres", -12),
-                cfladapt=spec.get("cfladapt", "YES"),
-                muscl=spec.get("muscl", "YES"),
+                cfl=spec["cfl"],
+                cflmax=spec["cflmax"],
+                iters=spec["iters"],
+                scheme=spec["scheme"],
+                venkat=spec["venkat"],
+                limiter=spec["limiter"],
+                minres=spec["minres"],
+                cfladapt=spec["cfladapt"],
+                muscl=spec["muscl"],
             )
         )
 
@@ -438,12 +445,32 @@ def write_wall(path, x, r, cp):
             f.write(f"{x[k]:.17e},{r[k]:.17e},{cp[k]:.17e}\n")
 
 
-def nose_drag(x, r, cp, L):
+def wall_to(x, r, cp, L, r_end=None):
+    """
+    The wall's vertices from the tip to x = L, in order. Where no vertex lies
+    at L (within 1e-12), a point is added there: Cp linear in x between the
+    vertices either side, r = r_end (R at the nose's end, where the nose meets
+    the cylinder) or, if not given, linear in x too. So the integral reaches
+    L, at the nose's end the whole base area.
+    """
     order = np.argsort(x, kind="stable")
     x, r, cp = x[order], r[order], cp[order]
     keep = x <= L + 1e-12
-    # Include the first cylinder vertex past L only through r = R exactly (it adds nothing).
-    x, r, cp = x[keep], r[keep], cp[keep]
+    xk, rk, ck = x[keep], r[keep], cp[keep]
+    if L - xk[-1] > 1e-12:
+        nxt = np.argmax(x > L)
+        if not x[nxt] > L:
+            raise ValueError("the wall does not reach the end asked")
+        t = (L - xk[-1]) / (x[nxt] - xk[-1])
+        c_end = ck[-1] + t * (cp[nxt] - ck[-1])
+        r_at = rk[-1] + t * (r[nxt] - rk[-1]) if r_end is None else r_end
+        xk, rk, ck = np.append(xk, L), np.append(rk, r_at), np.append(ck, c_end)
+    return xk, rk, ck
+
+
+def nose_drag(x, r, cp, L, r_end=None):
+    """The integral of Cp d(r^2) / R^2 from the tip to x = L (trapezoid rule in r^2), closed at L (`wall_to`)."""
+    x, r, cp = wall_to(x, r, cp, L, r_end)
     r2 = r * r
     return float(np.sum(0.5 * (cp[1:] + cp[:-1]) * np.diff(r2)) / (R * R))
 
@@ -458,26 +485,43 @@ def nose_drag(x, r, cp, L):
 GAMMA = 1.4
 
 
-def dist_change(coarse_surface, fine_surface, L):
+def regions(L, x0):
     """
-    The change of the drag's distribution between two levels, without the
-    cancellation the total allows: the integral over the nose of |Cp_fine -
-    Cp_coarse| d(r^2) / R^2, the coarser level's Cp taken linearly in r^2 at
-    the finer level's wall vertices, the trapezoid rule over those. It bounds
-    the change of the total drag between the two levels.
+    The regions of the regional change (registration R4): [0, x0], then each
+    next region twice the length of all before it (its end twice the last
+    end) but at most half a caliber long, to L. x0 is the cap's tangent point
+    on a capped nose, L / 128 on a sharp one.
     """
-    xc, rc, cc = read_surface(coarse_surface)
-    xf, rf, cf = read_surface(fine_surface)
-    out = []
-    for xs, rs, cps in ((xc, rc, cc), (xf, rf, cf)):
-        o = np.argsort(xs, kind="stable")
-        xs, rs, cps = xs[o], rs[o], cps[o]
-        m = xs <= L + 1e-12
-        out.append((rs[m], cps[m]))
-    (rc, cc), (rf, cf) = out
-    d = np.abs(cf - np.interp(rf**2, rc**2, cc))
+    edges = [0.0, x0]
+    while edges[-1] < L - 1e-12:
+        edges.append(min(2 * edges[-1], edges[-1] + 0.5, L))
+    return edges
+
+
+def changes(coarse_surface, fine_surface, L, x0, r_end=None):
+    """
+    The change of the drag's distribution between two levels, both closed at
+    L (`wall_to`), the coarser level's Cp taken linearly in r^2 at the finer
+    level's vertices, the integrand's change on each of the finer level's
+    segments by the trapezoid rule in r^2:
+    - "vertex": the sum of the segments' |change| (no cancellation at all);
+    - "regions": the sum over `regions` of |the change summed over the
+      region's segments| (a segment belongs to the region holding its
+      midpoint in x): cancellation inside a region, none between regions.
+    Each bounds the change of the total drag between the two levels.
+    """
+    (xc, rc, cc), (xf, rf, cf) = (wall_to(*read_surface(p), L, r_end) for p in (coarse_surface, fine_surface))
+    d = cf - np.interp(rf**2, rc**2, cc)
     q = rf**2 / R**2
-    return float(np.sum(0.5 * (d[1:] + d[:-1]) * np.diff(q)))
+    seg = 0.5 * (d[1:] + d[:-1]) * np.diff(q)
+    segabs = 0.5 * (np.abs(d[1:]) + np.abs(d[:-1])) * np.diff(q)
+    mid = 0.5 * (xf[1:] + xf[:-1])
+    edges = regions(L, x0)
+    idx = np.clip(np.searchsorted(edges, mid, side="right") - 1, 0, len(edges) - 2)
+    by = np.zeros(len(edges) - 1)
+    np.add.at(by, idx, seg)
+    return {"vertex": float(np.sum(segabs)), "regions": float(np.sum(np.abs(by))), "signed": float(np.sum(seg)),
+            "count": len(edges) - 1}
 
 
 def _oblique(M, beta):
@@ -558,6 +602,13 @@ def pitot_cp(M):
 # -------------------------------------------------------------- running
 
 
+def region_start(spec):
+    """The first region's end: the cap's tangent point on a capped nose, L / 128 on a sharp one."""
+    if spec["rn"] > 0:
+        return capped(spec["shape"], spec["L"], spec["rn"])["xt"]
+    return spec["L"] / 128
+
+
 def run_case(spec, run_dir, su2, threads=4):
     """Every level of a case, coarsest first, each to convergence, the drag and the record of each."""
     os.makedirs(run_dir, exist_ok=True)
@@ -571,15 +622,17 @@ def run_case(spec, run_dir, su2, threads=4):
         t0 = time.time()
         code = 0
         prev = os.path.join(run_dir, f"L{level - 1}", "restart_flow.csv")
-        seeded = bool(spec.get("seed")) and level > 0 and os.path.exists(prev)
+        seeded = bool(spec["seed"]) and level > 0
+        if seeded and not os.path.exists(prev):
+            raise FileNotFoundError(f"level {level} is to start from level {level - 1}, whose solution is missing")
         if seeded:
             # The finer grid started from the converged coarser one; the converged
             # solution does not depend on its start, only the iterations do.
             seed_restart(prev, x, r, os.path.join(d, "seed.csv"))
             stages = [dict(spec)]
         else:
-            stages = [dict(spec, muscl="NO", cfladapt="NO", cflmax=spec.get("cfl", 1.0), iters=spec.get("iters1", 20000))]
-            if spec.get("muscl", "YES") == "YES":
+            stages = [dict(spec, muscl="NO", cfladapt="NO", cflmax=spec["cfl"], iters=spec["iters1"])]
+            if spec["muscl"] == "YES":
                 stages.append(dict(spec))
         for k, st in enumerate(stages):
             write_cfg(os.path.join(d, "case.cfg"), st, restart=k > 0, seed=seeded and k == 0)
@@ -594,13 +647,18 @@ def run_case(spec, run_dir, su2, threads=4):
         if code == 0 and os.path.exists(surf):
             xs, rs, cps = read_surface(surf)
             write_wall(os.path.join(d, "wall.csv"), xs, rs, cps)
-            rec["drag"] = nose_drag(xs, rs, cps, spec["L"])
+            rec["drag"] = nose_drag(xs, rs, cps, spec["L"], R)
             rec["cpTip"] = float(cps[np.argmin(xs)])
-            coarser = os.path.join(run_dir, f"L{level - 1}", "surface_flow.csv")
+            coarser = os.path.join(run_dir, f"L{level - 1}", "wall.csv")
             if level > 0 and os.path.exists(coarser):
-                rec["distChange"] = dist_change(coarser, surf, spec["L"])
-        rec.update(history_summary(os.path.join(d, "history.csv")))
-        rec.update(boundary_check(d, rec["ni"], rec["nj"], spec["mach"]))
+                rec["change"] = changes(coarser, os.path.join(d, "wall.csv"), spec["L"], region_start(spec), R)
+        if code == 0:
+            rec.update(history_summary(os.path.join(d, "history.csv")))
+            rec.update(boundary_check(d, rec["ni"], rec["nj"], spec["mach"]))
+            if "CD" in rec and "drag" in rec:
+                # SU2's own axisymmetric force on REF_AREA = 1, as a drag on the
+                # base area: a check of the tool's integral (quadratures differ).
+                rec["su2Drag"] = rec["CD"] / (math.pi * R * R)
         out.append(rec)
         print(json.dumps(rec), flush=True)
     return out
@@ -699,11 +757,13 @@ def history_summary(path):
     for name in ("Inner_Iter", "rms[Rho]", "rms[RhoE]", "CD"):
         if name in col:
             res[name] = float(last[col[name]])
-    # The drag over the last 10% of the iterations: its spread, a measure of the iterative error.
+    # The drag over the last quarter of the iterations (SU2's force on the
+    # base area): its range, the level's iterative error where it did not
+    # reach the residual asked (registration R3).
     if "CD" in col:
-        n = max(2, len(rows) // 10)
-        cds = [float(rw[col["CD"]]) for rw in rows[-n:]]
-        res["cdSpreadLast10pct"] = max(cds) - min(cds)
+        n = max(2, len(rows) // 4)
+        cds = [float(rw[col["CD"]]) / (math.pi * R * R) for rw in rows[-n:]]
+        res["dragRangeLastQuarter"] = max(cds) - min(cds)
     return res
 
 
@@ -712,8 +772,9 @@ def history_summary(path):
 # Every run of the registration (README, "Registration") takes its settings
 # from these two functions; nothing is tuned per case.
 
-SETTINGS = {"scheme": "HLLC", "venkat": 0.05, "cfl": 1.0, "cflmax": 10.0, "cfladapt": "YES", "muscl": "YES",
-            "minres": -11, "iters1": 4000, "iters": 20000, "levels": 4, "seed": True, "Lcyl": 2.0}
+SETTINGS = {"scheme": "HLLC", "limiter": "VENKATAKRISHNAN", "venkat": 0.05, "cfl": 1.0, "cflmax": 10.0,
+            "cfladapt": "YES", "muscl": "YES", "minres": -11, "iters1": 4000, "iters": 8000, "levels": 4,
+            "seed": True, "Lcyl": 2.0}
 
 
 def billig_standoff(M, rn):
@@ -766,12 +827,27 @@ def sharp_spec(shape, calibers, M, widen=0):
 if __name__ == "__main__":
     cmd = sys.argv[1]
     if cmd == "case":
-        # case <spec.json> <run dir> <path to SU2_CFD> [threads]
+        # case <spec.json> <run dir> <path to SU2_CFD> [threads]: levels 0 to 3 (a widened or
+        # rerun case goes to a fresh folder; the earlier one is kept, renamed)
         spec = json.load(open(sys.argv[2]))
         su2 = sys.argv[4]
         threads = int(sys.argv[5]) if len(sys.argv) > 5 else 4
+        out = os.path.join(sys.argv[3], "result.json")
+        if os.path.exists(out):
+            raise SystemExit(f"{out} exists: a run is never overwritten")
         res = run_case(spec, sys.argv[3], su2, threads)
-        json.dump({"spec": spec, "levels": res}, open(os.path.join(sys.argv[3], "result.json"), "w"), indent=1)
+        json.dump({"spec": spec, "levels": res}, open(out, "w"), indent=1)
+    elif cmd == "level4":
+        # level4 <run dir> <path to SU2_CFD> [threads]: level 4 started from level 3 (R4's
+        # fallback, and check V4), its record added to the run's; the spec is unchanged.
+        out = os.path.join(sys.argv[2], "result.json")
+        res = json.load(open(out))
+        if any(r["level"] == 4 for r in res["levels"]):
+            raise SystemExit("level 4 has run already")
+        recs = run_case(dict(res["spec"], first_level=4, levels=5), sys.argv[2], sys.argv[3],
+                        int(sys.argv[4]) if len(sys.argv) > 4 else 4)
+        res["levels"] = res["levels"] + recs
+        json.dump(res, open(out, "w"), indent=1)
     elif cmd == "exact":
         M, half = float(sys.argv[2]), math.radians(float(sys.argv[3]))
         cp, beta = cone_cp(M, half)
