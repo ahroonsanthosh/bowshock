@@ -421,11 +421,32 @@ limits off for V5, a ratio of 1 or more made U_su2 infinite and V5 would
 pass any difference; V5 now needs both ratios below 1. A level is now
 taken as converged on its residual alone, before the iteration count.
 
+## The checks (R5), as they finish
+
+Judged by `judge.py`'s functions, exactly as registered:
+
+| Check | Value | Exact | Error | U_su2 | Error / U | Verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| V3, TN 3716 ogive, Mach 1.98 | 0.0988785 | 0.0988034 | +7.5e-5 (+0.076%) | 2.5e-4 (0.25%) | 0.30 | pass |
+| V1(b), cone to 0.8 L, Mach 1.3 | 0.0754283 | 0.0754683 | -4.0e-5 | 1.06e-4 (0.14%) | 0.38 | pass |
+| V1(b), cone to 0.8 L, Mach 3 | 0.0474205 | 0.0474416 | -2.1e-5 | 3.5e-5 (0.07%) | 0.60 | pass |
+
+V1(a): the worst wall vertex from L/3 to 0.8 L is 4.5e-4 (Mach 1.3) and
+4.2e-4 (Mach 3) from Taylor-Maccoll, against 1e-3: pass. V3's drags on
+levels 1 to 3 are 0.0988049, 0.0988886, 0.0988785 (not monotone, so
+U_total = 3 times the larger change); the cones' converge at orders 1.75
+and 1.43. Still to come: V5 (hemisphere, Mach 2 and 3), V2 (the capped
+ogive, Mach 1.3, 2, 3) and V4 (level 4 of two of them).
+
 ## State (2026-11-21)
 
 - Done: the tool, the geometry check, the set-up trials 1 to 13, the
   registration, its review and the revision.
-- Running: the fitted solver's eleven families (`fitted/lane.sh`, two
-  lanes).
+- Running: the checks V5 and V2; the hold-out's fitted families.
+- Stopped at the session's two-hour limit for one background job, and
+  resumable from their checkpoints: the fitted solver's lanes (the ogive's
+  3 calibers, 0.15, Mach 3 has its nj = 80, converged in 14,000
+  iterations; the Von Karman 3 calibers, 0.03, Mach 3 was at 8,000
+  iterations on nj = 80). `fitted/results.jsonl` holds every finished grid.
 - Next: V1 to V5 (with V4's level 4), then the W6 cases and the hold-out's
   Von Karman runs on SU2.
