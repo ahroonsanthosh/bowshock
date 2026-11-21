@@ -1,0 +1,198 @@
+figure,panel,configuration,legend_symbol,kind,x_quantity,x,y_quantity,y,x_error,y_error,flags,alternatives
+6,a (top): total drag,"Wind tunnel, fins off",circle,open,"Mach number, M",0.8061,"Total drag coefficient, C_DT",0.1077,0.0040,0.0040,ambiguous;partly-hidden,"kind flagged (detached tick above at M~0.81); symbol heavily broken, left side merges with frame"
+6,a (top): total drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",0.8376,"Total drag coefficient, C_DT",0.1076,0.0040,0.0040,ambiguous,kind open (tick above may be a fragment); outline broken
+6,a (top): total drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",0.9095,"Total drag coefficient, C_DT",0.1098,0.0020,0.0020,,
+6,a (top): total drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",0.9451,"Total drag coefficient, C_DT",0.1067,0.0020,0.0020,,
+6,a (top): total drag,"Wind tunnel, fins off",circle,open,"Mach number, M",0.9719,"Total drag coefficient, C_DT",0.1041,0.0020,0.0020,,
+6,a (top): total drag,"Wind tunnel, fins off",circle,open,"Mach number, M",1.0047,"Total drag coefficient, C_DT",0.1002,0.0040,0.0040,ambiguous;partly-hidden,upper and left parts hidden by gridlines; could also be read 0.005 higher (centre at top arc)
+6,a (top): total drag,"Wind tunnel, fins off",circle,,"Mach number, M",,"Total drag coefficient, C_DT",,,,illegible;ambiguous,"possible fins-off symbol near M~1.03, C_DT~0.15 (only a tick at start of fairing); alternatively not a symbol"
+6,a (top): total drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.1585,"Total drag coefficient, C_DT",0.1546,0.0020,0.0020,,
+6,a (top): total drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.1864,"Total drag coefficient, C_DT",0.1467,0.0020,0.0020,,
+6,a (top): total drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.2297,"Total drag coefficient, C_DT",0.1465,0.0020,0.0020,,
+6,a (top): total drag,"Wind tunnel, fins off",circle,open,"Mach number, M",1.2646,"Total drag coefficient, C_DT",0.1515,0.0020,0.0020,partly-hidden,kind flagged
+6,a (top): total drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.3274,"Total drag coefficient, C_DT",0.1397,0.0020,0.0020,,
+6,a (top): total drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.3962,"Total drag coefficient, C_DT",0.1483,0.0020,0.0020,,
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.8255,"Total drag coefficient, C_DT",0.1726,0.0020,0.0020,overlap,"one square with inner box (single reading at M~0.83, C_DT~0.170)"
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.8292,"Total drag coefficient, C_DT",0.1682,0.0020,0.0020,overlap,see previous row
+6,a (top): total drag,"Wind tunnel, fins on",square,solid,"Mach number, M",0.8097,"Total drag coefficient, C_DT",0.1593,0.0020,0.0020,overlap,"single solid square at M~0.81, C_DT~0.162"
+6,a (top): total drag,"Wind tunnel, fins on",square,solid,"Mach number, M",0.8128,"Total drag coefficient, C_DT",0.1535,0.0020,0.0020,overlap,see previous row
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.8944,"Total drag coefficient, C_DT",0.1810,0.0040,0.0040,overlap;ambiguous,"single tall symbol: one square centred C_DT~0.172, or square plus flag"
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.8944,"Total drag coefficient, C_DT",0.1733,0.0040,0.0040,overlap;ambiguous,see previous row
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.9266,"Total drag coefficient, C_DT",0.1740,0.0040,0.0040,ambiguous;partly-hidden,extra vertical bar at M~0.94 could be a second square at x~M0.935 same C_DT
+6,a (top): total drag,"Wind tunnel, fins on",square,flagged,"Mach number, M",0.9507,"Total drag coefficient, C_DT",0.1785,0.0040,0.0040,overlap;ambiguous,kind open; top part cluttered by crossbars
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.9478,"Total drag coefficient, C_DT",0.1657,0.0020,0.0020,overlap,
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.9682,"Total drag coefficient, C_DT",0.1682,0.0040,0.0040,ambiguous,second overlapping square below-left at about +0.006 lower C_DT; kind flagged
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.9958,"Total drag coefficient, C_DT",0.1868,0.0040,0.0040,ambiguous;overlap,kind flagged; overlaps free-flight diamonds
+6,a (top): total drag,"Wind tunnel, fins on",square,flagged,"Mach number, M",1.0187,"Total drag coefficient, C_DT",0.2281,0.0020,0.0020,overlap,two overlapping squares (cross pattern)
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.1625,"Total drag coefficient, C_DT",0.2241,0.0020,0.0020,partly-hidden,
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.1729,"Total drag coefficient, C_DT",0.2248,0.0040,0.0040,ambiguous;partly-hidden,not a symbol (fairing/flag fragments); or square at C_DT~0.231
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.1821,"Total drag coefficient, C_DT",0.2317,0.0040,0.0040,overlap;ambiguous,left side hidden by gridline
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.1850,"Total drag coefficient, C_DT",0.2230,0.0020,0.0020,overlap,
+6,a (top): total drag,"Wind tunnel, fins on",square,flagged,"Mach number, M",1.2183,"Total drag coefficient, C_DT",0.2328,0.0040,0.0040,partly-hidden;ambiguous,kind open; mostly hidden by gridlines
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.2517,"Total drag coefficient, C_DT",0.2260,0.0020,0.0020,partly-hidden,
+6,a (top): total drag,"Wind tunnel, fins on",square,flagged,"Mach number, M",1.2654,"Total drag coefficient, C_DT",0.2356,0.0020,0.0020,overlap,
+6,a (top): total drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.2634,"Total drag coefficient, C_DT",0.2287,0.0020,0.0020,overlap,
+6,a (top): total drag,"Wind tunnel, fins on",square,solid,"Mach number, M",1.3173,"Total drag coefficient, C_DT",0.2216,0.0012,0.0012,overlap,
+6,a (top): total drag,"Wind tunnel, fins on",square,solid,"Mach number, M",1.3244,"Total drag coefficient, C_DT",0.2183,0.0012,0.0012,overlap,
+6,a (top): total drag,"Wind tunnel, fins on",square,solid,"Mach number, M",1.3956,"Total drag coefficient, C_DT",0.2202,0.0012,0.0012,,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.8247,"Total drag coefficient, C_DT",0.1391,0.0040,0.0040,ambiguous,may be two overlapping diamonds
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.8553,"Total drag coefficient, C_DT",0.1397,0.0040,0.0040,partly-hidden,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.8704,"Total drag coefficient, C_DT",0.1402,0.0020,0.0020,,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.8855,"Total drag coefficient, C_DT",0.1370,0.0040,0.0040,overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.8914,"Total drag coefficient, C_DT",0.1388,0.0040,0.0040,overlap;ambiguous,not a separate symbol (hatching of neighbour)
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.8969,"Total drag coefficient, C_DT",0.1374,0.0040,0.0040,overlap;ambiguous,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.9071,"Total drag coefficient, C_DT",0.1387,0.0020,0.0020,,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.9258,"Total drag coefficient, C_DT",0.1467,0.0040,0.0040,partly-hidden,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.9311,"Total drag coefficient, C_DT",0.1360,0.0040,0.0040,ambiguous,not a separate symbol (lower half of previous)
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.9365,"Total drag coefficient, C_DT",0.1424,0.0040,0.0040,partly-hidden;overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.9518,"Total drag coefficient, C_DT",0.1320,0.0012,0.0012,,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.9420,"Total drag coefficient, C_DT",0.1248,0.0012,0.0012,out-of-line,reads ~0.007 below its neighbours; as plotted
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.9640,"Total drag coefficient, C_DT",0.1409,0.0020,0.0020,overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.9779,"Total drag coefficient, C_DT",0.1503,0.0040,0.0040,ambiguous;overlap,blotted cluster: one or two diamonds
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.9876,"Total drag coefficient, C_DT",0.1510,0.0040,0.0040,ambiguous;overlap,see previous row
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",0.9940,"Total drag coefficient, C_DT",0.1683,0.0020,0.0020,,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.0036,"Total drag coefficient, C_DT",0.1932,0.0040,0.0040,ambiguous;overlap,overlaps square
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.0110,"Total drag coefficient, C_DT",0.2039,0.0040,0.0040,ambiguous;overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.0251,"Total drag coefficient, C_DT",0.2056,0.0020,0.0020,partly-hidden,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.0375,"Total drag coefficient, C_DT",0.2062,0.0040,0.0040,partly-hidden,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.0483,"Total drag coefficient, C_DT",0.2042,0.0012,0.0012,,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.0603,"Total drag coefficient, C_DT",0.2082,0.0040,0.0040,ambiguous,"fragment, may be dash-dot fairing"
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.0676,"Total drag coefficient, C_DT",0.2081,0.0040,0.0040,overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.0736,"Total drag coefficient, C_DT",0.2043,0.0040,0.0040,overlap;ambiguous,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.0882,"Total drag coefficient, C_DT",0.2073,0.0020,0.0020,overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.0950,"Total drag coefficient, C_DT",0.2055,0.0040,0.0040,overlap;ambiguous,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.1174,"Total drag coefficient, C_DT",0.2049,0.0040,0.0040,ambiguous;partly-hidden,fragments around gridline
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.1289,"Total drag coefficient, C_DT",0.2053,0.0020,0.0020,,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.1462,"Total drag coefficient, C_DT",0.2048,0.0020,0.0020,overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.1531,"Total drag coefficient, C_DT",0.2052,0.0020,0.0020,overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.1742,"Total drag coefficient, C_DT",0.2039,0.0020,0.0020,,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.1974,"Total drag coefficient, C_DT",0.2038,0.0020,0.0020,,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.2201,"Total drag coefficient, C_DT",0.1986,0.0020,0.0020,,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.2566,"Total drag coefficient, C_DT",0.1895,0.0040,0.0040,ambiguous,"one diamond at M~1.255, C_DT~0.193"
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.2665,"Total drag coefficient, C_DT",0.1976,0.0040,0.0040,ambiguous,see previous row
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.2837,"Total drag coefficient, C_DT",0.1898,0.0020,0.0020,overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.2923,"Total drag coefficient, C_DT",0.1944,0.0040,0.0040,overlap;ambiguous,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.3123,"Total drag coefficient, C_DT",0.1887,0.0020,0.0020,,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.3451,"Total drag coefficient, C_DT",0.1903,0.0040,0.0040,ambiguous,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.3750,"Total drag coefficient, C_DT",0.1876,0.0020,0.0020,overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.3743,"Total drag coefficient, C_DT",0.1818,0.0040,0.0040,overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.4074,"Total drag coefficient, C_DT",0.1901,0.0020,0.0020,overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.4098,"Total drag coefficient, C_DT",0.1798,0.0020,0.0020,overlap,
+6,a (top): total drag,"Free-flight, fins on",diamond,open,"Mach number, M",1.4320,"Total drag coefficient, C_DT",0.1861,0.0020,0.0020,partly-hidden,
+6,a (top): total drag,"Free-flight, fins on",diamond,,"Mach number, M",,"Total drag coefficient, C_DT",,,,illegible;ambiguous,"broken fragments near M~0.81, C_DT~0.125-0.135; may be dash-dot fairing rather than symbols"
+6,a (top): total drag,"Free-flight, fins on",diamond,,"Mach number, M",,"Total drag coefficient, C_DT",,,,illegible;ambiguous,"broken fragments near M~0.84, C_DT~0.125-0.135; may be dash-dot fairing rather than symbols"
+6,a (top): total drag,"Free-flight, fins on",diamond,,"Mach number, M",,"Total drag coefficient, C_DT",,,,illegible;ambiguous,"broken fragments near M~0.86, C_DT~0.125-0.135; may be dash-dot fairing rather than symbols"
+6,b (middle): base drag,"Wind tunnel, fins off",circle,open,"Mach number, M",0.8422,"Base drag coefficient, C_Db",-0.0078,0.0040,0.0040,ambiguous;overlap,two overlapping circles; kind flagged
+6,b (middle): base drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",0.9073,"Base drag coefficient, C_Db",-0.0096,0.0020,0.0020,,
+6,b (middle): base drag,"Wind tunnel, fins off",circle,open,"Mach number, M",0.9458,"Base drag coefficient, C_Db",-0.0102,0.0040,0.0040,ambiguous;overlap,inside blotted square; may be absent
+6,b (middle): base drag,"Wind tunnel, fins off",circle,open,"Mach number, M",0.9706,"Base drag coefficient, C_Db",-0.0111,0.0020,0.0020,partly-hidden,
+6,b (middle): base drag,"Wind tunnel, fins off",circle,open,"Mach number, M",1.0141,"Base drag coefficient, C_Db",-0.0137,0.0040,0.0040,ambiguous;overlap,one circle only at M~1.02
+6,b (middle): base drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.0214,"Base drag coefficient, C_Db",-0.0112,0.0040,0.0040,ambiguous;overlap,kind open
+6,b (middle): base drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.1613,"Base drag coefficient, C_Db",0.0049,0.0040,0.0040,overlap,
+6,b (middle): base drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.1843,"Base drag coefficient, C_Db",0.0049,0.0020,0.0020,,
+6,b (middle): base drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.2305,"Base drag coefficient, C_Db",0.0073,0.0020,0.0020,overlap,
+6,b (middle): base drag,"Wind tunnel, fins off",circle,open,"Mach number, M",1.2339,"Base drag coefficient, C_Db",0.0042,0.0020,0.0020,overlap,one circle with inner arc only
+6,b (middle): base drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.2663,"Base drag coefficient, C_Db",0.0059,0.0020,0.0020,overlap,
+6,b (middle): base drag,"Wind tunnel, fins on",square,solid,"Mach number, M",0.8093,"Base drag coefficient, C_Db",-0.0083,0.0020,0.0020,overlap,single solid square at M~0.813
+6,b (middle): base drag,"Wind tunnel, fins on",square,solid,"Mach number, M",0.8127,"Base drag coefficient, C_Db",-0.0083,0.0020,0.0020,overlap,see previous row
+6,b (middle): base drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.8249,"Base drag coefficient, C_Db",-0.0094,0.0040,0.0040,overlap;ambiguous,
+6,b (middle): base drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.8314,"Base drag coefficient, C_Db",-0.0094,0.0040,0.0040,overlap;ambiguous,may be a circle
+6,b (middle): base drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.8935,"Base drag coefficient, C_Db",-0.0114,0.0020,0.0020,,two stacked squares
+6,b (middle): base drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.9274,"Base drag coefficient, C_Db",-0.0148,0.0020,0.0020,,
+6,b (middle): base drag,"Wind tunnel, fins on",square,flagged,"Mach number, M",0.9458,"Base drag coefficient, C_Db",-0.0123,0.0040,0.0040,ambiguous;overlap,kind open; blotted
+6,b (middle): base drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.9677,"Base drag coefficient, C_Db",-0.0180,0.0020,0.0020,,
+6,b (middle): base drag,"Wind tunnel, fins on",square,flagged,"Mach number, M",0.9945,"Base drag coefficient, C_Db",-0.0163,0.0040,0.0040,ambiguous;partly-hidden,kind open
+6,b (middle): base drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.1605,"Base drag coefficient, C_Db",-0.0017,0.0040,0.0040,overlap,
+6,b (middle): base drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.1726,"Base drag coefficient, C_Db",-0.0032,0.0020,0.0020,overlap,
+6,b (middle): base drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.2524,"Base drag coefficient, C_Db",0.0105,0.0020,0.0020,,
+6,b (middle): base drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.2640,"Base drag coefficient, C_Db",0.0118,0.0040,0.0040,ambiguous;overlap,not a square: top of the circle below
+6,b (middle): base drag,"Wind tunnel, fins on",square,solid,"Mach number, M",1.3181,"Base drag coefficient, C_Db",0.0039,0.0012,0.0012,overlap,
+6,b (middle): base drag,"Wind tunnel, fins on",square,solid,"Mach number, M",1.3245,"Base drag coefficient, C_Db",-0.0008,0.0012,0.0012,overlap,
+6,b (middle): base drag,"Wind tunnel, fins on",square,solid,"Mach number, M",1.3960,"Base drag coefficient, C_Db",0.0010,0.0012,0.0012,,
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,open,"Mach number, M",0.8057,"Net drag coefficient, C_D",0.1177,0.0040,0.0040,ambiguous;partly-hidden,"broken outline, left side on frame"
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",0.8362,"Net drag coefficient, C_D",0.1171,0.0040,0.0040,ambiguous,kind open
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",0.9162,"Net drag coefficient, C_D",0.1170,0.0040,0.0040,ambiguous,dashed-looking broken outline
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,open,"Mach number, M",0.9494,"Net drag coefficient, C_D",0.1205,0.0020,0.0020,ambiguous,kind flagged (tick at top right); fragments below may be part of a second symbol
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,open,"Mach number, M",0.9736,"Net drag coefficient, C_D",0.1155,0.0020,0.0020,partly-hidden,
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.0050,"Net drag coefficient, C_D",0.1186,0.0020,0.0020,partly-hidden,
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,,"Mach number, M",,"Net drag coefficient, C_D",,,,illegible;ambiguous,"tick at top of fins-off fairing near M~1.025, C_D~0.17; possibly a symbol, possibly only a fairing end"
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.1606,"Net drag coefficient, C_D",0.1514,0.0020,0.0020,,
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.1835,"Net drag coefficient, C_D",0.1483,0.0020,0.0020,,
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.2332,"Net drag coefficient, C_D",0.1427,0.0020,0.0020,,
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,open,"Mach number, M",1.2657,"Net drag coefficient, C_D",0.1416,0.0020,0.0020,,kind flagged (tail at lower right)
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.3251,"Net drag coefficient, C_D",0.1388,0.0020,0.0020,,
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,open,"Mach number, M",1.3422,"Net drag coefficient, C_D",0.1347,0.0040,0.0040,ambiguous;partly-hidden,not a symbol; left half hidden by gridline
+6,c (bottom): net drag,"Wind tunnel, fins off",circle,flagged,"Mach number, M",1.3927,"Net drag coefficient, C_D",0.1403,0.0020,0.0020,,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.8262,"Net drag coefficient, C_D",0.1818,0.0020,0.0020,overlap,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.8286,"Net drag coefficient, C_D",0.1782,0.0020,0.0020,overlap,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,solid,"Mach number, M",0.8088,"Net drag coefficient, C_D",0.1713,0.0020,0.0020,overlap,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,solid,"Mach number, M",0.8131,"Net drag coefficient, C_D",0.1620,0.0020,0.0020,overlap,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.8932,"Net drag coefficient, C_D",0.1957,0.0020,0.0020,overlap;ambiguous,single tall symbol; extra internal bar
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.8932,"Net drag coefficient, C_D",0.1869,0.0020,0.0020,overlap;ambiguous,see previous row
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.9270,"Net drag coefficient, C_D",0.1859,0.0012,0.0012,,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,flagged,"Mach number, M",0.9491,"Net drag coefficient, C_D",0.1897,0.0020,0.0020,overlap,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.9477,"Net drag coefficient, C_D",0.1762,0.0020,0.0020,partly-hidden,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,flagged,"Mach number, M",0.9685,"Net drag coefficient, C_D",0.1859,0.0040,0.0040,ambiguous,kind open (double top bar may be fairing); left side missing
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",0.9960,"Net drag coefficient, C_D",0.2052,0.0020,0.0020,partly-hidden,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.0185,"Net drag coefficient, C_D",0.2362,0.0020,0.0020,,kind flagged
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.0193,"Net drag coefficient, C_D",0.2450,0.0040,0.0040,ambiguous;overlap,flag of the square below rather than a second square
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.1618,"Net drag coefficient, C_D",0.2256,0.0020,0.0020,partly-hidden,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.1637,"Net drag coefficient, C_D",0.2376,0.0040,0.0040,ambiguous;overlap,"fairing/flag fragments, not a symbol"
+6,c (bottom): net drag,"Wind tunnel, fins on",square,flagged,"Mach number, M",1.1712,"Net drag coefficient, C_D",0.2386,0.0040,0.0040,overlap,kind open
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.1824,"Net drag coefficient, C_D",0.2353,0.0020,0.0020,overlap,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.1848,"Net drag coefficient, C_D",0.2314,0.0040,0.0040,overlap;ambiguous,single square only
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.2143,"Net drag coefficient, C_D",0.2329,0.0020,0.0020,partly-hidden,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.2521,"Net drag coefficient, C_D",0.2157,0.0012,0.0012,,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.2619,"Net drag coefficient, C_D",0.2222,0.0020,0.0020,overlap,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,open,"Mach number, M",1.2636,"Net drag coefficient, C_D",0.2191,0.0040,0.0040,overlap;ambiguous,single square only
+6,c (bottom): net drag,"Wind tunnel, fins on",square,flagged,"Mach number, M",1.2646,"Net drag coefficient, C_D",0.2339,0.0020,0.0020,,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,solid,"Mach number, M",1.3183,"Net drag coefficient, C_D",0.2195,0.0012,0.0012,overlap,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,solid,"Mach number, M",1.3243,"Net drag coefficient, C_D",0.2136,0.0012,0.0012,overlap,
+6,c (bottom): net drag,"Wind tunnel, fins on",square,solid,"Mach number, M",1.3956,"Net drag coefficient, C_D",0.2194,0.0012,0.0012,,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",0.8200,"Net drag coefficient, C_D",0.1400,0.0005,0.0030,curve;partly-hidden;ambiguous,curve may not exist below M~0.97: it would lie on the C_D=0.14 gridline and only a thickened gridline is seen
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",0.8400,"Net drag coefficient, C_D",0.1400,0.0005,0.0030,curve;partly-hidden;ambiguous,curve may not exist below M~0.97: it would lie on the C_D=0.14 gridline and only a thickened gridline is seen
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",0.8600,"Net drag coefficient, C_D",0.1400,0.0005,0.0030,curve;partly-hidden;ambiguous,curve may not exist below M~0.97: it would lie on the C_D=0.14 gridline and only a thickened gridline is seen
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",0.8800,"Net drag coefficient, C_D",0.1400,0.0005,0.0030,curve;partly-hidden;ambiguous,curve may not exist below M~0.97: it would lie on the C_D=0.14 gridline and only a thickened gridline is seen
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",0.9000,"Net drag coefficient, C_D",0.1400,0.0005,0.0030,curve;partly-hidden;ambiguous,curve may not exist below M~0.97: it would lie on the C_D=0.14 gridline and only a thickened gridline is seen
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",0.9200,"Net drag coefficient, C_D",0.1400,0.0005,0.0030,curve;partly-hidden;ambiguous,curve may not exist below M~0.97: it would lie on the C_D=0.14 gridline and only a thickened gridline is seen
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",0.9400,"Net drag coefficient, C_D",0.1400,0.0005,0.0030,curve;partly-hidden;ambiguous,curve may not exist below M~0.97: it would lie on the C_D=0.14 gridline and only a thickened gridline is seen
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",0.9600,"Net drag coefficient, C_D",0.1400,0.0005,0.0030,curve;partly-hidden;ambiguous,curve may not exist below M~0.97: it would lie on the C_D=0.14 gridline and only a thickened gridline is seen
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",0.9680,"Net drag coefficient, C_D",0.1417,0.0005,0.0020,curve,visible left end of dashed curve (it may continue hidden along the 0.14 gridline)
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",0.9800,"Net drag coefficient, C_D",0.1500,0.0005,0.0030,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.0000,"Net drag coefficient, C_D",0.1886,0.0005,0.0030,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.0200,"Net drag coefficient, C_D",0.2035,0.0005,0.0015,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.0400,"Net drag coefficient, C_D",0.2040,0.0005,0.0015,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.1400,"Net drag coefficient, C_D",0.1978,0.0005,0.0012,curve;partly-hidden,merges with 0.20 gridline
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.1600,"Net drag coefficient, C_D",0.1964,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.1800,"Net drag coefficient, C_D",0.1953,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.2000,"Net drag coefficient, C_D",0.1947,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.2200,"Net drag coefficient, C_D",0.1940,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.2400,"Net drag coefficient, C_D",0.1928,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.2600,"Net drag coefficient, C_D",0.1915,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.2800,"Net drag coefficient, C_D",0.1905,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.3000,"Net drag coefficient, C_D",0.1900,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.3200,"Net drag coefficient, C_D",0.1884,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.3400,"Net drag coefficient, C_D",0.1878,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.3600,"Net drag coefficient, C_D",0.1870,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.3800,"Net drag coefficient, C_D",0.1860,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.4000,"Net drag coefficient, C_D",0.1856,0.0005,0.0012,curve,
+6,c (bottom): net drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.3990,"Net drag coefficient, C_D",0.1855,0.0005,0.0012,curve,right end of curve
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",0.9912,"Base drag coefficient, C_Db",-0.0042,0.0005,0.0020,curve,visible left end; may continue to lower M hidden among symbols
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.0000,"Base drag coefficient, C_Db",-0.0034,0.0005,0.0015,curve,
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.0200,"Base drag coefficient, C_Db",0.0031,0.0005,0.0015,curve,
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.0400,"Base drag coefficient, C_Db",0.0055,0.0005,0.0010,curve,
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.1400,"Base drag coefficient, C_Db",0.0054,0.0005,0.0010,curve,
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.1600,"Base drag coefficient, C_Db",0.0049,0.0005,0.0010,curve,
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.1800,"Base drag coefficient, C_Db",0.0044,0.0005,0.0010,curve,
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.2000,"Base drag coefficient, C_Db",0.0038,0.0005,0.0010,curve,
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.2200,"Base drag coefficient, C_Db",0.0042,0.0005,0.0015,curve,
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.2187,"Base drag coefficient, C_Db",0.0032,0.0005,0.0015,curve;ambiguous,last clearly separate dash; the curve may continue merged with the line just above the zero gridline to M~1.40
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.2400,"Base drag coefficient, C_Db",0.0017,0.0005,0.0020,curve;ambiguous;partly-hidden,curve may end at M~1.22; this is a line merged with the zero gridline that may instead be a wind-tunnel fairing
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.2600,"Base drag coefficient, C_Db",0.0016,0.0005,0.0020,curve;ambiguous;partly-hidden,curve may end at M~1.22; this is a line merged with the zero gridline that may instead be a wind-tunnel fairing
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.2800,"Base drag coefficient, C_Db",0.0016,0.0005,0.0020,curve;ambiguous;partly-hidden,curve may end at M~1.22; this is a line merged with the zero gridline that may instead be a wind-tunnel fairing
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.3000,"Base drag coefficient, C_Db",0.0015,0.0005,0.0020,curve;ambiguous;partly-hidden,curve may end at M~1.22; this is a line merged with the zero gridline that may instead be a wind-tunnel fairing
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.3200,"Base drag coefficient, C_Db",0.0014,0.0005,0.0020,curve;ambiguous;partly-hidden,curve may end at M~1.22; this is a line merged with the zero gridline that may instead be a wind-tunnel fairing
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.3400,"Base drag coefficient, C_Db",0.0013,0.0005,0.0020,curve;ambiguous;partly-hidden,curve may end at M~1.22; this is a line merged with the zero gridline that may instead be a wind-tunnel fairing
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.3600,"Base drag coefficient, C_Db",0.0013,0.0005,0.0020,curve;ambiguous;partly-hidden,curve may end at M~1.22; this is a line merged with the zero gridline that may instead be a wind-tunnel fairing
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.3800,"Base drag coefficient, C_Db",0.0012,0.0005,0.0020,curve;ambiguous;partly-hidden,curve may end at M~1.22; this is a line merged with the zero gridline that may instead be a wind-tunnel fairing
+6,b (middle): base drag,"Free-flight, fins on",none (curve),curve,"Mach number, M",1.4000,"Base drag coefficient, C_Db",0.0011,0.0005,0.0020,curve;ambiguous;partly-hidden,curve may end at M~1.22; this is a line merged with the zero gridline that may instead be a wind-tunnel fairing
