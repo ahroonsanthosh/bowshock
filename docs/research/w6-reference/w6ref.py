@@ -6,7 +6,7 @@ shock, and the forebody pressure drag integrated here from SU2's surface
 pressures. Nothing in this file uses bowshock's solver, grids or geometry.
 
   python3 -I docs/research/w6-reference/w6ref.py geometry-check <out.json>
-  python3 -I docs/research/w6-reference/w6ref.py case <spec.json> <run dir>
+  python3 -I docs/research/w6-reference/w6ref.py case <spec.json> <run dir> <SU2_CFD> [threads]
   python3 -I docs/research/w6-reference/w6ref.py drag <run dir>
 
 Lengths are in body diameters (calibers): base radius R = 0.5, the nose's
@@ -191,34 +191,112 @@ def mapping(b):
 
 def grid(spec, level):
     """
-    The structured C grid of `spec` at `level` (0 the coarsest; each level
-    halves every spacing of the one before, by sampling the same mappings):
-    i along the wall from the tip (i = 0 on the axis ahead of the tip), j
-    from the wall to the outer boundary, a parabola x = -a + (X - (-a))
-    (r / Rout)^2 meeting the axis at x = -a at right angles. Each grid line
-    i is straight from its wall point to its outer point.
+    The structured grid of `spec` at `level` (0 the coarsest; each level
+    halves every spacing of the one before, by sampling the same mappings),
+    and its boundary edges. A sharp nose takes an H grid (`h_grid`), a capped
+    nose a C grid whose lines leave the wall along its normals (`c_grid`).
     """
     nose = capped(spec["shape"], spec["L"], spec["rn"])
+    if spec["rn"] == 0:
+        x, r, marks = h_grid(spec, nose, level)
+    else:
+        x, r, marks = c_grid(spec, nose, level)
+    return nose, x, r, marks
+
+
+def _edges_i(i, nj, idx):
+    return [(idx(i, j), idx(i, j + 1)) for j in range(nj)]
+
+
+def _edges_j(j, ni, idx):
+    return [(idx(i, j), idx(i + 1, j)) for i in range(ni)]
+
+
+def h_grid(spec, nose, level):
+    """
+    Sharp noses: lines of constant x from x = -a (the inflow) to the end of
+    the cylinder, each from the axis (ahead of the tip) or the wall to a
+    straight outer line from (-a, Rin) to (X, Rout); the tip is a grid
+    point. ni_up cells ahead of the tip and ni_body along the body, each
+    clustered toward the tip by its own mapping.
+    """
+    a, X = spec["a"], spec["L"] + spec["Lcyl"]
+    up = spec["ni0_up"] * 2**level
+    body = spec["ni0"] * 2**level
+    nj = spec["nj0"] * 2**level
+    # Ahead of the tip: x from -a to 0, densest at 0.
+    u_up = mapping(spec["bi_up"])(np.linspace(0, 1, up + 1))
+    x_up = -a * u_up[::-1]
+    u_b = mapping(spec["bi"])(np.linspace(0, 1, body + 1))
+    x_b = X * u_b
+    xs = np.concatenate([x_up, x_b[1:]])
+    low = np.array([0.0 if xv <= 0 else (radius(nose, xv) if xv <= nose["L"] else R) for xv in xs])
+    rin, rout = spec["Rin"], spec["Rout"]
+    high = rin + (rout - rin) * (xs + a) / (X + a)
+    uj = mapping(spec["bj"])(np.linspace(0, 1, nj + 1))
+    x = np.repeat(xs[:, None], nj + 1, axis=1)
+    r = low[:, None] + (high - low)[:, None] * uj[None, :]
+    ni = len(xs) - 1
+    idx = lambda i, j: i * (nj + 1) + j
+    lower = _edges_j(0, ni, idx)
+    axis = [e for k, e in enumerate(lower) if xs[k + 1] <= 0]
+    wall = [e for k, e in enumerate(lower) if xs[k] >= 0]
+    marks = {
+        "wall": wall,
+        "axis": axis,
+        "farfield": _edges_i(0, nj, idx) + _edges_j(nj, ni, idx),
+        "outlet": _edges_i(ni, nj, idx),
+    }
+    return x, r, marks
+
+
+def c_grid(spec, nose, level):
+    """
+    Capped noses: i along the wall from the stagnation point (i = 0 the
+    axis ahead of it), j along the wall's outward normal to the outer
+    boundary at the distance d(s) = a + k s from the wall (s the arc length
+    from the stagnation point). Around the spherical cap the grid is then
+    polar about the sphere's centre, so nearly orthogonal; a and k are
+    chosen so that the bow shock lies inside (checked after each solve).
+    """
     xs, rs, ss = wall_table(nose, spec["Lcyl"])
     S = ss[-1]
     ni = spec["ni0"] * 2**level
     nj = spec["nj0"] * 2**level
-    ui = mapping(spec["bi"])(np.linspace(0, 1, ni + 1))
-    uj = mapping(spec["bj"])(np.linspace(0, 1, nj + 1))
-    sw = ui * S
+    sw = mapping(spec["bi"])(np.linspace(0, 1, ni + 1)) * S
     xw = np.interp(sw, ss, xs)
     rw = np.interp(sw, ss, rs)
-    # The outer boundary, parametrised by r from 0 to Rout with the same fractions as the wall's s.
-    a, X, Rout = spec["a"], spec["L"] + spec["Lcyl"], spec["Rout"]
-    ro = ui * Rout
-    xo = -a + (X + a) * (ro / Rout) ** 2
+    h = 1e-7 * S
+    nx = np.empty(ni + 1)
+    nr = np.empty(ni + 1)
+    for i in range(ni + 1):
+        if i == 0:
+            nx[i], nr[i] = -1.0, 0.0
+            continue
+        s1, s2 = max(0.0, sw[i] - h), min(S, sw[i] + h)
+        dx = np.interp(s2, ss, xs) - np.interp(s1, ss, xs)
+        dr = np.interp(s2, ss, rs) - np.interp(s1, ss, rs)
+        n = math.hypot(dx, dr)
+        nx[i], nr[i] = -dr / n, dx / n
+    d = spec["a"] + spec["k"] * sw
+    xo = xw + d * nx
+    ro = rw + d * nr
+    ro[0] = 0.0
+    uj = mapping(spec["bj"])(np.linspace(0, 1, nj + 1))
     x = xw[:, None] + (xo - xw)[:, None] * uj[None, :]
     r = rw[:, None] + (ro - rw)[:, None] * uj[None, :]
-    return nose, x, r
+    idx = lambda i, j: i * (nj + 1) + j
+    marks = {
+        "wall": _edges_j(0, ni, idx),
+        "axis": _edges_i(0, nj, idx),
+        "farfield": _edges_j(nj, ni, idx),
+        "outlet": _edges_i(ni, nj, idx),
+    }
+    return x, r, marks
 
 
-def write_su2(path, x, r):
-    """The grid in SU2's native format: quads, and markers wall, axis, farfield, outlet."""
+def write_su2(path, x, r, marks):
+    """The grid in SU2's native format: quads, and the markers given as edges (pairs of point indices)."""
     ni, nj = x.shape[0] - 1, x.shape[1] - 1
     idx = lambda i, j: i * (nj + 1) + j
     with open(path, "w") as f:
@@ -227,7 +305,6 @@ def write_su2(path, x, r):
         e = 0
         for i in range(ni):
             for j in range(nj):
-                # Counter-clockwise in (x, r): wall-side edge first along increasing i.
                 f.write(f"9 {idx(i, j)} {idx(i + 1, j)} {idx(i + 1, j + 1)} {idx(i, j + 1)} {e}\n")
                 e += 1
         f.write(f"NPOIN= {(ni + 1) * (nj + 1)}\n")
@@ -236,23 +313,12 @@ def write_su2(path, x, r):
             for j in range(nj + 1):
                 f.write(f"{x[i, j]:.17e} {r[i, j]:.17e} {k}\n")
                 k += 1
-        f.write("NMARK= 4\n")
-        f.write("MARKER_TAG= wall\n")
-        f.write(f"MARKER_ELEMS= {ni}\n")
-        for i in range(ni):
-            f.write(f"3 {idx(i, 0)} {idx(i + 1, 0)}\n")
-        f.write("MARKER_TAG= axis\n")
-        f.write(f"MARKER_ELEMS= {nj}\n")
-        for j in range(nj):
-            f.write(f"3 {idx(0, j)} {idx(0, j + 1)}\n")
-        f.write("MARKER_TAG= farfield\n")
-        f.write(f"MARKER_ELEMS= {ni}\n")
-        for i in range(ni):
-            f.write(f"3 {idx(i, nj)} {idx(i + 1, nj)}\n")
-        f.write("MARKER_TAG= outlet\n")
-        f.write(f"MARKER_ELEMS= {nj}\n")
-        for j in range(nj):
-            f.write(f"3 {idx(ni, j)} {idx(ni, j + 1)}\n")
+        f.write(f"NMARK= {len(marks)}\n")
+        for name, edges in marks.items():
+            f.write(f"MARKER_TAG= {name}\n")
+            f.write(f"MARKER_ELEMS= {len(edges)}\n")
+            for p, q in edges:
+                f.write(f"3 {p} {q}\n")
 
 
 def quality(x, r):
@@ -293,7 +359,7 @@ MARKER_PLOTTING= ( wall )
 MARKER_MONITORING= ( wall )
 NUM_METHOD_GRAD= WEIGHTED_LEAST_SQUARES
 CFL_NUMBER= {cfl}
-CFL_ADAPT= YES
+CFL_ADAPT= {cfladapt}
 CFL_ADAPT_PARAM= ( 0.5, 1.2, {cfl}, {cflmax} )
 ITER= {iters}
 LINEAR_SOLVER= FGMRES
@@ -301,7 +367,7 @@ LINEAR_SOLVER_PREC= ILU
 LINEAR_SOLVER_ERROR= 1E-6
 LINEAR_SOLVER_ITER= 10
 CONV_NUM_METHOD_FLOW= {scheme}
-MUSCL_FLOW= YES
+MUSCL_FLOW= {muscl}
 SLOPE_LIMITER_FLOW= VENKATAKRISHNAN
 VENKAT_LIMITER_COEFF= {venkat}
 TIME_DISCRE_FLOW= EULER_IMPLICIT
@@ -334,6 +400,8 @@ def write_cfg(path, spec, restart=False):
                 scheme=spec.get("scheme", "ROE"),
                 venkat=spec.get("venkat", 0.05),
                 minres=spec.get("minres", -12),
+                cfladapt=spec.get("cfladapt", "YES"),
+                muscl=spec.get("muscl", "YES"),
             )
         )
 
@@ -365,6 +433,91 @@ def nose_drag(x, r, cp, L):
     return float(np.sum(0.5 * (cp[1:] + cp[:-1]) * np.diff(r2)) / (R * R))
 
 
+# ------------------------------------------------------- exact checks
+#
+# The tool's own exact references, for its verification: the sharp cone's
+# surface pressure by the Taylor-Maccoll equation (integrated here, RK4,
+# from the shock inward), and the stagnation pressure behind a normal shock
+# (Rayleigh's pitot formula).
+
+GAMMA = 1.4
+
+
+def _oblique(M, beta):
+    """Mach number, deflection and pressure ratio behind an oblique shock of wave angle beta."""
+    g = GAMMA
+    mn = M * math.sin(beta)
+    theta = math.atan(2 / math.tan(beta) * (mn * mn - 1) / (M * M * (g + math.cos(2 * beta)) + 2))
+    mn2 = math.sqrt((1 + (g - 1) / 2 * mn * mn) / (g * mn * mn - (g - 1) / 2))
+    M2 = mn2 / math.sin(beta - theta)
+    p2 = 1 + 2 * g / (g + 1) * (mn * mn - 1)
+    return M2, theta, p2
+
+
+def _tm_cone_angle(M, beta, steps=20000):
+    """Integrate Taylor-Maccoll inward from a shock of angle beta; the cone angle and its surface Mach number."""
+    g = GAMMA
+    M2, theta, _ = _oblique(M, beta)
+    # Non-dimensional speed V' = V / V_max behind the shock.
+    V2 = (2 / ((g - 1) * M2 * M2) + 1) ** -0.5
+    vr = V2 * math.cos(beta - theta)
+    vt = -V2 * math.sin(beta - theta)
+
+    def f(th, y):
+        vr, vt = y
+        a = (g - 1) / 2 * (1 - vr * vr - vt * vt)
+        dvt = (vr * vt * vt - a * (2 * vr + vt / math.tan(th))) / (a - vt * vt)
+        return (vt, dvt)
+
+    th = beta
+    h = -beta / steps
+    y = (vr, vt)
+    for _ in range(steps):
+        if y[1] >= 0:
+            break
+        k1 = f(th, y)
+        k2 = f(th + h / 2, (y[0] + h / 2 * k1[0], y[1] + h / 2 * k1[1]))
+        k3 = f(th + h / 2, (y[0] + h / 2 * k2[0], y[1] + h / 2 * k2[1]))
+        k4 = f(th + h, (y[0] + h * k3[0], y[1] + h * k3[1]))
+        ynew = (y[0] + h / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]),
+                y[1] + h / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]))
+        if ynew[1] >= 0:
+            # Linear in vt to vt = 0 within the step.
+            frac = -y[1] / (ynew[1] - y[1])
+            return th + frac * h, y[0] + frac * (ynew[0] - y[0]), (y, ynew, frac)
+        y, th = ynew, th + h
+    return th, y[0], None
+
+
+def cone_cp(M, half_angle):
+    """The exact surface pressure coefficient of a sharp cone (Taylor-Maccoll), by bisection on the shock angle."""
+    g = GAMMA
+    lo = math.asin(1 / M) + 1e-9
+    hi = math.radians(89.0)
+    for _ in range(100):
+        mid = 0.5 * (lo + hi)
+        th, _, _ = _tm_cone_angle(M, mid)
+        if th < half_angle:
+            lo = mid
+        else:
+            hi = mid
+    beta = 0.5 * (lo + hi)
+    th, vr, _ = _tm_cone_angle(M, beta)
+    M2, theta, p2 = _oblique(M, beta)
+    V2 = (2 / ((g - 1) * M2 * M2) + 1) ** -0.5
+    # Isentropic from just behind the shock to the surface: p / p02 = (1 - V'^2)^(g/(g-1)).
+    p_surface_over_p2 = ((1 - vr * vr) / (1 - V2 * V2)) ** (g / (g - 1))
+    p = p2 * p_surface_over_p2
+    return (p - 1) / (g / 2 * M * M), math.degrees(beta)
+
+
+def pitot_cp(M):
+    """The stagnation point's pressure coefficient behind a normal shock (Rayleigh)."""
+    g = GAMMA
+    p0 = ((g + 1) ** 2 * M * M / (4 * g * M * M - 2 * (g - 1))) ** (g / (g - 1)) * (1 - g + 2 * g * M * M) / (g + 1)
+    return (p0 - 1) / (g / 2 * M * M)
+
+
 # -------------------------------------------------------------- running
 
 
@@ -375,13 +528,20 @@ def run_case(spec, run_dir, su2, threads=4):
     for level in range(spec["levels"]):
         d = os.path.join(run_dir, f"L{level}")
         os.makedirs(d, exist_ok=True)
-        nose, x, r = grid(spec, level)
+        nose, x, r, marks = grid(spec, level)
         amin, skew = quality(x, r)
-        write_su2(os.path.join(d, "mesh.su2"), x, r)
-        write_cfg(os.path.join(d, "case.cfg"), spec)
+        write_su2(os.path.join(d, "mesh.su2"), x, r, marks)
         t0 = time.time()
-        with open(os.path.join(d, "log.txt"), "w") as log:
-            code = subprocess.call([su2, "-t", str(threads), "case.cfg"], cwd=d, stdout=log, stderr=subprocess.STDOUT)
+        code = 0
+        stages = [dict(spec, muscl="NO", cfladapt="NO", cflmax=spec.get("cfl", 1.0), iters=spec.get("iters1", 20000))]
+        if spec.get("muscl", "YES") == "YES":
+            stages.append(dict(spec))
+        for k, st in enumerate(stages):
+            write_cfg(os.path.join(d, "case.cfg"), st, restart=k > 0)
+            with open(os.path.join(d, f"log{k}.txt"), "w") as log:
+                code = subprocess.call([su2, "-t", str(threads), "case.cfg"], cwd=d, stdout=log, stderr=subprocess.STDOUT)
+            if code != 0:
+                break
         seconds = time.time() - t0
         rec = {"level": level, "ni": x.shape[0] - 1, "nj": x.shape[1] - 1, "minArea": amin, "maxSkewCos": skew,
                "exit": code, "seconds": seconds}
@@ -421,10 +581,17 @@ def history_summary(path):
 if __name__ == "__main__":
     cmd = sys.argv[1]
     if cmd == "case":
+        # case <spec.json> <run dir> <path to SU2_CFD> [threads]
         spec = json.load(open(sys.argv[2]))
-        su2 = os.environ["SU2_CFD"]
-        res = run_case(spec, sys.argv[3], su2, int(os.environ.get("THREADS", "4")))
+        su2 = sys.argv[4]
+        threads = int(sys.argv[5]) if len(sys.argv) > 5 else 4
+        res = run_case(spec, sys.argv[3], su2, threads)
         json.dump({"spec": spec, "levels": res}, open(os.path.join(sys.argv[3], "result.json"), "w"), indent=1)
+    elif cmd == "exact":
+        M, half = float(sys.argv[2]), math.radians(float(sys.argv[3]))
+        cp, beta = cone_cp(M, half)
+        print(json.dumps({"mach": M, "halfAngleDeg": float(sys.argv[3]), "coneCp": cp, "shockAngleDeg": beta,
+                          "pitotCp": pitot_cp(M)}))
     elif cmd == "drag":
         d = sys.argv[2]
         spec = json.load(open(os.path.join(d, "..", "spec.json")))

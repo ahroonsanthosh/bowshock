@@ -1,0 +1,5 @@
+{
+  "permissions": {
+    "allow": ["Bash(python3 -I docs/research/w6-reference/w6ref.py *)"]
+  }
+}
