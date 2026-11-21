@@ -418,7 +418,10 @@ drag (R3's own branch uses the tool's; the two differ by 2.3e-4 of the
 drag on this level, which moves the floor by that fraction). The
 review found the resumption itself sound, and the three recovered
 records bit-identical with everything derivable from their files. The
-changes went back to the same reviewer for confirmation (below).
+changes went back to the same reviewer: **confirmed** (2026-11-21), every
+required change doing what was asked, `judge.py --checks-only` reproducing
+V1 and V3 exactly with and without the charge, and nothing in the main
+path broken. Amendment 1 is in force from then.
 
 ## The review of the first form (2026-11-21)
 
@@ -533,7 +536,7 @@ the grid part alone is the informative number.
 - Done: the tool, the geometry check, the set-up trials 1 to 13, the
   registration, its review and the revision.
 - V5 at Mach 2 failed R3 on level 2; the owner chose Amendment 1, which
-  passed its review with changes, all made. Its stagnation vertex is 6.0%
+  passed its review with changes, all made and confirmed. Its stagnation vertex is 6.0%
   low on level 2 (above), so it may yet fail V2's test on level 3. Running: the checks' queue (`queue.sh`: V5 Mach 2's level 3,
   then V5 Mach 3 and V2), started again in each two-hour window; a case
   goes on from its first unfinished level (`w6ref.py` keeps each finished
