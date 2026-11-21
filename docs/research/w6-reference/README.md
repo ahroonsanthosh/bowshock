@@ -275,8 +275,9 @@ runs and the route goes back to the owner.
   +- U(1 to 3).
 - V5, a blunt drag on the C grid (blocking only): the hemisphere-cylinder
   at Mach 2 and 3 against the project's fitted values (0006: 0.788934,
-  band 0.023%; 0.849320, band 0.010%): R3's checks pass and the
-  difference is within U_su2 plus that band; R4's limits are not applied
+  band 0.023%; 0.849320, band 0.010%): R3's checks pass, both of R4's
+  ratios are below 1, and the difference is within U_su2 plus that band;
+  R4's 0.5% and 1% limits are not applied
   (on a hemisphere U_cap is the stagnation error times the whole drag).
   The difference against the grid part alone is reported too, a measure
   of how much U_cap over-counts. Agreement licenses nothing; a
@@ -415,6 +416,10 @@ done: the order's guard against equal coarse drags, V1's failures given
 as failures, a Von Karman hold-out at Mach 1.3, each case's settings in
 the verdict, R7's word on a hold-out without a reference, and R4's notes
 on the cap as one region and on the finest level used.
+Its confirmation of those changes found one more hole, fixed: with R4's
+limits off for V5, a ratio of 1 or more made U_su2 infinite and V5 would
+pass any difference; V5 now needs both ratios below 1. A level is now
+taken as converged on its residual alone, before the iteration count.
 
 ## State (2026-11-21)
 

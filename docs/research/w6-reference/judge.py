@@ -154,7 +154,7 @@ def level_checks(spec, k, rec):
     if rec.get("exit") != 0 or "drag" not in rec:
         return ["SU2 failed"], 0.0
     u_it = 0.0
-    if not (rec.get("rms[Rho]", 0.0) <= -11 + 1e-9 and rec.get("Inner_Iter", math.inf) < spec["iters"] - 1):
+    if not rec.get("rms[Rho]", 0.0) <= -11 + 1e-9:
         swing = rec.get("dragRangeLastQuarter", math.inf)
         drift = abs(rec.get("dragMeanLastEighth", math.inf) - rec.get("dragMeanEighthBefore", -math.inf))
         if (rec.get("Inner_Iter", 0) >= spec["iters"] - 1 and swing <= ITERATIVE * abs(rec["drag"])
@@ -369,7 +369,8 @@ def check_v5(run, build):
     if "value" in est and "u" in est and not hard:
         d = est["value"] - value
         out.update(difference=d, againstGridPart=abs(d) / (est["uGrid"] + band * value))
-        out["pass"] = abs(d) <= est["u"] + band * value
+        # Both ratios below 1 (a finite U_su2), as R5 says; only R4's limits are not applied.
+        out["pass"] = est["rho"] < 1 and est["rhoVertex"] < 1 and math.isfinite(est["u"]) and abs(d) <= est["u"] + band * value
     else:
         out["pass"] = False
     return out
