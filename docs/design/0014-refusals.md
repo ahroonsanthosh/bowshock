@@ -4526,6 +4526,24 @@ figure of either report was seen.
    0.05 apart in Mach, the interpolation's error taken as the two
    symbols' difference; otherwise it sets nothing.
 
+**2026-11-21, power-1/2 outline, registered before any run** (no
+letter: letters are the coordinator's to allocate, and the registry is
+not in this checkout, so this entry carries none until one is
+allocated). The power series of exponent 1/2 (a paraboloid, whose tip
+has a finite radius of curvature and which meets the cylinder at a
+corner of 2.9 to 4.8 deg), refused at every length and Mach number (W5),
+is run against the method of characteristics by the procedure that
+widened the Von Karman outline, registered in design record 0006 ("The
+power-1/2 outline: registration"): six cases at 3 to 5 calibers and Mach
+1.5 to 3 (the corners, (4, 2) and (5, 2)), the same fits, line rule, line
+criterion and judging, each march ended at the end of the nose, ahead of
+the corner (the drag compared is the nose's alone, as before), the
+allowance fixed at 8e-4 and never raised to make a case pass, and the
+same hold for a failed case inside the hull of the passing ones. The 9
+population cases it concerns lie at 3.15 to 4.61 calibers, Mach 1.62 to
+2.97. Code that serves the nose changes only after the results are
+recorded and judged.
+
 **2026-11-21, F1 through RM L55H09: the owner's ruling on symbols the
 readers classify differently; the route fails and the refusal stays**
 (unlettered, as the entry of 2026-11-20 above). Made after the pairing

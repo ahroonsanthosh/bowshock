@@ -316,3 +316,14 @@ calibers and Mach 1.5 to 3 ((4, 1.5), (6, 1.5), (4, 3), (6, 3), (5, 2),
 allowance fixed at 8e-4. Started 2026-11-20 23:23 UTC in three lanes;
 `outline/lv-haack/README.md` says where they run and how to monitor,
 resume and judge them. No result yet.
+
+## `outline/power-half/`: the power-1/2 outline (2026-11-21)
+
+The power series of exponent 1/2 (a paraboloid), registered before any
+run in 0006 ("The power-1/2 outline: registration", commit 0eb106f9):
+six cases at 3 to 5 calibers and Mach 1.5 to 3 ((3, 1.5), (5, 1.5), (3,
+3), (5, 3), (4, 2), (5, 2)), with the outline's runners and criteria,
+each march ended at the end of the nose (ahead of its corner), and the
+allowance fixed at 8e-4. Lane a started 2026-11-21 00:17 UTC; lanes b
+and c wait for cores. `outline/power-half/README.md` says where they run
+and how to monitor, start, resume and judge them. No result yet.

@@ -502,6 +502,114 @@ describe('method of characteristics from given data on a line behind the tip', (
   });
 });
 
+describe('method of characteristics from given data, ended at a corner at the end of the nose', () => {
+  const half = 20 * deg;
+  const L = 0.5 / Math.tan(half);
+  const exact = taylorMaccoll(3, half, gamma);
+  const coneCylinder: Body = { ...cone(20), cylinderLength: 2 };
+
+  it('M = 3, 20 deg cone-cylinder, from Taylor-Maccoll data: conical up to the corner, at second order', () => {
+    // Ahead of the corner the flow over the cone-cylinder is the cone's,
+    // exactly: the corner's fan lies downstream. Measured when written,
+    // wall pressure and shock angle on 80 and 160 intervals: 2.30e-6 and
+    // 5.75e-7, 2.30e-6 and 5.75e-7 rad (9.0e-9 and 9.1e-9 on 1280); the
+    // drag downstream of the line within 8.2e-7 and 2.0e-7 of Cp (1 -
+    // (r0 / R)^2) (3.2e-9 on 1280), the last wall point 3.6e-3 of the nose
+    // length ahead of the corner on 160 intervals.
+    const start = coneLine(3, half, 0.3 * L, 90 * deg, 400);
+    const r0 = 0.3 * L * Math.tan(half);
+    [80, 160].forEach((n, k) => {
+      const sol = characteristicsFrom(coneCylinder, start, {
+        mach: 3,
+        gamma,
+        intervals: n,
+        end: L,
+      });
+      for (const w of sol.wall) {
+        expect(Math.abs(w.p / exact.surfacePressureRatio - 1)).toBeLessThan([2.4e-6, 6.0e-7][k]!);
+      }
+      for (const s of sol.shock) {
+        expect(Math.abs(s.angle - exact.shockAngle)).toBeLessThan([2.4e-6, 6.0e-7][k]!);
+      }
+      // It ends at the last C- line that reaches the body ahead of the corner.
+      expect(sol.wall[sol.wall.length - 1]!.x).toBeLessThanOrEqual(L);
+      expect(sol.wall[sol.wall.length - 1]!.x).toBeGreaterThan(0.99 * L);
+      // Nothing beyond the end enters: the march on the cone alone is the same.
+      const bare = characteristicsFrom(cone(20), start, { mach: 3, gamma, intervals: n });
+      expect(sol.wall).toEqual(bare.wall);
+      expect(sol.shock).toEqual(bare.shock);
+      if (n === 160) {
+        const drag = downstreamDrag(coneCylinder, 3, sol.wall);
+        const cp = exact.surfacePressureCoefficient * (1 - (r0 / 0.5) ** 2);
+        expect(Math.abs(drag / cp - 1)).toBeLessThan(3e-7);
+      }
+    });
+  });
+
+  it('a 3-caliber parabolic nose (K = 1/2, a 6.3 deg corner) at M = 2, from its own flow on x = 1: the same drag downstream, at second order', () => {
+    // The data and the reference from the march from the tip on the nose
+    // alone (whose end is its own, no corner inside it), on 320 intervals;
+    // the march from the data on the nose with its cylinder, ended at the
+    // corner. Measured when written, against the reference's 0.0590496:
+    // +1.40e-5 on 160 intervals and +3.35e-6 on 320. From the data of the
+    // march from the tip on 1280 intervals, on 320 to 2560 intervals,
+    // +3.58e-6, +8.91e-7, +2.18e-7 and +5.13e-8 against the march from the
+    // tip extrapolated over 320, 640 and 1280 intervals (order 2.03), and
+    // extrapolated (order 2.01) to within 4.0e-9 of it (6.8e-8 of the
+    // drag).
+    const nose: Body = {
+      nose: { shape: { kind: 'parabolic', parameter: 0.5 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 0,
+    };
+    const body: Body = { ...nose, cylinderLength: 2 };
+    const { start, downstream } = flowOnLine(nose, 2, 320, 1);
+    const errors = [160, 320].map((n) => {
+      const sol = characteristicsFrom(body, start, { mach: 2, gamma, intervals: n, end: 3 });
+      expect(sol.penetration).toBe(0);
+      expect(sol.wall[sol.wall.length - 1]!.x).toBeLessThanOrEqual(3);
+      return downstreamDrag(body, 2, sol.wall) - downstream;
+    });
+    expect(Math.abs(errors[1]!)).toBeLessThan(4e-6);
+    expect(errors[0]! / errors[1]!).toBeGreaterThan(3.5);
+  }, 120_000);
+
+  it('takes the slope ahead of the corner on a wall point within the difference step of it', () => {
+    // A cone-cylinder whose corner lies 3e-7 of its length behind the last
+    // wall point of the march above (on 160 intervals; the wall points
+    // ahead of the corner do not depend on where the cone ends). A slope
+    // differenced across the corner there would turn the flow by about
+    // half the corner's 20 deg; measured when written, that point's
+    // pressure within 9.8e-8 of Taylor-Maccoll's with the one-sided slope,
+    // 0.33 off it with the central difference.
+    const start = coneLine(3, half, 0.3 * L, 90 * deg, 400);
+    const first = characteristicsFrom(coneCylinder, start, {
+      mach: 3,
+      gamma,
+      intervals: 160,
+      end: L,
+    });
+    const corner = first.wall[first.wall.length - 1]!.x / (1 - 3e-7);
+    const short: Body = {
+      nose: { shape: { kind: 'conical' }, length: corner, baseRadius: corner * Math.tan(half) },
+      cylinderLength: 2,
+    };
+    const sol = characteristicsFrom(short, start, { mach: 3, gamma, intervals: 160, end: corner });
+    const last = sol.wall[sol.wall.length - 1]!;
+    expect(corner - last.x).toBeGreaterThan(0);
+    expect(corner - last.x).toBeLessThan(1e-6 * corner);
+    expect(Math.abs(last.p / exact.surfacePressureRatio - 1)).toBeLessThan(6e-7);
+  });
+
+  it('refuses an end off the body or behind the starting line, and a corner ahead of the end', () => {
+    const start = coneLine(3, half, 0.3 * L, 90 * deg, 40);
+    const run = (end: number) => () =>
+      characteristicsFrom(coneCylinder, start, { mach: 3, gamma, intervals: 40, end });
+    expect(run(L + 2.5)).toThrow(/end on the body/);
+    expect(run(0.2 * L)).toThrow(/ahead of the end of the march/);
+    expect(run(L + 1)).toThrow(/corners in the profile/);
+  });
+});
+
 describe('method of characteristics from the fitted flow behind a blunt nose', () => {
   it('3:1 ellipsoid at Mach 2, from its fitted flow on the line at x = 0.133: second order, and where the fitted drags converge', () => {
     // The data (nj = 80, tests/support/ellipsoid-start-line.ts) carry the

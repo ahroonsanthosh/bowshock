@@ -63,6 +63,14 @@
  * are refused; a slope that is continuous across a breakpoint is accepted
  * even where the curvature is unbounded (the Haack series meets the
  * cylinder with its slope vanishing as the square root of the distance).
+ * `characteristicsFrom` can instead end the march at a corner (its option
+ * `end`, the nose's length on a nose meeting the cylinder at an angle, as
+ * the power series does): the flow is supersonic, so nothing downstream of
+ * the corner reaches the body ahead of it, and the C- lines that end on
+ * the body at or ahead of the corner, the only ones the march then runs,
+ * lie wholly upstream of the fan the corner would start. The wall
+ * pressures up to the corner, and so the nose's pressure drag, are those
+ * of the whole body's flow.
  * Further shock points are not spaced by control: where the shock weakens
  * along a curved nose the C+ lines meet it at a shallower angle and the
  * network stretches downstream, so results are used only where refinement
@@ -150,14 +158,19 @@ interface MarchRecord {
   penetration: number;
 }
 
-/** The unit processes of the network on a body in a free stream (p = rho = 1). */
-function network(body: Body, mach: number, gamma: number) {
+/**
+ * The unit processes of the network on a body in a free stream (p = rho =
+ * 1), for a march that ends at xEnd (the end of the body by default).
+ */
+function network(body: Body, mach: number, gamma: number, xEnd = bodyLength(body)) {
   // Free stream: p = rho = 1, so a^2 = gamma.
   const vInf = mach * Math.sqrt(gamma);
   const cp = gamma / (gamma - 1);
   const enthalpy = cp + 0.5 * vInf * vInf;
-  const xEnd = bodyLength(body);
   const L = body.nose.length;
+  if (!(xEnd > 0 && xEnd <= bodyLength(body))) {
+    throw new RangeError('the march must end on the body');
+  }
 
   /** Mach number of a point from its pressure and entropy (NaN where none). */
   const machOf = (pt: Pick<Point, 'p' | 'k'>) => {
@@ -192,6 +205,9 @@ function network(body: Body, mach: number, gamma: number) {
   const radius = (x: number) => bodyRadius(body, x);
   const slope = (x: number) => {
     const h = 1e-6 * L;
+    // Within h of the end the profile beyond it (a corner's other side)
+    // is not the marched body's: a one-sided difference there.
+    if (x + h > xEnd) return Math.atan((radius(xEnd) - radius(xEnd - 2 * h)) / (2 * h));
     return Math.atan((radius(x + h) - radius(x - h)) / (2 * h));
   };
   const corners = bodyBreakpoints(body).filter((x) => x > 0 && x < xEnd);
@@ -590,11 +606,20 @@ export interface CharacteristicsFromOptions {
    * one from the curve's shock point first.
    */
   readonly onLine?: (line: readonly CharacteristicPoint[]) => void;
+  /**
+   * Where the march ends, along the axis: the end of the body by default.
+   * The march stops at the last C- line that ends on the body at or ahead
+   * of it, and a corner of the profile there is not refused (see the
+   * file's header): on a nose meeting the cylinder at an angle, the nose's
+   * length gives the wall pressures, and the drag, of the whole nose.
+   */
+  readonly end?: number;
 }
 
 /**
  * The method of characteristics from given data on a curve from the body
- * to the shock (see the file's header), marched to the end of the body.
+ * to the shock (see the file's header), marched to the end of the body, or
+ * to `end`.
  * The wall points start at the curve's body point, the shock points at its
  * shock point.
  */
@@ -610,7 +635,8 @@ export function characteristicsFrom(
   const given = start.points;
   const last = given.length - 1;
   if (last < 3) throw new RangeError('the starting line needs at least four points');
-  const net = network(body, mach, gamma);
+  const xEnd = options.end ?? bodyLength(body);
+  const net = network(body, mach, gamma, xEnd);
   const { vInf, machOf, radius, slope, entropy, massFlux, behindShock } = net;
   const { interiorPoint, wallPoint } = net;
 
@@ -626,6 +652,8 @@ export function characteristicsFrom(
   if (!(Math.abs(foot.y - radius(foot.x)) <= 1e-9 * length)) {
     throw new RangeError('the starting line must begin on the body');
   }
+  if (!(foot.x < xEnd))
+    throw new RangeError('the starting line must begin ahead of the end of the march');
   const samples = given.map((q) => ({
     x: q.x,
     y: q.y,
