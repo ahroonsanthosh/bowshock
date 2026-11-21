@@ -258,6 +258,11 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     expect(bluntNoseRefusal(nose({ kind: 'power', exponent: 0.75 }, 3), 2)).toMatch(
       /only the Von Karman/,
     );
+    // The paraboloid's tip has a finite radius of curvature (R^2 / 2L): the
+    // reason does not say its curvature is unbounded.
+    const paraboloid = bluntNoseRefusal(nose({ kind: 'power', exponent: 0.5 }, 4), 2);
+    expect(paraboloid).toMatch(/only the Von Karman/);
+    expect(paraboloid).not.toMatch(/curvature/);
     // Sharp tips are the sharp problem's to refuse (a detached shock).
     expect(bluntNoseRefusal(nose({ kind: 'ogive', parameter: 1 }, 1), 1.2)).toBeUndefined();
     // The outline: a point, a segment, a polygon.

@@ -15,8 +15,18 @@
 # are the Von Karman lanes' as they ran: C, the Haack parameter (0; the
 # LV-Haack lanes pass 0.3333333333333333, which is 1/3 as a double), and
 # S, the lanes' folder (/tmp/scratch/vk).
+# Three more, added 2026-11-21 for the power-1/2 registration (0006, "The
+# power-1/2 outline: registration"), whose defaults leave the Haack lanes
+# as they ran: SHAPE (haack; the power-1/2 lanes pass power), N, the
+# power-series exponent (0.75, common.ts's default, unused by a Haack
+# nose; the power-1/2 lanes pass 0.5), and MOC_END (unset; the power-1/2
+# lanes pass nose, which ends each march at the end of the nose, ahead of
+# its corner: moc.test.ts).
 C=${C:-0}
 S=${S:-/tmp/scratch/vk}
+SHAPE=${SHAPE:-haack}
+N=${N:-0.75}
+MOC_END=${MOC_END:-}
 TREE=$S/tree
 D=$S/out
 JOBS=$1
@@ -40,7 +50,7 @@ fam() { # CAL CYL M MAXREF
       chunk=500
       [ "$r" -ge 4 ] && chunk=250
       say "start $name"
-      env SHAPE=haack C=$C L=$cal M=$m CYL=$cyl REF=$r UNGATED=1 CHUNK=$chunk SUB=250 \
+      env SHAPE=$SHAPE C=$C N=$N L=$cal M=$m CYL=$cyl REF=$r UNGATED=1 CHUNK=$chunk SUB=250 \
         CHECKPOINT=$D/ckpt-$name SAVE=$D/$name LOG=$D/log.txt ONLY=tests/vk/fitsave.test.ts \
         npx vitest run --config tests/vk/vitest.config.ts > "$D/run-$name.out" 2>&1 < /dev/null
       say "done $name exit $?"
@@ -59,7 +69,7 @@ moc() { # CAL CYL M
   done
   rm -f "$D/moc-$tag.txt" "$D/moc-$tag.jsonl"
   say "start moc $tag"
-  env SHAPE=haack C=$C L=$cal M=$m CYL=$cyl MOC_R=1,2,4 \
+  env SHAPE=$SHAPE C=$C N=$N L=$cal M=$m CYL=$cyl MOC_R=1,2,4 MOC_END=$MOC_END \
     MOC_FILES=$D/${tag}r1,$D/${tag}r2,$D/${tag}r4 MOC_LINES=auto MOC_RUN=640,1280,2560 \
     MOC_OUT=$D/moc-$tag.txt MOC_JSONL=$D/moc-$tag.jsonl ONLY=tests/vk/moc.test.ts \
     npx vitest run --config tests/vk/vitest.config.ts > "$D/run-moc-$tag.out" 2>&1 < /dev/null

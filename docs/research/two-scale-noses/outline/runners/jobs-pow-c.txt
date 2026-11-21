@@ -1,0 +1,9 @@
+# Power-1/2 lane c (0006, "The power-1/2 outline: registration", 2026-11-21): 4 and 5 calibers at Mach 2 (2 of cylinder); nj 20, then 40, then 80 and its marches (ended at the end of the nose).
+fam 4 2 2 1
+fam 5 2 2 1
+fam 4 2 2 2
+fam 5 2 2 2
+fam 4 2 2 4
+moc 4 2 2
+fam 5 2 2 4
+moc 5 2 2

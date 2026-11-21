@@ -1431,7 +1431,7 @@ is what the hold waited for. The served outline now reaches 5 calibers
 at Mach 1.5, about 5.33 at Mach 2, about 5.67 at Mach 2.5 and 6 at Mach
 3; the failed (6, 2) and 6 calibers at Mach 1.5 lie outside it.
 
-**The LV-Haack outline: registration (2026-11-20, before any run).**
+**The LV-Haack outline: registration (2026-11-21, before any run).**
 The LV-Haack nose (Haack, C = 1/3) is refused at every length and Mach
 number (`bluntNoseRefusal`; the refusal audit's W5). Its tip, as the Von
 Karman's, has unbounded slope (r ~ x^(3/4)), and the fitted solver
@@ -1537,6 +1537,169 @@ stricter rule on the allowance, all fixed here before any LV-Haack run
   re-run; the README's line naming the served noses and its count of the
   cases that get a total. If nothing passes, none of this changes and
   the result is recorded.
+
+**The power-1/2 outline: registration (2026-11-21, before any run).**
+The power series of exponent 1/2 (r = R (x / L)^(1/2), a paraboloid) is
+refused at every length and Mach number (`bluntNoseRefusal`; the refusal
+audit's W5). Unlike the Haack noses its tip has a finite radius of
+curvature, R^2 / 2L (0.042 of the diameter at 3 calibers, 0.025 at 5),
+so it is blunt as an ellipsoid is; but that tip is far smaller than the
+body (the grid's length scale, twice the tip scale R^2 / L, is 0.17 to
+0.10 of the diameter at 3 to 5 calibers), so the fitted solver solves it
+on the two-scale grids (0004), and `TWO_SCALE_DRAG_FLOOR` applies to it.
+It meets the cylinder at a corner of atan(R / 2L): 4.76 deg at 3
+calibers, 2.86 deg at 5, inside the fitted grids' limit of 15 deg
+(`MAX_SHOULDER_ANGLE`). In the refusal audit's population
+(`docs/research/refusals`, 2000 rockets, 8000 cases, its power-1/2 noses
+drawn at 3 to 5 calibers; 292 power-1/2 cases) 9 are refused for the
+nose alone (checked 2026-11-20 on af73138: every other reason, nose and
+total, absent): 3.15 to 4.61 calibers at Mach 1.62 to 2.97 ((3.15,
+1.76), (3.15, 2.48), (3.22, 2.43), (3.26, 2.19), (3.59, 1.62), (3.59,
+2.80), (4.43, 1.64), (4.43, 2.97), (4.61, 2.66)). New references are run
+for them by the Von Karman outline's procedure above with the LV-Haack
+registration's stricter rule on the allowance, adapted only where the
+corner requires it, all fixed here before any power-1/2 run (branch
+`worktree-agent-a6fd4c525ce3bd07f`):
+
+- Cases: the power-1/2 nose (`SHAPE=power N=0.5` to the runners, the
+  page's `{ kind: 'power', exponent: 0.5 }`) with 2 calibers of cylinder,
+  at six points: the corners (3, 1.5), (5, 1.5), (3, 3) and (5, 3) of
+  the region 3 to 5 calibers, Mach 1.5 to 3, which holds every one of the
+  9 cases, and (4, 2) and (5, 2) inside it. Why these: the corners alone
+  would serve the whole region on four points, so (4, 2) checks its
+  middle; and (5, 2) is, as (6, 2) is for the LV-Haack registration, the
+  longest nose at Mach 2, where the Von Karman nose failed for want of a
+  passing line, on what would otherwise be this outline's edge, so it is
+  checked rather than taken on trust. Nothing below Mach 1.5 and nothing
+  outside 3 to 5 calibers, for the Von Karman registration's reasons (the
+  criteria were set at Mach 1.5 to 3; the population draws 3 to 5). No
+  case is added after the runs start, under this registration.
+- The reference, adapted for the corner: `characteristicsFrom` refuses a
+  corner in the profile (it would need an expansion fan, not
+  implemented). Each march is ended at the end of the nose instead
+  (`characteristicsFrom`'s option `end`, the runner's `MOC_END=nose`), at
+  the last C- line that reaches the body at or ahead of the corner. This
+  loses nothing the comparison uses. The drag compared is the nose's
+  alone, from the line to the end of the nose, both from the march
+  (`downstreamDrag` in `fitdata.ts`, which closes the integral at the end
+  of the nose with the pressure interpolated there, or extrapolated from
+  the last two wall points when the march ends short of it, as it now
+  does) and from the fitted flow (`fittedDragFrom`, whose cylinder faces
+  have no axial normal and carry no axial force), as for the Von Karman
+  and LV-Haack noses, whose marches ran on along the cylinder but whose
+  drag was integrated to the end of the nose only. And the flow is
+  supersonic there, so the corner's fan lies wholly downstream of every
+  C- line that ends on the body at or ahead of it: the wall pressures up
+  to the corner are the whole body's. Tested
+  (`tests/validation/characteristics.test.ts`, "ended at a corner at the
+  end of the nose"): on a 20 deg cone-cylinder at Mach 3 from
+  Taylor-Maccoll data, wall pressures and shock angles within 2.30e-6 and
+  5.75e-7 of Taylor-Maccoll's on 80 and 160 intervals and the drag
+  downstream within 2.0e-7 of the exact value, the march identical to the
+  march on the cone alone; on a 3-caliber parabolic nose (K = 1/2, a 6.3
+  deg corner) at Mach 2 from the flow of the march from its tip, second
+  order (2.01 on 320 to 2560 intervals), extrapolated to within 6.8e-8 of
+  the drag of the march from the tip; a wall point within the slope's
+  difference step of the corner takes the slope ahead of it (9.8e-8 of
+  Taylor-Maccoll's pressure; differenced across the corner, 0.33).
+  Planted errors caught: the end not passed to the network (all three
+  tests), the end check moved 0.05 of the nose length past the corner
+  (both drag tests), the slope differenced across the corner (the slope
+  test). Without `end` the marches are as before (the default end is the
+  body's, and the slope changes only within 1e-6 of the nose length of
+  that end, where on a cylinder it is zero either way), so the Von Karman
+  and LV-Haack marches are unchanged. The shoulder expansion fan of
+  `claude/wip/boat-tails` was not brought in: it shares no history with
+  this branch (no merge base), it changes how every C- line finds the
+  wall, and nothing past the corner enters the nose's drag.
+- Code: the src of this registration's commit, frozen for the runs in a
+  copy (its `COMMIT` file), with the outline's runners (`fitsave.test.ts`,
+  `seed.mjs`, `fitdata.ts`, `common.ts`, `fingerprint.ts` unchanged;
+  `moc.test.ts` gains `MOC_END`, unset by default). `lane.sh` gains three
+  settings from the environment, the shape (`SHAPE=power`), the exponent
+  (`N=0.5`) and `MOC_END=nose`, whose defaults leave the Haack lanes as
+  they ran. Every checkpoint and saved fit carries the fingerprint, and a
+  checkpoint, seed or saved fit with another is refused, as before. Three
+  lanes (`jobs-pow-a.txt`: 3 calibers at Mach 1.5 and 3; `jobs-pow-b.txt`:
+  5 calibers at Mach 1.5 and 3; `jobs-pow-c.txt`: 4 and 5 calibers at Mach
+  2), at `nice -n 10`, one core each, started as cores come free (the
+  LV-Haack lanes hold three of the four). A lane stopped by a restart
+  resumes from its last checkpoint (the same fit, not a re-run).
+- Fits, unchanged: nj = 20, 40 and 80, each finer one started from the
+  coarser saved fit, W5's chunks and early stop, at most 40000 iterations
+  times the refinement. They pass if every fit settles within that, every
+  fitted grid passes the fitted gates (`FITTED_QUALITY_LIMITS`), and the
+  three drags converge monotonically.
+- Lines, unchanged: chosen on the nj = 20 fit before any march by the
+  registered rule (`MOC_LINES=auto`: the nose's lines behind the last
+  line whose least Mach number is below 1.05, ahead of the first whose
+  fitted drag downstream is below 40% of the nose's, seven targets evenly
+  in log x), marched from each grid's fitted flow on 640, 1280 and 2560
+  intervals, each march ended at the end of the nose.
+- The line criterion, unchanged: on every grid, the march's mass balance
+  on 2560 intervals below 3.5e-5, and its change from 1280 intervals
+  below 3.5e-5 of the nose's drag; a line whose march or upstream part
+  does not converge monotonically over the three grids gives no reference
+  and fails. A march that stops with an error gives no value and so fails
+  its line.
+- References, lowest bound and miss, unchanged (`judge.mjs`). The lines
+  next to a passing line are counted as the owner's decision of
+  2026-10-29 counts them: one marched line on each side that gives a
+  reference.
+- The allowance is fixed at 8e-4 (`TWO_SCALE_DRAG_FLOOR`) and does not
+  rise under this registration, as for the LV-Haack nose: a case whose
+  counted misses would need more, that is twice its largest counted miss
+  (over its passing lines and, for a case resting on one passing line,
+  the lines next to it) rounded up to one significant figure above 8e-4,
+  fails; and a case whose error against the lowest bound of any passing
+  line exceeds its band (three grids) plus 8e-4 fails. The allowance is
+  not raised to make a case pass. Judged with `judge.mjs --allowance
+8e-4`, unchanged.
+- A case passes when its fits pass, at least one line passes, twice its
+  largest counted miss rounds up to 8e-4 or less, and its band with the
+  allowance of 8e-4 contains its error against the lowest bound of every
+  passing line. The power-1/2 outline is then the convex hull of the
+  passing power-1/2 cases (`insideOutline`, a point on the outline counted
+  inside), separate from the Von Karman and LV-Haack outlines: no shape's
+  references widen another's.
+- A case that fails is not added and the outline is not extended there;
+  the failure and its numbers are recorded here and in
+  `docs/research/two-scale-noses/outline/power-half/`. It is not re-run
+  with other lines or settings under this registration. If a failed case
+  lies inside the hull of the passing ones, or on it, nothing is added
+  until the owner decides.
+- Not criteria, as for the Haack noses: a four-grid run to nj = 160, and
+  the body length (the measurement on the 3-caliber Von Karman nose is
+  taken to carry over, as the page's body lengths of 0 to 30 calibers are
+  accepted: behind a corner as behind a smooth shoulder, the supersonic
+  flow over the nose does not depend on the body behind it; the result
+  says so).
+- Not set aside: the corner is singular in the fitted flow (its fan is
+  captured over a few cells), and the fitted drag's convergence near it is
+  part of what the fits and the references judge.
+- The reason's wording, corrected with this registration rather than
+  after it: it said "of the blunt noses whose tip curvature is
+  unbounded", false for this nose, whose tip curvature is finite; it now
+  says "of the blunt noses other than ellipsoids". That is a plain
+  factual error in a message, corrected without changing what is served
+  or refused (the same noses are refused, for the same reason), so it
+  does not wait for the results; a test holds it
+  (`tests/analysis/fitted-flow.test.ts`).
+- Code after a pass, and only after the results are recorded here and
+  judged: a per-shape list of references in `fitted-flow.ts`
+  (`POWER_HALF_REFERENCES` beside `VON_KARMAN_REFERENCES`, and the
+  LV-Haack list if that registration passes), and `bluntNoseRefusal`
+  serving the power series of exponent exactly 1/2 inside its outline
+  (other exponents stay refused: no reference interpolates between
+  shapes); the refusal's wording naming every checked nose, and for a
+  power-1/2 nose outside its outline the power-1/2 points checked; a test
+  holding the list to the power-1/2 `judge.json` and to this
+  registration's rule, as `tests/analysis/von-karman-references.test.ts`
+  does; the refusal audit's comment in `docs/research/refusals/evaluate.ts`
+  (its `noseReasons`, which calls `bluntNoseRefusal`, and its `noseHaack`
+  reason's wording) and its served totals re-run; the README's line
+  naming the served noses and its count of the cases that get a total. If
+  nothing passes, none of this changes and the result is recorded.
 
 **Sharp tips whose bow shock detaches** stay refused (the sharp
 problem's message). On the same grids (0004), with 5 calibers of

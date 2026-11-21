@@ -864,7 +864,10 @@ export function bluntNoseRefusal(body: Body, mach: number): string | undefined {
   const { shape, length, baseRadius } = body.nose;
   if (Number.isFinite(noseTipSlope(body.nose)) || shape.kind === 'ellipsoid') return undefined;
   if (!(shape.kind === 'haack' && shape.parameter === 0)) {
-    return 'of the blunt noses whose tip curvature is unbounded, only the Von Karman (LD-Haack) nose has been checked against a reference so far';
+    // Not "whose tip curvature is unbounded" (as this said until
+    // 2026-11-21): the power series of exponent 1/2 is a paraboloid, whose
+    // tip has a finite radius of curvature, R^2 / 2L.
+    return 'of the blunt noses other than ellipsoids, only the Von Karman (LD-Haack) nose has been checked against a reference so far';
   }
   const calibers = length / (2 * baseRadius);
   if (insideOutline(VON_KARMAN_REFERENCES, [calibers, mach])) return undefined;

@@ -15,10 +15,17 @@
 // Every saved fit must carry the fingerprint of this tree's fit (its case
 // and the numerics hash of fitsave.test.ts's sources); the records carry
 // this runner's own hashes.
+//
+// MOC_END=nose (added 2026-11-21 for the power-1/2 registration in 0006,
+// before any power-1/2 run) ends each march at the end of the nose
+// (characteristicsFrom's `end`), ahead of the corner where a power-series
+// nose meets the cylinder; the drag compared (downstreamDrag) is the
+// nose's, from the line to the end of the nose, either way. Unset, the
+// marches are as before.
 // Env: C, L, M, CYL (common.ts), MOC_R (refinements, e.g. 1,2,4),
 // MOC_FILES (saved states, same order), MOC_LINES (base-grid line indices,
 // "scan" or "auto"), MOC_COUNT, MOC_RUN (intervals), MOC_OUT (text log),
-// MOC_JSONL (records).
+// MOC_JSONL (records), MOC_END.
 import { appendFileSync, readFileSync } from 'node:fs';
 import { it } from 'vitest';
 import { characteristicsFrom } from '../../src/validation/characteristics';
@@ -39,9 +46,16 @@ it('moc', () => {
   const runs = (process.env.MOC_RUN ?? '640,1280,2560').split(',').map(Number);
   const linesArg = process.env.MOC_LINES ?? 'auto';
   const count = Number(process.env.MOC_COUNT ?? 7);
+  const endAtNose = process.env.MOC_END === 'nose';
+  if (process.env.MOC_END !== undefined && process.env.MOC_END !== '' && !endAtNose) {
+    throw new Error(`MOC_END must be "nose" or unset, got ${process.env.MOC_END}`);
+  }
+  const marchEnd = endAtNose ? { end: body.nose.length } : {};
   const fitCode = codeHashes(['fitsave.test.ts']);
   const own = codeHashes(['moc.test.ts']);
-  log(`${new Date().toISOString()} ${tag}: march, fit numerics ${fitCode.numerics}, march numerics ${own.numerics}, runner ${own.runner}`);
+  log(
+    `${new Date().toISOString()} ${tag}: march, fit numerics ${fitCode.numerics}, march numerics ${own.numerics}, runner ${own.runner}${endAtNose ? ', ended at the end of the nose' : ''}`,
+  );
   let lines: number[] = [];
   rs.forEach((r, n) => {
     const head = JSON.parse(readFileSync(`${files[n]!}.json`, 'utf8')) as {
@@ -106,7 +120,7 @@ it('moc', () => {
       for (const intervals of runs) {
         const t1 = performance.now();
         try {
-          const sol = characteristicsFrom(f.body, d.start, { mach, gamma, intervals });
+          const sol = characteristicsFrom(f.body, d.start, { mach, gamma, intervals, ...marchEnd });
           const drag = downstreamDrag(f.body, mach, sol.wall);
           appendFileSync(
             JSONL,
@@ -125,6 +139,7 @@ it('moc', () => {
               fitNumerics: fitCode.numerics,
               mocNumerics: own.numerics,
               mocRunner: own.runner,
+              ...(endAtNose ? { end: 'nose' } : {}),
             }) + '\n',
           );
           log(
