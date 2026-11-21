@@ -36,9 +36,10 @@ OUTER_CP = 1e-6  # R3
 SHOCK_REACH = 0.9  # R3
 SU2_FORCE = 5e-3  # R3: the tool's drag within 0.5% of SU2's own force on level 1, a quarter of that per level after
 ITERATIVE = 1e-3  # R3: a level stopped at its limit counts if its drag's range over its last quarter is at most 0.1%
+DRIFT = 0.25  # R3: ... and the means of its last two eighths differ by at most a quarter of that range
 CEILING = 0.02  # R7
 REFIT = 1e-9  # R6: a refit of a lane's grid within 1e-9 of its drag (the fits' settling tolerance)
-VENKAT_ALLOWED = (0.05, 0.25, 0.5)  # R3: the registered value, then the stalled case's reruns, in order
+VENKAT_ALLOWED = (0.05,)  # R3: one coefficient; no reruns with another (the re-review's change 5)
 WIDEN_ALLOWED = (0, 1, 2)  # R3
 FITTED_DRAG_FLOOR = 7e-5  # src/analysis/verified-drag.ts
 TWO_SCALE_DRAG_FLOOR = 8e-4  # src/analysis/verified-drag.ts
@@ -56,7 +57,8 @@ CHECK_RUNS = ("V1-cone3M1.3", "V1-cone3M3", "V2-ogive4rn0.08M1.3", "V2-ogive4rn0
 LEVEL4_TEST = ("V2-ogive4rn0.08M1.3", "V2-ogive4rn0.08M2")  # R5 V4: these also run level 4
 # The hold-out (R7): off W6's list, SU2 from the V2 runs and one more.
 HOLDOUT = (("ogive", 4, 0.08, 1.3, "V2-ogive4rn0.08M1.3"), ("ogive", 4, 0.08, 2, "V2-ogive4rn0.08M2"),
-           ("ogive", 4, 0.08, 3, "V2-ogive4rn0.08M3"), ("vk", 4, 0.08, 2, "H-vk4rn0.08M2"))
+           ("ogive", 4, 0.08, 3, "V2-ogive4rn0.08M3"), ("vk", 4, 0.08, 1.3, "H-vk4rn0.08M1.3"),
+           ("vk", 4, 0.08, 2, "H-vk4rn0.08M2"))
 BOX = {"calibers": (3, 5), "ratio": (0.03, 0.15), "mach": (1.3, 3)}
 
 SHAPES = ("ogive", "vk")
@@ -117,6 +119,28 @@ def _same(a, b):
 
 # ------------------------------------------------------------- SU2's side
 
+BOUNDARY = ("|Cp|", "the shock reaches", "outlet Mach")
+
+
+def earlier_attempts(run, spec, build):
+    """
+    '' if a widened run's earlier attempts are kept (<run>.try1, .try2, ...,
+    widen 0, 1, ...) and each failed R3's shock or boundary checks on a level
+    1 to 3, as R3's trigger requires (the re-review's change 5(b)); else why not.
+    """
+    for t in range(1, spec["widen"] + 1):
+        old = f"{run}.try{t}"
+        if not os.path.exists(os.path.join(old, "result.json")):
+            return f"widen {spec['widen']} without its earlier attempt {os.path.basename(old)}"
+        ospec, orecs = run_record(old)
+        if spec_mismatch(ospec, build) or ospec["widen"] != t - 1:
+            return f"{os.path.basename(old)} is not the registered attempt with widen {t - 1}"
+        msgs = [m for k in (1, 2, 3) if k in orecs for m in level_checks(ospec, k, orecs[k])[0]]
+        if not any(m.startswith(BOUNDARY) for m in msgs):
+            return f"{os.path.basename(old)} did not fail R3's shock or boundary checks"
+    return ""
+
+
 
 def run_record(run):
     with open(os.path.join(run, "result.json")) as f:
@@ -132,10 +156,13 @@ def level_checks(spec, k, rec):
     u_it = 0.0
     if not (rec.get("rms[Rho]", 0.0) <= -11 + 1e-9 and rec.get("Inner_Iter", math.inf) < spec["iters"] - 1):
         swing = rec.get("dragRangeLastQuarter", math.inf)
-        if rec.get("Inner_Iter", 0) >= spec["iters"] - 1 and swing <= ITERATIVE * abs(rec["drag"]):
+        drift = abs(rec.get("dragMeanLastEighth", math.inf) - rec.get("dragMeanEighthBefore", -math.inf))
+        if (rec.get("Inner_Iter", 0) >= spec["iters"] - 1 and swing <= ITERATIVE * abs(rec["drag"])
+                and drift <= DRIFT * swing):
             u_it = swing
         else:
-            bad.append(f"not converged (residual {rec.get('rms[Rho]')}, {rec.get('Inner_Iter')} iterations, drag range {swing})")
+            bad.append(f"not converged (residual {rec.get('rms[Rho]')}, {rec.get('Inner_Iter')} iterations, "
+                       f"drag range {swing}, drift {drift})")
     if not rec.get("outerMaxAbsCp", math.inf) <= OUTER_CP:
         bad.append(f"|Cp| {rec.get('outerMaxAbsCp')} on the outer boundary")
     if not rec.get("shockReach", math.inf) <= SHOCK_REACH:
@@ -146,26 +173,39 @@ def level_checks(spec, k, rec):
         bad.append("a cell of no area")
     if not rec.get("seeded"):
         bad.append("not started from the level below")
-    if not abs(rec.get("su2Drag", math.inf) - rec["drag"]) <= SU2_FORCE / 4 ** (k - 1) * abs(rec["drag"]):
+    # Not on the sharp cone, which meets the cylinder at a corner where the two
+    # quadratures differ on every level (the re-review); V1(b) tests the
+    # integral there against the exact drag instead.
+    if spec["shape"] != "cone" and not abs(rec.get("su2Drag", math.inf) - rec["drag"]) <= SU2_FORCE / 4 ** (k - 1) * abs(rec["drag"]):
         bad.append(f"the tool's drag {rec['drag']} against SU2's own {rec.get('su2Drag')}")
     return bad, u_it
 
 
-def su2_estimate(D, Vreg, Vvert):
-    """R4's grid part: the value on the finest level used and max(U_total, U_dist)."""
+def su2_estimate(D, Vreg, Vvert, swings=(0.0, 0.0, 0.0)):
+    """
+    R4's grid part: the value on the finest level used and max(U_total,
+    U_dist). With the levels' iterative ranges s1, s2, s3 (zero where a level
+    converged), every rate is taken at its least favourable: the coarser
+    changes |e12|, V12 reduced by s1 + s2, the finer |e23|, V23 increased by
+    s2 + s3 (the re-review's change 3(b)).
+    """
+    s1, s2, s3 = swings
     e12, e23 = D[1] - D[0], D[2] - D[1]
-    if e12 * e23 > 0 and abs(e23) < abs(e12):
-        p = math.log2(e12 / e23)
-        u_total = 1.25 * abs(e23) / (2 ** min(p, 2) - 1)
+    a12, a23 = max(abs(e12) - s1 - s2, 0.0), abs(e23) + s2 + s3
+    if e12 * e23 > 0 and a23 < a12:
+        p = math.log2(a12 / a23)
+        u_total = 1.25 * a23 / (2 ** min(p, 2) - 1)
         kind = f"monotone, order {p:.2f}"
     else:
         p = None
-        u_total = 3 * max(abs(e12), abs(e23))
+        u_total = 3 * max(abs(e12) + s1 + s2, a23)
         kind = "not monotone"
-    rho = Vreg[1] / Vreg[0] if Vreg[0] > 0 else math.inf
-    rho_vertex = Vvert[1] / Vvert[0] if Vvert[0] > 0 else math.inf
+    v12, v23 = Vreg[0] - s1 - s2, Vreg[1] + s2 + s3
+    w12, w23 = Vvert[0] - s1 - s2, Vvert[1] + s2 + s3
+    rho = v23 / v12 if v12 > 0 else math.inf
+    rho_vertex = w23 / w12 if w12 > 0 else math.inf
     r = max(rho, 0.5)
-    u_dist = Vreg[1] * r / (1 - r) if rho < 1 else math.inf
+    u_dist = v23 * r / (1 - r) if rho < 1 else math.inf
     return {"value": D[2], "drags": D, "regionChanges": Vreg, "vertexChanges": Vvert, "order": p, "kind": kind,
             "uTotal": u_total, "rho": rho, "rhoVertex": rho_vertex, "r": r, "uDist": u_dist,
             "uGrid": max(u_total, u_dist)}
@@ -181,16 +221,18 @@ def su2_case(run, levels, build, x_end=None):
     spec, recs = run_record(run)
     out = {"levels": levels}
     hard = {}
-    mismatch = spec_mismatch(spec, build)
+    mismatch = spec_mismatch(spec, build) or earlier_attempts(run, spec, build)
     if mismatch:
         hard["spec"] = [mismatch]
     u_iter = 0.0
+    swings = []
     for k in levels:
         if k not in recs:
             hard[k] = ["not run"]
             continue
         bad, u_it = level_checks(spec, k, recs[k])
         u_iter += u_it
+        swings.append(u_it)
         if bad:
             hard[k] = bad
     walls = [os.path.join(run, f"L{k}", "wall.csv") for k in levels]
@@ -201,7 +243,7 @@ def su2_case(run, levels, build, x_end=None):
     x0 = w6ref.region_start(spec) if x_end is None else spec["L"] / 128
     D = [w6ref.nose_drag(*w6ref.read_surface(w), end, r_end) for w in walls]
     ch = [w6ref.changes(walls[i], walls[i + 1], end, x0, r_end) for i in (0, 1)]
-    est = su2_estimate(D, [c["regions"] for c in ch], [c["vertex"] for c in ch])
+    est = su2_estimate(D, [c["regions"] for c in ch], [c["vertex"] for c in ch], swings)
     out.update(est)
     u_cap = 0.0
     if spec["rn"] > 0:
@@ -209,10 +251,13 @@ def su2_case(run, levels, build, x_end=None):
         top = recs[levels[-1]]
         exact = w6ref.pitot_cp(spec["mach"])
         rel = top["cpStagnation"] / exact - 1
+        rel_before = recs[levels[-2]]["cpStagnation"] / exact - 1
         xt = nose["xt"]
         cap = w6ref.nose_drag(*w6ref.read_surface(walls[-1]), xt, w6ref.radius(nose, xt))
-        u_cap = abs(rel) * abs(cap)
-        out["stagnation"] = {"cp": top["cpStagnation"], "pitot": exact, "relative": rel, "capDrag": cap}
+        # The larger stagnation error of the two finest levels used (the re-review's change 4).
+        u_cap = max(abs(rel), abs(rel_before)) * abs(cap)
+        out["stagnation"] = {"cp": top["cpStagnation"], "pitot": exact, "relative": rel,
+                             "relativeLevelBefore": rel_before, "capDrag": cap}
     out["uCap"] = u_cap
     out["uIter"] = u_iter
     out["u"] = est["uGrid"] + u_cap + u_iter
@@ -251,6 +296,13 @@ def su2_reference(run, build):
 
 
 def check_v1(run, build):
+    try:
+        return _check_v1(run, build)
+    except (OSError, ValueError, KeyError) as e:
+        return {"name": "V1", "pass": False, "why": f"{type(e).__name__}: {e}"}
+
+
+def _check_v1(run, build):
     spec, _ = run_record(run)
     L, M = spec["L"], spec["mach"]
     cp_exact, _ = w6ref.cone_cp(M, math.atan(R / L))
@@ -308,13 +360,16 @@ def check_v4(run, build):
 
 
 def check_v5(run, build):
+    """R5 V5: the hard checks, and the difference within U_su2 plus the fitted band (R4's limits not applied)."""
     spec, _ = run_record(run)
     value, band = HEMISPHERE[spec["mach"]]
     est = su2_case(run, [1, 2, 3], build)
     out = {"name": "V5", "fitted": value, "fittedBand": band * value, "estimate": est}
-    if "value" in est:
-        out["difference"] = est["value"] - value
-        out["pass"] = est["reference"] and abs(est["value"] - value) <= est["u"] + band * value
+    hard = {k: v for k, v in est["failures"].items() if k != "R4"}
+    if "value" in est and "u" in est and not hard:
+        d = est["value"] - value
+        out.update(difference=d, againstGridPart=abs(d) / (est["uGrid"] + band * value))
+        out["pass"] = abs(d) <= est["u"] + band * value
     else:
         out["pass"] = False
     return out
@@ -367,6 +422,9 @@ def procedure(fam, refits, t):
             why.append(f"nj {x['nj']} refitted {rf['here']} against the lanes' {rf['lanes']}")
     T = [x["drag"] for x in g]
     q = (T[0] - T[1]) / (T[1] - T[2]) if T[1] != T[2] else math.inf
+    if q == 0:
+        why.append("nj = 20 and 40 give the same drag")
+        return dict(reference=False, why="; ".join(why), drags=T, oscillation=osc, value=None, u=None)
     out = {"drags": T, "oscillation": osc}
     if q < 0:
         # Not monotone: the page's rule for oscillation, the range of the three.
@@ -471,6 +529,9 @@ def main():
         row = {"tag": t, "shape": shape, "point": (cal, ratio, M), "where": where}
         run = os.path.join(runs, t)
         row["su2"] = su2_reference(run, registered(t, shape, cal, ratio, M)) if have(t) else {"reference": False, "failures": {"-": ["not run"]}}
+        if have(t):
+            sp, _ = run_record(run)
+            row["settings"] = {"widen": sp.get("widen"), "venkat": sp.get("venkat")}
         row["fitted"] = procedure(fam, refits, t)
         row["both"] = bool(row["su2"]["reference"] and row["fitted"]["reference"])
         if row["both"]:

@@ -146,8 +146,10 @@ scratchpad, summarised here:
    tried leaves level 2's stagnation streamline 1.3% to 3.1% low, and 0.05
    the least, the only one seen to recover on level 3. The coefficient is
    0.05 (R3), most accurate at the stagnation point; its limit cycles
-   (trial 10, 0.063% of the drag) are carried as an iterative error, and
-   a case whose level swings by more is run again with 0.25, then 0.5.
+   (trial 10, 0.063% of the drag) are carried as an iterative error. At
+   Mach 3, 0.25 stalls on level 1 too (the drag swinging by 4.7e-4 of its
+   value), so another coefficient is no cure, and a case is never rerun
+   with one (R3).
 
 ## Registration (2026-11-21, revised after its review the same day; before any check below and any W6 case runs on SU2)
 
@@ -180,8 +182,10 @@ limiter, coefficient 0.05 (trials 10 to 13), implicit Euler stepping, CFL
 most 8,000 iterations (converged levels took 270 to 3,100). A level used
 that stops at the limit instead counts only if its drag (SU2's force on
 the base area) ranges over at most 0.1% of its value in its last quarter
-of iterations; that range is then its iterative error, and the levels'
-ranges are added to U_su2 (R4). Four
+of iterations and the means of its last two eighths differ by at most a
+quarter of that range (a cycle, not a slow drift); that range is then its
+iterative error, the levels' ranges are added to U_su2 and they make the
+rates of R4 less favourable. Four
 nested levels: level 0 (64 x 32 cells on a C grid) first order from the
 free stream, then second order; levels 1, 2 and 3 (512 x 256) each
 started from the level below (trial 6), and none otherwise (the tool
@@ -198,40 +202,50 @@ boundary at most 1e-6; the bow shock's reach (the outermost vertex with
 Mach number on the outlet above 1; every cell's area positive; the tool's
 drag within 0.5% of SU2's own axisymmetric force on the wall (CD on a
 reference area of 1, over pi R^2) on level 1, a quarter of that on each
-level after (the quadratures differ at second order, trial 12). A case
-that fails the shock's or the
+level after (the quadratures differ at second order, trial 12), except
+on the sharp cone, which meets its cylinder at a corner where the two
+differ on every level (V1(b) tests the integral there against the exact
+drag). A case that fails the shock's or the
 boundary's checks is run again in full with a and k (H grid: the outer
-line's rise) times 1.25, at most twice; a case with a level used that
-neither converges nor meets the iterative rule is run again in full with
-the limiter's coefficient 0.25, then 0.5. Each rerun goes to a fresh folder, the earlier kept beside it
-renamed, and is listed in the record; the tool never overwrites a run.
-After that the case gives no reference.
+line's rise) times 1.25, at most twice, each rerun in the run's folder and
+the earlier attempt kept beside it as `<run>.try1`, `.try2` (`judge.py`
+accepts a widened run only with its earlier attempts, each failing those
+checks); the tool never overwrites a run. Any other failure (a level used
+that neither converges nor meets the iterative rule, the force check) has
+no rerun: the case gives no reference.
 
 **R4. SU2's value and uncertainty.** The value D is the drag on level 3.
 From the drags D1, D2, D3 on levels 1 to 3, and the changes of the drag's
 distribution between them (`changes`, on the finer level's segments, the
 coarser level's Cp linear in r^2, both closed at x = L):
-- from the total: e12 = D2 - D1, e23 = D3 - D2; if they have the same sign
-  and |e23| < |e12|, p = log2(e12 / e23) and U_total = 1.25 |e23| /
-  (2^min(p, 2) - 1); otherwise U_total = 3 max(|e12|, |e23|);
+- from the total: e12 = D2 - D1, e23 = D3 - D2; with the levels'
+  iterative ranges s1, s2, s3 (R3; zero where a level converged), a12 =
+  |e12| - s1 - s2 and a23 = |e23| + s2 + s3; if e12 and e23 have the same
+  sign and a23 < a12, p = log2(a12 / a23) and U_total = 1.25 a23 /
+  (2^min(p, 2) - 1); otherwise U_total = 3 max(|e12| + s1 + s2, a23);
 - from the distribution, by regions (trials 7 to 9; the review's
   conditions): the regions are [0, x0] with x0 the cap's tangent point (L
   / 128 on a sharp nose), then each next region's end twice the last end
   but at most half a caliber further, to L (`regions`); a segment belongs
   to the region holding its midpoint in x; V is the sum over regions of
   |the change of the drag integral in the region| (cancellation inside a
-  region, none between regions). rho = V23 / V12; if rho < 1, U_dist =
-  V23 r / (1 - r) with r = max(rho, 0.5) (the rest of a geometric series,
-  never taken faster than first order); otherwise no reference;
+  region, none between regions; the cap is one region, so on it, and on
+  the hemisphere of V5 whose whole nose is cap, only the vertex-level
+  measure below sees cancellation). With V12 - s1 - s2 and V23 + s2 + s3,
+  rho = their ratio; if rho < 1, U_dist = (V23 + s2 + s3) r / (1 - r)
+  with r = max(rho, 0.5) (the rest of a geometric series, never taken
+  faster than first order); otherwise no reference;
 - the same change without any cancellation (the sum of every segment's
-  |change|) must fall too: its ratio below 1, or no reference;
-- the cap's term (the review's 1.3): U_cap = |Cp0 / Cp_pitot - 1| times
-  the cap's drag (the integral to the tangent point), both on level 3,
-  with Cp0 the stagnation vertex's;
+  |change|), taken the same way, must fall too: its ratio below 1, or no
+  reference;
+- the cap's term (the review's 1.3): U_cap = the larger of |Cp0 /
+  Cp_pitot - 1| on the two finest levels used (it changes sign between
+  levels, trial 8), times the cap's drag (the integral to the tangent
+  point) on the finest, with Cp0 the stagnation vertex's;
 - U_su2 = max(U_total, U_dist) + U_cap + the iterative errors of the
   levels used (R3; zero for a level that converged).
 A case gives a reference if every level used converges and passes R3's
-checks, V2 holds on its level 3, both ratios are below 1, max(U_total,
+checks, V2 holds on its finest level used, both ratios are below 1, max(U_total,
 U_dist) is at most 0.5% of D and U_su2 at most 1% of D. If it fails only
 on the ratios or these limits, level 4 (1024 x 512, `w6ref.py level4`) is
 run once from level 3 and R4 is applied to levels 2 to 4; level 4 is used
@@ -261,8 +275,12 @@ runs and the route goes back to the owner.
   +- U(1 to 3).
 - V5, a blunt drag on the C grid (blocking only): the hemisphere-cylinder
   at Mach 2 and 3 against the project's fitted values (0006: 0.788934,
-  band 0.023%; 0.849320, band 0.010%): the difference within U_su2 plus
-  that band. Agreement licenses nothing; a disagreement stops the route.
+  band 0.023%; 0.849320, band 0.010%): R3's checks pass and the
+  difference is within U_su2 plus that band; R4's limits are not applied
+  (on a hemisphere U_cap is the stagnation error times the whole drag).
+  The difference against the grid part alone is reported too, a measure
+  of how much U_cap over-counts. Agreement licenses nothing; a
+  disagreement stops the route.
 V1(b) and V3 test R4 on sharp flows on H grids; V4 and V5 on capped
 flows on C grids. Both solvers capture the embedded shock with
 finite-volume HLLC schemes: different codes, grids and limiters, a
@@ -311,9 +329,11 @@ delta = D_proc - D_su2.
   the owner decides, with the numbers (W6 section 11 (c)).
 - The hold-out, after the verdict, off W6's list: the ogive of 4 calibers,
   r_n/R 0.08, at Mach 1.3, 2 and 3 (SU2 from V2's runs, R4 as for any
-  case) and the Von Karman nose of 4 calibers, 0.08, at Mach 2 (its own
-  SU2 run, `runs/H-vk4rn0.08M2`); each fitted by R6. Each band with A must
-  contain SU2's interval; if one does not, that shape goes to the owner.
+  case) and the Von Karman nose of 4 calibers, 0.08, at Mach 1.3 and 2
+  (their own SU2 runs, `runs/H-vk4rn0.08M1.3` and `M2`); each fitted by
+  R6. Each band with A must contain SU2's interval; if one does not, or a
+  hold-out case gives no reference on either side, that shape goes to the
+  owner.
 
 **R8. The served region.** For each shape, the outline (convex hull) in
 calibers, r_n/R and Mach of the cases that give a reference on both
@@ -330,8 +350,9 @@ reference has checked (W6 section 3's nj = 160 families are not run
 here); and how many cases disagree.
 
 **R9. The order.** (1) This revision reviewed again, by the same
-reviewer; (2) V1 to V5; (3) the 24 cases on SU2 and the hold-out's
-Von Karman run; the fitted families (running); (4) `judge.py`'s verdict,
+reviewer (done: the re-review below, its changes made); (2) V1 to V5; (3)
+the 24 cases on SU2 and the hold-out's Von Karman runs; the fitted
+families (running); (4) `judge.py`'s verdict,
 recorded with every case and the hold-out, then reviewed; (5) only if it
 serves: W6's geometry and capped families brought to the main line, the
 page's tip-radius input (0014 P4), the refusal lifted inside the outline,
@@ -379,10 +400,27 @@ Not adopted: tightening V2 to 1.5% (its error now enters U_su2 in full
 through U_cap, so V2 stays a gross check); W6's nj = 160 families (15 to
 50 CPU hours each; the caveat stands on the label instead).
 
+## The re-review of the revision (2026-11-21)
+
+The same reviewer, of commit 3a93703d: **PASS WITH CHANGES**, five
+required, all made before anything ran: (1) the force check exempts the
+sharp cone (its corner); (2) V5 is judged as its text says, without R4's
+limits; (3) the iterative rule gained the drift guard and the
+least-favourable rates; (4) U_cap takes the larger stagnation error of the
+two finest levels; (5) a rerun is accepted only with its earlier attempt
+kept and failing the registered trigger, and reruns with another limiter
+coefficient were removed altogether (V2, V4 and V5 never ran at one, and
+trial 13 shows another coefficient does not cure the cycles). Optional,
+done: the order's guard against equal coarse drags, V1's failures given
+as failures, a Von Karman hold-out at Mach 1.3, each case's settings in
+the verdict, R7's word on a hold-out without a reference, and R4's notes
+on the cap as one region and on the finest level used.
+
 ## State (2026-11-21)
 
 - Done: the tool, the geometry check, the set-up trials 1 to 13, the
   registration, its review and the revision.
 - Running: the fitted solver's eleven families (`fitted/lane.sh`, two
   lanes).
-- Next: the revision's re-review; then V1 to V5; then the W6 cases.
+- Next: V1 to V5 (with V4's level 4), then the W6 cases and the hold-out's
+  Von Karman runs on SU2.

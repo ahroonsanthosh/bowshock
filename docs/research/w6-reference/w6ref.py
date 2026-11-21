@@ -764,6 +764,11 @@ def history_summary(path):
         n = max(2, len(rows) // 4)
         cds = [float(rw[col["CD"]]) / (math.pi * R * R) for rw in rows[-n:]]
         res["dragRangeLastQuarter"] = max(cds) - min(cds)
+        # The means of the last eighth and of the eighth before it: a drift
+        # (still converging) rather than a cycle shows as their difference.
+        h = max(1, n // 2)
+        res["dragMeanLastEighth"] = sum(cds[-h:]) / h
+        res["dragMeanEighthBefore"] = sum(cds[-2 * h:-h]) / h
     return res
 
 
