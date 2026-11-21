@@ -34,7 +34,7 @@ CANDIDATES = {
     "S2": {"grad": "GREEN_GAUSS"},
     "S3": {"limiter": "NISHIKAWA_R3"},
     "S4": {"limiterIter": 2000},  # Venkatakrishnan's limiter frozen after 2,000 iterations of each run
-    "S5": {"scheme": "JST"},  # central, its own scalar dissipation; no limiter
+    "S5": {"scheme": "JST", "muscl": "NO"},  # central, its own scalar dissipation; no limiter (SU2 refuses MUSCL with it)
     "S6": {"scheme": "MSW"},  # modified Steger-Warming flux-vector splitting
 }
 

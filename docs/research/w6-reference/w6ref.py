@@ -399,6 +399,9 @@ SCREEN_WRT_FREQ_INNER= 100
 """
 
 
+CENTRAL = ("JST", "JST_KE", "JST_MAT", "LAX-FRIEDRICH")
+
+
 def write_cfg(path, spec, restart=False, seed=False):
     """SU2's configuration; a restart reads the stage before's binary file, or with `seed` the ASCII seed."""
     with open(path, "w") as f:
@@ -699,7 +702,9 @@ def run_case(spec, run_dir, su2, threads=4, deadline=None):
             stages = [dict(spec)]
         else:
             stages = [dict(spec, muscl="NO", cfladapt="NO", cflmax=spec["cfl"], iters=spec["iters1"])]
-            if spec["muscl"] == "YES":
+            # A central scheme (revision 2's trials) has no first-order form
+            # and SU2 refuses MUSCL with it, but takes the same second stage.
+            if spec["muscl"] == "YES" or spec["scheme"] in CENTRAL:
                 stages.append(dict(spec))
         for k, st in enumerate(stages):
             write_cfg(os.path.join(d, "case.cfg"), st, restart=k > 0, seed=seeded and k == 0)

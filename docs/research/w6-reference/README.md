@@ -618,6 +618,31 @@ the one with the smallest U_su2 (R4 on levels 1 to 3). If none passes, or
 the control passes level 3 too (so T could not tell a fix from the
 registered setting), the route goes back to the owner.
 
+### The trials, as they finish
+
+Corrections, made before the candidate concerned had a result: S5 as
+first written ran JST with MUSCL on, which SU2 refuses for a central
+scheme (level 0's second stage stopped on that error at once). It is now
+MUSCL off, and the tool gives a central scheme the same second stage on
+level 0 as the others (`w6ref.CENTRAL`; nothing changes for any other
+setting). The first attempt is kept as `trials-r2/runs/S5.try1`.
+
+Every candidate so far fails R3's outer-boundary check on level 1 of T
+(|Cp| there 3.8e-6 to 8.7e-5, against 1e-6; level 2 passes it): T's
+domain at Mach 2.5, not the setting. R3's remedy is a rerun with the
+outer boundary widened (a and k times 1.25), and that is applied here: a
+candidate that fails the screen on nothing else is rerun so, as R3 says,
+before it is judged.
+
+| | Level 0, 1, 2 residual reached | Stagnation error, levels 0, 1, 2 | Vertex-level ratio | Screen |
+| --- | --- | --- | --- | --- |
+| S0 | 1e-4.6 (limit), 1e-11, 1e-10.5 (limit) | -3.0%, -4.5%, -5.4% | 0.58 | fail: levels 0 and 2 not converged; stagnation beyond 3% and growing |
+| S1 | 1e-11, 1e-11, 1e-9.5 (limit) | -1.2%, +0.7%, -1.9% | 0.30 | fail: level 2 not converged; stagnation error growing |
+| S3 | 1e-11, 1e-11, 1e-5.6 (limit) | -3.6%, -5.5%, -5.9% | 0.74 | fail: level 2 not converged; stagnation beyond 3% and growing |
+
+The control fails the screen, as V5 at Mach 2 failed: T shows the same
+fault.
+
 ## State (2026-11-21)
 
 - Done: the tool, the geometry check, the set-up trials 1 to 13, the
