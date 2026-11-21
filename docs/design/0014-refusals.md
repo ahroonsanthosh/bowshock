@@ -4526,6 +4526,36 @@ figure of either report was seen.
    0.05 apart in Mach, the interpolation's error taken as the two
    symbols' difference; otherwise it sets nothing.
 
+**2026-11-21, F1 through RM L55H09: the owner's ruling on symbols the
+readers classify differently; the route fails and the refusal stays**
+(unlettered, as the entry of 2026-11-20 above). Made after the pairing
+(`docs/research/total-drag/audit/round-F1-pending/pairing/`, commits
+ce65c1e7 and b11cc99e) and before any drag model, ratio or band was
+computed. The pairing's rule 3, written by the neutral party before the
+comparison but not registered here, let a symbol read as open by one
+reader and as flagged (fixed transition, by the legend) by the other
+pair and agree on its values. The owner ruled, on 2026-11-21: such a
+pair does not count. A symbol whose kind the readers do not agree on is
+a value only one reader gives in the sense of item 6 (ii), because its
+boundary-layer state, and so what it measured, is not agreed.
+
+- _What follows, by items 6 and 7._ On the net drag, the agreed solid
+  fins-on points at the fins-off Reynolds number lie at Mach 0.81 (two)
+  and 1.32 and 1.40 (three). Below the gap both lie under Mach 1.0,
+  where item 4 serves nothing. Above the gap, each takes its fins-off
+  value only from an agreed fins-off symbol within +-0.01 in Mach or by
+  interpolation between two agreed fins-off symbols no more than 0.05
+  apart; the only ones within reach (1.325 and 1.393) are pairs whose
+  kinds differ, and the nearest agreed pairs of one kind (1.265 and
+  1.339) are 0.074 apart. So no point qualifies above the gap, item 6
+  (v) holds, and the route through RM L55H09 fails.
+- _The refusal stays._ `finsOwnDragMachRefusal` is unchanged: fin
+  friction and the wave drag of sharp sections stay refused below Mach
+  1.5. No band was formed, no figure of RM L55H09 sets anything for F1,
+  and fig. 6's readings are kept as recorded (they may serve a later,
+  separately registered use). F1 needs another source (0019 section
+  3.1).
+
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
 allocate. _(Corrected 2026-10-28, the re-review's R4: this branch's

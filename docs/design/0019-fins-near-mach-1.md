@@ -1856,6 +1856,12 @@ F2 last.
    and 0.027 in, after F5's convergence check near beta = 0 at those Mach
    numbers; the band formed by that entry's items 3 to 6. If the legend
    shows no such points, the route fails and is recorded.
+   _2026-11-21: the route through RM L55H09 failed; the refusal stays_
+   (0014 10.7, the entry of that date). The legend showed the points;
+   fig. 6 was read twice blind and paired; by the owner's ruling a symbol
+   the readers classify differently (open or fixed transition) does not
+   count, which leaves no qualifying point above the tunnel's gap, so no
+   band was formed. F1 needs another fin increment near Mach 1.
 4. **F3, bevelled leading edges.** Readings: TR 1094 figs. 13, 14, 15 and
    16, R&M 3348 figs. 31a, 31b and 32 (31b and 32 read blind by round 10,
    and once by W7 at 818d9f2 and 3c5a9f5, to pair; CR-149372 fig. 8a, F2's
