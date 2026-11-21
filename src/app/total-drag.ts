@@ -61,7 +61,7 @@ import {
   basicFinnerBody,
 } from '../validation/basic-finner';
 import { noseBand } from '../validation/nose-model-form';
-import type { NoseModelAllowance } from './nose-model-allowance';
+import { allowanceWords, type NoseModelAllowance } from './nose-model-allowance';
 
 const DEG = Math.PI / 180;
 
@@ -843,7 +843,7 @@ export function noseComponentOf(
     'numerical error of the inviscid solve, measured from the grids, with an allowance of ' +
     `${allowanceText(solve.floor ?? FITTED_DRAG_FLOOR)} of the value (0006)`;
   const caveat = bandCaveat(solve.floor ?? FITTED_DRAG_FLOOR, solve.grids);
-  const band = model === null ? null : noseBand(solve.value, model.halfWidth, solve.uncertainty);
+  const band = model === null ? null : noseBand(solve.value, model, solve.uncertainty);
   return {
     name: 'nose wave drag',
     cd: solve.value,
@@ -852,16 +852,12 @@ export function noseComponentOf(
     label:
       'solved on this page: the inviscid forebody pressure drag, bow shock fitted, finest of ' +
       `${solve.grids} grids (0006)`,
+    // With the allowance, two parts, each with its size (0022 section 4.4; shown in one row, 0014 (am)).
     band:
       (model === null
         ? `${numerical}; the model's own error is not in this band (docs/validation/sources.md)`
-        : `${numerical}; and the inviscid model against measured wind-tunnel pressures, ` +
-          `+-${(100 * model.halfWidth).toFixed(1)}% of the value, the widest of the measured ` +
-          `noses within 0.25 calibers and 0.05 in Mach of this one: ${model.sources.join('; ')}` +
-          (model.seenOnly
-            ? '; formed from data seen before registration, so it can only widen the band, and ' +
-              'is not a test (design record 0022)'
-            : ' (design record 0022)')) + (caveat === '' ? '' : `. ${caveat}`),
+        : `two parts, added: the ${numerical}, +-${solve.uncertainty.toExponential(1)} in C_D; and ` +
+          allowanceWords(model, solve.value)) + (caveat === '' ? '' : `. ${caveat}`),
   };
 }
 

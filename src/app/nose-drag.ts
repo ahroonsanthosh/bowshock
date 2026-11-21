@@ -77,7 +77,7 @@ import {
   type DisplayBlock,
   type TotalDragFields,
 } from './total-drag-display';
-import { noseModelAllowance } from './nose-model-allowance';
+import { allowanceWords, noseModelAllowance } from './nose-model-allowance';
 import { renderBlocks } from './total-drag-render';
 import { h } from '../ui/dom';
 
@@ -704,9 +704,7 @@ async function run(gpu: GPUDevice): Promise<void> {
           // Where a measured nose's box holds this one, the model-form allowance the total carries (0022).
           const model = noseModelAllowance(body.nose, mach);
           const modelWords =
-            model === null
-              ? ''
-              : ` The total carries also the inviscid model against measured wind-tunnel pressures, +-${(100 * model.halfWidth).toFixed(1)}% of the value (${model.sources.join('; ')}; design record 0022).`;
+            model === null ? '' : ` The total carries also ${allowanceWords(model, e.value)}.`;
           show(
             `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${allowanceText(outcome.floor)} of the value.${stopped}${bandCaveat(outcome.floor, outcome.levels.length) === '' ? '' : ` ${bandCaveat(outcome.floor, outcome.levels.length)}`}${modelWords}`,
             VERIFIED,

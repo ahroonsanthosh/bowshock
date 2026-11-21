@@ -102,7 +102,7 @@ export function noseRadius(nose: Nose, x: number): number {
  * MINFEATURE); above it the arc differs from the cone by less than 1e-3 of
  * the base radius.
  */
-const OGIVE_CONE_LIMIT = 0.001;
+export const OGIVE_CONE_LIMIT = 0.001;
 
 /**
  * The circular arc of the ogive family. With parameter p the arc, of radius

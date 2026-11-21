@@ -8,12 +8,12 @@ must be independently reviewed before any fresh reading reaches it
 (0022 section 4.3, "Fixed before any reading").
 
 On this line since 2026-11-20 (0014 section 10.7 (am)): the readings, the
-script's runs above Mach 1.05 and their outputs, which set the boxes the
+script's runs on every set but TN 4233's rows below indicated Mach 1.078, and their outputs, which set the boxes the
 page carries (`src/app/nose-model-allowance.ts`). The runs were made again
 here on 2026-11-20: the three `.out` tables came out byte for byte, and
 the `.json` files equal in every value, the later code adding only fields
 (`measure`, `difference`, `uNum`, `absolute`); the committed files are
-kept as they were. The work below Mach 1.05 (0014 10.7 (y): the rows
+kept as they were. TN 4233's rows at indicated Mach 0.60 to 1.064 (0014 10.7 (y): the rows
 marked "branch only" below, and the transonic solver's verification below
 Mach 1 it needs) is not on this line: it stays on
 `claude/wip/nose-model-form`, its results unreleased.

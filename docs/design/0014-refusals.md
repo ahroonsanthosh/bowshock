@@ -2378,7 +2378,8 @@ branches. _(Corrected 2026-10-28, on merging main at 3e026a8 into the
 trailing-edge branch: (aa), (ab) and (af) are main's entries below; (w)
 to (z) remain the other branches'. And on merging main at 76899f1, the
 same day: (z) is main's A1 entry, above; (w) to (y) remain the other
-branches'.)_
+branches'.)_ _(2026-11-20: (w) is now on this line too, above, with (am); (x) and (y)
+remain on their branches.)_
 
 **2026-10-28 (ac), addendum: what RM A52E01 sets above Mach 1.5, and the
 band served there** (written after the review of B1 on main, cdd26e6, its
@@ -4481,25 +4482,67 @@ so; the measured allowance existed only on its branch.
   Mach (TN 4233's eight rows, the widest that holds the case); cones of
   5.742 to 6.242 calibers at Mach 3.80 to 3.90, +-66.5% (RM E51H17, its
   tunnel Reynolds number far below flight).
-- _Which noses._ The page's cone, and its ogive at parameter 1 (the
-  tangent ogive the reports measured). A secant portion of the ogive, and
-  every other shape, has no box and keeps "numerical error only".
-- _Not carried._ TN 4233's rows below Mach 1.05 ((y) on its branch, not
-  released). The pages serve the nose from Mach 1.2, so the boxes below
-  that hold nothing served; the cones at Mach 3.8 to 3.9 are reachable
-  only on the drag page, whose Mach number goes to 5.
-- _How it is carried._ In the nose term itself, named in its band's words
-  as its own part, not as a separate term, so that every display and the
-  floor of a refused total (0011 section 10) take it without change.
+- _Which noses._ The page's cone, the shapes its geometry draws as that
+  cone exactly (an ogive below its cone limit, 0.001; a power series of
+  exponent 1; a parabolic series of K = 0; added after the review), and
+  its ogive at parameter 1 (the tangent ogive the reports measured). A
+  secant portion of the ogive, and every other shape, has no box and keeps
+  "numerical error only".
+- _Not carried._ TN 4233's rows at indicated Mach 0.60 to 1.064 ((y) on
+  its branch, read and paired, their results not released); the boxes
+  carried are those of its rows at 1.078 and above. Where one of the rows
+  not released would also hold the case (cones of 3.832 to 4.332 calibers
+  up to Mach 1.114), the boxes carried are not the widest measured, so no
+  allowance is carried there and the band says "numerical error only"
+  (corrected the same day after the review below: as first committed it
+  was carried at Mach 1.1, where the rocketeer page's curve solves the
+  nose too). The cones at Mach 3.8 to 3.9 are reachable only on the All
+  inputs page, whose Mach number goes to 5; the rocketeer curve stops at
+  3.0.
+- _How it is carried, a departure from (w)'s "as its own line"._ In the
+  nose term itself: its interval is the sum, and its band's words give the
+  two parts, each with its size ("two parts, added: the numerical error
+  ..., +-n in C_D; and the inviscid model against measured wind-tunnel
+  pressures, +-a of the value (+-a D in C_D) ..."), in the one row of the
+  breakdown, not as two rows. So every display and the floor of a refused
+  total (0011 section 10) take it without change, and neither part is
+  hidden. 0022's "shown as two lines" is met as two parts of one row's
+  words, not as two rows of the table.
   `noseStateOf` applies it on the rocketeer page (`src/app/curve.ts`) and
   the drag page (`src/app/nose-drag.ts`, which names it in its nose line
   too); the flow page shows the numerical band alone, and its note and the
   help say where the second band is carried.
 - _What moves._ No case is refused or served differently, so the refusal
   audit's counts do not move. The bands of the nose term and of the total
-  widen by a D wherever a box holds the nose. The Basic Finner's nose (a
+  widen by a D wherever a box holds the nose. On the audit's cases
+  (`docs/research/refusals/out/nose-allowance-count.out`, the same draws
+  as `impact.out`, which it reproduces: 2,038 noses served, 168 totals),
+  23 cases carry it: 18 cones of 3.89 to 4.32 calibers at Mach 1.22 to 1.44 (+-5.6% to +-9.4%, none with a total, all below Mach 1.5) and 5 tangent ogives of 3.02 to 3.16 calibers at Mach 1.93 to 2.02 (+-16.4%), 2 of them with a total
+  served. Nothing solves a nose there, so the growth in C_D (a times each
+  nose term) is not tabulated. The Basic Finner's nose (a
   2.84-caliber cone) and its BRL sub-class lie in no box: nothing tested
   or validated changes.
+- _Records it cites that are not on this line._ 0022, (w) and
+  `src/validation/nose-model-form.ts` cite (y), the owner's GPU kit,
+  0013's "Below Mach 1: results" and commits (305557f, 3e26e9a, 6019bbd,
+  cce5621, 944f46f, e412609, 5fcc92b, d83b336, b7d74ad) that are on
+  `claude/wip/nose-model-form` only; that branch is kept.
+- _The independent review, the same day: NOT PASS on three findings, all
+  fixed._ It reran both runs (tables byte for byte), tested the boxes,
+  the rule and the band's arithmetic, and found nothing validated moves.
+  Its findings: the allowance was carried at Mach 1.1, where rows not
+  released also reach (fixed above); the two parts were merged without
+  their sizes or a record of the departure (fixed above); the All inputs
+  page's nose line lacked "formed from data seen before registration"
+  (it now takes the same words as the band, `allowanceWords`). And, minor,
+  all done: `docs/validation/sources.md`'s RM E51H17 and RM A53E01 rows
+  brought up to date; the cone-drawn shapes; the TN 4233 words (its
+  half-angle, its table and tunnel named, the 14-foot rows not given the
+  2- by 2-foot tunnel's Reynolds number); exact edge tests; the README's
+  ranges (Mach 1.12 to 1.45 for the cones, but for 1.349 to 1.350, which
+  no box holds; the 6-caliber cones only on the All inputs page); this
+  count; and the help and the pages' notes, which said "a second band",
+  now say what is shown.
 
 **2026-11-20 (an): W6, rounded nose tips: the open calls of route (b)
 decided for accuracy; rounded tips stay refused.** W6's work and records

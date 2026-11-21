@@ -724,10 +724,10 @@ this note; `Y_RESULTS_REVIEWED` is not set.
    an independent review; merge.
 
 _2026-11-20, on the main line (0014 10.7 (am)):_ step 7 is done for the
-boxes above Mach 1.05: the page and the drag page carry the allowance in
+boxes of TN 4233's rows at indicated Mach 1.078 and above, and of the other sets: the page and the drag page carry the allowance in
 the nose's band where a box holds the nose (`src/app/nose-model-allowance.ts`),
 and keep "numerical error only" elsewhere. The script's runs on the
 readings were made again on the main line first and reproduced. The rows
-below Mach 1.05 and the verification of 0014 10.7 (y) stay on
+at indicated Mach 0.60 to 1.064 (where their boxes reach, to Mach 1.114, no allowance is carried) and the verification of 0014 10.7 (y) stay on
 `claude/wip/nose-model-form`, unreleased. The refusal audit's counts do not
 move (no case is refused or served differently by this record).

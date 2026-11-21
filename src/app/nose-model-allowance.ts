@@ -16,9 +16,11 @@
  * not here: their results are not released.
  */
 
-import type { Nose } from '../geometry/nose';
+import { OGIVE_CONE_LIMIT, type Nose } from '../geometry/nose';
 import {
   allowanceAt,
+  BOX_FINENESS,
+  BOX_MACH,
   type Allowance,
   type Box,
   type NoseFamily,
@@ -30,7 +32,6 @@ export interface NoseModelBox extends Box {
   readonly source: string;
 }
 
-const TN4233_RE = 'tunnel Reynolds number 2.4e6 on the cone’s length';
 const TN4233_FINENESS = 4.081989276071384;
 const TN4233_A = 'TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot';
 const TN4233_B = 'TN 4233, 7 deg cone, table I(b), Ames 14-foot';
@@ -47,7 +48,12 @@ const tn4233 = (id: string, mach: number, halfWidth: number): NoseModelBox => ({
   measure: 'ratio',
   halfWidth,
   floor: null,
-  source: `NACA TN 4233, a 7 deg cone of 4.08 calibers at Mach ${mach} (${TN4233_RE})`,
+  source:
+    `NACA TN 4233, a cone of 7 deg half-angle and 4.08 calibers at Mach ${mach}, ` +
+    (id === TN4233_A
+      ? "table I(a), the Ames 2- by 2-foot tunnel (tunnel Reynolds number 2.4e6 on the cone's length)"
+      : "table I(b), the Ames 14-foot tunnel (the report states 2.4e6 on the cone's length for the " +
+        '2- by 2-foot tunnel, and not whether this run had the same)'),
 });
 
 /** The measured boxes (0022 section 4.4), from the paired blind readings. */
@@ -101,31 +107,68 @@ export const NOSE_MODEL_BOXES: readonly NoseModelBox[] = [
     halfWidth: 0.6649486135132016,
     floor: null,
     source:
-      'NACA RM E51H17, a 4.77 deg cone of 5.99 calibers at Mach 3.85 (tunnel Reynolds number far ' +
-      'below flight: 3.85e6 on a basis not stated, or 1.1e6 per foot)',
+      'NACA RM E51H17, a cone of 4.77 deg half-angle and 5.99 calibers at Mach 3.85 (tunnel ' +
+      'Reynolds number far below flight: 3.85e6 on a basis not stated, or 1.1e6 per foot)',
   },
 ];
 
 /**
+ * TN 4233's rows at indicated Mach 0.60 to 1.064 (0014 10.7 (y), on its
+ * branch): read and paired, their results not released. Each would be a box
+ * of the cone's family (+-0.05 in Mach, +-0.25 calibers) and could only
+ * widen the allowance, so where one of them reaches, the boxes carried here
+ * are not the widest measured, and no allowance is carried: the band stays
+ * "numerical error only", as it says. The highest of them, 1.064, is tested
+ * against `blind-run-2.json`'s rows not run.
+ */
+export const UNRELEASED_CONE_ROWS = {
+  fineness: TN4233_FINENESS,
+  highestMach: 1.064,
+} as const;
+
+/**
  * The family of 0022 section 4.4 a nose belongs to, where a measured box
- * can hold it: a cone, or a tangent ogive (the ogive parameter 1, an arc
- * meeting the body tangentially). Every other shape, the ogive's secant
- * portions included, has no measured box: null.
+ * can hold it: a cone (the page's cone, and the shapes the geometry draws as
+ * that cone exactly: an ogive below its cone limit, a power series of
+ * exponent 1, a parabolic series of K = 0), or a tangent ogive (the ogive
+ * parameter 1, an arc meeting the body tangentially). Every other shape, the
+ * ogive's secant portions included, has no measured box: null.
  */
 export function noseFamilyOf(nose: Nose): NoseFamily | null {
   const s = nose.shape;
-  if (s.kind === 'conical') return 'cone';
+  if (
+    s.kind === 'conical' ||
+    (s.kind === 'ogive' && s.parameter < OGIVE_CONE_LIMIT) ||
+    (s.kind === 'power' && s.exponent === 1) ||
+    (s.kind === 'parabolic' && s.parameter === 0)
+  ) {
+    return 'cone';
+  }
   if (s.kind === 'ogive' && s.parameter === 1) return 'tangent ogive';
   return null;
 }
 
-/** The allowance at this nose and Mach number (0022 section 4.4), or null outside every box. */
+/** Whether a row not released (UNRELEASED_CONE_ROWS) would hold this case. */
+function unreleasedHolds(family: NoseFamily, fineness: number, mach: number): boolean {
+  const eps = 1e-12;
+  return (
+    family === 'cone' &&
+    Math.abs(fineness - UNRELEASED_CONE_ROWS.fineness) <= BOX_FINENESS + eps &&
+    mach <= UNRELEASED_CONE_ROWS.highestMach + BOX_MACH + eps
+  );
+}
+
+/**
+ * The allowance at this nose and Mach number (0022 section 4.4), or null:
+ * outside every box, or where a row not released would also hold it.
+ */
 export function noseModelAllowance(nose: Nose, mach: number): NoseModelAllowance | null {
   const family = noseFamilyOf(nose);
   if (family === null) return null;
   const fineness = nose.length / (2 * nose.baseRadius);
+  if (unreleasedHolds(family, fineness, mach)) return null;
   const found = allowanceAt(NOSE_MODEL_BOXES, family, fineness, mach);
-  if (found === null || !(found.halfWidth > 0)) return null;
+  if (found === null || !(found.halfWidth > 0 || found.absolute > 0)) return null;
   const boxes = NOSE_MODEL_BOXES.filter((b) =>
     found.boxes.some((f) => f.id === b.id && f.mach === b.mach),
   );
@@ -135,4 +178,27 @@ export function noseModelAllowance(nose: Nose, mach: number): NoseModelAllowance
 export interface NoseModelAllowance extends Allowance {
   /** Each containing box's source, in a reader's words. */
   readonly sources: readonly string[];
+}
+
+/** The allowance's size, in C_D, at a nose term D (0022 section 8 item 10: the wider form). */
+export function allowanceCd(model: NoseModelAllowance, drag: number): number {
+  return Math.max(model.halfWidth * Math.abs(drag), model.absolute);
+}
+
+/**
+ * The allowance in words, as the band's second part (0022 section 4.6): its
+ * size relative to the value and in C_D, the sources that hold the case, and,
+ * where every one rests on a set seen before registration, that it can only
+ * widen the band and is not a test.
+ */
+export function allowanceWords(model: NoseModelAllowance, drag: number): string {
+  return (
+    `the inviscid model against measured wind-tunnel pressures, +-${(100 * model.halfWidth).toFixed(1)}% ` +
+    `of the value (+-${allowanceCd(model, drag).toExponential(1)} in C_D), the widest of the measured ` +
+    `noses within 0.25 calibers and 0.05 in Mach of this one: ${model.sources.join('; ')}` +
+    (model.seenOnly
+      ? '; formed from data seen before registration, so it can only widen the band, and is not a ' +
+        'test (design record 0022)'
+      : ' (design record 0022)')
+  );
 }

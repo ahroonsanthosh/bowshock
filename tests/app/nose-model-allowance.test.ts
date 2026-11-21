@@ -9,9 +9,11 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
+  allowanceWords,
   NOSE_MODEL_BOXES,
   noseFamilyOf,
   noseModelAllowance,
+  UNRELEASED_CONE_ROWS,
 } from '../../src/app/nose-model-allowance';
 import { noseStateOf } from '../../src/app/total-drag-display';
 import { noseComponentOf } from '../../src/app/total-drag';
@@ -72,10 +74,25 @@ describe('the boxes (0022 section 4.4)', () => {
 });
 
 describe('which noses a box can hold', () => {
-  it('cones and tangent ogives only; secant portions of the ogive and other shapes, none', () => {
+  it('cones (and shapes drawn as that cone) and tangent ogives only; secant ogives and other shapes, none', () => {
     expect(noseFamilyOf(cone(4))).toBe('cone');
     expect(noseFamilyOf(ogive(3))).toBe('tangent ogive');
     expect(noseFamilyOf(ogive(3, 0.5))).toBeNull();
+    expect(noseFamilyOf(ogive(3, 0.9))).toBeNull();
+    expect(noseFamilyOf(ogive(3, 0.999999))).toBeNull();
+    // Shapes the geometry draws as the cone exactly (src/geometry/nose.ts).
+    expect(noseFamilyOf(ogive(4, 0))).toBe('cone');
+    expect(noseFamilyOf(ogive(4, 0.0009))).toBe('cone');
+    expect(noseFamilyOf(ogive(4, 0.001))).toBeNull();
+    expect(
+      noseFamilyOf({ shape: { kind: 'power', exponent: 1 }, length: 4, baseRadius: 0.5 }),
+    ).toBe('cone');
+    expect(
+      noseFamilyOf({ shape: { kind: 'power', exponent: 0.5 }, length: 4, baseRadius: 0.5 }),
+    ).toBeNull();
+    expect(
+      noseFamilyOf({ shape: { kind: 'parabolic', parameter: 0 }, length: 4, baseRadius: 0.5 }),
+    ).toBe('cone');
     expect(
       noseFamilyOf({ shape: { kind: 'haack', parameter: 0 }, length: 5, baseRadius: 0.5 }),
     ).toBeNull();
@@ -93,9 +110,12 @@ describe('which noses a box can hold', () => {
     expect(noseModelAllowance(cone(4), 1.2)?.sources.length).toBe(2);
     expect(noseModelAllowance(cone(4), 1.46)).toBeNull();
     expect(noseModelAllowance(cone(4.34), 1.3)).toBeNull();
-    // The box's edge, 4.082 - 0.25 = 3.832 calibers (the outputs print it rounded, 3.83).
-    expect(noseModelAllowance(cone(3.832), 1.3)?.halfWidth).toBe(0.0781551187911795);
-    expect(noseModelAllowance(cone(3.83), 1.3)).toBeNull();
+    // The box's edges, inclusive: 4.081989... - 0.25 calibers, and 1.299 + 0.05 in Mach.
+    const edge = 4.081989276071384 - 0.25;
+    expect(noseModelAllowance(cone(edge), 1.3)?.halfWidth).toBe(0.0781551187911795);
+    expect(noseModelAllowance(cone(edge - 1e-9), 1.3)).toBeNull();
+    expect(noseModelAllowance(cone(4), 1.349)?.halfWidth).toBe(0.0781551187911795);
+    expect(noseModelAllowance(cone(4), 1.3495)).toBeNull();
     // TN 3716's 3-caliber tangent ogive: its readings set it above its published floor (14.4%).
     expect(noseModelAllowance(ogive(3), 2)?.halfWidth).toBe(0.16414839743603604);
     expect(noseModelAllowance(ogive(5.75), 1.95)?.halfWidth).toBe(0.2126241678549045);
@@ -104,22 +124,55 @@ describe('which noses a box can hold', () => {
     expect(noseModelAllowance(cone(2.84), 2)).toBeNull();
     expect(noseModelAllowance(cone(2.84), 1.8)).toBeNull();
   });
+
+  it('none where a measured row not yet released would also hold the case (to Mach 1.064 + 0.05)', () => {
+    // The rows not run in blind-run-2 (0014 (y)): their highest indicated Mach number is the constant's.
+    const second = read('blind-run-2.json') as { notRun?: string[] }[];
+    const rows = second.flatMap((x) => x.notRun ?? []);
+    const machs = rows.map((r) => Number(/indicated Mach ([0-9.]+)/.exec(r)![1]));
+    expect(rows.length).toBe(30);
+    expect(Math.max(...machs)).toBe(UNRELEASED_CONE_ROWS.highestMach);
+    expect(UNRELEASED_CONE_ROWS.fineness).toBe(4.081989276071384);
+    // A 4.08-caliber cone at Mach 1.1, where the boxes carried hold it and so would the rows at 1.050
+    // to 1.064: none. Past 1.114 the released boxes alone hold it.
+    expect(noseModelAllowance(cone(4), 1.1)).toBeNull();
+    expect(noseModelAllowance(cone(4), 1.114)).toBeNull();
+    expect(noseModelAllowance(cone(4), 1.115)?.halfWidth).toBe(0.12751870443103236);
+    // Another fineness, outside those rows' boxes, is not touched by them (and lies in no box).
+    expect(noseModelAllowance(cone(4.5), 1.1)).toBeNull();
+  });
 });
 
 describe('the nose term with and without the allowance', () => {
   const solve = { value: 0.08, uncertainty: 3e-5, grids: 4 };
 
-  it('inside a box: D (1 - a) - n to D (1 + a) + n, both parts named', () => {
+  it('inside a box: D (1 - a) - n to D (1 + a) + n, both parts named with their sizes', () => {
     const a = noseModelAllowance(cone(4), 1.3)!;
     const c = noseComponentOf(solve, a);
     expect(c.cd).toBe(0.08);
     expect(c.low).toBe(0.08 - a.halfWidth * 0.08 - 3e-5);
     expect(c.high).toBe(0.08 + a.halfWidth * 0.08 + 3e-5);
-    expect(c.band).toContain('numerical error of the inviscid solve');
-    expect(c.band).toContain('+-7.8% of the value');
-    expect(c.band).toContain('NACA TN 4233, a 7 deg cone of 4.08 calibers at Mach 1.299');
+    expect(c.band).toContain('two parts, added: the numerical error of the inviscid solve');
+    expect(c.band).toContain('+-3.0e-5 in C_D');
+    expect(c.band).toContain('+-7.8% of the value (+-6.3e-3 in C_D)');
+    expect(c.band).toContain(
+      'NACA TN 4233, a cone of 7 deg half-angle and 4.08 calibers at Mach 1.299, table I(a)',
+    );
     expect(c.band).toContain('formed from data seen before registration');
     expect(c.band).not.toContain('is not in this band');
+  });
+
+  it("the drag page's nose line takes the same words, the seen-before label with them", () => {
+    const a = noseModelAllowance(ogive(3), 2)!;
+    const w = allowanceWords(a, 0.1);
+    expect(w).toContain('+-16.4% of the value (+-1.6e-2 in C_D)');
+    expect(w).toContain('NACA TN 3716, a 3-caliber tangent ogive at Mach 1.98');
+    expect(w).toContain('formed from data seen before registration, so it can only widen the band');
+    // The 14-foot rows do not claim the 2- by 2-foot tunnel's Reynolds number.
+    const b = noseModelAllowance(cone(4), 1.12)!;
+    const words = allowanceWords(b, 0.1);
+    expect(words).toContain('table I(b), the Ames 14-foot tunnel (the report states 2.4e6');
+    expect(words).toContain('and not whether this run had the same');
   });
 
   it('outside every box: the numerical band alone, as before, and it says so', () => {

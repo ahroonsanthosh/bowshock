@@ -118,7 +118,7 @@ and writes `af/out/` (0016 section 21.6).
 The blind readings of measured nose pressures (TN 3716, RM A53E01, TN
 4233, RM E51H17), their neutral pairing, and the integration script's runs
 (0022 section 4.3) that form the boxes the pages carry in the nose's band
-since 0014 10.7 (am). The work below Mach 1.05 (0014 10.7 (y)) is on its
+since 0014 10.7 (am). TN 4233's rows below indicated Mach 1.078 (0014 10.7 (y)) are on their
 branch only. Its README says how to re-run each.
 
 ## `interface/`: screenshots of the interface's phase checks

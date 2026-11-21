@@ -10,7 +10,7 @@
  * nose solve the drag page uses (passed in, so that it is tested with a
  * stand-in): after each grid the point is provisional (the logic's total
  * with the nose at that grid's value, no band); when the solve ends it is
- * `totalDragView(form, noseStateOf(outcome))`, a number with its band and
+ * `totalDragView(form, noseStateOf(outcome, { nose, mach }))`, a number with its band and
  * claim, or no number with every reason. Then (0011 section 10) the points
  * refused before solving are solved too, coarse to fine, for their nose
  * wave drag alone: each stays refused, now with the nose among its parts
