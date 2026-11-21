@@ -11,11 +11,12 @@
  * (sharpFitProblem, src/analysis/fitted-flow.ts) and the fitted grids' wall
  * gate (50 deg, so tips up to 40 deg; src/grid/quality.ts), and for the
  * two-scale noses (the Haack series and the power series) the solver's own
- * gate (bluntNoseRefusal): only the Von Karman and LV-Haack noses are
- * served, each only inside the outline of its own lengths and Mach numbers
- * checked against a reference (VON_KARMAN_REFERENCES, LV_HAACK_REFERENCES;
- * docs/design/0006-shock-fitting.md, "Two-scale noses" and "The LV-Haack
- * outline"). Not modelled:
+ * gate (bluntNoseRefusal): only the Von Karman, LV-Haack and power-1/2
+ * noses are served, each only inside the outline of its own lengths and
+ * Mach numbers checked against a reference (VON_KARMAN_REFERENCES,
+ * LV_HAACK_REFERENCES, POWER_HALF_REFERENCES; docs/design/0006-shock-fitting.md,
+ * "Two-scale noses", "The LV-Haack outline" and "The power-1/2 outline").
+ * Not modelled:
  * the grid gates on long bodies (a fallback family exists), fits that do not
  * converge, and families whose band cannot be measured ("not verified"):
  * these can only be known by solving, so the nose is counted as served
@@ -58,7 +59,7 @@ export const REASONS = {
   // Nose (the page's solve).
   noseMach: 'nose: Mach below 1.2 (page input and solver; transonic solver in progress, 0013)',
   noseHaack:
-    'nose: Haack or power-series shape not served (only the Von Karman and LV-Haack noses, each inside the lengths and Mach numbers checked against a reference)',
+    'nose: Haack or power-series shape not served (only the Von Karman, LV-Haack and power-1/2 noses, each inside the lengths and Mach numbers checked against a reference)',
   noseTip: 'nose: rounded (blunted) tip not represented',
   noseDetached: 'nose: tip shock detaches',
   noseSubsonicTip: 'nose: axially subsonic tip flow (at a corner, or subsonic on the surface)',
@@ -172,8 +173,8 @@ export function noseReasons(r: Rocket, mach: number): ReasonKey[] {
   if (r.tipRadiusRatio > 0) out.push('noseTip');
   if (r.nose === 'von-karman' || r.nose === 'lv-haack' || r.nose === 'power-half') {
     // Two-scale noses: the solver's own gate (0006 "Two-scale noses"), which
-    // serves the Von Karman and LV-Haack noses inside their checked outlines
-    // and refuses the rest.
+    // serves the Von Karman, LV-Haack and power-1/2 noses inside their
+    // checked outlines and refuses the rest.
     if (bluntNoseRefusal(calibreBody(r), mach) !== undefined) out.push('noseHaack');
     return out;
   }

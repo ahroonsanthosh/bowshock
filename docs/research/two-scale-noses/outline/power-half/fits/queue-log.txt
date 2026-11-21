@@ -1,0 +1,65 @@
+2026-11-21T00:17:44Z a start L3c2M1.5r1
+2026-11-21T00:18:31Z a done L3c2M1.5r1 exit 0
+2026-11-21T00:18:31Z a start L3c2M3r1
+2026-11-21T00:20:34Z a done L3c2M3r1 exit 0
+seeded /home/user/bowshock-runs/pow/out/ckpt-L3c2M1.5r2 (172 x 40) from /home/user/bowshock-runs/pow/out/L3c2M1.5r1 (86 x 20)
+2026-11-21T00:20:34Z a start L3c2M1.5r2
+2026-11-21T00:24:58Z a done L3c2M1.5r2 exit 0
+seeded /home/user/bowshock-runs/pow/out/ckpt-L3c2M3r2 (456 x 40) from /home/user/bowshock-runs/pow/out/L3c2M3r1 (228 x 20)
+2026-11-21T00:24:59Z a start L3c2M3r2
+2026-11-21T00:36:01Z a done L3c2M3r2 exit 0
+seeded /home/user/bowshock-runs/pow/out/ckpt-L3c2M1.5r4 (344 x 80) from /home/user/bowshock-runs/pow/out/L3c2M1.5r2 (172 x 40)
+2026-11-21T00:36:01Z a start L3c2M1.5r4
+2026-11-21T07:36:48Z a start L3c2M1.5r4
+2026-11-21T13:40:29Z a start L3c2M1.5r4
+2026-11-21T13:49:09Z a done L3c2M1.5r4 exit 0
+2026-11-21T13:49:09Z a start moc L3c2M1.5
+2026-11-21T14:00:55Z a done moc L3c2M1.5 exit 0
+seeded /home/user/bowshock-runs/pow/out/ckpt-L3c2M3r4 (912 x 80) from /home/user/bowshock-runs/pow/out/L3c2M3r2 (456 x 40)
+2026-11-21T14:00:55Z a start L3c2M3r4
+2026-11-21T15:18:40Z a done L3c2M3r4 exit 0
+2026-11-21T15:18:40Z a start moc L3c2M3
+2026-11-21T15:39:01Z a done moc L3c2M3 exit 0
+2026-11-21T15:39:01Z a finished /home/user/bowshock-runs/pow/runners/jobs-pow-a.txt
+2026-11-21T17:31:13Z b start L5c2M1.5r1
+2026-11-21T17:32:01Z b done L5c2M1.5r1 exit 0
+2026-11-21T17:32:01Z b start L5c2M3r1
+2026-11-21T17:34:02Z b done L5c2M3r1 exit 0
+seeded /home/user/bowshock-runs/pow/out/ckpt-L5c2M1.5r2 (196 x 40) from /home/user/bowshock-runs/pow/out/L5c2M1.5r1 (98 x 20)
+2026-11-21T17:34:02Z b start L5c2M1.5r2
+2026-11-21T17:38:16Z b done L5c2M1.5r2 exit 0
+seeded /home/user/bowshock-runs/pow/out/ckpt-L5c2M3r2 (520 x 40) from /home/user/bowshock-runs/pow/out/L5c2M3r1 (260 x 20)
+2026-11-21T17:38:16Z b start L5c2M3r2
+2026-11-21T17:50:04Z b done L5c2M3r2 exit 0
+seeded /home/user/bowshock-runs/pow/out/ckpt-L5c2M1.5r4 (392 x 80) from /home/user/bowshock-runs/pow/out/L5c2M1.5r2 (196 x 40)
+2026-11-21T17:50:04Z b start L5c2M1.5r4
+2026-11-21T18:08:14Z c start L4c2M2r1
+2026-11-21T18:09:35Z c done L4c2M2r1 exit 0
+2026-11-21T18:09:35Z c start L5c2M2r1
+2026-11-21T18:11:00Z c done L5c2M2r1 exit 0
+seeded /home/user/bowshock-runs/pow/out/ckpt-L4c2M2r2 (306 x 40) from /home/user/bowshock-runs/pow/out/L4c2M2r1 (153 x 20)
+2026-11-21T18:11:00Z c start L4c2M2r2
+2026-11-21T18:17:53Z c done L4c2M2r2 exit 0
+seeded /home/user/bowshock-runs/pow/out/ckpt-L5c2M2r2 (324 x 40) from /home/user/bowshock-runs/pow/out/L5c2M2r1 (162 x 20)
+2026-11-21T18:17:53Z c start L5c2M2r2
+2026-11-21T18:24:34Z c done L5c2M2r2 exit 0
+seeded /home/user/bowshock-runs/pow/out/ckpt-L4c2M2r4 (612 x 80) from /home/user/bowshock-runs/pow/out/L4c2M2r2 (306 x 40)
+2026-11-21T18:24:34Z c start L4c2M2r4
+2026-11-21T18:28:14Z b done L5c2M1.5r4 exit 0
+2026-11-21T18:28:14Z b start moc L5c2M1.5
+2026-11-21T18:41:17Z b done moc L5c2M1.5 exit 0
+seeded /home/user/bowshock-runs/pow/out/ckpt-L5c2M3r4 (1040 x 80) from /home/user/bowshock-runs/pow/out/L5c2M3r2 (520 x 40)
+2026-11-21T18:41:17Z b start L5c2M3r4
+2026-11-21T19:22:35Z c done L4c2M2r4 exit 0
+2026-11-21T19:22:35Z c start moc L4c2M2
+2026-11-21T19:38:41Z c done moc L4c2M2 exit 0
+seeded /home/user/bowshock-runs/pow/out/ckpt-L5c2M2r4 (648 x 80) from /home/user/bowshock-runs/pow/out/L5c2M2r2 (324 x 40)
+2026-11-21T19:38:41Z c start L5c2M2r4
+2026-11-21T20:13:04Z b done L5c2M3r4 exit 0
+2026-11-21T20:13:04Z b start moc L5c2M3
+2026-11-21T20:32:23Z c done L5c2M2r4 exit 0
+2026-11-21T20:32:23Z c start moc L5c2M2
+2026-11-21T20:32:59Z b done moc L5c2M3 exit 0
+2026-11-21T20:32:59Z b finished /home/user/bowshock-runs/pow/runners/jobs-pow-b.txt
+2026-11-21T20:48:04Z c done moc L5c2M2 exit 0
+2026-11-21T20:48:04Z c finished /home/user/bowshock-runs/pow/runners/jobs-pow-c.txt

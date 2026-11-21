@@ -29,7 +29,9 @@ rather than guessing.
   1.2 to 5, and Von Kármán noses from Mach 1.5 to 3 (1 to 5 calibers long,
   up to 6 at Mach 3). LV-Haack noses 4 to 6 calibers long, from Mach 1.5
   to 3 (from Mach 2 at 6 calibers), in the library; the page's nose menu
-  doesn't offer them yet. The band covers the numerical error; tunnel tests sit
+  doesn't offer them yet. Power-series noses of power 0.5 (the builder's
+  default) 3 to 5 calibers long, from Mach 1.5 to 3 (from Mach 2 at 5
+  calibers). The band covers the numerical error; tunnel tests sit
   from a few percent to about a third off the inviscid answer, and that gap
   isn't on the page yet.
 - **Skin friction**, within -12% to +19% of 23 measurements.
@@ -43,7 +45,7 @@ anything below Mach 1.5, rounded nose tips, Haack and power-series noses
 outside the range above, fins at the base swept in ways no test has
 measured, fins that end just ahead of the base, boat-tails, and square or
 rounded fin edges. In our test set of 2,000 typical rockets, each flown at
-four speeds (8,000 cases), 245 cases get a total today. For the rest,
+four speeds (8,000 cases), 252 cases get a total today. For the rest,
 bowshock lists every reason, says what you could change, shows the parts it
 can work out, and gives a "drag is at least this much" floor where that is
 safe.

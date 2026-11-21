@@ -4588,6 +4588,21 @@ from 75; 1.8 to 3.0: 167, from 160), and the nose's wave drag in 2090
 of 1200. The 10 new totals are 10 of the
 14 cases the registration named; the other 4 lie outside the outline.
 
+**2026-11-21, power-1/2 outline, judged** (no letter, as its
+registration). The six cases ran as registered, every march ended at the
+end of the nose, and they were judged with the allowance fixed at 8e-4
+(design record 0006, "The power-1/2 outline: results";
+`docs/research/two-scale-noses/outline/power-half/`). Five pass: (3,
+1.5), (3, 3), (4, 2), (5, 2) and (5, 3). (5, 1.5) fails: twice its
+largest counted miss, 1.39e-3, rounds up above 8e-4. It lies outside the
+hull of the five, so the hold does not apply, and the five are served
+(`POWER_HALF_REFERENCES`, `bluntNoseRefusal`). The audit re-run on top of
+the LV-Haack outline: 252 of 8000 get a total, from 245 (Mach 1.5 to
+1.8: 79, from 78; 1.8 to 3.0: 173, from 167), and the nose's wave drag
+in 2134 (a total or the nose alone), from 2090; the cross-check agrees
+on 1200 of 1200. The 7 new totals are 7 of the 9 cases the registration
+named; (3.59, 1.62) and (4.43, 1.64) lie below the outline's lower edge.
+
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
 allocate. _(Corrected 2026-10-28, the re-review's R4: this branch's

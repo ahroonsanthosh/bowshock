@@ -1754,6 +1754,63 @@ corner requires it, all fixed here before any power-1/2 run (branch
   naming the served noses and its count of the cases that get a total. If
   nothing passes, none of this changes and the result is recorded.
 
+**The power-1/2 outline: results (2026-11-21).** Judged as registered,
+by `docs/research/two-scale-noses/outline/analysis/judge.mjs` with
+`--allowance 8e-4` on the six cases' saved fits and marches
+(`outline/power-half/`: `fits/`, `marches/`, `analysis/judge.txt` and
+`judge.json`); `tests/analysis/power-half-references.test.ts` holds
+`POWER_HALF_REFERENCES` to those verdicts and to the registration's rule.
+The lanes ran to 20:48 on 2026-11-21, resumed from their checkpoints
+after each restart of the machine (the same fits, nothing re-run or
+changed). Every fit settled (5000 iterations on nj = 20, 8000 on nj = 40,
+11000 to 13000 on nj = 80; none reached its limit), every fitted grid
+passed the fitted gates (wall cells at 87.4 deg or more, no gate failing
+on any of the 18), and every case's three drags converge monotonically.
+Every march finished and ended at the end of the nose (each text log
+says so on its first line, and every record carries `"end":"nose"`).
+
+| Nose, Mach  | nj = 20      | nj = 40      | nj = 80      | Order | Band (no allowance) | Lines passing (x, share)         | Largest counted miss | Verdict |
+| ----------- | ------------ | ------------ | ------------ | ----- | ------------------- | -------------------------------- | -------------------- | ------- |
+| 3 cal., 1.5 | 0.0860967950 | 0.0856291834 | 0.0854789390 | 1.64  | 1.04e-3             | five, 0.17 (64%) to 0.55 (40%)   | 1.68e-4              | passes  |
+| 5 cal., 1.5 | 0.0390943450 | 0.0387232943 | 0.0385829868 | 1.40  | 2.76e-3             | five, 0.13 (68%) to 0.64 (40%)   | 6.93e-4              | fails   |
+| 3 cal., 3   | 0.0780876887 | 0.0779134068 | 0.0778714475 | 2.05  | 2.25e-4             | seven, 0.029 (86%) to 0.54 (40%) | 3.47e-5              | passes  |
+| 5 cal., 3   | 0.0357983194 | 0.0356282082 | 0.0355832233 | 1.92  | 5.68e-4             | five, 0.017 (89%) to 0.68 (40%)  | 9.75e-5              | passes  |
+| 4 cal., 2   | 0.0541826178 | 0.0538183742 | 0.0537136642 | 1.80  | 9.83e-4             | six, 0.056 (79%) to 0.61 (40%)   | 1.46e-4              | passes  |
+| 5 cal., 2   | 0.0382393765 | 0.0378946677 | 0.0377906811 | 1.73  | 1.49e-3             | three, 0.047 (81%) to 0.39 (50%) | 2.56e-4              | passes  |
+
+(2 calibers of cylinder; the share is the drag downstream of the line,
+to the end of the nose.) Unlike the Haack noses, most lines pass, from
+close behind the tip, and on each case every passing line misses by
+nearly the same amount (at 5 calibers and Mach 1.5, -6.71e-4 to
+-6.93e-4 over five lines and both estimates): the references from the
+different lines agree with one another, and the miss is between them and
+the procedure's extrapolation of the fitted drag. The five that pass need no more than 8e-4 (twice their largest
+counted miss, rounded up, is 7e-5 to 6e-4), and their bands with 8e-4
+contain the error against every passing line's lowest bound 2.33 to
+6.75 times. 5 calibers at Mach 1.5 fails on the registration's stricter
+rule alone: twice its largest counted miss, 1.39e-3, rounds up to 2e-3,
+above 8e-4 (its bands would contain the errors 2.20 to 2.29 times, its
+band without the allowance being 2.76e-3, the widest of the six). It is
+not added and not re-run.
+
+`judge.txt` also prints the allowance by W5's rule over all the cases,
+2e-3 from that same miss; under this registration it does not apply (the
+allowance does not rise), and the Von Karman verdicts it lists are W5's,
+unchanged.
+
+The outline is the hull of the five that pass: corners (3, 1.5), (3, 3),
+(5, 3) and (5, 2), with (4, 2) inside, its lower edge from 3 calibers at
+Mach 1.5 to 5 at Mach 2 (4 calibers at Mach 1.75). The failed (5, 1.5)
+lies outside it, below that edge, so the registration's hold does not
+apply and the five are added (`POWER_HALF_REFERENCES`). `bluntNoseRefusal`
+serves the power series of exponent exactly 1/2 inside that outline, with
+the allowance of 8e-4 (`TWO_SCALE_DRAG_FLOOR`); other exponents stay
+refused, and the reason names the three checked noses. The page's
+builder gives the power series exponent 0.5 when it is picked, so the
+page serves it there. Of the registration's 9 population cases, 7 lie
+inside the outline; (3.59, 1.62) and (4.43, 1.64) lie below its lower
+edge and stay refused.
+
 **Sharp tips whose bow shock detaches** stay refused (the sharp
 problem's message). On the same grids (0004), with 5 calibers of
 cylinder at Mach 1.2:

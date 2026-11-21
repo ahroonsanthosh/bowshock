@@ -853,12 +853,13 @@ export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedF
  * Why a blunt nose the fitted solver could solve is not served, or
  * undefined if it is. Ellipsoids are served (0006). Of the noses solved as
  * two-scale families (docs/design/0004-grids.md), the Von Karman (LD-Haack,
- * C = 0) and LV-Haack (C = 1/3) noses have been checked against a
- * reference, the method of characteristics from the fitted flow (0006),
+ * C = 0), LV-Haack (C = 1/3) and power-1/2 noses have been checked against
+ * a reference, the method of characteristics from the fitted flow (0006),
  * and each is served only inside the outline of its own lengths and Mach
- * numbers checked (VON_KARMAN_REFERENCES, LV_HAACK_REFERENCES); other
- * two-scale noses (the Haack noses between, the power series) are refused,
- * as are sharp tips whose shock detaches (by sharpFitProblem).
+ * numbers checked (VON_KARMAN_REFERENCES, LV_HAACK_REFERENCES,
+ * POWER_HALF_REFERENCES); other two-scale noses (the Haack noses between,
+ * the other power series) are refused, as are sharp tips whose shock
+ * detaches (by sharpFitProblem).
  */
 export function bluntNoseRefusal(body: Body, mach: number): string | undefined {
   const { shape, length, baseRadius } = body.nose;
@@ -868,12 +869,14 @@ export function bluntNoseRefusal(body: Body, mach: number): string | undefined {
       ? { name: 'Von Karman', references: VON_KARMAN_REFERENCES }
       : shape.kind === 'haack' && shape.parameter === 1 / 3
         ? { name: 'LV-Haack', references: LV_HAACK_REFERENCES }
-        : undefined;
+        : shape.kind === 'power' && shape.exponent === 0.5
+          ? { name: 'power-1/2', references: POWER_HALF_REFERENCES }
+          : undefined;
   if (!nose) {
     // Not "whose tip curvature is unbounded" (as this said until
     // 2026-11-21): the power series of exponent 1/2 is a paraboloid, whose
     // tip has a finite radius of curvature, R^2 / 2L.
-    return 'of the blunt noses other than ellipsoids, only the Von Karman (LD-Haack) and LV-Haack noses have been checked against a reference so far';
+    return 'of the blunt noses other than ellipsoids, only the Von Karman (LD-Haack), LV-Haack and power-1/2 noses have been checked against a reference so far';
   }
   const calibers = length / (2 * baseRadius);
   if (insideOutline(nose.references, [calibers, mach])) return undefined;
@@ -920,6 +923,25 @@ export const LV_HAACK_REFERENCES: readonly (readonly [number, number])[] = [
   [5, 2],
   [6, 2],
   [6, 3],
+];
+
+/**
+ * The power-1/2 noses (r = R (x / L)^(1/2), a paraboloid) checked against
+ * the method of characteristics, each march ended at the end of the nose
+ * (0006, "The power-1/2 outline"): nose length in calibers, Mach number,
+ * with 2 calibers of cylinder. The registration of 2026-11-21 judged six
+ * cases (docs/research/two-scale-noses/outline/power-half) with the
+ * allowance fixed at 8e-4: these five passed; 5 calibers at Mach 1.5
+ * failed (twice its largest counted miss, 1.39e-3, rounds up above 8e-4)
+ * and lies outside their hull, so the outline is the hull of these five.
+ * Separate from the Haack outlines: no shape's references widen another's.
+ */
+export const POWER_HALF_REFERENCES: readonly (readonly [number, number])[] = [
+  [3, 1.5],
+  [3, 3],
+  [4, 2],
+  [5, 2],
+  [5, 3],
 ];
 
 /**

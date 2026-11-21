@@ -16,6 +16,7 @@ import {
   solvedBluntBody,
   verifiedFittedDrag,
   LV_HAACK_REFERENCES,
+  POWER_HALF_REFERENCES,
   VON_KARMAN_REFERENCES,
   wallDrag,
   type BluntStart,
@@ -279,16 +280,36 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     expect(bluntNoseRefusal(nose(vonKarman, 6), 2)).toMatch(/Von Karman nose/);
     // Haack noses between are refused: no reference interpolates between shapes.
     expect(bluntNoseRefusal(nose({ kind: 'haack', parameter: 0.2 }, 5), 2)).toMatch(
-      /only the Von Karman \(LD-Haack\) and LV-Haack noses/,
+      /only the Von Karman \(LD-Haack\), LV-Haack and power-1\/2 noses/,
     );
     expect(bluntNoseRefusal(nose({ kind: 'power', exponent: 0.75 }, 3), 2)).toMatch(
       /only the Von Karman/,
     );
-    // The paraboloid's tip has a finite radius of curvature (R^2 / 2L): the
-    // reason does not say its curvature is unbounded.
-    const paraboloid = bluntNoseRefusal(nose({ kind: 'power', exponent: 0.5 }, 4), 2);
-    expect(paraboloid).toMatch(/only the Von Karman/);
-    expect(paraboloid).not.toMatch(/curvature/);
+    // The reason does not say the tip's curvature is unbounded: the
+    // paraboloid's is finite (R^2 / 2L), and so are other power series'.
+    expect(bluntNoseRefusal(nose({ kind: 'power', exponent: 0.75 }, 3), 2)).not.toMatch(
+      /curvature/,
+    );
+    // The power-1/2 nose (a paraboloid), inside the outline of its own
+    // references only (0006, "The power-1/2 outline";
+    // power-half-references.test.ts): corners (3, 1.5), (3, 3), (5, 3) and
+    // (5, 2), its edge from 3 calibers at Mach 1.5 to 5 at Mach 2 passing 4
+    // calibers at Mach 1.75, away from the failed (5, 1.5).
+    const paraboloid = { kind: 'power', exponent: 0.5 } as const;
+    for (const [calibers, mach] of POWER_HALF_REFERENCES) {
+      expect(bluntNoseRefusal(nose(paraboloid, calibers), mach)).toBeUndefined();
+    }
+    expect(bluntNoseRefusal(nose(paraboloid, 4), 2.5)).toBeUndefined();
+    expect(bluntNoseRefusal(nose(paraboloid, 5), 2.5)).toBeUndefined();
+    expect(bluntNoseRefusal(nose(paraboloid, 4), 1.8)).toBeUndefined();
+    expect(bluntNoseRefusal(nose(paraboloid, 4), 1.7)).toMatch(
+      /power-1\/2 nose of 4 calibers at Mach 1.7 lies outside the referenced range/,
+    );
+    expect(bluntNoseRefusal(nose(paraboloid, 5), 1.9)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(paraboloid, 5), 1.5)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(paraboloid, 3), 1.4)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(paraboloid, 2.9), 2)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(paraboloid, 5.1), 3)).toMatch(/outside the referenced range/);
     // Sharp tips are the sharp problem's to refuse (a detached shock).
     expect(bluntNoseRefusal(nose({ kind: 'ogive', parameter: 1 }, 1), 1.2)).toBeUndefined();
     // The outline: a point, a segment, a polygon.
