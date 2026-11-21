@@ -435,18 +435,36 @@ V1(a): the worst wall vertex from L/3 to 0.8 L is 4.5e-4 (Mach 1.3) and
 4.2e-4 (Mach 3) from Taylor-Maccoll, against 1e-3: pass. V3's drags on
 levels 1 to 3 are 0.0988049, 0.0988886, 0.0988785 (not monotone, so
 U_total = 3 times the larger change); the cones' converge at orders 1.75
-and 1.43. Still to come: V5 (hemisphere, Mach 2 and 3), V2 (the capped
+and 1.43. Still to come: V5 (hemisphere, Mach 3), V2 (the capped
 ogive, Mach 1.3, 2, 3) and V4 (level 4 of two of them).
+
+V5 at Mach 2 fails R3 on level 2, before its level 3 has finished. Level 1
+converged (residual 1e-11 in 4,427 iterations). Level 2 stopped at the
+8,000-iteration limit with an RMS density residual of 1.03e-11 (the
+registered target is 1e-11), so R3's iterative rule decides it: its drag
+ranged over 2.7e-9 (3.4e-9 of its value) in the last quarter, well inside
+0.1%, but the means of the last two eighths differ by 1.27e-9, 0.48 of the
+range, against the registered 0.25. The level does not count, so V5 at
+Mach 2 fails "R3's checks pass" and, by R5, no W6 case runs and the route
+goes back to the owner. The failure is at the 1e-9 level, a millionth of
+R4's 0.5% grid limit: the rule's drift test is relative to the range and
+has no floor, so on a level that is nearly converged it compares two
+round-off-sized numbers. It is applied as registered; any change to it is
+the owner's, made openly after this result and reviewed before it is used.
 
 ## State (2026-11-21)
 
 - Done: the tool, the geometry check, the set-up trials 1 to 13, the
   registration, its review and the revision.
-- Running: the checks V5 and V2; the hold-out's fitted families.
+- V5 at Mach 2 fails R3 on level 2 (above): by R5 the route waits on the
+  owner. Running: the checks' queue (V5 Mach 2's level 3, then V5 Mach 3
+  and V2), for information only until the owner decides.
 - Stopped at the session's two-hour limit for one background job, and
   resumable from their checkpoints: the fitted solver's lanes (the ogive's
   3 calibers, 0.15, Mach 3 has its nj = 80, converged in 14,000
   iterations; the Von Karman 3 calibers, 0.03, Mach 3 was at 8,000
-  iterations on nj = 80). `fitted/results.jsonl` holds every finished grid.
+  iterations on nj = 80) and the hold-out's (the ogive's 4 calibers, 0.08,
+  Mach 2 has its nj = 80; the Von Karman's was at 6,000 iterations on nj =
+  80). `fitted/results.jsonl` holds every finished grid.
 - Next: V1 to V5 (with V4's level 4), then the W6 cases and the hold-out's
   Von Karman runs on SU2.
