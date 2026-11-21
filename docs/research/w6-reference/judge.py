@@ -37,6 +37,8 @@ SHOCK_REACH = 0.9  # R3
 SU2_FORCE = 5e-3  # R3: the tool's drag within 0.5% of SU2's own force on level 1, a quarter of that per level after
 ITERATIVE = 1e-3  # R3: a level stopped at its limit counts if its drag's range over its last quarter is at most 0.1%
 DRIFT = 0.25  # R3: ... and the means of its last two eighths differ by at most a quarter of that range
+SETTLED = 1e-8  # Amendment 1: or that range and that difference are each at most 1e-8 of its drag,
+SETTLED_EIGHTHS = 8000  # its iterative error then the range plus the difference over 8,000 eighths (1,000 runs)
 CEILING = 0.02  # R7
 REFIT = 1e-9  # R6: a refit of a lane's grid within 1e-9 of its drag (the fits' settling tolerance)
 VENKAT_ALLOWED = (0.05,)  # R3: one coefficient; no reruns with another (the re-review's change 5)
@@ -157,9 +159,14 @@ def level_checks(spec, k, rec):
     if not rec.get("rms[Rho]", 0.0) <= -11 + 1e-9:
         swing = rec.get("dragRangeLastQuarter", math.inf)
         drift = abs(rec.get("dragMeanLastEighth", math.inf) - rec.get("dragMeanEighthBefore", -math.inf))
-        if (rec.get("Inner_Iter", 0) >= spec["iters"] - 1 and swing <= ITERATIVE * abs(rec["drag"])
-                and drift <= DRIFT * swing):
+        at_limit = rec.get("Inner_Iter", 0) >= spec["iters"] - 1
+        if at_limit and swing <= ITERATIVE * abs(rec["drag"]) and drift <= DRIFT * swing:
             u_it = swing
+        elif at_limit and swing <= SETTLED * abs(rec["drag"]) and drift <= SETTLED * abs(rec["drag"]):
+            # Amendment 1 (after V5 Mach 2's level 2): a level whose drag has
+            # settled to 1e-8 of its value, its drift charged as if it went
+            # on undecayed for a thousand more runs.
+            u_it = swing + SETTLED_EIGHTHS * drift
         else:
             bad.append(f"not converged (residual {rec.get('rms[Rho]')}, {rec.get('Inner_Iter')} iterations, "
                        f"drag range {swing}, drift {drift})")

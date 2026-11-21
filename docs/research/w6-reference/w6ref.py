@@ -609,13 +609,44 @@ def region_start(spec):
     return spec["L"] / 128
 
 
-def run_case(spec, run_dir, su2, threads=4):
-    """Every level of a case, coarsest first, each to convergence, the drag and the record of each."""
+# The longest a level may take, in seconds, for the session's two-hour
+# background windows: a level is not started unless this much time is left
+# before W6REF_DEADLINE (seconds since the epoch), so that none is cut off.
+LEVEL_BUDGET = {0: 600, 1: 900, 2: 2400, 3: 7000, 4: 7000}
+# What SU2 and the tool write in a level's folder; cleared before a level
+# that was cut off runs again from its start.
+LEVEL_OUTPUTS = ("history.csv", "surface_flow.csv", "restart_flow.csv", "restart_flow.dat", "wall.csv",
+                 "seed.csv", "log0.txt", "log1.txt", "record.json")
+
+
+class Deadline(Exception):
+    pass
+
+
+def run_case(spec, run_dir, su2, threads=4, deadline=None):
+    """
+    Every level of a case, coarsest first, each to convergence, the drag and
+    the record of each. A level that finished keeps its record in its folder
+    (record.json) and is not run again: a case stopped between levels goes on
+    from the first level without one, which starts from the level below as
+    it would have (the level below's solution on disk is its final one).
+    """
     os.makedirs(run_dir, exist_ok=True)
     out = []
     for level in range(spec.get("first_level", 0), spec["levels"]):
         d = os.path.join(run_dir, f"L{level}")
+        done = os.path.join(d, "record.json")
+        if os.path.exists(done):
+            rec = json.load(open(done))
+            out.append(rec)
+            print(json.dumps(rec), flush=True)
+            continue
+        if deadline is not None and time.time() + LEVEL_BUDGET[level] > deadline:
+            raise Deadline(f"level {level} of {run_dir} needs up to {LEVEL_BUDGET[level]} s; not started")
         os.makedirs(d, exist_ok=True)
+        for name in LEVEL_OUTPUTS:
+            if os.path.exists(os.path.join(d, name)):
+                os.remove(os.path.join(d, name))
         nose, x, r, marks = grid(spec, level)
         amin, skew = quality(x, r)
         write_su2(os.path.join(d, "mesh.su2"), x, r, marks)
@@ -659,6 +690,9 @@ def run_case(spec, run_dir, su2, threads=4):
                 # SU2's own axisymmetric force on REF_AREA = 1, as a drag on the
                 # base area: a check of the tool's integral (quadratures differ).
                 rec["su2Drag"] = rec["CD"] / (math.pi * R * R)
+        with open(done + ".tmp", "w") as f:
+            json.dump(rec, f)
+        os.replace(done + ".tmp", done)
         out.append(rec)
         print(json.dumps(rec), flush=True)
     return out
@@ -840,7 +874,12 @@ if __name__ == "__main__":
         out = os.path.join(sys.argv[3], "result.json")
         if os.path.exists(out):
             raise SystemExit(f"{out} exists: a run is never overwritten")
-        res = run_case(spec, sys.argv[3], su2, threads)
+        deadline = float(os.environ["W6REF_DEADLINE"]) if "W6REF_DEADLINE" in os.environ else None
+        try:
+            res = run_case(spec, sys.argv[3], su2, threads, deadline)
+        except Deadline as e:
+            print(f"deadline: {e}", flush=True)
+            sys.exit(3)
         json.dump({"spec": spec, "levels": res}, open(out, "w"), indent=1)
     elif cmd == "level4":
         # level4 <run dir> <path to SU2_CFD> [threads]: level 4 started from level 3 (R4's
@@ -849,8 +888,13 @@ if __name__ == "__main__":
         res = json.load(open(out))
         if any(r["level"] == 4 for r in res["levels"]):
             raise SystemExit("level 4 has run already")
-        recs = run_case(dict(res["spec"], first_level=4, levels=5), sys.argv[2], sys.argv[3],
-                        int(sys.argv[4]) if len(sys.argv) > 4 else 4)
+        deadline = float(os.environ["W6REF_DEADLINE"]) if "W6REF_DEADLINE" in os.environ else None
+        try:
+            recs = run_case(dict(res["spec"], first_level=4, levels=5), sys.argv[2], sys.argv[3],
+                            int(sys.argv[4]) if len(sys.argv) > 4 else 4, deadline)
+        except Deadline as e:
+            print(f"deadline: {e}", flush=True)
+            sys.exit(3)
         res["levels"] = res["levels"] + recs
         json.dump(res, open(out, "w"), indent=1)
     elif cmd == "exact":

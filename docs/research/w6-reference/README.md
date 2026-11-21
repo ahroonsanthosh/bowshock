@@ -20,6 +20,7 @@ made here. It shares no code, grid or geometry with bowshock's solver.
 | --- | --- |
 | `w6ref.py` | The tool: the capped-nose geometry written here from its definition (W6 README section 1); H grids for sharp noses and C grids for capped ones, nested (each level halves every spacing by sampling the same mappings); SU2's mesh and configuration; the registered settings (`SETTINGS`, `capped_spec`, `sharp_spec`); each level after the first started from the level below (`seed_restart`); the nose's pressure drag integrated here from SU2's surface pressures (trapezoid rule in r^2, on the base area); the change of the drag's distribution between levels (`dist_change`); the boundary checks |
 | `judge.py` | The verdict, as registered below, from the committed records only |
+| `queue.sh` | SU2's cases in order inside one two-hour background window; a case goes on from its first unfinished level (each finished level keeps its record, `L*/record.json`), and no level starts that could not finish before the window closes |
 | `fitted/lane.sh` | The fitted solver's families that W6 left without nj = 80, run with W6's own runners on the lanes' frozen source (ae794e4) |
 | `fitted/lanes-results.jsonl` | W6's lane records, copied unchanged from `claude/wip/w6-build` bf3c739 (`docs/research/w6-build/results/lanes/results.jsonl`, git blob 3bf6e11, SHA-256 `e5f218a9...`) |
 | `geometry-check/` | This geometry against W6's own (`src/geometry/nose.ts` at `claude/wip/w6-build` bf3c739, SHA-256 `e738b187...`, run as it is by `w6geom.ts`): the tangent ogive and the Von Karman nose, 3, 4 and 5 calibers, r_n/R 0.03, 0.05, 0.10 and 0.15, 401 stations each. `compare.out`: the parent's length within 1.8e-14, the offset 5.7e-15, the tangent point 7.7e-16, the radius 4.0e-15 (calibers). `gridq.py`, `gridq.out`: every cell's area positive on five levels for three trial cases (the first C grid, since replaced: trial 2 below) |
@@ -185,7 +186,8 @@ the base area) ranges over at most 0.1% of its value in its last quarter
 of iterations and the means of its last two eighths differ by at most a
 quarter of that range (a cycle, not a slow drift); that range is then its
 iterative error, the levels' ranges are added to U_su2 and they make the
-rates of R4 less favourable. Four
+rates of R4 less favourable (Amendment 1, below, adds a second way for
+such a level to count). Four
 nested levels: level 0 (64 x 32 cells on a C grid) first order from the
 free stream, then second order; levels 1, 2 and 3 (512 x 256) each
 started from the level below (trial 6), and none otherwise (the tool
@@ -359,6 +361,31 @@ serves: W6's geometry and capped families brought to the main line, the
 page's tip-radius input (0014 P4), the refusal lifted inside the outline,
 the label, the refusal audit run again, each reviewed.
 
+### Amendment 1 (2026-11-21, after V5 at Mach 2's level 2; the owner's decision)
+
+Made after a result, and said so. V5 at Mach 2's level 2 stopped at
+8,000 iterations with an RMS density residual of 1.03e-11 against the
+target 1e-11. Its drag ranged over 3.4e-9 of its value in the last
+quarter, but the means of its last two eighths differ by 0.48 of that
+range against R3's 0.25 (the checks, below). R3's drift test is relative
+to the range and has no floor, so on a level this close to converged it
+compares two round-off-sized numbers. The owner chose to amend the rule,
+reviewed before use, rather than stop the route or rerun the case. When
+it was made, V5 at Mach 2's level 3 and V5 at Mach 3, V2, V4 and every W6
+case had not run; V3 and V1 had passed without it, and it changes
+neither.
+
+The rule, applied to every level of every run: a level used that stops
+at its limit and fails R3's rule also counts if its drag's range over
+its last quarter and the difference of the means of its last two eighths
+are each at most 1e-8 of its drag. Its iterative error is then the range
+plus 8,000 times that difference: an eighth's drift (1,000 iterations)
+going on, undecayed, for a thousand more runs of 8,000 iterations. At the
+floor that is at most 8e-5 of the drag, a sixtieth of R4's 0.5%; on V5 at
+Mach 2's level 2 it is 1.29e-5 of the drag. It stands in R4's rates and
+in U_su2 as R3's range does (`judge.py`, `SETTLED`). A level that meets
+R3's own rule keeps R3's error.
+
 ## The review of the first form (2026-11-21)
 
 An independent review (Fable, given the code and the text, not the
@@ -449,16 +476,21 @@ Mach 2 fails "R3's checks pass" and, by R5, no W6 case runs and the route
 goes back to the owner. The failure is at the 1e-9 level, a millionth of
 R4's 0.5% grid limit: the rule's drift test is relative to the range and
 has no floor, so on a level that is nearly converged it compares two
-round-off-sized numbers. It is applied as registered; any change to it is
-the owner's, made openly after this result and reviewed before it is used.
+round-off-sized numbers. Under R3 as registered the route stops here; the
+owner chose Amendment 1 (above), which counts the level with an iterative
+error of 1.29e-5 of its drag, once reviewed. The case's level 3 then runs
+on from level 2 as it would have (levels 0 to 2 are not run again; their
+records, printed when they finished, match their files on disk exactly).
 
 ## State (2026-11-21)
 
 - Done: the tool, the geometry check, the set-up trials 1 to 13, the
   registration, its review and the revision.
-- V5 at Mach 2 fails R3 on level 2 (above): by R5 the route waits on the
-  owner. Running: the checks' queue (V5 Mach 2's level 3, then V5 Mach 3
-  and V2), for information only until the owner decides.
+- V5 at Mach 2 failed R3 on level 2; the owner chose Amendment 1, in
+  review. Running: the checks' queue (`queue.sh`: V5 Mach 2's level 3,
+  then V5 Mach 3 and V2), started again in each two-hour window; a case
+  goes on from its first unfinished level (`w6ref.py` keeps each finished
+  level's record in its folder).
 - Stopped at the session's two-hour limit for one background job, and
   resumable from their checkpoints: the fitted solver's lanes (the ogive's
   3 calibers, 0.15, Mach 3 has its nj = 80, converged in 14,000
