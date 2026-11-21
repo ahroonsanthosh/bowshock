@@ -367,7 +367,7 @@ MARKER_SYM= ( axis )
 MARKER_FAR= ( farfield, outlet )
 MARKER_PLOTTING= ( wall )
 MARKER_MONITORING= ( wall )
-NUM_METHOD_GRAD= WEIGHTED_LEAST_SQUARES
+NUM_METHOD_GRAD= {grad}
 CFL_NUMBER= {cfl}
 CFL_ADAPT= {cfladapt}
 CFL_ADAPT_PARAM= ( 0.5, 1.2, {cfl}, {cflmax} )
@@ -380,7 +380,7 @@ CONV_NUM_METHOD_FLOW= {scheme}
 MUSCL_FLOW= {muscl}
 SLOPE_LIMITER_FLOW= {limiter}
 VENKAT_LIMITER_COEFF= {venkat}
-TIME_DISCRE_FLOW= EULER_IMPLICIT
+{frozen}TIME_DISCRE_FLOW= EULER_IMPLICIT
 CONV_FIELD= RMS_DENSITY
 CONV_RESIDUAL_MINVAL= {minres}
 CONV_STARTITER= 10
@@ -417,6 +417,10 @@ def write_cfg(path, spec, restart=False, seed=False):
                 minres=spec["minres"],
                 cfladapt=spec["cfladapt"],
                 muscl=spec["muscl"],
+                # Two settings only revision 2's trials vary (README); a spec
+                # without them writes the file exactly as before.
+                grad=spec.get("grad", "WEIGHTED_LEAST_SQUARES"),
+                frozen=f"LIMITER_ITER= {spec['limiterIter']}\n" if "limiterIter" in spec else "",
             )
         )
 

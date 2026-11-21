@@ -21,6 +21,7 @@ made here. It shares no code, grid or geometry with bowshock's solver.
 | `w6ref.py` | The tool: the capped-nose geometry written here from its definition (W6 README section 1); H grids for sharp noses and C grids for capped ones, nested (each level halves every spacing by sampling the same mappings); SU2's mesh and configuration; the registered settings (`SETTINGS`, `capped_spec`, `sharp_spec`); each level after the first started from the level below (`seed_restart`); the nose's pressure drag integrated here from SU2's surface pressures (trapezoid rule in r^2, on the base area); the change of the drag's distribution between levels (`dist_change`); the boundary checks |
 | `judge.py` | The verdict, as registered below, from the committed records only |
 | `queue.sh` | SU2's cases in order inside one two-hour background window; a case goes on from its first unfinished level (each finished level keeps its record, `L*/record.json`, with the hashes of the case's spec and of the level's solution file, both checked before the next level starts from it; a level whose SU2 was killed keeps none), one process per case (a lock the tool and SU2 hold), and no level starts that the window could not see finish (a start condition only) |
+| `trials-r2/` | Revision 2's trials (below): `trial.py` runs each candidate setting on the trial case and applies the trial rules; `runs/` holds the records, as `runs/` does for the registered cases. `w6ref.py` takes two optional settings for them (`grad`, `limiterIter`); without them it writes SU2's file byte for byte as before |
 | `fitted/lane.sh` | The fitted solver's families that W6 left without nj = 80, run with W6's own runners on the lanes' frozen source (ae794e4) |
 | `fitted/lanes-results.jsonl` | W6's lane records, copied unchanged from `claude/wip/w6-build` bf3c739 (`docs/research/w6-build/results/lanes/results.jsonl`, git blob 3bf6e11, SHA-256 `e5f218a9...`) |
 | `geometry-check/` | This geometry against W6's own (`src/geometry/nose.ts` at `claude/wip/w6-build` bf3c739, SHA-256 `e738b187...`, run as it is by `w6geom.ts`): the tangent ogive and the Von Karman nose, 3, 4 and 5 calibers, r_n/R 0.03, 0.05, 0.10 and 0.15, 401 stations each. `compare.out`: the parent's length within 1.8e-14, the offset 5.7e-15, the tangent point 7.7e-16, the radius 4.0e-15 (calibers). `gridq.py`, `gridq.out`: every cell's area positive on five levels for three trial cases (the first C grid, since replaced: trial 2 below) |
@@ -562,6 +563,61 @@ tool as it was before records carried hashes; its record matches the
 case's result exactly, and its two hashes were added from its files, as
 for levels 0 to 2.
 
+## Revision 2: the trials for a fix (2026-11-21, after V5 at Mach 2 failed; the owner's decision)
+
+Written down, and committed, before any of these runs. The owner chose to
+look for a setting that removes the failure, rather than stop the route.
+Nothing below changes a check, a limit or a rule: whatever setting is
+chosen is registered as revision 2, reviewed independently, and then every
+check (V1 to V5) runs again from the start under it, in a fresh folder,
+the first runs kept as they are. No candidate runs on a check case or a W6
+case, and no fitted value is looked at.
+
+What failed. On V5 at Mach 2 the error starts at the bow shock on the
+axis: the total pressure just behind it is 4.8% low on level 2 and 2.3%
+high on level 3, and is carried unchanged along the axis to the nose (the
+stagnation vertex reads it). Off the axis, in the subsonic region behind
+the shock, total pressure below the pitot value (which no streamline
+can have) reaches 6.2% low on level 2 and 2.4% on level 3. Trials 4 and 11 to 13 already
+tried Roe's scheme (7% low), AUSM+-up2 and SLAU2 (no convergence) and
+Venkatakrishnan's coefficients 0.25, 0.5 and 5 and Wang's variant; every
+one left the stagnation streamline wrong and growing with refinement.
+
+The trial case T: the hemisphere-cylinder of V5 at Mach 2.5, on the grids
+the registration builds for it (`capped_spec`), levels and iteration
+limits as registered. The candidates (`trials-r2/trial.py`), each
+changing only the flux scheme, the limiter or the gradients:
+
+| | Setting |
+| --- | --- |
+| S0 | the registered one (HLLC, Venkatakrishnan 0.05, weighted least-squares gradients): the control |
+| S1 | HLLC, Van Albada's limiter (SU2's edge form) |
+| S2 | HLLC, Venkatakrishnan 0.05, Green-Gauss gradients |
+| S3 | HLLC, Nishikawa's R3 limiter (coefficient 0.05) |
+| S4 | HLLC, Venkatakrishnan 0.05, the limiter frozen after 2,000 iterations of each run |
+| S5 | JST (central, its own dissipation, no limiter) |
+| S6 | modified Steger-Warming flux splitting, Venkatakrishnan 0.05 |
+
+The screen, on levels 0 to 2 of every candidate: each level converges to
+SU2's residual target (1e-11) within its limit, with no rule for a level
+stopped at the limit; R3's other checks on levels 1 and 2; the stagnation
+vertex within 3% of the pitot value on level 2 and its error no larger
+than on level 1; the vertex-level change from level 1 to 2 smaller than
+from 0 to 1.
+
+Level 3 runs for the control if it passes the screen, and for at most two
+other candidates that pass it, those with the smallest stagnation error
+on level 2. Level 3 passes if it converges to 1e-11 within 8,000
+iterations; R3's other checks hold; the stagnation vertex is within 3%
+and its error no larger than on level 2; and both of R4's ratios on
+levels 1 to 3 are below 1, with R4's hard checks passing (its 0.5% and 1%
+limits not applied, as for V5).
+
+The choice: of the candidates other than the control that pass level 3,
+the one with the smallest U_su2 (R4 on levels 1 to 3). If none passes, or
+the control passes level 3 too (so T could not tell a fix from the
+registered setting), the route goes back to the owner.
+
 ## State (2026-11-21)
 
 - Done: the tool, the geometry check, the set-up trials 1 to 13, the
@@ -570,10 +626,9 @@ for levels 0 to 2.
   passed its review with changes, all made and confirmed. Its level 3
   then did not converge (its residual cycling between 1e-6.5 and 1e-7.7) and its vertex-level change
   grew (ratio 1.81): **V5 at Mach 2 fails R5, no W6 case runs, and the
-  route is with the owner.** Running as a record only: the checks' queue
-  (`queue.sh`: V5 Mach 3, then V2), started again in each two-hour
-  window; a case goes on from its first unfinished level (`w6ref.py`
-  keeps each finished level's record in its folder).
+  route is with the owner.** The owner chose to look for a fix: revision
+  2's trials (above) are running; the checks' queue under the first
+  settings is stopped (V5 at Mach 3 had levels 0 and 1).
 - Stopped at the session's two-hour limit for one background job, and
   resumable from their checkpoints: the fitted solver's lanes (the ogive's
   3 calibers, 0.15, Mach 3 has its nj = 80, converged in 14,000

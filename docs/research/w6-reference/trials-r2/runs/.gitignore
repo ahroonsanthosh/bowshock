@@ -1,0 +1,9 @@
+# SU2's large working files stay out of the repository; the records are kept:
+# result.json, spec.json, and per level case.cfg, history.csv and wall.csv.
+mesh.su2
+restart_flow.dat
+restart_flow.csv
+seed.csv
+surface_flow.csv
+log*.txt
+.lock
