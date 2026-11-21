@@ -4574,6 +4574,20 @@ boundary-layer state, and so what it measured, is not agreed.
   separately registered use). F1 needs another source (0019 section
   3.1).
 
+**2026-11-21, LV-Haack outline, judged** (no letter, as its
+registration). The six cases ran as registered and were judged with the
+allowance fixed at 8e-4 (design record 0006, "The LV-Haack outline:
+results"; `docs/research/two-scale-noses/outline/lv-haack/`). Five pass:
+(4, 1.5), (4, 3), (5, 2), (6, 2) and (6, 3). (6, 1.5) fails: twice its
+largest counted miss, 8.63e-4, rounds up above 8e-4. It lies outside the
+hull of the five, so the hold does not apply, and the five are served
+(`LV_HAACK_REFERENCES`, `bluntNoseRefusal`). The audit re-run on the
+merged head: 245 of 8000 get a total, from 235 (Mach 1.5 to 1.8: 78,
+from 75; 1.8 to 3.0: 167, from 160), and the nose's wave drag in 2090
+(a total or the nose alone), from 2038; the cross-check agrees on 1200
+of 1200. The 10 new totals are 10 of the
+14 cases the registration named; the other 4 lie outside the outline.
+
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
 allocate. _(Corrected 2026-10-28, the re-review's R4: this branch's

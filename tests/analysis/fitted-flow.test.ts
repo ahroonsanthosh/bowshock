@@ -15,6 +15,7 @@ import {
   sharpFittedFlow,
   solvedBluntBody,
   verifiedFittedDrag,
+  LV_HAACK_REFERENCES,
   VON_KARMAN_REFERENCES,
   wallDrag,
   type BluntStart,
@@ -252,8 +253,33 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     expect(bluntNoseRefusal(nose(vonKarman, 6), 1.5)).toMatch(/outside the referenced range/);
     expect(bluntNoseRefusal(nose(vonKarman, 5.1), 1.5)).toMatch(/outside the referenced range/);
     expect(bluntNoseRefusal(nose(vonKarman, 6.1), 3)).toMatch(/outside the referenced range/);
-    expect(bluntNoseRefusal(nose({ kind: 'haack', parameter: 1 / 3 }, 3), 2)).toMatch(
-      /only the Von Karman/,
+    // The LV-Haack nose (C = 1/3), inside the outline of its own references
+    // only (0006, "The LV-Haack outline"; lv-haack-references.test.ts):
+    // corners (4, 1.5), (4, 3), (6, 3) and (6, 2), its edge from 4 calibers
+    // at Mach 1.5 to 6 at Mach 2 passing 5 calibers at Mach 1.75, away from
+    // the failed (6, 1.5).
+    const lvHaack = { kind: 'haack', parameter: 1 / 3 } as const;
+    for (const [calibers, mach] of LV_HAACK_REFERENCES) {
+      expect(bluntNoseRefusal(nose(lvHaack, calibers), mach)).toBeUndefined();
+    }
+    expect(bluntNoseRefusal(nose(lvHaack, 4.5), 2.5)).toBeUndefined();
+    expect(bluntNoseRefusal(nose(lvHaack, 6), 2.5)).toBeUndefined();
+    expect(bluntNoseRefusal(nose(lvHaack, 5), 1.8)).toBeUndefined();
+    expect(bluntNoseRefusal(nose(lvHaack, 5), 1.7)).toMatch(
+      /LV-Haack nose of 5 calibers at Mach 1.7 lies outside the referenced range/,
+    );
+    expect(bluntNoseRefusal(nose(lvHaack, 6), 1.9)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(lvHaack, 6), 1.5)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(lvHaack, 4), 1.4)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(lvHaack, 3), 2)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(lvHaack, 6.1), 3)).toMatch(/outside the referenced range/);
+    // Neither outline widens the other: a Von Karman point is not an
+    // LV-Haack one, nor the reverse.
+    expect(bluntNoseRefusal(nose(lvHaack, 1), 2)).toMatch(/LV-Haack nose/);
+    expect(bluntNoseRefusal(nose(vonKarman, 6), 2)).toMatch(/Von Karman nose/);
+    // Haack noses between are refused: no reference interpolates between shapes.
+    expect(bluntNoseRefusal(nose({ kind: 'haack', parameter: 0.2 }, 5), 2)).toMatch(
+      /only the Von Karman \(LD-Haack\) and LV-Haack noses/,
     );
     expect(bluntNoseRefusal(nose({ kind: 'power', exponent: 0.75 }, 3), 2)).toMatch(
       /only the Von Karman/,

@@ -1538,6 +1538,59 @@ stricter rule on the allowance, all fixed here before any LV-Haack run
   cases that get a total. If nothing passes, none of this changes and
   the result is recorded.
 
+**The LV-Haack outline: results (2026-11-21).** Judged as registered,
+by `docs/research/two-scale-noses/outline/analysis/judge.mjs` with
+`--allowance 8e-4` on the six cases' saved fits and marches
+(`outline/lv-haack/`: `fits/`, `marches/`, `analysis/judge.txt` and
+`judge.json`); `tests/analysis/lv-haack-references.test.ts` holds
+`LV_HAACK_REFERENCES` to those verdicts and to the registration's rule.
+The lanes ran from 2026-11-20 to 18:58 on 2026-11-21, resumed from their
+checkpoints after each restart of the machine (the same fits, nothing
+re-run or changed). Every fit settled (5500 iterations on nj = 20, 8000
+to 9000 on nj = 40, 13000 to 15000 on nj = 80; none reached its limit),
+every fitted grid passed the fitted gates (wall cells at 71.7 deg or
+more, no gate failing on any of the 18), and every case's three drags
+converge monotonically. Every march finished.
+
+| Nose, Mach  | nj = 20      | nj = 40      | nj = 80      | Order | Band (no allowance) | Lines passing (x, share)        | Largest counted miss | Verdict |
+| ----------- | ------------ | ------------ | ------------ | ----- | ------------------- | ------------------------------- | -------------------- | ------- |
+| 4 cal., 1.5 | 0.0612806457 | 0.0610492158 | 0.0609797320 | 1.74  | 6.11e-4             | four, 0.19 (85%) to 0.73 (42%)  | 2.40e-4              | passes  |
+| 6 cal., 1.5 | 0.0291515085 | 0.0289849415 | 0.0289477632 | 2.16  | 5.35e-4             | three, 0.25 (85%) to 1.01 (41%) | 4.31e-4              | fails   |
+| 4 cal., 3   | 0.0548293976 | 0.0547204043 | 0.0546893957 | 1.81  | 2.82e-4             | two, 0.37 (73%) and 0.92 (41%)  | 3.97e-5              | passes  |
+| 6 cal., 3   | 0.0267723329 | 0.0266860813 | 0.0266574379 | 1.59  | 6.68e-4             | one, 1.29 (40%)                 | 8.62e-5              | passes  |
+| 5 cal., 2   | 0.0395493699 | 0.0394111681 | 0.0393591058 | 1.41  | 9.99e-4             | two, 0.43 (73%) and 1.01 (40%)  | 8.75e-5              | passes  |
+| 6 cal., 2   | 0.0282990769 | 0.0281889562 | 0.0281514617 | 1.55  | 8.60e-4             | two, 0.44 (75%) and 1.15 (40%)  | 2.53e-4              | passes  |
+
+(2 calibers of cylinder; the share is the drag downstream of the line.
+The counted misses are over the passing lines and, for 6 calibers at
+Mach 3, which rests on one, the lines next to it: its neighbour at x =
+0.41 misses by -8.62e-5.) The five that pass need no more than 8e-4
+(twice their largest counted miss, rounded up, is 8e-5 to 6e-4), and
+their bands with 8e-4 contain the error against every passing line's
+lowest bound 1.70 to 4.15 times. 6 calibers at Mach 1.5 fails on the
+registration's stricter rule alone: its own passing line at x = 0.25
+misses by +4.31e-4, twice which, 8.63e-4, rounds up to 9e-4, above 8e-4
+(its bands would contain the errors 1.52 to 1.61 times). It is not added
+and not re-run. As on the Von Karman noses, the lines nearer the tip fail
+the mass balance or the change from 1280 intervals on every case.
+
+`judge.txt` also prints the allowance by W5's rule over all the cases,
+9e-4 from that same miss; under this registration it does not apply (the
+allowance does not rise), and the Von Karman verdicts it lists are W5's,
+unchanged.
+
+The outline is the hull of the five that pass: corners (4, 1.5), (4, 3),
+(6, 3) and (6, 2), with (5, 2) inside, its lower edge from 4 calibers at
+Mach 1.5 to 6 at Mach 2 (5 calibers at Mach 1.75). The failed (6, 1.5)
+lies outside it, below that edge, so the registration's hold does not
+apply and the five are added (`LV_HAACK_REFERENCES`). `bluntNoseRefusal`
+serves the Haack nose of parameter exactly 1/3 inside that outline, with
+the allowance of 8e-4 (`TWO_SCALE_DRAG_FLOOR`); other Haack parameters and
+the power series stay refused, and the reason names both checked noses.
+The page's nose menu offers the Von Karman nose and no other Haack nose
+(`src/ui/builder.ts` lists any Haack nose under the Von Karman choice), so the menu is
+unchanged: an LV-Haack nose is served where the library is asked for one.
+
 **The power-1/2 outline: registration (2026-11-21, before any run).**
 The power series of exponent 1/2 (r = R (x / L)^(1/2), a paraboloid) is
 refused at every length and Mach number (`bluntNoseRefusal`; the refusal

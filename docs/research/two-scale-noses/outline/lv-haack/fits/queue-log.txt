@@ -1,0 +1,69 @@
+2026-11-20T23:23:30Z a start L6c2M1.5r1
+2026-11-20T23:23:32Z b start L4c2M1.5r1
+2026-11-20T23:23:34Z c start L5c2M2r1
+2026-11-20T23:25:05Z b done L4c2M1.5r1 exit 0
+2026-11-20T23:25:05Z b start L4c2M3r1
+2026-11-20T23:25:22Z a done L6c2M1.5r1 exit 0
+2026-11-20T23:25:22Z a start L6c2M3r1
+2026-11-20T23:26:17Z c done L5c2M2r1 exit 0
+2026-11-20T23:26:17Z c start L6c2M2r1
+2026-11-20T23:29:04Z c done L6c2M2r1 exit 0
+seeded /home/user/bowshock-runs/lvh/out/ckpt-L5c2M2r2 (536 x 40) from /home/user/bowshock-runs/lvh/out/L5c2M2r1 (268 x 20)
+2026-11-20T23:29:04Z c start L5c2M2r2
+2026-11-20T23:29:06Z b done L4c2M3r1 exit 0
+seeded /home/user/bowshock-runs/lvh/out/ckpt-L4c2M1.5r2 (276 x 40) from /home/user/bowshock-runs/lvh/out/L4c2M1.5r1 (138 x 20)
+2026-11-20T23:29:06Z b start L4c2M1.5r2
+2026-11-20T23:30:19Z a done L6c2M3r1 exit 0
+seeded /home/user/bowshock-runs/lvh/out/ckpt-L6c2M1.5r2 (330 x 40) from /home/user/bowshock-runs/lvh/out/L6c2M1.5r1 (165 x 20)
+2026-11-20T23:30:19Z a start L6c2M1.5r2
+2026-11-20T23:37:01Z b done L4c2M1.5r2 exit 0
+seeded /home/user/bowshock-runs/lvh/out/ckpt-L4c2M3r2 (852 x 40) from /home/user/bowshock-runs/lvh/out/L4c2M3r1 (426 x 20)
+2026-11-20T23:37:01Z b start L4c2M3r2
+2026-11-20T23:38:49Z a done L6c2M1.5r2 exit 0
+seeded /home/user/bowshock-runs/lvh/out/ckpt-L6c2M3r2 (1000 x 40) from /home/user/bowshock-runs/lvh/out/L6c2M3r1 (500 x 20)
+2026-11-20T23:38:49Z a start L6c2M3r2
+2026-11-20T23:43:09Z c done L5c2M2r2 exit 0
+seeded /home/user/bowshock-runs/lvh/out/ckpt-L6c2M2r2 (574 x 40) from /home/user/bowshock-runs/lvh/out/L6c2M2r1 (287 x 20)
+2026-11-20T23:43:09Z c start L6c2M2r2
+2026-11-20T23:59:01Z c done L6c2M2r2 exit 0
+seeded /home/user/bowshock-runs/lvh/out/ckpt-L5c2M2r4 (1072 x 80) from /home/user/bowshock-runs/lvh/out/L5c2M2r2 (536 x 40)
+2026-11-20T23:59:01Z c start L5c2M2r4
+2026-11-21T00:01:32Z b done L4c2M3r2 exit 0
+seeded /home/user/bowshock-runs/lvh/out/ckpt-L4c2M1.5r4 (552 x 80) from /home/user/bowshock-runs/lvh/out/L4c2M1.5r2 (276 x 40)
+2026-11-21T00:01:32Z b start L4c2M1.5r4
+2026-11-21T00:06:37Z a done L6c2M3r2 exit 0
+seeded /home/user/bowshock-runs/lvh/out/ckpt-L6c2M1.5r4 (660 x 80) from /home/user/bowshock-runs/lvh/out/L6c2M1.5r2 (330 x 40)
+2026-11-21T00:06:37Z a start L6c2M1.5r4
+2026-11-21T07:36:37Z b start L4c2M1.5r4
+2026-11-21T07:36:37Z c start L5c2M2r4
+2026-11-21T07:36:37Z a start L6c2M1.5r4
+2026-11-21T13:40:29Z a start L6c2M1.5r4
+2026-11-21T13:40:29Z c start L5c2M2r4
+2026-11-21T13:40:29Z b start L4c2M1.5r4
+2026-11-21T14:07:01Z b done L4c2M1.5r4 exit 0
+2026-11-21T14:07:01Z b start moc L4c2M1.5
+2026-11-21T14:24:47Z a done L6c2M1.5r4 exit 0
+2026-11-21T14:24:47Z a start moc L6c2M1.5
+2026-11-21T14:26:53Z b done moc L4c2M1.5 exit 0
+seeded /home/user/bowshock-runs/lvh/out/ckpt-L4c2M3r4 (1704 x 80) from /home/user/bowshock-runs/lvh/out/L4c2M3r2 (852 x 40)
+2026-11-21T14:26:53Z b start L4c2M3r4
+2026-11-21T14:46:06Z a done moc L6c2M1.5 exit 0
+seeded /home/user/bowshock-runs/lvh/out/ckpt-L6c2M3r4 (2000 x 80) from /home/user/bowshock-runs/lvh/out/L6c2M3r2 (1000 x 40)
+2026-11-21T14:46:07Z a start L6c2M3r4
+2026-11-21T15:00:15Z c done L5c2M2r4 exit 0
+2026-11-21T15:00:15Z c start moc L5c2M2
+2026-11-21T15:31:19Z c done moc L5c2M2 exit 0
+seeded /home/user/bowshock-runs/lvh/out/ckpt-L6c2M2r4 (1148 x 80) from /home/user/bowshock-runs/lvh/out/L6c2M2r2 (574 x 40)
+2026-11-21T15:31:20Z c start L6c2M2r4
+2026-11-21T17:26:15Z b done L4c2M3r4 exit 0
+2026-11-21T17:26:15Z b start moc L4c2M3
+2026-11-21T17:45:01Z c done L6c2M2r4 exit 0
+2026-11-21T17:45:01Z c start moc L6c2M2
+2026-11-21T18:07:54Z b done moc L4c2M3 exit 0
+2026-11-21T18:07:54Z b finished /home/user/bowshock-runs/lvh/runners/jobs-lvh-b.txt
+2026-11-21T18:13:19Z a done L6c2M3r4 exit 0
+2026-11-21T18:13:19Z a start moc L6c2M3
+2026-11-21T18:15:40Z c done moc L6c2M2 exit 0
+2026-11-21T18:15:40Z c finished /home/user/bowshock-runs/lvh/runners/jobs-lvh-c.txt
+2026-11-21T18:58:23Z a done moc L6c2M3 exit 0
+2026-11-21T18:58:23Z a finished /home/user/bowshock-runs/lvh/runners/jobs-lvh-a.txt
