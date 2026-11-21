@@ -185,6 +185,23 @@ export function allowanceCd(model: NoseModelAllowance, drag: number): number {
   return Math.max(model.halfWidth * Math.abs(drag), model.absolute);
 }
 
+/** A size in words, two significant figures, rounded up (never narrower than the size; src/app/band.ts). */
+export function upExponential(x: number): string {
+  if (!(x > 0)) return (0).toExponential(1);
+  let e = Math.floor(Math.log10(x));
+  let m = Math.ceil((x / 10 ** e) * 10 - 1e-9) / 10;
+  if (m >= 10) {
+    m = 1;
+    e += 1;
+  }
+  return `${m.toFixed(1)}e${e < 0 ? '-' : '+'}${Math.abs(e)}`;
+}
+
+/** A relative size as a percent to one decimal, rounded up. */
+export function upPercent(a: number): string {
+  return (Math.ceil(1000 * a - 1e-9) / 10).toFixed(1);
+}
+
 /**
  * The allowance in words, as the band's second part (0022 section 4.6): its
  * size relative to the value and in C_D, the sources that hold the case, and,
@@ -193,12 +210,22 @@ export function allowanceCd(model: NoseModelAllowance, drag: number): number {
  */
 export function allowanceWords(model: NoseModelAllowance, drag: number): string {
   return (
-    `the inviscid model against measured wind-tunnel pressures, +-${(100 * model.halfWidth).toFixed(1)}% ` +
-    `of the value (+-${allowanceCd(model, drag).toExponential(1)} in C_D), the widest of the measured ` +
+    `the inviscid model against measured wind-tunnel pressures, +-${upPercent(model.halfWidth)}% ` +
+    `of the value (+-${upExponential(allowanceCd(model, drag))} in C_D), the widest of the measured ` +
     `noses within 0.25 calibers and 0.05 in Mach of this one: ${model.sources.join('; ')}` +
     (model.seenOnly
       ? '; formed from data seen before registration, so it can only widen the band, and is not a ' +
         'test (design record 0022)'
       : ' (design record 0022)')
   );
+}
+
+/**
+ * The All inputs page's nose line, after its numerical band: where a box
+ * holds this nose, that its total carries the allowance too, in the band's
+ * words; elsewhere nothing.
+ */
+export function noseLineAllowance(nose: Nose, mach: number, drag: number): string {
+  const model = noseModelAllowance(nose, mach);
+  return model === null ? '' : ` The total carries also ${allowanceWords(model, drag)}.`;
 }

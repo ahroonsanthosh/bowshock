@@ -61,7 +61,7 @@ import {
   basicFinnerBody,
 } from '../validation/basic-finner';
 import { noseBand } from '../validation/nose-model-form';
-import { allowanceWords, type NoseModelAllowance } from './nose-model-allowance';
+import { allowanceWords, upExponential, type NoseModelAllowance } from './nose-model-allowance';
 
 const DEG = Math.PI / 180;
 
@@ -856,7 +856,7 @@ export function noseComponentOf(
     band:
       (model === null
         ? `${numerical}; the model's own error is not in this band (docs/validation/sources.md)`
-        : `two parts, added: the ${numerical}, +-${solve.uncertainty.toExponential(1)} in C_D; and ` +
+        : `two parts, added: the ${numerical}, +-${upExponential(solve.uncertainty)} in C_D; and ` +
           allowanceWords(model, solve.value)) + (caveat === '' ? '' : `. ${caveat}`),
   };
 }

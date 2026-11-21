@@ -77,7 +77,7 @@ import {
   type DisplayBlock,
   type TotalDragFields,
 } from './total-drag-display';
-import { allowanceWords, noseModelAllowance } from './nose-model-allowance';
+import { noseLineAllowance } from './nose-model-allowance';
 import { renderBlocks } from './total-drag-render';
 import { h } from '../ui/dom';
 
@@ -701,12 +701,8 @@ async function run(gpu: GPUDevice): Promise<void> {
             ? ''
             : ` The grids have ${outcome.columnDensity} times the usual columns along the body: the usual grid at refinement ${failed.refinement} fails the quality checks of fitted grids.`);
         if (outcome.uncertainty !== undefined) {
-          // Where a measured nose's box holds this one, the model-form allowance the total carries (0022).
-          const model = noseModelAllowance(body.nose, mach);
-          const modelWords =
-            model === null ? '' : ` The total carries also ${allowanceWords(model, e.value)}.`;
           show(
-            `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${allowanceText(outcome.floor)} of the value.${stopped}${bandCaveat(outcome.floor, outcome.levels.length) === '' ? '' : ` ${bandCaveat(outcome.floor, outcome.levels.length)}`}${modelWords}`,
+            `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${allowanceText(outcome.floor)} of the value.${stopped}${bandCaveat(outcome.floor, outcome.levels.length) === '' ? '' : ` ${bandCaveat(outcome.floor, outcome.levels.length)}`}${noseLineAllowance(body.nose, mach, e.value)}`,
             VERIFIED,
             withBand(e.value, outcome.uncertainty),
           );

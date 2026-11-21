@@ -4506,12 +4506,10 @@ so; the measured allowance existed only on its branch.
   pressures, +-a of the value (+-a D in C_D) ..."), in the one row of the
   breakdown, not as two rows. So every display and the floor of a refused
   total (0011 section 10) take it without change, and neither part is
-  hidden. 0022's "shown as two lines" is met as two parts of one row's
-  words, not as two rows of the table.
+  hidden. 0022's "shown as two lines" is replaced by two sized parts in one row's words, not met as two rows of the table.
   `noseStateOf` applies it on the rocketeer page (`src/app/curve.ts`) and
   the drag page (`src/app/nose-drag.ts`, which names it in its nose line
-  too); the flow page shows the numerical band alone, and its note and the
-  help say where the second band is carried.
+  too); the flow page shows the numerical band alone, and its note and the help say where the allowance is carried.
 - _What moves._ No case is refused or served differently, so the refusal
   audit's counts do not move. The bands of the nose term and of the total
   widen by a D wherever a box holds the nose. On the audit's cases
@@ -4538,11 +4536,19 @@ so; the measured allowance existed only on its branch.
   all done: `docs/validation/sources.md`'s RM E51H17 and RM A53E01 rows
   brought up to date; the cone-drawn shapes; the TN 4233 words (its
   half-angle, its table and tunnel named, the 14-foot rows not given the
-  2- by 2-foot tunnel's Reynolds number); exact edge tests; the README's
-  ranges (Mach 1.12 to 1.45 for the cones, but for 1.349 to 1.350, which
-  no box holds; the 6-caliber cones only on the All inputs page); this
+  2- by 2-foot tunnel's Reynolds number); exact edge tests; the README's ranges (Mach 1.2 to 1.45 for the cones as the pages reach them, the boxes carried holding them from 1.115, but for 1.349 to 1.350, which no box holds; the 6-caliber cones only on the All inputs page); this
   count; and the help and the pages' notes, which said "a second band",
   now say what is shown.
+- _The review's re-check of the fixes, the same day: PASS WITH CHANGES._
+  The three blocking fixes hold, each with a test that fails when it is
+  undone. Its small items, done: the help no longer says, on every page,
+  that the page's own band is the numerical error alone (true only on the
+  Live flow page and the All inputs page's nose line); the sizes in the
+  words are rounded up, as the page rounds a band outward, not to the
+  nearest digit (16.41% reads +-16.5%); the All inputs page's nose line
+  takes its words from a tested function; the README names the range the
+  pages reach; `sources.md`'s rows say when the readings were made and
+  which boxes TN 3716 and TN 4233 set.
 
 **2026-11-20 (an): W6, rounded nose tips: the open calls of route (b)
 decided for accuracy; rounded tips stay refused.** W6's work and records

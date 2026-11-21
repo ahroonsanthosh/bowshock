@@ -12,8 +12,11 @@ import {
   allowanceWords,
   NOSE_MODEL_BOXES,
   noseFamilyOf,
+  noseLineAllowance,
   noseModelAllowance,
   UNRELEASED_CONE_ROWS,
+  upExponential,
+  upPercent,
 } from '../../src/app/nose-model-allowance';
 import { noseStateOf } from '../../src/app/total-drag-display';
 import { noseComponentOf } from '../../src/app/total-drag';
@@ -154,7 +157,7 @@ describe('the nose term with and without the allowance', () => {
     expect(c.high).toBe(0.08 + a.halfWidth * 0.08 + 3e-5);
     expect(c.band).toContain('two parts, added: the numerical error of the inviscid solve');
     expect(c.band).toContain('+-3.0e-5 in C_D');
-    expect(c.band).toContain('+-7.8% of the value (+-6.3e-3 in C_D)');
+    expect(c.band).toContain('+-7.9% of the value (+-6.3e-3 in C_D)');
     expect(c.band).toContain(
       'NACA TN 4233, a cone of 7 deg half-angle and 4.08 calibers at Mach 1.299, table I(a)',
     );
@@ -165,7 +168,7 @@ describe('the nose term with and without the allowance', () => {
   it("the drag page's nose line takes the same words, the seen-before label with them", () => {
     const a = noseModelAllowance(ogive(3), 2)!;
     const w = allowanceWords(a, 0.1);
-    expect(w).toContain('+-16.4% of the value (+-1.6e-2 in C_D)');
+    expect(w).toContain('+-16.5% of the value (+-1.7e-2 in C_D)');
     expect(w).toContain('NACA TN 3716, a 3-caliber tangent ogive at Mach 1.98');
     expect(w).toContain('formed from data seen before registration, so it can only widen the band');
     // The 14-foot rows do not claim the 2- by 2-foot tunnel's Reynolds number.
@@ -209,5 +212,26 @@ describe('the nose term with and without the allowance', () => {
     const wide = band(noseStateOf(outcome, { nose: cone(4), mach: 1.3 }));
     expect(wide[0]).toBeLessThan(plain[0]!);
     expect(wide[1]).toBeGreaterThan(plain[1]!);
+  });
+
+  it('the sizes in words are rounded up, never narrower than the band (src/app/band.ts)', () => {
+    expect(upPercent(0.16414839743603604)).toBe('16.5');
+    expect(upPercent(0.0781551187911795)).toBe('7.9');
+    expect(upPercent(0.09)).toBe('9.0');
+    expect(upExponential(0.0062524)).toBe('6.3e-3');
+    expect(upExponential(3e-5)).toBe('3.0e-5');
+    expect(upExponential(9.96e-3)).toBe('1.0e-2');
+    expect(upExponential(0.0164148)).toBe('1.7e-2');
+  });
+
+  it("the All inputs page's nose line: the allowance's words where a box holds the nose, else nothing", () => {
+    expect(noseLineAllowance(cone(2.84), 2, 0.05)).toBe('');
+    expect(noseLineAllowance(cone(4), 1.1, 0.09)).toBe('');
+    const line = noseLineAllowance(ogive(3), 2, 0.1);
+    expect(line.startsWith(' The total carries also the inviscid model against measured')).toBe(
+      true,
+    );
+    expect(line).toContain('+-16.5% of the value');
+    expect(line).toContain('formed from data seen before registration');
   });
 });
