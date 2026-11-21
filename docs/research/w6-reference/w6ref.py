@@ -378,7 +378,7 @@ MESH_FILENAME= mesh.su2
 MESH_FORMAT= SU2
 SOLUTION_FILENAME= restart_flow.dat
 RESTART_FILENAME= restart_flow.dat
-OUTPUT_FILES= ( RESTART, SURFACE_CSV )
+OUTPUT_FILES= ( RESTART, RESTART_ASCII, SURFACE_CSV )
 SURFACE_FILENAME= surface_flow
 SCREEN_OUTPUT= ( INNER_ITER, RMS_DENSITY, RMS_ENERGY, DRAG )
 HISTORY_OUTPUT= ( ITER, RMS_RES, AERO_COEFF )
@@ -525,7 +525,7 @@ def run_case(spec, run_dir, su2, threads=4):
     """Every level of a case, coarsest first, each to convergence, the drag and the record of each."""
     os.makedirs(run_dir, exist_ok=True)
     out = []
-    for level in range(spec["levels"]):
+    for level in range(spec.get("first_level", 0), spec["levels"]):
         d = os.path.join(run_dir, f"L{level}")
         os.makedirs(d, exist_ok=True)
         nose, x, r, marks = grid(spec, level)
@@ -551,9 +551,36 @@ def run_case(spec, run_dir, su2, threads=4):
             rec["drag"] = nose_drag(xs, rs, cps, spec["L"])
             rec["cpTip"] = float(cps[np.argmin(xs)])
         rec.update(history_summary(os.path.join(d, "history.csv")))
+        rec.update(boundary_check(d, rec["ni"], rec["nj"], spec["mach"]))
         out.append(rec)
         print(json.dumps(rec), flush=True)
     return out
+
+
+def boundary_check(level_dir, ni, nj, mach):
+    """
+    From SU2's whole-field output: the largest |Cp| on the outer boundary
+    (zero if the bow shock lies inside the domain), the least Mach number on
+    the outlet (above 1 for the supersonic outlet to be right), and the
+    stagnation point's Cp (the vertex at i = 0, j = 0).
+    """
+    path = os.path.join(level_dir, "restart_flow.csv")
+    if not os.path.exists(path):
+        return {}
+    with open(path) as f:
+        head = [h.strip().strip('"') for h in f.readline().split(",")]
+        col = {h: k for k, h in enumerate(head)}
+        rows = [line.split(",") for line in f if line.strip()]
+    cp = np.array([float(rw[col["Pressure_Coefficient"]]) for rw in rows])
+    ma = np.array([float(rw[col["Mach"]]) for rw in rows])
+    pid = np.array([int(float(rw[col["PointID"]])) for rw in rows])
+    order = np.argsort(pid)
+    cp, ma = cp[order], ma[order]
+    idx = lambda i, j: i * (nj + 1) + j
+    outer = [idx(i, nj) for i in range(ni + 1)]
+    outlet = [idx(ni, j) for j in range(nj + 1)]
+    return {"outerMaxAbsCp": float(np.max(np.abs(cp[outer]))), "outletMinMach": float(np.min(ma[outlet])),
+            "cpStagnation": float(cp[idx(0, 0)])}
 
 
 def history_summary(path):
