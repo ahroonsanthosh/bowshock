@@ -8,6 +8,8 @@ pressures. Nothing in this file uses bowshock's solver, grids or geometry.
   python3 -I docs/research/w6-reference/w6ref.py geometry-check <out.json>
   python3 -I docs/research/w6-reference/w6ref.py case <spec.json> <run dir> <SU2_CFD> [threads]
   python3 -I docs/research/w6-reference/w6ref.py drag <run dir>
+  python3 -I docs/research/w6-reference/w6ref.py spec capped <shape> <calibers> <tip ratio> <M> <out.json> [widen]
+  python3 -I docs/research/w6-reference/w6ref.py spec sharp <shape> <calibers> <M> <out.json> [widen]
 
 Lengths are in body diameters (calibers): base radius R = 0.5, the nose's
 tip at x = 0, the axis along x. The drag coefficient is the pressure drag
@@ -376,7 +378,8 @@ CONV_RESIDUAL_MINVAL= {minres}
 CONV_STARTITER= 10
 MESH_FILENAME= mesh.su2
 MESH_FORMAT= SU2
-SOLUTION_FILENAME= restart_flow.dat
+SOLUTION_FILENAME= {solution}
+READ_BINARY_RESTART= {binary}
 RESTART_FILENAME= restart_flow.dat
 OUTPUT_FILES= ( RESTART, RESTART_ASCII, SURFACE_CSV )
 SURFACE_FILENAME= surface_flow
@@ -388,12 +391,15 @@ SCREEN_WRT_FREQ_INNER= 100
 """
 
 
-def write_cfg(path, spec, restart=False):
+def write_cfg(path, spec, restart=False, seed=False):
+    """SU2's configuration; a restart reads the stage before's binary file, or with `seed` the ASCII seed."""
     with open(path, "w") as f:
         f.write(
             CFG.format(
                 mach=spec["mach"],
-                restart="YES" if restart else "NO",
+                restart="YES" if restart or seed else "NO",
+                solution="seed.csv" if seed else "restart_flow.dat",
+                binary="NO" if seed else "YES",
                 cfl=spec.get("cfl", 1.0),
                 cflmax=spec.get("cflmax", 50.0),
                 iters=spec.get("iters", 20000),
@@ -423,8 +429,17 @@ def read_surface(path):
     return a[:, col["x"]], a[:, col["y"]], a[:, col["Pressure_Coefficient"]]
 
 
+def write_wall(path, x, r, cp):
+    """The wall's vertices from SU2's surface file, x, r and Cp at full precision (what the verdict reads)."""
+    order = np.argsort(x, kind="stable")
+    with open(path, "w") as f:
+        f.write('"x","y","Pressure_Coefficient"\n')
+        for k in order:
+            f.write(f"{x[k]:.17e},{r[k]:.17e},{cp[k]:.17e}\n")
+
+
 def nose_drag(x, r, cp, L):
-    order = np.argsort(x)
+    order = np.argsort(x, kind="stable")
     x, r, cp = x[order], r[order], cp[order]
     keep = x <= L + 1e-12
     # Include the first cylinder vertex past L only through r = R exactly (it adds nothing).
@@ -441,6 +456,28 @@ def nose_drag(x, r, cp, L):
 # (Rayleigh's pitot formula).
 
 GAMMA = 1.4
+
+
+def dist_change(coarse_surface, fine_surface, L):
+    """
+    The change of the drag's distribution between two levels, without the
+    cancellation the total allows: the integral over the nose of |Cp_fine -
+    Cp_coarse| d(r^2) / R^2, the coarser level's Cp taken linearly in r^2 at
+    the finer level's wall vertices, the trapezoid rule over those. It bounds
+    the change of the total drag between the two levels.
+    """
+    xc, rc, cc = read_surface(coarse_surface)
+    xf, rf, cf = read_surface(fine_surface)
+    out = []
+    for xs, rs, cps in ((xc, rc, cc), (xf, rf, cf)):
+        o = np.argsort(xs, kind="stable")
+        xs, rs, cps = xs[o], rs[o], cps[o]
+        m = xs <= L + 1e-12
+        out.append((rs[m], cps[m]))
+    (rc, cc), (rf, cf) = out
+    d = np.abs(cf - np.interp(rf**2, rc**2, cc))
+    q = rf**2 / R**2
+    return float(np.sum(0.5 * (d[1:] + d[:-1]) * np.diff(q)))
 
 
 def _oblique(M, beta):
@@ -533,28 +570,80 @@ def run_case(spec, run_dir, su2, threads=4):
         write_su2(os.path.join(d, "mesh.su2"), x, r, marks)
         t0 = time.time()
         code = 0
-        stages = [dict(spec, muscl="NO", cfladapt="NO", cflmax=spec.get("cfl", 1.0), iters=spec.get("iters1", 20000))]
-        if spec.get("muscl", "YES") == "YES":
-            stages.append(dict(spec))
+        prev = os.path.join(run_dir, f"L{level - 1}", "restart_flow.csv")
+        seeded = bool(spec.get("seed")) and level > 0 and os.path.exists(prev)
+        if seeded:
+            # The finer grid started from the converged coarser one; the converged
+            # solution does not depend on its start, only the iterations do.
+            seed_restart(prev, x, r, os.path.join(d, "seed.csv"))
+            stages = [dict(spec)]
+        else:
+            stages = [dict(spec, muscl="NO", cfladapt="NO", cflmax=spec.get("cfl", 1.0), iters=spec.get("iters1", 20000))]
+            if spec.get("muscl", "YES") == "YES":
+                stages.append(dict(spec))
         for k, st in enumerate(stages):
-            write_cfg(os.path.join(d, "case.cfg"), st, restart=k > 0)
+            write_cfg(os.path.join(d, "case.cfg"), st, restart=k > 0, seed=seeded and k == 0)
             with open(os.path.join(d, f"log{k}.txt"), "w") as log:
                 code = subprocess.call([su2, "-t", str(threads), "case.cfg"], cwd=d, stdout=log, stderr=subprocess.STDOUT)
             if code != 0:
                 break
         seconds = time.time() - t0
         rec = {"level": level, "ni": x.shape[0] - 1, "nj": x.shape[1] - 1, "minArea": amin, "maxSkewCos": skew,
-               "exit": code, "seconds": seconds}
+               "exit": code, "seconds": seconds, "seeded": seeded}
         surf = os.path.join(d, "surface_flow.csv")
         if code == 0 and os.path.exists(surf):
             xs, rs, cps = read_surface(surf)
+            write_wall(os.path.join(d, "wall.csv"), xs, rs, cps)
             rec["drag"] = nose_drag(xs, rs, cps, spec["L"])
             rec["cpTip"] = float(cps[np.argmin(xs)])
+            coarser = os.path.join(run_dir, f"L{level - 1}", "surface_flow.csv")
+            if level > 0 and os.path.exists(coarser):
+                rec["distChange"] = dist_change(coarser, surf, spec["L"])
         rec.update(history_summary(os.path.join(d, "history.csv")))
         rec.update(boundary_check(d, rec["ni"], rec["nj"], spec["mach"]))
         out.append(rec)
         print(json.dumps(rec), flush=True)
     return out
+
+
+def seed_restart(coarse_csv, x, r, out_path):
+    """
+    A starting solution for the grid (x, r) from the converged solution on the
+    grid of half its cells (SU2's ASCII restart, vertices numbered i (nj + 1) +
+    j). The grids nest: fine vertex (2i, 2j) is coarse vertex (i, j); a fine
+    vertex between two coarse ones takes their mean, one amid four their mean.
+    """
+    ni, nj = x.shape[0] - 1, x.shape[1] - 1
+    nic, njc = ni // 2, nj // 2
+    with open(coarse_csv) as f:
+        head = [h.strip().strip('"') for h in f.readline().split(",")]
+        col = {h: k for k, h in enumerate(head)}
+        rows = [line.split(",") for line in f if line.strip()]
+    names = ["Density", "Momentum_x", "Momentum_y", "Energy"]
+    pid = np.array([int(float(rw[col["PointID"]])) for rw in rows])
+    if len(pid) != (nic + 1) * (njc + 1):
+        raise ValueError("the coarse solution is not of the grid of half the cells")
+    cx = np.array([float(rw[col["x"]]) for rw in rows])
+    cr = np.array([float(rw[col["y"]]) for rw in rows])
+    cu = np.array([[float(rw[col[n]]) for n in names] for rw in rows])
+    order = np.argsort(pid)
+    cx, cr, cu = cx[order].reshape(nic + 1, njc + 1), cr[order].reshape(nic + 1, njc + 1), cu[order].reshape(nic + 1, njc + 1, 4)
+    gap = max(np.max(np.abs(cx - x[::2, ::2])), np.max(np.abs(cr - r[::2, ::2])))
+    if gap > 1e-9:
+        raise ValueError(f"the grids do not nest (vertices {gap:.1e} apart)")
+    u = np.empty((ni + 1, nj + 1, 4))
+    u[::2, ::2] = cu
+    u[1::2, ::2] = 0.5 * (cu[:-1] + cu[1:])
+    u[::2, 1::2] = 0.5 * (cu[:, :-1] + cu[:, 1:])
+    u[1::2, 1::2] = 0.25 * (cu[:-1, :-1] + cu[1:, :-1] + cu[:-1, 1:] + cu[1:, 1:])
+    with open(out_path, "w") as f:
+        f.write('"PointID","x","y","Density","Momentum_x","Momentum_y","Energy"\n')
+        k = 0
+        for i in range(ni + 1):
+            for j in range(nj + 1):
+                q = u[i, j]
+                f.write(f"{k}, {x[i, j]:.17e}, {r[i, j]:.17e}, {q[0]:.17e}, {q[1]:.17e}, {q[2]:.17e}, {q[3]:.17e}\n")
+                k += 1
 
 
 def boundary_check(level_dir, ni, nj, mach):
@@ -574,13 +663,26 @@ def boundary_check(level_dir, ni, nj, mach):
     cp = np.array([float(rw[col["Pressure_Coefficient"]]) for rw in rows])
     ma = np.array([float(rw[col["Mach"]]) for rw in rows])
     pid = np.array([int(float(rw[col["PointID"]])) for rw in rows])
+    xs = np.array([float(rw[col["x"]]) for rw in rows])
+    ys = np.array([float(rw[col["y"]]) for rw in rows])
     order = np.argsort(pid)
-    cp, ma = cp[order], ma[order]
+    cp, ma, xs, ys = cp[order], ma[order], xs[order], ys[order]
     idx = lambda i, j: i * (nj + 1) + j
     outer = [idx(i, nj) for i in range(ni + 1)]
     outlet = [idx(ni, j) for j in range(nj + 1)]
+    # The bow shock's reach: on each line from the wall, the distance to the
+    # outermost vertex whose |Cp| exceeds 1e-3, over the line's length; the
+    # largest over the lines (1 would put the shock on the outer boundary).
+    reach = 0.0
+    for i in range(ni + 1):
+        line = [idx(i, j) for j in range(nj + 1)]
+        hit = [j for j in range(nj + 1) if abs(cp[line[j]]) > 1e-3]
+        if hit:
+            k = max(hit)
+            length = math.hypot(xs[line[-1]] - xs[line[0]], ys[line[-1]] - ys[line[0]])
+            reach = max(reach, math.hypot(xs[line[k]] - xs[line[0]], ys[line[k]] - ys[line[0]]) / length)
     return {"outerMaxAbsCp": float(np.max(np.abs(cp[outer]))), "outletMinMach": float(np.min(ma[outlet])),
-            "cpStagnation": float(cp[idx(0, 0)])}
+            "cpStagnation": float(cp[idx(0, 0)]), "shockReach": reach}
 
 
 def history_summary(path):
@@ -605,6 +707,62 @@ def history_summary(path):
     return res
 
 
+# ------------------------------------------------------------ the registered specs
+#
+# Every run of the registration (README, "Registration") takes its settings
+# from these two functions; nothing is tuned per case.
+
+SETTINGS = {"scheme": "HLLC", "venkat": 0.05, "cfl": 1.0, "cflmax": 10.0, "cfladapt": "YES", "muscl": "YES",
+            "minres": -11, "iters1": 4000, "iters": 20000, "levels": 4, "seed": True, "Lcyl": 2.0}
+
+
+def billig_standoff(M, rn):
+    """F. S. Billig's correlation for a sphere's shock standoff (J. Spacecraft Rockets 4, 1967): 0.143 rn exp(3.24 / M^2)."""
+    return 0.143 * rn * math.exp(3.24 / M**2)
+
+
+def capped_spec(shape, calibers, ratio, M, widen=0):
+    """
+    A capped nose's run (the C grid): 64 x 32 cells on level 0 (512 x 256 on
+    level 3); along the wall the first cell a quarter of the tip radius on
+    level 0 (b solved for it), so the cap has about five cells there and forty
+    on level 3; the outer boundary at a + k s from the wall, a four times
+    Billig's standoff and k = 1.5 / sqrt(M^2 - 1) (one and a half times the
+    slope of the Mach lines), each times 1.25^widen (the registered widening
+    after a failed boundary check).
+    """
+    rn = R * ratio
+    nose = capped(shape, calibers, rn)
+    _, _, ss = wall_table(nose, SETTINGS["Lcyl"])
+    S, ni0, target = ss[-1], 64, rn / 4
+    lo, hi = 1e-3, 30.0
+    for _ in range(200):
+        mid = 0.5 * (lo + hi)
+        if S * mid / math.expm1(mid) / ni0 > target:
+            lo = mid
+        else:
+            hi = mid
+    grow = 1.25**widen
+    return dict(SETTINGS, shape=shape, L=float(calibers), rn=rn, mach=M, ni0=ni0, nj0=32, bi=lo, bj=2.5,
+                a=4 * billig_standoff(M, rn) * grow, k=1.5 / math.sqrt(M * M - 1) * grow, widen=widen)
+
+
+def sharp_spec(shape, calibers, M, widen=0):
+    """
+    A sharp nose's run (the H grid, for the checks with exact answers): 8 + 48
+    cells along x and 32 across on level 0, clustered to the tip; the outer
+    line from (-0.5, 0.6) to the end of the cylinder at 1.5 times the reach
+    of the tip's attached conical shock there (times 1.25^widen).
+    """
+    L = float(calibers)
+    tip = math.atan(R / L) if shape == "cone" else 2 * math.atan(R / L)
+    _, beta = cone_cp(M, tip)
+    a, X, rin = 0.5, L + SETTINGS["Lcyl"], 0.6
+    rout = rin + 1.5 * (X + a) * math.tan(math.radians(beta)) * 1.25**widen
+    return dict(SETTINGS, shape=shape, L=L, rn=0.0, mach=M, ni0_up=8, ni0=48, nj0=32, bi_up=4.0, bi=4.0, bj=2.5,
+                a=a, Rin=rin, Rout=rout, widen=widen)
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1]
     if cmd == "case":
@@ -619,6 +777,19 @@ if __name__ == "__main__":
         cp, beta = cone_cp(M, half)
         print(json.dumps({"mach": M, "halfAngleDeg": float(sys.argv[3]), "coneCp": cp, "shockAngleDeg": beta,
                           "pitotCp": pitot_cp(M)}))
+    elif cmd == "spec":
+        # spec capped <shape> <calibers> <tip ratio> <M> <out.json> [widen]
+        # spec sharp <shape> <calibers> <M> <out.json> [widen]
+        if sys.argv[2] == "capped":
+            sp = capped_spec(sys.argv[3], float(sys.argv[4]), float(sys.argv[5]), float(sys.argv[6]),
+                             int(sys.argv[8]) if len(sys.argv) > 8 else 0)
+            out = sys.argv[7]
+        else:
+            sp = sharp_spec(sys.argv[3], float(sys.argv[4]), float(sys.argv[5]), int(sys.argv[7]) if len(sys.argv) > 7 else 0)
+            out = sys.argv[6]
+        os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
+        json.dump(sp, open(out, "w"), indent=1)
+        print(json.dumps(sp))
     elif cmd == "drag":
         d = sys.argv[2]
         spec = json.load(open(os.path.join(d, "..", "spec.json")))
