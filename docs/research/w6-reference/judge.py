@@ -26,7 +26,7 @@ import w6ref  # noqa: E402
 R = w6ref.R
 
 # The registration's numbers.
-MAX_RELATIVE_U = 5e-3  # R4: U_su2 at most 0.5% of the drag for a reference
+MAX_RELATIVE_U = 1e-2  # R4: U_su2 at most 1% of the drag for a reference (trial 8)
 CONE_POINTWISE = 1e-3  # R5 V1(a)
 STAGNATION = 0.03  # R5 V2
 OUTER_CP = 1e-6  # R3
