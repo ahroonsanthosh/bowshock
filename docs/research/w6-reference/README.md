@@ -641,7 +641,22 @@ before it is judged.
 | S3 | 1e-11, 1e-11, 1e-5.6 (limit) | -3.6%, -5.5%, -5.9% | 0.74 | fail: level 2 not converged; stagnation beyond 3% and growing |
 | S2 | 1e-4.7 (limit), 1e-11, 1e-10.6 (limit) | -3.1%, -4.5%, -5.4% | 0.55 | fail: as the control (levels 0 and 2 not converged; stagnation beyond 3% and growing) |
 | S5 | 1e-11, 1e-11, 1e-11 (38, 1,333 and 1,813 iterations) | +7.2%, +5.7%, +4.7% | 0.35 | fail: stagnation beyond 3% on level 2 (falling, by about a fifth a level); its wider shock also fails R3's boundary checks on levels 1 and 2 (it reaches the outer boundary: \|Cp\| 1.1e-3 and 2.4e-5 there) |
+| S4 | 1e-11, 1e-11, 1e-10.95 (limit) | -3.1%, -4.5%, -5.4% | 0.59 | fail: level 2 not converged; stagnation beyond 3% and growing |
 | S6 | SU2 diverged (NaN) in level 0's second stage | | | fail |
+
+**No candidate passes the screen.** None runs level 3, nothing is chosen
+(`trial.py judge`: `chosen` null), and by the rule above the route goes
+back to the owner. With every upwind scheme and limiter tried, here and in
+trials 4 and 11 to 13, SU2's axisymmetric solution leaves the total
+pressure on the stagnation streamline wrong. With Venkatakrishnan-type
+limiting (S0, S2, S3, S4) the error grows with refinement, to 5.4% low on
+level 2. Van Albada's limiter (S1) keeps it within 2%, but its level 2
+does not converge and the error still grows. JST (S5) converges on every
+level, but its error is 4.7% high on level 2, falling by about a fifth a
+level. The drag moves less: on level 2 the candidates lie between
+0.827213 (S5) and 0.831601 (S1), 0.53% apart (0.27% without S5). That
+spread between schemes on one grid is as large as R4's whole 0.5% grid
+limit.
 
 The control fails the screen, as V5 at Mach 2 failed: T shows the same
 fault.
@@ -654,9 +669,10 @@ fault.
   passed its review with changes, all made and confirmed. Its level 3
   then did not converge (its residual cycling between 1e-6.5 and 1e-7.7) and its vertex-level change
   grew (ratio 1.81): **V5 at Mach 2 fails R5, no W6 case runs, and the
-  route is with the owner.** The owner chose to look for a fix: revision
-  2's trials (above) are running; the checks' queue under the first
-  settings is stopped (V5 at Mach 3 had levels 0 and 1).
+  route is with the owner.** The owner chose to look for a fix:
+  revision 2's trials (above) ran, and no candidate passed their screen,
+  so the route is with the owner again. The checks' queue under the
+  first settings is stopped (V5 at Mach 3 had levels 0 and 1).
 - Stopped at the session's two-hour limit for one background job, and
   resumable from their checkpoints: the fitted solver's lanes (the ogive's
   3 calibers, 0.15, Mach 3 has its nj = 80, converged in 14,000
