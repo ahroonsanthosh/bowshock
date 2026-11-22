@@ -427,3 +427,43 @@ def read_monitor(case, mach):
     # surfaceFieldValue.dat: time, the force along x on the wedge, which holds 2 HALF degrees.
     cd = frc[:n, 1] * (360.0 / (2 * HALF)) / (0.7 * mach * mach * math.pi * w6ref.R**2)
     return np.stack([it, rms, cd], 1)
+
+
+def read_internal(path):
+    """A volScalarField's or volVectorField's internal values from an ASCII field file."""
+    import re
+
+    txt = open(path).read()
+    m = re.search(r"internalField\s+nonuniform\s+List<(scalar|vector)>\s*\n?(\d+)\s*\(", txt)
+    if m is None:
+        raise ValueError(f"{path}: no nonuniform internal field")
+    n = int(m.group(2))
+    body = txt[m.end():]
+    if m.group(1) == "scalar":
+        vals = np.array(body.split(")", 1)[0].split(), dtype=float)
+    else:
+        body = body.split("\n)\n", 1)[0]
+        vals = np.array([[float(v) for v in ln.strip("() ").split()] for ln in body.split("\n") if ln.strip()])
+    if len(vals) != n:
+        raise ValueError(f"{path}: {len(vals)} values for {n}")
+    return vals
+
+
+def stagnation(time_dir, ni, nj, mach):
+    """
+    The stagnation region from the cells: the wall's first cell (against the
+    axis and the wall), and the total pressure along the axis's cells
+    behind the bow shock, both against Rayleigh's pitot value.
+    """
+    p = read_internal(os.path.join(time_dir, "p")).reshape(ni, nj)
+    T = read_internal(os.path.join(time_dir, "T")).reshape(ni, nj)
+    U = read_internal(os.path.join(time_dir, "U")).reshape(ni, nj, 3)
+    M2 = (U**2).sum(-1) / T  # speed of sound sqrt(T) in these units
+    p0 = p * (1 + 0.2 * M2) ** 3.5
+    pitot = 1 + 0.7 * mach**2 * w6ref.pitot_cp(mach)
+    sub = M2[0] < 1
+    return {
+        "cpWallFirstCell": (p[0, 0] - 1) / (0.7 * mach**2),
+        "pitotCp": w6ref.pitot_cp(mach),
+        "axisTotalPressure": (p0[0][sub] / pitot).tolist(),
+    }
