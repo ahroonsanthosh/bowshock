@@ -17,7 +17,7 @@ import numpy as np
 import w6ref
 
 HALF = 2.5  # degrees each side of the x-y plane
-WEDGE_TO_BODY = 2 * math.pi / math.sin(math.radians(2 * HALF))
+WEDGE_TO_BODY = math.pi / math.tan(math.radians(HALF))  # a wall face's area along x is tan(a) (r2^2 - r1^2)
 
 HEADER = """FoamFile
 {{
@@ -46,8 +46,14 @@ def _points(x, r):
     pts = np.zeros((n_on + 2 * n_off, 3))
     pts[:n_on, 0] = x[on]
     xo, ro = x[~on], r[~on]
-    pts[n_on : n_on + n_off] = np.stack([xo, ro * math.cos(a), ro * math.sin(a)], 1)
-    pts[n_on + n_off :] = np.stack([xo, ro * math.cos(a), -ro * math.sin(a)], 1)
+    # On the planes z = +-y tan(a), at y = r: every face's width is then
+    # 2 tan(a) times its distance from the axis, so every area, volume and
+    # the sides' pressure force are the axisymmetric finite volume's for an
+    # angle of 2 tan(a), exactly; points at (r cos a, +-r sin a) would move
+    # each flat face inward by r (1 - cos a) and tilt it, an error of order a^2
+    # (0.05% in the drag at a = 2.5 degrees, trial 9).
+    pts[n_on : n_on + n_off] = np.stack([xo, ro, ro * math.tan(a)], 1)
+    pts[n_on + n_off :] = np.stack([xo, ro, -ro * math.tan(a)], 1)
     return pts, front, back
 
 
@@ -473,10 +479,9 @@ def read_monitor(case, mach):
     n = min(len(res), len(frc))
     it = res[:n, 0]
     rms = 0.5 * np.log10(np.maximum(res[:n, 1], 1e-300)) - math.log10(1.4)
-    # surfaceFieldValue.dat: time, the force along x on the wedge. A wall face
-    # of the wedge is flat: its area along x is (r2^2 - r1^2) sin(2a) / 2, where
-    # the body's ring is pi (r2^2 - r1^2); so the body's force is the wedge's
-    # times 2 pi / sin(2a) (not 360 / 2a, which is 0.13% less at a = 2.5 deg).
+    # surfaceFieldValue.dat: time, the force along x on the wedge. A wall face's
+    # area along x is tan(a) (r2^2 - r1^2) where the body's ring is
+    # pi (r2^2 - r1^2), so the body's force is the wedge's times pi / tan(a).
     cd = frc[:n, 1] * WEDGE_TO_BODY / (0.7 * mach * mach * math.pi * w6ref.R**2)
     return np.stack([it, rms, cd], 1)
 

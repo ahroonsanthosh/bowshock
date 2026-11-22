@@ -746,6 +746,16 @@ at Mach 2.5, which is no check case.
    steady to 5.7e-9, the same to 8 digits as with the two-pass step (the
    steady discrete solution does not depend on how it is reached); the
    residual stops near 1e-0.77, the swing inside again, not on the wall.
+9. The wedge's angle: level 1 at half-angles 2.5 and 0.5 degrees (points
+   at (r cos a, +-r sin a)): drags 0.82797962 and about 0.82841 (the
+   second still settling, within 1e-5), 0.05% apart. The cause is
+   geometric: each flat face then sits r (1 - cos a) inside its radius and
+   tilts, an error of order a^2. With the points on the planes z = +-y tan a
+   at y = r instead, every face's width is 2 tan a times its distance from
+   the axis, so every area, volume and the sides' pressure force are
+   exactly those of the axisymmetric finite volume for an angle of 2 tan a
+   (the drag's factor pi / tan a; checked on the mesh to 1e-16). Being
+   rerun at both angles to confirm. Item 4's factor is superseded.
 
 ## State (2026-11-21)
 
