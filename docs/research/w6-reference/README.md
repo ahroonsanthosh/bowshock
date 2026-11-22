@@ -775,8 +775,14 @@ at Mach 2.5, which is no check case.
    order a^2 (2e-3), so the cone was run again on the corrected wedge:
    level 0 converges (residual 1e-6.94), level 1's drag steady to 2.6e-6;
    their worst faces 2.2e-3 and 8.1e-4 of the exact value, means +1.7e-3
-   and +6.7e-4: now falling with refinement (ratio 0.37). Level 2 is
-   running.
+   and +6.7e-4: now falling with refinement (ratio 0.37). Level 2 (40,000
+   iterations, residual 1e-1.85, drag 0.0950884 within 1.1e-5 over its
+   last quarter): worst face 9.9e-4, mean +2.5e-4. But level 2's wall is
+   not steady: from one saved state to the next (5,000 iterations) a wave
+   of about 1e-3 of Cp, some ten faces long, moves along the wall, where
+   level 1's wall changes by 1e-4 between saves and level 0 converges.
+   Its worst face is the wave's crest, so V1(a), 0.1% at every vertex of
+   level 3, would be decided by the unsteadiness, not by the grid.
 11. The capped ogive of 4 calibers, r_n/R 0.10, at Mach 1.3 (off every
    list; SU2's trial 9): level 0's drag not steady (range 1e-3 of it, the
    residual 1e-3.8), level 1 converged (residual 1e-7.35, drag 0.0625783
