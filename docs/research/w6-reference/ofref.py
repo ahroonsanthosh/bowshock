@@ -255,7 +255,8 @@ boundaryField
 }}
 """
 
-# Per iteration, from OpenFOAM's own function objects (no compiled code:
+# Every tenth iteration (each a single iteration's change; the monitors cost
+# about a fifth of a step), from OpenFOAM's own function objects (no compiled code:
 # OpenFOAM refuses that when run as root): the mean over cells of
 # (d rho / dt)^2 under the local time step (`resid`, a residual like
 # SU2's), and the wall's pressure force along x less the free stream's
@@ -267,6 +268,7 @@ FUNCTIONS = """    ddtRho
         libs            ("libfieldFunctionObjects.so");
         field           rho;
         executeControl  timeStep;
+        executeInterval 10;
         writeControl    writeTime;
     }
     sqDdtRho
@@ -275,6 +277,7 @@ FUNCTIONS = """    ddtRho
         libs            ("libfieldFunctionObjects.so");
         field           ddt(rho);
         executeControl  timeStep;
+        executeInterval 10;
         writeControl    writeTime;
     }
     resid
@@ -286,7 +289,9 @@ FUNCTIONS = """    ddtRho
         operation       average;
         writeFields     false;
         executeControl  timeStep;
+        executeInterval 10;
         writeControl    timeStep;
+        writeInterval   10;
         log             false;
     }
     pFree
@@ -298,6 +303,7 @@ FUNCTIONS = """    ddtRho
         dimensions      [1 -1 -2 0 0 0 0];
         value           1;
         executeControl  timeStep;
+        executeInterval 10;
         writeControl    writeTime;
     }
     pGauge
@@ -307,6 +313,7 @@ FUNCTIONS = """    ddtRho
         fields          (p pFree);
         result          pGauge;
         executeControl  timeStep;
+        executeInterval 10;
         writeControl    writeTime;
     }
     ex
@@ -318,6 +325,7 @@ FUNCTIONS = """    ddtRho
         dimensions      [0 0 0 0 0 0 0];
         value           (1 0 0);
         executeControl  timeStep;
+        executeInterval 10;
         writeControl    writeTime;
     }
     pX
@@ -327,6 +335,7 @@ FUNCTIONS = """    ddtRho
         fields          (pGauge ex);
         result          pX;
         executeControl  timeStep;
+        executeInterval 10;
         writeControl    writeTime;
     }
     wallForce
@@ -338,7 +347,9 @@ FUNCTIONS = """    ddtRho
         operation       areaNormalIntegrate;
         writeFields     false;
         executeControl  timeStep;
+        executeInterval 10;
         writeControl    timeStep;
+        writeInterval   10;
         log             false;
     }
 """

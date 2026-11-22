@@ -776,7 +776,18 @@ at Mach 2.5, which is no check case.
    list; SU2's trial 9): level 0's drag not steady (range 1e-3 of it, the
    residual 1e-3.8), level 1 converged (residual 1e-7.35, drag 0.0625783
    steady to 7.7e-7). Its stagnation cell +1.28% and +0.77% from pitot on
-   levels 0 and 1 (SU2: +6.3%, +2.4%, +1.0% on levels 0 to 2).
+   levels 0 and 1 (SU2: +6.3%, +2.4%, +1.0% on levels 0 to 2). Level 2:
+   converged (residual 1e-4.1, drag 0.0623504 steady to 3.4e-8); the
+   stagnation cell +0.43%; the axis's total pressure next to the wall
+   +6.3%, +1.85%, +0.59% on levels 0 to 2, at mid-gap +2.8%, +2.2%, +1.4%:
+   all falling. Drags on levels 1 and 2: 0.0625783, 0.0623504 (SU2's
+   0.0625085, 0.0624740). (Its levels on the corrected wedge.)
+12. T's level 3 (the old placement), single pass, Courant 0.2, from level
+   2: no failure; after 9,949 iterations its drag still moves by about
+   2e-5 (0.82906 to 0.82910), the residual near 1e0.3; about 70
+   iterations a minute on 2 processes beside other runs, four times
+   slower a cell than level 0. The monitors (eight function objects, six
+   of them whole-field operations) now run every tenth iteration.
 
 ## State (2026-11-21)
 
