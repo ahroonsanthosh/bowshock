@@ -673,6 +673,12 @@ fault.
   revision 2's trials (above) ran, and no candidate passed their screen,
   so the route is with the owner again. The checks' queue under the
   first settings is stopped (V5 at Mach 3 had levels 0 and 1).
+- The owner then chose a second independent solver in place of SU2:
+  OpenFOAM 13 (the OpenFOAM Foundation's package `openfoam13`, version
+  20260624, from dl.openfoam.org for Ubuntu 24.04), its density-based
+  solver `shockFluid` on wedge meshes of the same grids (`ofref.py`). Its
+  set-up trials are under way, on the trial case T only, before any
+  registration; they are summarised here as they finish.
 - Stopped at the session's two-hour limit for one background job, and
   resumable from their checkpoints: the fitted solver's lanes (the ogive's
   3 calibers, 0.15, Mach 3 has its nj = 80, converged in 14,000
