@@ -661,6 +661,52 @@ limit.
 The control fails the screen, as V5 at Mach 2 failed: T shows the same
 fault.
 
+## The second solver: OpenFOAM's set-up trials (2026-11-22, on the trial case T only, before any registration)
+
+OpenFOAM 13 (`openfoam13` 20260624), its density-based solver
+`shockFluid` (the Kurganov-Tadmor central-upwind flux, local time
+stepping), inviscid (viscosity 0), on wedge meshes of the tool's own
+grids (`ofref.py`: the 2D grid turned by +-2.5 degrees about the axis,
+the cells against the axis prisms with no face on it, so no source term
+in 1/r; OpenFOAM's `checkMesh` passes the C and the H grids).
+Non-dimensional as OpenFOAM's tutorials (p = 1, T = 1, speed of sound 1).
+Per iteration, from OpenFOAM's own function objects (it refuses compiled
+code when run as root): the RMS over cells of d(rho)/dt under the local
+time step, and the drag (the wall's pressure force along x, from
+(p - 1) x-hat against the wall's area vectors). All on T, the hemisphere
+at Mach 2.5, which is no check case.
+
+1. OpenFOAM's usual settings (van Leer reconstruction, Courant number
+   0.5): level 0's drag settles within 1.9e-4 but its residual stops at
+   1e-0.26. Run time-accurately (one global time step) the same: a
+   periodic swing (period 0.085) in the supersonic flow behind the
+   shoulder, density 1.5% to 3% there, the subsonic nose region still
+   (3e-5). Not the outer boundary (widened 1.56 and 2.44 times: no
+   change), not the step (Courant 0.2 and 0.1, van Albada's limiter, the
+   Tadmor flux: no change). First-order reconstruction converges to
+   1e-11.5 in 9,000 iterations. The cause: OpenFOAM's limited
+   reconstructions blend to linear interpolation in smooth flow, where
+   the face states then agree and the flux adds no dissipation; with the
+   forward-Euler step that is unstable, and the limiter caps the growth.
+2. Upwind-biased second order (`linearUpwind` from limited cell
+   gradients: minmod, Venkatakrishnan, cubic): level 0's drag steadies to
+   1e-6 to 3e-7; the residual still stops near 1e-0.9 (a slow, odd-even
+   swing in the shock layer behind the hemisphere-cylinder junction; the
+   wall barely moves). Two outer passes a step (a two-stage scheme,
+   stable on the imaginary axis): no change on level 0. Unlimited
+   gradients diverge at once.
+3. Levels 0 to 2 (Venkatakrishnan's gradient limiter, each level started
+   from the one below by `mapFields`): **the stagnation region converges
+   as SU2's did not.** The wall's first cell (half a cell from the
+   stagnation point) -0.38%, -0.02%, +0.17% from the pitot value; the
+   total pressure along the axis next to the wall +0.70%, +0.28%,
+   +0.22%, at mid-gap +1.16%, +0.75%, +0.47%, all falling with
+   refinement (SU2's control on the same levels: -3.0%, -4.5%, -5.4%).
+   The drag 0.8287583 and 0.8269291 on levels 0 and 1 (steady to 3e-7 and
+   3e-8); level 2 is not steady: its drag wanders between 0.822 and 0.832,
+   the motion almost all (97%) on the cylinder near the outlet (x 2.3 to
+   2.4), density changing by order 1 an iteration there.
+
 ## State (2026-11-21)
 
 - Done: the tool, the geometry check, the set-up trials 1 to 13, the
