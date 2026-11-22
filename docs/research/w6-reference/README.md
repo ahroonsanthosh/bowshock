@@ -785,12 +785,11 @@ at Mach 2.5, which is no check case.
   solver `shockFluid` on wedge meshes of the same grids (`ofref.py`). Its
   set-up trials are under way, on the trial case T only, before any
   registration; they are summarised here as they finish.
-- Stopped at the session's two-hour limit for one background job, and
-  resumable from their checkpoints: the fitted solver's lanes (the ogive's
-  3 calibers, 0.15, Mach 3 has its nj = 80, converged in 14,000
-  iterations; the Von Karman 3 calibers, 0.03, Mach 3 was at 8,000
-  iterations on nj = 80) and the hold-out's (the ogive's 4 calibers, 0.08,
-  Mach 2 has its nj = 80; the Von Karman's was at 6,000 iterations on nj =
-  80). `fitted/results.jsonl` holds every finished grid.
+- The fitted solver's side (R6) is complete (2026-11-22): the eleven
+  families W6 left without nj = 80 and the hold-out's five, each on nj =
+  20, 40 and 80, every grid converged (`fitted/results.jsonl`, 48
+  records). Their nj = 20 and 40 refits reproduce the lanes' drags within
+  R6's 1e-9 (eleven of the 22 to every digit, the rest within 6e-12 of
+  the drag).
 - Next: V1 to V5 (with V4's level 4), then the W6 cases and the hold-out's
   Von Karman runs on SU2.
