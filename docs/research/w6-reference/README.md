@@ -754,8 +754,14 @@ at Mach 2.5, which is no check case.
    at y = r instead, every face's width is 2 tan a times its distance from
    the axis, so every area, volume and the sides' pressure force are
    exactly those of the axisymmetric finite volume for an angle of 2 tan a
-   (the drag's factor pi / tan a; checked on the mesh to 1e-16). Being
-   rerun at both angles to confirm. Item 4's factor is superseded.
+   (the drag's factor pi / tan a; checked on the mesh to 1e-16). Item 4's
+   factor is superseded. Level 1 so at 2.5 degrees (one pass, Courant
+   0.2): 0.82841486, where the old placement gave 0.82797962 at 2.5 and
+   about 0.82841 at 0.5 degrees: the angle's error is gone (0.5 degrees
+   with the new placement is being run to confirm).
+10. The sharp cone at Mach 2 on the H grid: level 0 converges to a
+   residual of 1e-6.96, level 1 to 1e-2.37 with its drag steady to
+   2.7e-6 (0.0947050, 0.0949138; the old placement).
 
 ## State (2026-11-21)
 
