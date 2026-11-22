@@ -867,8 +867,11 @@ at Mach 2.5, which is no check case.
    Venkatakrishnan's limiter and Heun's step at Courant 0.5 reach
    1e-10.7 by 12,000 iterations; unlimited, 1e-10.5; Venkatakrishnan's
    with OpenFOAM's own one-pass step at Courant 0.2, 1e-8.3 at 19,500
-   and falling. The last two give the same drag to 8 digits (0.09498568):
-   one steady discrete solution, reached two ways. Heun's step costs 1.45
+   and falling (1e-10.4 at 30,000). The Venkatakrishnan runs give the
+   same drag to 8 digits (0.09498568): one steady discrete solution,
+   reached two ways. Its wall from L/3 to 0.8 L: worst face 3.2e-5 of
+   the Taylor-Maccoll value, mean +1.1e-6 (with `linearUpwindV`, 8.1e-4
+   and +6.7e-4); unlimited, 3.2e-4 and +3.1e-4. Heun's step costs 1.45
    times a pass and reaches 1e-8 in about 0.6 of the one-pass step's time.
    Next: T on the corrected wedge, levels 0 to 3, with `linearUpwind`
    for all three and Heun's step at 0.5, each level stopped once the
