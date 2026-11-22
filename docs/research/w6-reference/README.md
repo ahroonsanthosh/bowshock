@@ -847,8 +847,33 @@ at Mach 2.5, which is no check case.
    pass's and its own, which is Heun's step exactly, the local time step
    fixed through it and no intermediate state formed (the two-pass
    failure of item 7 was a negative temperature in such a state). With
-   one pass it is shockFluid. Trials on the cone's level 1 at Courant 0.2
-   and 0.5 are running.
+   one pass it is shockFluid.
+14. Heun's step on the cone's level 1 (as item 13): at Courant 0.2 the
+   residual stops at 1e-2.48, at 0.5 at 1e-2.46, the wall changing by
+   5e-5 to 9e-5 between saves, the errors as before; so the step was not
+   the cause. With Heun's step at 0.5: unlimited gradients 1e-2.19,
+   minmod 1e-2.27, Tadmor's flux 1e-2.97 (mean error +1.0e-3); first
+   order converges (1e-11.17 by 12,000 iterations, mean error +1.7e-2).
+   The multi-directional limiters (forward Euler): cell-based (minmod)
+   1e-1.55, face-based 1e-1.95, means +1.6e-3 and +1.7e-3. In every case
+   the flow moves most in the captured shock's cells. The cause:
+   `linearUpwindV`, the reconstruction of the momentum, is not the
+   gradient's extrapolation alone. It drops the correction when it points
+   against the face's difference and cuts it to linear interpolation
+   when it is longer (OpenFOAM's `linearUpwindVTemplates.C`), a switch
+   on many faces even with unlimited gradients, and linear interpolation
+   is item 1's unstable central value. With the plain `linearUpwind`
+   (each component from its limited gradient, as for rho and T):
+   Venkatakrishnan's limiter and Heun's step at Courant 0.5 reach
+   1e-10.7 by 12,000 iterations; unlimited, 1e-10.5; Venkatakrishnan's
+   with OpenFOAM's own one-pass step at Courant 0.2, 1e-8.3 at 19,500
+   and falling. The last two give the same drag to 8 digits (0.09498568):
+   one steady discrete solution, reached two ways. Heun's step costs 1.45
+   times a pass and reaches 1e-8 in about 0.6 of the one-pass step's time.
+   Next: T on the corrected wedge, levels 0 to 3, with `linearUpwind`
+   for all three and Heun's step at 0.5, each level stopped once the
+   residual is at 1e-10 (50 iterations running); then the cone's levels
+   0 to 2 the same way.
 
 ## State (2026-11-21)
 
