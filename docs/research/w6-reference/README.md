@@ -713,6 +713,17 @@ at Mach 2.5, which is no check case.
    is 0.127% less; checked on the mesh (its wall faces' area along x so
    scaled is pi R^2 to 4e-16). The drags in item 3 were taken the old way;
    times 1.00127 they are 0.8298113 and 0.8279797.
+5. Level 2's swing is the forward-Euler step's: two outer passes a step
+   (each restarts from the step's start with the latest fluxes, so the
+   update is y - dt R(y - dt R(y)), amplification 1 + z + z^2: stable on
+   the imaginary axis for |z| < 1, but only down to z = -1 on the real
+   axis, so the Courant number goes to 0.3; at 0.5 it failed in 12
+   iterations). Level 2 so, from level 1: its drag steady to 6.8e-9 of
+   its value from about iteration 6,000 (0.8285365), the residual still
+   stopping at 1e-1.78 (a swing inside, not on the wall). The stagnation
+   region as with one pass (+0.16%, +0.22%). Drags on levels 0 to 2:
+   0.8298113, 0.8279797, 0.8285365 (changes -1.83e-3, +5.57e-4; levels 0
+   and 1 with one pass at Courant 0.5).
 
 ## State (2026-11-21)
 
