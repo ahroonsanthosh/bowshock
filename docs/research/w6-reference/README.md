@@ -873,10 +873,30 @@ at Mach 2.5, which is no check case.
    the Taylor-Maccoll value, mean +1.1e-6 (with `linearUpwindV`, 8.1e-4
    and +6.7e-4); unlimited, 3.2e-4 and +3.1e-4. Heun's step costs 1.45
    times a pass and reaches 1e-8 in about 0.6 of the one-pass step's time.
-   Next: T on the corrected wedge, levels 0 to 3, with `linearUpwind`
-   for all three and Heun's step at 0.5, each level stopped once the
-   residual is at 1e-10 (50 iterations running); then the cone's levels
-   0 to 2 the same way.
+15. That scheme (`linearUpwind` for rho, the momentum and T from
+   Venkatakrishnan-limited gradients, Heun's step at 0.5, each level
+   stopped once the residual has been at or below 1e-10 for 50
+   iterations), the corrected wedge:
+   - the cone at Mach 2, levels 0 to 2 (level 0 from the free stream):
+     converged in 14,694, 9,906 and 5,183 iterations; drags 0.0947372,
+     0.0949857, 0.0950441 (changes +2.49e-4, +5.84e-5, ratio 0.23); the
+     wall from L/3 to 0.8 L against Taylor-Maccoll, worst face 4.5e-4,
+     3.2e-5, 7.6e-5 of it, means +3.9e-4, +1.1e-6, -5.2e-5.
+   - T, levels 0 to 2: converged in 7,110, 9,610 and 16,470 iterations;
+     drags 0.8280565, 0.8272772, 0.8285204 (changes -7.79e-4,
+     +1.243e-3); the wall's first cell -0.43%, -0.06%, +0.30% from
+     pitot; the axis's total pressure next to the wall +0.66%, +0.24%,
+     +0.35%. Along the axis from the wall to the shock the total pressure
+     rises (level 2: +0.35% at the wall, +0.61% a third of the way out,
+     +0.87% at 0.6, +2.65% in the cells just behind the shock; level 0
+     +2.6%, level 1 +1.6% there), where the exact flow has pitot's value
+     all along: the captured bow shock leaves too little entropy on the
+     stagnation streamline, and the excess just behind it does not fall
+     with refinement. The old scheme's profile is the same within 0.3%.
+     Between levels 0 and 1 the drag's distribution changes by up to 1%
+     of Cp (minus from 10 to 50 degrees, plus from 50 to 90, cancelling
+     in the total), between levels 1 and 2 by up to 0.35% (plus almost
+     everywhere). Level 3 is running; the capped ogive at Mach 1.3 too.
 
 ## State (2026-11-21)
 
