@@ -706,6 +706,13 @@ at Mach 2.5, which is no check case.
    3e-8); level 2 is not steady: its drag wanders between 0.822 and 0.832,
    the motion almost all (97%) on the cylinder near the outlet (x 2.3 to
    2.4), density changing by order 1 an iteration there.
+4. The drag's scale (found here, before any use): a wall face of the
+   wedge is flat, so its area along x is (r2^2 - r1^2) sin(2a)/2 where the
+   body's ring is pi (r2^2 - r1^2). The body's drag is the wedge's times
+   2 pi / sin(2a) (72.0915 at a = 2.5 degrees), not 360 / 2a (72), which
+   is 0.127% less; checked on the mesh (its wall faces' area along x so
+   scaled is pi R^2 to 4e-16). The drags in item 3 were taken the old way;
+   times 1.00127 they are 0.8298113 and 0.8279797.
 
 ## State (2026-11-21)
 

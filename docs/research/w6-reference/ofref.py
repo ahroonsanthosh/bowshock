@@ -17,6 +17,7 @@ import numpy as np
 import w6ref
 
 HALF = 2.5  # degrees each side of the x-y plane
+WEDGE_TO_BODY = 2 * math.pi / math.sin(math.radians(2 * HALF))
 
 HEADER = """FoamFile
 {{
@@ -472,8 +473,11 @@ def read_monitor(case, mach):
     n = min(len(res), len(frc))
     it = res[:n, 0]
     rms = 0.5 * np.log10(np.maximum(res[:n, 1], 1e-300)) - math.log10(1.4)
-    # surfaceFieldValue.dat: time, the force along x on the wedge, which holds 2 HALF degrees.
-    cd = frc[:n, 1] * (360.0 / (2 * HALF)) / (0.7 * mach * mach * math.pi * w6ref.R**2)
+    # surfaceFieldValue.dat: time, the force along x on the wedge. A wall face
+    # of the wedge is flat: its area along x is (r2^2 - r1^2) sin(2a) / 2, where
+    # the body's ring is pi (r2^2 - r1^2); so the body's force is the wedge's
+    # times 2 pi / sin(2a) (not 360 / 2a, which is 0.13% less at a = 2.5 deg).
+    cd = frc[:n, 1] * WEDGE_TO_BODY / (0.7 * mach * mach * math.pi * w6ref.R**2)
     return np.stack([it, rms, cd], 1)
 
 
