@@ -454,10 +454,21 @@ def _table(path):
     return np.array(rows)
 
 
+def _joined(case, fo, name):
+    """A function object's per-iteration table over every start (a resumed run writes a new folder)."""
+    d = os.path.join(case, "postProcessing", fo)
+    parts = sorted(os.listdir(d), key=float)
+    rows = {}
+    for t in parts:
+        for row in _table(os.path.join(d, t, name)):
+            rows[row[0]] = row  # a later start's row for the same iteration replaces the earlier
+    return np.array([rows[k] for k in sorted(rows)])
+
+
 def read_monitor(case, mach):
     """Per iteration: the iteration, log10 of the RMS of d rho / dt (on rho_inf), and the drag on pi R^2."""
-    res = _table(os.path.join(case, "postProcessing", "resid", "0", "volFieldValue.dat"))
-    frc = _table(os.path.join(case, "postProcessing", "wallForce", "0", "surfaceFieldValue.dat"))
+    res = _joined(case, "resid", "volFieldValue.dat")
+    frc = _joined(case, "wallForce", "surfaceFieldValue.dat")
     n = min(len(res), len(frc))
     it = res[:n, 0]
     rms = 0.5 * np.log10(np.maximum(res[:n, 1], 1e-300)) - math.log10(1.4)
