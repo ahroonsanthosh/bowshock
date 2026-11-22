@@ -757,8 +757,12 @@ at Mach 2.5, which is no check case.
    (the drag's factor pi / tan a; checked on the mesh to 1e-16). Item 4's
    factor is superseded. Level 1 so at 2.5 degrees (one pass, Courant
    0.2): 0.82841486, where the old placement gave 0.82797962 at 2.5 and
-   about 0.82841 at 0.5 degrees: the angle's error is gone (0.5 degrees
-   with the new placement is being run to confirm).
+   about 0.82841 at 0.5 degrees. With the new placement at 0.5 degrees
+   (90,000 iterations, the thinner wedge's smaller local step):
+   0.82840698, settling by 1e-8 a 5,000 iterations. The two angles now
+   differ by 9.5e-6 of the drag (from 5.3e-4 with the old placement), the
+   stagnation cell the same to 5 digits (Cp 1.71799, axis total pressure
+   1.00173 of pitot). The half-angle stays 2.5 degrees.
 10. The sharp cone at Mach 2 on the H grid: level 0 converges to a
    residual of 1e-6.96, level 1 to 1e-2.37 with its drag steady to
    2.7e-6 (0.0947050, 0.0949138; the old placement).
