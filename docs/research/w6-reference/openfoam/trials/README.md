@@ -1,0 +1,13 @@
+# The OpenFOAM set-up trials' scripts
+
+The scripts behind the set-up trials in `../../README.md` ("The second
+solver: OpenFOAM's set-up trials"), as run. They write their cases
+outside the repository (paths inside them point at the session's scratch
+folder). `ladder.py` runs levels 0 to L-1 of a case, each level from the
+one below (`mapFields`); `heuntrial.py` runs it with `shockFluidHeun`
+(`LADDER_UPLAIN=1`: `linearUpwind` for the momentum, `LADDER_TARGET`: stop
+a level once its residual is at or below that power of ten);
+`limtrial.py` the cone's level 1 with another gradient limiter;
+`wedgetest2.py` the wedge-angle trial; `levels.py`, `conecheck.py` and
+`conewall.py` measure the runs (stagnation, drag and changes between
+levels; the cone's wall against Taylor-Maccoll).
