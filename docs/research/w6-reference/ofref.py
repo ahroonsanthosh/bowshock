@@ -9,8 +9,15 @@ quad becomes a hexahedron, and the cells against the axis become prisms
 term, on the axis: the axisymmetric equations come from the 3D finite
 volumes themselves, where SU2 adds a source term in 1/r).
 """
+import fcntl
+import hashlib
+import json
 import math
 import os
+import re
+import shutil
+import subprocess
+import time
 
 import numpy as np
 
@@ -373,9 +380,10 @@ def write_case(case, spec, settings, iters, start_from_latest=False):
         f.write(HEADER.format(cls="dictionary", loc="constant", obj="physicalProperties") + PHYSICAL)
     with open(os.path.join(case, "constant", "momentumTransport"), "w") as f:
         f.write(HEADER.format(cls="dictionary", loc="constant", obj="momentumTransport") + "simulationType  laminar;\n")
+    libs = "".join(f'libs            ("{lib}");\n' for lib in settings.get("libs", ()))
     with open(os.path.join(case, "system", "controlDict"), "w") as f:
         f.write(HEADER.format(cls="dictionary", loc="system", obj="controlDict"))
-        f.write(f"""solver          shockFluid;
+        f.write(f"""{libs}solver          {settings.get("solver", "shockFluid")};
 startFrom       {"latestTime" if start_from_latest else "startTime"};
 startTime       0;
 stopAt          endTime;
@@ -396,6 +404,7 @@ functions
     with open(os.path.join(case, "system", "fvSchemes"), "w") as f:
         f.write(HEADER.format(cls="dictionary", loc="system", obj="fvSchemes"))
         rc = settings["recon"]
+        rec = settings.get("reconstruct", {"rho": rc, "U": f"{rc}V", "T": rc})
         f.write(f"""fluxScheme      {settings["flux"]};
 
 ddtSchemes
@@ -405,7 +414,7 @@ ddtSchemes
 
 gradSchemes
 {{
-    default         Gauss linear;
+    default         {settings.get("grad", "Gauss linear")};
 }}
 
 divSchemes
@@ -421,9 +430,9 @@ laplacianSchemes
 interpolationSchemes
 {{
     default         linear;
-    reconstruct(rho) {rc};
-    reconstruct(U)  {rc}V;
-    reconstruct(T)  {rc};
+    reconstruct(rho) {rec["rho"]};
+    reconstruct(U)  {rec["U"]};
+    reconstruct(T)  {rec["T"]};
 }}
 
 snGradSchemes
@@ -431,6 +440,7 @@ snGradSchemes
     default         corrected;
 }}
 """)
+    outer = f"    nOuterCorrectors {settings['outer']};\n" if settings.get("outer", 1) != 1 else ""
     with open(os.path.join(case, "system", "fvSolution"), "w") as f:
         f.write(HEADER.format(cls="dictionary", loc="system", obj="fvSolution"))
         f.write(f"""solvers
@@ -457,7 +467,7 @@ snGradSchemes
 
 PIMPLE
 {{
-    maxCo           {settings["maxCo"]};
+{outer}    maxCo           {settings["maxCo"]};
     rDeltaTSmoothingCoeff {settings["smoothing"]};
 }}
 """)
@@ -642,3 +652,230 @@ def boundary_check(time_dir, x, r, marks, mach):
     return {"outerMaxAbsCp": float(max(abs(cp[i, j]) for i, j in outer)),
             "outletMinMach": float(min(ma[i, j] for i, j in outlet)),
             "cpStagnation": float(cp[0, 0]), "shockReach": reach}
+
+
+def wall_total_pressure(time_dir, x, r, marks, mach):
+    """
+    Per wall face, in wall_faces' order: the total pressure of the face's
+    cell over Rayleigh's pitot value. In the exact flow the wall's
+    streamline crosses the bow shock where it is normal, so this is 1 all
+    along the wall; the excess is the entropy the scheme failed to make.
+    """
+    ni, nj = x.shape[0] - 1, x.shape[1] - 1
+    p = read_internal(os.path.join(time_dir, "p")).reshape(ni, nj)
+    T = read_internal(os.path.join(time_dir, "T")).reshape(ni, nj)
+    U = read_internal(os.path.join(time_dir, "U")).reshape(ni, nj, 3)
+    p0 = p * (1 + 0.2 * (U**2).sum(-1) / T) ** 3.5
+    pitot = 1 + 0.7 * mach**2 * w6ref.pitot_cp(mach)
+    xv = x.ravel()
+    rows = []
+    for a, b in marks["wall"]:
+        i, j = _cell_of_edge(a, b, ni, nj)
+        p0_, p1_ = (a, b) if xv[a] <= xv[b] else (b, a)
+        rows.append((xv[p0_], xv[p1_], p0[i, j] / pitot))
+    rows.sort(key=lambda t: (t[0], t[1]))
+    return np.array([t[2] for t in rows])
+
+
+# ------------------------------------------------------------ the registered runs
+#
+# As `w6ref.run_case` for SU2: every level of a case, coarsest first, each
+# from the converged level below (mapFields), each to the residual asked or
+# its iteration limit, with a record per level. The settings are passed in
+# (README, the OpenFOAM registration); nothing is tuned per case.
+
+
+class Deadline(Exception):
+    pass
+
+
+def _foam(cmd, cwd, log):
+    with open(os.path.join(cwd, log), "w") as f:
+        return subprocess.call(["bash", "-c", "source /opt/openfoam13/etc/bashrc; " + cmd], cwd=cwd,
+                               stdout=f, stderr=subprocess.STDOUT)
+
+
+def _set_control(case, key, value):
+    path = os.path.join(case, "system", "controlDict")
+    cd = open(path).read()
+    cd, n = re.subn(rf"^{key}\s+[^;]*;", f"{key} {value};", cd, count=1, flags=re.M)
+    assert n == 1, key
+    open(path, "w").write(cd)
+
+
+def _monitor_tail(case, n):
+    """The monitor's last n rows (iteration, log10 residual), from the latest start's file."""
+    d = os.path.join(case, "postProcessing", "resid")
+    if not os.path.isdir(d) or not os.listdir(d):
+        return []
+    last = max(os.listdir(d), key=float)
+    try:
+        rows = [l.split() for l in open(os.path.join(d, last, "volFieldValue.dat")) if l.strip() and not l.startswith("#")]
+        return [(float(r[0]), 0.5 * math.log10(max(float(r[1]), 1e-300)) - math.log10(1.4)) for r in rows[-n:]]
+    except (OSError, ValueError, IndexError):
+        return []
+
+
+def solution_hash(time_dir):
+    h = hashlib.sha256()
+    for name in ("p", "T", "U"):
+        h.update(open(os.path.join(time_dir, name), "rb").read())
+    return h.hexdigest()
+
+
+def settings_hash(spec, settings):
+    keep = {k: v for k, v in spec.items() if k not in ("first_level", "levels")}
+    return hashlib.sha256(json.dumps([keep, settings], sort_keys=True).encode()).hexdigest()
+
+
+def _solve(case, np_, target, deadline):
+    """
+    foamRun on the case from its latest save. It is told to save and stop
+    (writeNow) once the monitor's last 5 rows (50 iterations) are at or
+    below 10^target, and 5 minutes before the deadline (then Deadline is
+    raised: the level goes on from that save next time).
+    """
+    k = len([f for f in os.listdir(case) if f.startswith("log.run")])
+    _set_control(case, "stopAt", "endTime")
+    cmd = f"mpirun --allow-run-as-root -np {np_} foamRun -parallel" if np_ > 1 else "foamRun"
+    with open(os.path.join(case, f"log.run{k}"), "w") as f:
+        proc = subprocess.Popen(["bash", "-c", "source /opt/openfoam13/etc/bashrc; " + cmd], cwd=case,
+                                stdout=f, stderr=subprocess.STDOUT)
+        told = False
+        while proc.poll() is None:
+            tail = _monitor_tail(case, 5)
+            if not told and len(tail) == 5 and max(v for _, v in tail) <= target:
+                _set_control(case, "stopAt", "writeNow")
+                told = True
+            if deadline is not None and time.time() > deadline - 300:
+                _set_control(case, "stopAt", "writeNow")
+                try:
+                    proc.wait(timeout=240)
+                except subprocess.TimeoutExpired:
+                    proc.terminate()
+                    proc.wait()
+                _set_control(case, "stopAt", "endTime")
+                raise Deadline(f"{case} saved and stopped before the deadline")
+            time.sleep(10)
+    _set_control(case, "stopAt", "endTime")
+    return proc.returncode
+
+
+def run_case(spec, run_dir, settings, np_, deadline=None):
+    """
+    Every level of a case, coarsest first. settings: the registered
+    OpenFOAM settings (solver, libs, flux, reconstruct, grad, outer, maxCo,
+    smoothing), with "target" (log10 of the residual a level stops at),
+    "iters" (each level's iteration limit) and "checkpoint" (iterations
+    between saves). np_: processes per level. A level that finished keeps
+    its record (record.json, with the spec's and settings' hash and its
+    solution's) and is not run again; a level stopped by the deadline goes
+    on from its last save. A finer level starts from the level below
+    (mapFields), after checking the level below's solution on disk is the
+    one its record finished with. One process at a time per case.
+    """
+    os.makedirs(run_dir, exist_ok=True)
+    lock = os.open(os.path.join(run_dir, ".lock"), os.O_CREAT | os.O_RDWR)
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        raise SystemExit(f"{run_dir} is being run by another process")
+    try:
+        return _run_levels(spec, run_dir, settings, np_, deadline)
+    finally:
+        os.close(lock)
+
+
+def _run_levels(spec, run_dir, settings, np_, deadline):
+    sh = settings_hash(spec, settings)
+    M = spec["mach"]
+    out = []
+    for level in range(spec.get("first_level", 0), spec["levels"]):
+        d = os.path.join(run_dir, f"L{level}")
+        done = os.path.join(d, "record.json")
+        if os.path.exists(done):
+            rec = json.load(open(done))
+            if rec.get("settingsHash") != sh:
+                raise SystemExit(f"{done} was made with another spec or settings")
+            out.append(rec)
+            print(json.dumps(rec), flush=True)
+            continue
+        nose, x, r, marks = w6ref.grid(spec, level)
+        ni, nj = x.shape[0] - 1, x.shape[1] - 1
+        seeded = bool(spec["seed"]) and level > 0
+        start = os.path.join(d, "start.json")
+        if not os.path.exists(start):
+            # A fresh level (anything left from an unfinished set-up is replaced).
+            if os.path.isdir(d):
+                for sub in os.listdir(d):
+                    path = os.path.join(d, sub)
+                    if os.path.isdir(path):
+                        shutil.rmtree(path)
+                    else:
+                        os.remove(path)
+            os.makedirs(d, exist_ok=True)
+            below = os.path.join(run_dir, f"L{level - 1}")
+            if seeded:
+                brec = json.load(open(os.path.join(below, "record.json")))
+                if brec.get("settingsHash") != sh:
+                    raise SystemExit(f"level {level - 1} was made with another spec or settings")
+                if solution_hash(os.path.join(below, str(brec["time"]))) != brec.get("solutionSha256"):
+                    raise SystemExit(f"level {level - 1}'s solution on disk is not the one its record finished with")
+            write_polymesh(d, x, r, marks)
+            write_case(d, spec, settings, settings["iters"][level], start_from_latest=True)
+            _set_control(d, "writeInterval", str(settings["checkpoint"]))
+            _set_control(d, "runTimeModifiable", "true")
+            assert _foam("checkMesh", d, "log.checkMesh") == 0, "checkMesh failed to run"
+            mesh_ok = "Mesh OK." in open(os.path.join(d, "log.checkMesh")).read()
+            if seeded:
+                assert _foam(f"mapFields ../L{level - 1} -consistent -sourceTime {brec['time']}", d, "log.map") == 0, "mapFields failed"
+            if np_[level] > 1:
+                with open(os.path.join(d, "system", "decomposeParDict"), "w") as f:
+                    f.write(HEADER.format(cls="dictionary", loc="system", obj="decomposeParDict")
+                            + f"numberOfSubdomains {np_[level]};\ndecomposer scotch;\n")
+                assert _foam("decomposePar -force", d, "log.decompose") == 0, "decomposePar failed"
+            json.dump({"seeded": seeded, "meshOK": mesh_ok, "settingsHash": sh,
+                       "seedSha256": brec.get("solutionSha256") if seeded else None}, open(start, "w"))
+        st = json.load(open(start))
+        t0 = time.time()
+        code = _solve(d, np_[level], settings["target"], deadline)
+        if code == 0 and np_[level] > 1:
+            code = _foam("reconstructPar -latestTime", d, "log.reconstruct")
+        seconds = time.time() - t0
+        rec = {"level": level, "ni": ni, "nj": nj, "exit": code, "seconds": seconds, "seeded": st["seeded"],
+               "meshOK": st["meshOK"], "seedSha256": st["seedSha256"]}
+        if code == 0:
+            last = max(int(t) for t in os.listdir(d) if re.fullmatch(r"\d+", t))
+            tdir = os.path.join(d, str(last))
+            m = read_monitor(d, M)
+            np.savetxt(os.path.join(d, "monitor.csv"), m, delimiter=",", header="iteration,log10_residual,drag", comments="")
+            faces = wall_faces(tdir, x, r, marks, M)
+            p0 = wall_total_pressure(tdir, x, r, marks, M)
+            with open(os.path.join(d, "wall.csv"), "w") as f:
+                f.write('"x0","r0","x1","r1","Pressure_Coefficient","p0_over_pitot"\n')
+                for row, q in zip(faces, p0):
+                    f.write(",".join(f"{v:.17e}" for v in (*row, q)) + "\n")
+            n = max(2, len(m) // 4)
+            q = m[-n:, 2]
+            h = max(1, n // 2)
+            rec.update({"time": last, "iterations": int(m[-1, 0]), "logRes": float(m[-1, 1]),
+                        "converged": bool(len(_monitor_tail(d, 5)) == 5 and max(v for _, v in _monitor_tail(d, 5)) <= settings["target"]),
+                        "atLimit": last >= settings["iters"][level],
+                        "drag": faces_drag(faces), "forceDrag": float(m[-1, 2]),
+                        "dragRangeLastQuarter": float(q.max() - q.min()),
+                        "dragMeanLastEighth": float(q[-h:].mean()), "dragMeanEighthBefore": float(q[-2 * h:-h].mean()),
+                        "solutionSha256": solution_hash(tdir)})
+            rec.update(boundary_check(tdir, x, r, marks, M))
+            if spec["rn"] > 0:
+                s = stagnation(tdir, ni, nj, M)
+                rec.update({"pitotCp": s["pitotCp"], "axisTotalPressure": s["axisTotalPressure"]})
+            coarser = os.path.join(run_dir, f"L{level - 1}", "wall.csv")
+            if level > 0 and os.path.exists(coarser):
+                rec["change"] = faces_changes(read_wall(coarser), faces, spec["L"], w6ref.region_start(spec))
+        rec["settingsHash"] = sh
+        with open(done + ".tmp", "w") as f:
+            json.dump(rec, f)
+        os.replace(done + ".tmp", done)
+        out.append(rec)
+        print(json.dumps(rec), flush=True)
+    return out
