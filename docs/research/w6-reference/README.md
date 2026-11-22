@@ -763,9 +763,20 @@ at Mach 2.5, which is no check case.
    differ by 9.5e-6 of the drag (from 5.3e-4 with the old placement), the
    stagnation cell the same to 5 digits (Cp 1.71799, axis total pressure
    1.00173 of pitot). The half-angle stays 2.5 degrees.
-10. The sharp cone at Mach 2 on the H grid: level 0 converges to a
-   residual of 1e-6.96, level 1 to 1e-2.37 with its drag steady to
-   2.7e-6 (0.0947050, 0.0949138; the old placement).
+10. The sharp cone at Mach 2 on the H grid (the old placement): level 0
+   converges to a residual of 1e-6.96, levels 1 and 2 stop near 1e-2.4 and
+   1e-1.8 with their drags steady to 2.7e-6 and 1.1e-5 (0.0947050,
+   0.0949138, 0.0947632). The wall's Cp from L/3 to 0.8 L against
+   Taylor-Maccoll (0.0955290): worst face 6.7e-4, 1.1e-3, 1.7e-3 on levels
+   0 to 2, mean +1.9e-4, -8.4e-4, -1.3e-3: growing, where V1 asks 1e-3 on
+   level 3 and SU2 gave 4.5e-4. The old placement's error is of order a^2
+   (2e-3), so the cone is being run again on the corrected wedge before
+   anything is concluded.
+11. The capped ogive of 4 calibers, r_n/R 0.10, at Mach 1.3 (off every
+   list; SU2's trial 9): level 0's drag not steady (range 1e-3 of it, the
+   residual 1e-3.8), level 1 converged (residual 1e-7.35, drag 0.0625783
+   steady to 7.7e-7). Its stagnation cell +1.28% and +0.77% from pitot on
+   levels 0 and 1 (SU2: +6.3%, +2.4%, +1.0% on levels 0 to 2).
 
 ## State (2026-11-21)
 
