@@ -896,7 +896,16 @@ at Mach 2.5, which is no check case.
      Between levels 0 and 1 the drag's distribution changes by up to 1%
      of Cp (minus from 10 to 50 degrees, plus from 50 to 90, cancelling
      in the total), between levels 1 and 2 by up to 0.35% (plus almost
-     everywhere). Level 3 is running; the capped ogive at Mach 1.3 too.
+     everywhere). Level 3: item 16.
+   - the capped ogive at Mach 1.3 (4 calibers, cap ratio 0.10), levels 0
+     to 2: level 0 stopped at its 30,000-iteration limit at 1e-8.94
+     (drag range over the last quarter 1.2e-8), levels 1 and 2 converged
+     (20,193 and 20,805 iterations); drags 0.0626185, 0.0623083,
+     0.0622263 (changes -3.08e-4, -8.31e-5); the regional changes 6.54e-4
+     and 2.75e-4 (ratio 0.42), the vertex changes 9.83e-4 and 4.97e-4
+     (ratio 0.51); the wall's first cell +1.24%, +0.80%, +0.49% from
+     pitot; the axis's total pressure next to the wall +6.4%, +1.9%,
+     +0.6%, halfway out +2.9%, +2.2%, +1.4%.
 16. T's level 3 (512 x 256, from level 2 by mapFields) does not
    converge on that scheme. Its residual fell to 1e-1.64 by iteration
    4,000, rose to 1e-1.0 by 4,250, and from there to 8,000 cycled between
