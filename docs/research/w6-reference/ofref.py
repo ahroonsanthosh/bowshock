@@ -31,20 +31,22 @@ HEADER = """FoamFile
 def _points(x, r):
     """The wedge's points and, per 2D vertex, its front and back point numbers (one point on the axis)."""
     ni, nj = x.shape[0] - 1, x.shape[1] - 1
-    if np.any(r[0, :] != 0.0) or np.any(r[1:, :] <= 0.0):
-        raise ValueError("expected the line i = 0 on the axis and every other vertex off it")
+    if np.any(r < 0.0):
+        raise ValueError("a vertex below the axis")
     a = math.radians(HALF)
+    on = r == 0.0
     front = np.empty((ni + 1, nj + 1), dtype=np.int64)
     back = np.empty((ni + 1, nj + 1), dtype=np.int64)
-    front[0, :] = back[0, :] = np.arange(nj + 1)
-    n_off = ni * (nj + 1)
-    front[1:, :] = (nj + 1) + np.arange(n_off).reshape(ni, nj + 1)
-    back[1:, :] = (nj + 1) + n_off + np.arange(n_off).reshape(ni, nj + 1)
-    pts = np.zeros(((nj + 1) + 2 * n_off, 3))
-    pts[: nj + 1, 0] = x[0, :]
-    xo, ro = x[1:, :].ravel(), r[1:, :].ravel()
-    pts[nj + 1 : nj + 1 + n_off] = np.stack([xo, ro * math.cos(a), ro * math.sin(a)], 1)
-    pts[nj + 1 + n_off :] = np.stack([xo, ro * math.cos(a), -ro * math.sin(a)], 1)
+    n_on = int(on.sum())
+    n_off = int((~on).sum())
+    front[on] = back[on] = np.arange(n_on)
+    front[~on] = n_on + np.arange(n_off)
+    back[~on] = n_on + n_off + np.arange(n_off)
+    pts = np.zeros((n_on + 2 * n_off, 3))
+    pts[:n_on, 0] = x[on]
+    xo, ro = x[~on], r[~on]
+    pts[n_on : n_on + n_off] = np.stack([xo, ro * math.cos(a), ro * math.sin(a)], 1)
+    pts[n_on + n_off :] = np.stack([xo, ro * math.cos(a), -ro * math.sin(a)], 1)
     return pts, front, back
 
 
@@ -65,8 +67,15 @@ def _area_vector(pts, face):
     return 0.5 * s, c
 
 
-def write_polymesh(case, x, r):
-    """constant/polyMesh of the wedge: patches wall, farfield, outlet (as the C grid's markers), front, back."""
+PATCH_TYPES = {"wall": "wall", "farfield": "patch", "outlet": "patch"}
+
+
+def write_polymesh(case, x, r, marks):
+    """
+    constant/polyMesh of the wedge. The patches are the 2D grid's markers
+    (`w6ref.grid`): wall, farfield and outlet as given, the axis dropped
+    (its faces collapse to lines), and front and back (the wedge's sides).
+    """
     ni, nj = x.shape[0] - 1, x.shape[1] - 1
     pts, F, B = _points(x, r)
     cell = lambda i, j: i * nj + j
@@ -79,8 +88,12 @@ def write_polymesh(case, x, r):
     def oriented(face, own, towards):
         face = _dedup(face)
         s, c = _area_vector(pts, face)
-        ref = towards - centre[own]
-        return face if np.dot(s, ref) > 0 else face[::-1]
+        return face if np.dot(s, towards - centre[own]) > 0 else face[::-1]
+
+    def side(f, b, i0, j0, i1, j1):
+        """The face over the 2D edge (i0, j0)-(i1, j1); None if the edge lies on the axis."""
+        face = _dedup([f[i0, j0], f[i1, j1], b[i1, j1], b[i0, j0]])
+        return face if len(face) >= 3 else None
 
     faces, owner, neigh = [], [], []
     # Internal faces in upper-triangular order: per cell, its north then its east neighbour.
@@ -88,31 +101,55 @@ def write_polymesh(case, x, r):
         for j in range(nj):
             c = cell(i, j)
             if j < nj - 1:
-                f = [F[i, j + 1], F[i + 1, j + 1], B[i + 1, j + 1], B[i, j + 1]]
+                f = side(F, B, i, j + 1, i + 1, j + 1)
+                if f is None:
+                    raise ValueError("an internal edge on the axis")
                 faces.append(oriented(f, c, centre[cell(i, j + 1)]))
                 owner.append(c)
                 neigh.append(cell(i, j + 1))
             if i < ni - 1:
-                f = [F[i + 1, j], F[i + 1, j + 1], B[i + 1, j + 1], B[i + 1, j]]
+                f = side(F, B, i + 1, j, i + 1, j + 1)
+                if f is None:
+                    raise ValueError("an internal edge on the axis")
                 faces.append(oriented(f, c, centre[cell(i + 1, j)]))
                 owner.append(c)
                 neigh.append(cell(i + 1, j))
     n_internal = len(faces)
     patches = []
+    idx = lambda k: divmod(k, nj + 1)
 
-    def patch(name, kind, items):
+    def edge_cell(p, q):
+        (i0, j0), (i1, j1) = idx(p), idx(q)
+        if j0 == j1:  # along i
+            return cell(min(i0, i1), j0 if j0 < nj else nj - 1)
+        return cell(i0 if i0 < ni else ni - 1, min(j0, j1))
+
+    for name, edges in marks.items():
+        if name == "axis":
+            for p, q in edges:
+                if side(F, B, *idx(p), *idx(q)) is not None:
+                    raise ValueError("an axis edge off the axis")
+            continue
         start = len(faces)
-        for f, c in items:
-            s, fc = _area_vector(pts, _dedup(f))
-            faces.append(oriented(f, c, fc + 2 * (fc - centre[c])))
+        for p, q in edges:
+            f = side(F, B, *idx(p), *idx(q))
+            if f is None:
+                raise ValueError(f"a {name} edge on the axis")
+            c = edge_cell(p, q)
+            _, fc = _area_vector(pts, f)
+            faces.append(oriented(f, c, fc + (fc - centre[c])))
             owner.append(c)
-        patches.append((name, kind, len(faces) - start, start))
-
-    patch("wall", "wall", [([F[i, 0], F[i + 1, 0], B[i + 1, 0], B[i, 0]], cell(i, 0)) for i in range(ni)])
-    patch("farfield", "patch", [([F[i, nj], F[i + 1, nj], B[i + 1, nj], B[i, nj]], cell(i, nj - 1)) for i in range(ni)])
-    patch("outlet", "patch", [([F[ni, j], F[ni, j + 1], B[ni, j + 1], B[ni, j]], cell(ni - 1, j)) for j in range(nj)])
-    patch("front", "wedge", [([F[i, j], F[i + 1, j], F[i + 1, j + 1], F[i, j + 1]], cell(i, j)) for i in range(ni) for j in range(nj)])
-    patch("back", "wedge", [([B[i, j], B[i + 1, j], B[i + 1, j + 1], B[i, j + 1]], cell(i, j)) for i in range(ni) for j in range(nj)])
+        patches.append((name, PATCH_TYPES[name], len(faces) - start, start))
+    for name, lay in (("front", F), ("back", B)):
+        start = len(faces)
+        for i in range(ni):
+            for j in range(nj):
+                f = _dedup([lay[i, j], lay[i + 1, j], lay[i + 1, j + 1], lay[i, j + 1]])
+                c = cell(i, j)
+                _, fc = _area_vector(pts, f)
+                faces.append(oriented(f, c, fc + (fc - centre[c])))
+                owner.append(c)
+        patches.append((name, "wedge", len(faces) - start, start))
 
     d = os.path.join(case, "constant", "polyMesh")
     os.makedirs(d, exist_ok=True)
