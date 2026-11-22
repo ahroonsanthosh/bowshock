@@ -733,6 +733,15 @@ at Mach 2.5, which is no check case.
    0.58 face by face, with its stagnation point failing. |Cp| in the
    cells against the outer boundary 4e-10 or less, the shock's reach 0.88
    at most, the outlet's Mach number 2.14 or more.
+7. Level 3 with the two-pass step, from level 2: it failed at iteration
+   76 (negative temperature), the state at 75 showing it growing over a
+   few iterations in cells on the hemisphere at about 51 degrees (x 0.17,
+   r 0.39), just off the wall. The two-pass step is not a combination of
+   forward-Euler steps, so it does not keep the states positive as one
+   forward-Euler step with limited reconstruction does; started from a
+   level 2 field interpolated onto level 3 it overshot. Next: one pass at
+   a Courant number of 0.2 (the long-wave growth of item 1 scales with its
+   square).
 
 ## State (2026-11-21)
 
