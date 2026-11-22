@@ -27,3 +27,33 @@ cp -r shockFluidHeun /tmp/shockFluidHeun-build
 ```bash
 cd /tmp/shockFluidHeun-build && bash -c "source /opt/openfoam13/etc/bashrc; wmake libso"
 ```
+
+# cellVenkatakrishnanGrad
+
+OpenFOAM 13's `cellLimitedGrad` gradient scheme with Venkatakrishnan's
+limiter in its full form, with the smoothing term eps^2 = (K h)^3
+(J. Comput. Phys. 118, 1995); OpenFOAM's own `Venkatakrishnan` limiter
+is the form without it. For each face of a cell, with d2 the change the
+gradient gives from the cell's centre to the face's and d1 the largest
+change to a neighbour in d2's direction:
+
+    psi = (d1^2 + eps^2 + 2 d1 d2)/(d1^2 + 2 d2^2 + d1 d2 + eps^2)
+
+The cell's limiter is the least psi over its faces, capped at 1, per
+component. h is the square root of the cell's wedge-face area for a cell
+on a wedge patch, else the cube root of its volume. With K = 0 the
+gradients are `cellLimited<Venkatakrishnan> Gauss linear 1`'s (to
+round-off). Use:
+
+    libs ("libcellVenkatakrishnanGrad.so");                (controlDict)
+    gradSchemes { default cellVenkatakrishnan Gauss linear <K>; }
+
+Build:
+
+```bash
+cp -r cellVenkatakrishnanGrad /tmp/cellVenkatakrishnanGrad-build
+```
+
+```bash
+cd /tmp/cellVenkatakrishnanGrad-build && bash -c "source /opt/openfoam13/etc/bashrc; wmake libso"
+```

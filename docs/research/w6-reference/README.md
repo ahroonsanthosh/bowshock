@@ -897,6 +897,36 @@ at Mach 2.5, which is no check case.
      of Cp (minus from 10 to 50 degrees, plus from 50 to 90, cancelling
      in the total), between levels 1 and 2 by up to 0.35% (plus almost
      everywhere). Level 3 is running; the capped ogive at Mach 1.3 too.
+16. T's level 3 (512 x 256, from level 2 by mapFields) does not
+   converge on that scheme. Its residual fell to 1e-1.64 by iteration
+   4,000, rose to 1e-1.0 by 4,250, and from there to 8,000 cycled between
+   1e-1.0 and 1e-1.3 with a period of about 250 iterations. The drag
+   swung between 0.82897 and 0.82939 (range 4.8e-4 of it per 1,000
+   iterations, mean 0.82922; from 3,000 to 4,000 the range was 4.8e-5).
+   The motion fills the subsonic layer between the bow shock and the
+   hemisphere from about 25 to 40 degrees from the axis: |d rho/dt| up
+   to 3 (in rho_inf = 1.4 units) in the cells against the wall, the wall's
+   pressure there changing by 0.15% between saves 134 iterations apart,
+   and the shock moving by a cell at 20 degrees. The run was stopped at
+   iteration 8,100.
+   OpenFOAM's `Venkatakrishnan` gradient limiter is the bare function of
+   r, (r^2 + 2r)/(r^2 + r + 2) (`VenkatakrishnanGradientLimiter.H`),
+   without the smoothing term eps^2 = (K h)^3 of Venkatakrishnan's paper
+   (J. Comput. Phys. 118, 1995). That term is there because without it
+   the limiter acts in smooth flow and at smooth extrema and stalls or
+   cycles a steady solver. `cellVenkatakrishnanGrad` (openfoam/, beside
+   this file) is OpenFOAM's `cellLimitedGrad` with the full form: for
+   each face, psi = (d1^2 + eps^2 + 2 d1 d2)/(d1^2 + 2 d2^2 + d1 d2 +
+   eps^2), the least over the faces, capped at 1, per component, with h
+   the square root of the cell's wedge-face area. With K = 0 its
+   gradients equal `cellLimited<Venkatakrishnan> Gauss linear 1`'s to
+   round-off on T's converged level 1 (largest difference 3.9e-16 of the
+   largest gradient, for rho, U and T). With K = 5 they differ in 85% of
+   the cells (by up to 0.8%, 1.4% and 2.0% of the largest gradient):
+   OpenFOAM's limiter is active almost everywhere, not only at the shock.
+   Diagnostic restarts of level 3 from its oscillating save (iteration
+   5,000) are running: unlimited gradients, and OpenFOAM's limiter with
+   its coefficient 0.5 (bounds widened by the neighbours' range).
 
 ## State (2026-11-21)
 

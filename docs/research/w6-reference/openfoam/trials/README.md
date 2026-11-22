@@ -11,3 +11,9 @@ a level once its residual is at or below that power of ten);
 `wedgetest2.py` the wedge-angle trial; `levels.py`, `conecheck.py` and
 `conewall.py` measure the runs (stagnation, drag and changes between
 levels; the cone's wall against Taylor-Maccoll).
+
+Item 16: `l3trial.py` restarts a saved state with another gradient scheme
+for a set number of iterations; `resh.py` prints a run's residual history;
+`where.py` and `wheretxt.py` locate where a run's flow moves between two
+saves; `gradcmp.py` compares gradient fields written by `foamPostProcess`
+(`cellVenkatakrishnanGrad` at K = 0 against OpenFOAM's limiter).
