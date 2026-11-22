@@ -809,7 +809,13 @@ at Mach 2.5, which is no check case.
    drag's change between levels 1 and 2 is +5.55e-4, between levels 2 and
    3 +5.20e-4, nearly all of the latter between 10 and 40 degrees from
    the axis, where level 3 is still settling; the regional ratio 0.94, the
-   face-by-face ratio 0.46. Not judged until level 3 has settled. Of the
+   face-by-face ratio 0.46. Not judged until level 3 has settled. It did
+   not settle: at iterations 20,000, 22,556, 25,000 and 30,000 the wall's
+   first cell +0.190%, +0.192%, +0.290%, +0.265% from pitot, the drag
+   0.829016, 0.829013, 0.829025, 0.829024; at 30,000 the changes between
+   levels 2 and 3 +4.88e-4 by region (ratio 0.88 to levels 1 and 2) and
+   7.11e-4 face by face (ratio 0.44). As on the cone's level 2, the finest
+   level wanders instead of converging. Of the
    stagnation numbers, part is the old placement's: on level 1 the
    corrected wedge gives +0.173% on the axis where the old gave +0.280%.
 
