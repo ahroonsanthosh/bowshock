@@ -742,6 +742,10 @@ at Mach 2.5, which is no check case.
    level 2 field interpolated onto level 3 it overshot. Next: one pass at
    a Courant number of 0.2 (the long-wave growth of item 1 scales with its
    square).
+8. One pass at Courant 0.2, level 2 from level 1: its drag 0.82853652,
+   steady to 5.7e-9, the same to 8 digits as with the two-pass step (the
+   steady discrete solution does not depend on how it is reached); the
+   residual stops near 1e-0.77, the swing inside again, not on the wall.
 
 ## State (2026-11-21)
 
