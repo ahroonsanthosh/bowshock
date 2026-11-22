@@ -11,6 +11,10 @@ if not os.path.exists(f"{dst}/system/controlDict"):
     old = "    default         cellLimited<Venkatakrishnan> Gauss linear 1;\n"
     assert old in fs
     open(f"{dst}/system/fvSchemes", "w").write(fs.replace(old, f"    default         {grad};\n"))
+    if grad.startswith("cellVenkatakrishnan "):
+        cd = open(f"{dst}/system/controlDict").read()
+        assert "libcellVenkatakrishnanGrad" not in cd and "\nsolver " in cd
+        open(f"{dst}/system/controlDict", "w").write(cd.replace("\nsolver ", '\nlibs            ("libcellVenkatakrishnanGrad.so");\nsolver ', 1))
     ladder.set_control(dst, "endTime", str(int(t0) + n))
     ladder.set_control(dst, "writeInterval", "1000")
     if np_ > 1:
