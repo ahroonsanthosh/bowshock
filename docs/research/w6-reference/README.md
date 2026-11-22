@@ -818,6 +818,37 @@ at Mach 2.5, which is no check case.
    level wanders instead of converging. Of the
    stagnation numbers, part is the old placement's: on level 1 the
    corrected wedge gives +0.173% on the axis where the old gave +0.280%.
+13. Where the cone's flow moves: between saved states the pressure
+   changes most (1e-3 of it) in the cells of the captured oblique shock,
+   and from there across the shock layer to the wall. Other gradient
+   limiters on the cone's level 1 (corrected wedge, from level 0, 30,000
+   iterations, Courant 0.2), against Venkatakrishnan's (k = 1: residual
+   1e-2.43, wall change between saves 1.1e-4 of Cp, mean error +6.7e-4,
+   worst 8.1e-4): Venkatakrishnan's with k = 0.5 (bounds widened by the
+   neighbours' range) 1e-2.07, 9.9e-5, +1.5e-3, 1.8e-3; k = 0.8 1e-2.07,
+   9.3e-5, +1.5e-3, 1.8e-3; the cubic limiter (r_t 1.5) 1e-2.31, 1.0e-4,
+   +1.4e-3, 1.5e-3. None settles the wall and each doubles the error.
+   (OpenFOAM accepts the multi-directional limiter only with minmod.) The
+   cause is the step, not the limiter: OpenFOAM's linearUpwind from the
+   cell gradient is, in one dimension on a uniform grid, Fromm's scheme,
+   and one forward-Euler step of it is unstable for long waves at any
+   Courant number nu (its squared amplification 1 + nu^2 theta^2 - nu
+   theta^4 / 4 to leading order in the wave number theta; at most 1.0048
+   a step at nu = 0.2, 1.089 at 0.5, computed over all theta), so
+   wherever the limiter is off the flow grows until the limiter acts, a
+   limit cycle; the limiter's threshold of SU2's version would leave more
+   of the flow unlimited, not less. A two-stage strong-stability-
+   preserving step (Heun's) damps every wave of Fromm's scheme up to nu =
+   0.9 at least (computed; 1.22 at nu = 1.1) and keeps a state positive
+   whenever one forward-Euler step does. OpenFOAM's two passes
+   (item 5) are not that step. `shockFluidHeun` (openfoam/, beside this
+   file) is shockFluid with one change: with two outer passes, the second
+   pass's mass, momentum and energy fluxes are the means of the first
+   pass's and its own, which is Heun's step exactly, the local time step
+   fixed through it and no intermediate state formed (the two-pass
+   failure of item 7 was a negative temperature in such a state). With
+   one pass it is shockFluid. Trials on the cone's level 1 at Courant 0.2
+   and 0.5 are running.
 
 ## State (2026-11-21)
 

@@ -1,0 +1,95 @@
+--- a/shockFluidHeun.H
++++ b/shockFluidHeun.H
+@@ -27,6 +27,14 @@
+ Description
+     Solver module for density-based solution of compressible flow
+ 
++    shockFluid (OpenFOAM 13) with one change, for steady runs under local
++    time stepping: with nOuterCorrectors 2 each time step is Heun's
++    two-stage, strong-stability-preserving Runge-Kutta step. The second
++    pass's mass, momentum and energy fluxes are the averages of the first
++    pass's (from the state at the step's start) and its own (from the first
++    pass's state), so the step is u + dt (R(u) + R(u + dt R(u)))/2, with the
++    time step fixed for the step. With nOuterCorrectors 1 it is shockFluid.
++
+     Based on central-upwind schemes of Kurganov and Tadmor with support for
+     mesh-motion and topology change.
+ 
+@@ -152,6 +160,11 @@
+         //- Optional LTS reciprocal time-step field
+         tmp<volScalarField> trDeltaT;
+ 
++        //- The first pass's mass, momentum and energy fluxes (Heun's step)
++        tmp<surfaceScalarField> phi1;
++        tmp<surfaceVectorField> phiUp1;
++        tmp<surfaceScalarField> phiEp1;
++
+ 
+ private:
+ 
+--- a/shockFluidHeun.C
++++ b/shockFluidHeun.C
+@@ -275,6 +275,17 @@
+ void Foam::solvers::shockFluidHeun::prePredictor()
+ {
+     fluxPredictor();
++
++    // Heun's step: the second pass takes the mean of the two passes' fluxes
++    if (pimple.firstIter())
++    {
++        phi1 = surfaceScalarField::New("phi1", phi_);
++    }
++    else
++    {
++        phi_ = 0.5*(phi1() + phi_);
++    }
++
+     correctDensity();
+ }
+ 
+--- a/momentumPredictor.C
++++ b/momentumPredictor.C
+@@ -33,12 +33,23 @@
+ {
+     volVectorField& U(U_);
+ 
+-    const surfaceVectorField phiUp
++    surfaceVectorField phiUp
+     (
++        "phiUp",
+         (aphiv_pos()*rhoU_pos() + aphiv_neg()*rhoU_neg())
+       + (a_pos()*p_pos() + a_neg()*p_neg())*mesh.Sf()
+     );
+ 
++    // Heun's step: the second pass takes the mean of the two passes' fluxes
++    if (pimple.firstIter())
++    {
++        phiUp1 = surfaceVectorField::New("phiUp1", phiUp);
++    }
++    else
++    {
++        phiUp = 0.5*(phiUp1() + phiUp);
++    }
++
+     // Construct the divDevTau matrix first
+     // so that the maxwellSlipU BC can access the explicit part
+     tmp<fvVectorMatrix> divDevTau;
+--- a/thermophysicalPredictor.C
++++ b/thermophysicalPredictor.C
+@@ -51,6 +51,16 @@
+         phiEp += mesh.phi()*(a_pos()*p_pos() + a_neg()*p_neg());
+     }
+ 
++    // Heun's step: the second pass takes the mean of the two passes' fluxes
++    if (pimple.firstIter())
++    {
++        phiEp1 = surfaceScalarField::New("phiEp1", phiEp);
++    }
++    else
++    {
++        phiEp = 0.5*(phiEp1() + phiEp);
++    }
++
+     fvScalarMatrix EEqn
+     (
+         fvm::ddt(rho, e) + fvc::div(phiEp)
