@@ -765,13 +765,18 @@ at Mach 2.5, which is no check case.
    1.00173 of pitot). The half-angle stays 2.5 degrees.
 10. The sharp cone at Mach 2 on the H grid (the old placement): level 0
    converges to a residual of 1e-6.96, levels 1 and 2 stop near 1e-2.4 and
-   1e-1.8 with their drags steady to 2.7e-6 and 1.1e-5 (0.0947050,
-   0.0949138, 0.0947632). The wall's Cp from L/3 to 0.8 L against
-   Taylor-Maccoll (0.0955290): worst face 6.7e-4, 1.1e-3, 1.7e-3 on levels
-   0 to 2, mean +1.9e-4, -8.4e-4, -1.3e-3: growing, where V1 asks 1e-3 on
-   level 3 and SU2 gave 4.5e-4. The old placement's error is of order a^2
-   (2e-3), so the cone is being run again on the corrected wedge before
-   anything is concluded.
+   1e-1.8 with their drags steady to 2.7e-6 and 1.1e-5 (from the wall's
+   faces: 0.0947050, 0.0949138, 0.0949438; level 2's 0.0947632 first given
+   here had been read with the corrected wedge's factor, cos^2 a too
+   small). The wall's Cp from L/3 to 0.8 L against Taylor-Maccoll
+   (0.0955290), as fractions of it: worst face 6.7e-4, 1.1e-3, 1.7e-3 on
+   levels 0 to 2, mean +1.9e-4, -8.4e-4, -1.3e-3: growing, where V1 asks
+   1e-3 on level 3 and SU2 gave 4.5e-4. The old placement's error is of
+   order a^2 (2e-3), so the cone was run again on the corrected wedge:
+   level 0 converges (residual 1e-6.94), level 1's drag steady to 2.6e-6;
+   their worst faces 2.2e-3 and 8.1e-4 of the exact value, means +1.7e-3
+   and +6.7e-4: now falling with refinement (ratio 0.37). Level 2 is
+   running.
 11. The capped ogive of 4 calibers, r_n/R 0.10, at Mach 1.3 (off every
    list; SU2's trial 9): level 0's drag not steady (range 1e-3 of it, the
    residual 1e-3.8), level 1 converged (residual 1e-7.35, drag 0.0625783
@@ -788,6 +793,19 @@ at Mach 2.5, which is no check case.
    iterations a minute on 2 processes beside other runs, four times
    slower a cell than level 0. The monitors (eight function objects, six
    of them whole-field operations) now run every tenth iteration.
+   At 19,000 iterations its drag (from the wall's faces) 0.82906, swinging
+   within 8e-5 over the last 5,000; the residual still near 1e0.3. The
+   stagnation region is still settling: the wall's first cell +0.61%,
+   +0.29%, +0.23% from pitot at iterations 5,000, 10,000 and 15,000, the
+   axis's total pressure next to the wall +0.56%, +0.28%, +0.22%. Level 2
+   had settled by 20,000 (+0.162% and +0.218% from then to 30,000, to 3
+   digits). Measured on the levels as they stand (level 3 at 15,000): the
+   drag's change between levels 1 and 2 is +5.55e-4, between levels 2 and
+   3 +5.20e-4, nearly all of the latter between 10 and 40 degrees from
+   the axis, where level 3 is still settling; the regional ratio 0.94, the
+   face-by-face ratio 0.46. Not judged until level 3 has settled. Of the
+   stagnation numbers, part is the old placement's: on level 1 the
+   corrected wedge gives +0.173% on the axis where the old gave +0.280%.
 
 ## State (2026-11-21)
 
