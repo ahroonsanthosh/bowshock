@@ -519,3 +519,110 @@ def stagnation(time_dir, ni, nj, mach):
         "pitotCp": w6ref.pitot_cp(mach),
         "axisTotalPressure": (p0[0][sub] / pitot).tolist(),
     }
+
+
+# ------------------------------------------------------------ the wall
+#
+# OpenFOAM's values are the cells'. On a slip wall the pressure on a face is
+# its cell's (zeroGradient), so the wall's pressure is a value per face, from
+# vertex (x0, r0) to (x1, r1) of the 2D grid. The drag is then the sum of
+# Cp (r1^2 - r0^2) / R^2 over the faces: exactly OpenFOAM's own force on the
+# wall (a cylinder face adds nothing), with no quadrature of the tool's.
+
+
+def _cell_of_edge(p, q, ni, nj):
+    (i0, j0), (i1, j1) = divmod(p, nj + 1), divmod(q, nj + 1)
+    if j0 == j1:
+        return min(i0, i1), (j0 if j0 < nj else nj - 1)
+    return (i0 if i0 < ni else ni - 1), min(j0, j1)
+
+
+def wall_faces(time_dir, x, r, marks, mach):
+    """The wall's faces in order from the tip: x0, r0, x1, r1 and Cp."""
+    ni, nj = x.shape[0] - 1, x.shape[1] - 1
+    p = read_internal(os.path.join(time_dir, "p")).reshape(ni, nj)
+    xv, rv = x.ravel(), r.ravel()
+    rows = []
+    for a, b in marks["wall"]:
+        i, j = _cell_of_edge(a, b, ni, nj)
+        p0, p1 = (a, b) if xv[a] <= xv[b] else (b, a)
+        rows.append((xv[p0], rv[p0], xv[p1], rv[p1], (p[i, j] - 1) / (0.7 * mach * mach)))
+    rows.sort(key=lambda t: (t[0], t[2]))
+    return np.array(rows)
+
+
+def write_wall(path, faces):
+    with open(path, "w") as f:
+        f.write('"x0","r0","x1","r1","Pressure_Coefficient"\n')
+        for row in faces:
+            f.write(",".join(f"{v:.17e}" for v in row) + "\n")
+
+
+def read_wall(path):
+    return np.loadtxt(path, delimiter=",", skiprows=1, ndmin=2)
+
+
+def faces_drag(faces, x_end=None):
+    """The sum of Cp (r1^2 - r0^2) / R^2 over the wall's faces (to x_end, a vertex, if given)."""
+    keep = np.ones(len(faces), bool) if x_end is None else faces[:, 2] <= x_end + 1e-12
+    f = faces[keep]
+    return float(np.sum(f[:, 4] * (f[:, 3] ** 2 - f[:, 1] ** 2)) / w6ref.R**2)
+
+
+def faces_changes(coarse, fine, L, x0, x_end=None):
+    """
+    The change of the drag's distribution between two levels, as
+    `w6ref.changes` takes it, on faces: the coarser level's Cp, at its faces'
+    centres, taken linearly in r^2 at the finer faces' centres; per finer
+    face its change times its d(r^2) / R^2. "vertex": the sum of |those|;
+    "regions": the sum over `w6ref.regions` (a face in the region holding its
+    centre in x) of |the region's sum|; "signed": the plain sum.
+    """
+    end = L if x_end is None else x_end
+    cut = lambda f: f[f[:, 2] <= end + 1e-12]
+    c, f = cut(coarse), cut(fine)
+    qc = 0.5 * (c[:, 1] ** 2 + c[:, 3] ** 2)
+    qf = 0.5 * (f[:, 1] ** 2 + f[:, 3] ** 2)
+    d = f[:, 4] - np.interp(qf, qc, c[:, 4])
+    dq = (f[:, 3] ** 2 - f[:, 1] ** 2) / w6ref.R**2
+    seg = d * dq
+    mid = 0.5 * (f[:, 0] + f[:, 2])
+    edges = w6ref.regions(end, x0)
+    idx = np.clip(np.searchsorted(edges, mid, side="right") - 1, 0, len(edges) - 2)
+    by = np.zeros(len(edges) - 1)
+    np.add.at(by, idx, seg)
+    return {"vertex": float(np.sum(np.abs(seg))), "regions": float(np.sum(np.abs(by))), "signed": float(np.sum(seg)),
+            "count": len(edges) - 1}
+
+
+def boundary_check(time_dir, x, r, marks, mach):
+    """
+    As `w6ref.boundary_check`, from the cells: the largest |Cp| in the
+    cells against the outer boundary, the least Mach number in those
+    against the outlet, the bow shock's reach (on each grid line from the
+    wall, the outermost cell with |Cp| above 1e-3, its centre's distance
+    from the wall over the line's length; the largest over the lines), and
+    the stagnation point's Cp (the wall's first cell, against the axis).
+    """
+    ni, nj = x.shape[0] - 1, x.shape[1] - 1
+    p = read_internal(os.path.join(time_dir, "p")).reshape(ni, nj)
+    T = read_internal(os.path.join(time_dir, "T")).reshape(ni, nj)
+    U = read_internal(os.path.join(time_dir, "U")).reshape(ni, nj, 3)
+    cp = (p - 1) / (0.7 * mach * mach)
+    ma = np.sqrt((U**2).sum(-1) / T)
+    cells = lambda name: [_cell_of_edge(a, b, ni, nj) for a, b in marks[name]]
+    outer = cells("farfield")
+    outlet = cells("outlet")
+    xc = 0.25 * (x[:-1, :-1] + x[1:, :-1] + x[1:, 1:] + x[:-1, 1:])
+    rc = 0.25 * (r[:-1, :-1] + r[1:, :-1] + r[1:, 1:] + r[:-1, 1:])
+    reach = 0.0
+    for i in range(ni):
+        hit = np.nonzero(np.abs(cp[i]) > 1e-3)[0]
+        if len(hit):
+            k = hit.max()
+            xw, rw = 0.5 * (x[i, 0] + x[i + 1, 0]), 0.5 * (r[i, 0] + r[i + 1, 0])
+            xo, ro = 0.5 * (x[i, nj] + x[i + 1, nj]), 0.5 * (r[i, nj] + r[i + 1, nj])
+            reach = max(reach, math.hypot(xc[i, k] - xw, rc[i, k] - rw) / math.hypot(xo - xw, ro - rw))
+    return {"outerMaxAbsCp": float(max(abs(cp[i, j]) for i, j in outer)),
+            "outletMinMach": float(min(ma[i, j] for i, j in outlet)),
+            "cpStagnation": float(cp[0, 0]), "shockReach": reach}

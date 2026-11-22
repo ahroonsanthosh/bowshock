@@ -724,6 +724,15 @@ at Mach 2.5, which is no check case.
    region as with one pass (+0.16%, +0.22%). Drags on levels 0 to 2:
    0.8298113, 0.8279797, 0.8285365 (changes -1.83e-3, +5.57e-4; levels 0
    and 1 with one pass at Courant 0.5).
+6. The wall's measures on faces (`ofref.wall_faces`, `faces_drag`,
+   `faces_changes`, `boundary_check`): the drag as the sum of each face's
+   Cp times its d(r^2)/R^2 equals OpenFOAM's own force on level 2 to 8
+   digits. On T's levels 0 to 2 the change of the drag's distribution is
+   7.55e-3 then 1.63e-3 face by face (ratio 0.22) and 1.84e-3 then
+   5.55e-4 by region (ratio 0.30); SU2's control on the same levels:
+   0.58 face by face, with its stagnation point failing. |Cp| in the
+   cells against the outer boundary 4e-10 or less, the shock's reach 0.88
+   at most, the outlet's Mach number 2.14 or more.
 
 ## State (2026-11-21)
 
