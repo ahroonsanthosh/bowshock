@@ -639,6 +639,9 @@ before it is judged.
 | S0 | 1e-4.6 (limit), 1e-11, 1e-10.5 (limit) | -3.0%, -4.5%, -5.4% | 0.58 | fail: levels 0 and 2 not converged; stagnation beyond 3% and growing |
 | S1 | 1e-11, 1e-11, 1e-9.5 (limit) | -1.2%, +0.7%, -1.9% | 0.30 | fail: level 2 not converged; stagnation error growing |
 | S3 | 1e-11, 1e-11, 1e-5.6 (limit) | -3.6%, -5.5%, -5.9% | 0.74 | fail: level 2 not converged; stagnation beyond 3% and growing |
+| S2 | 1e-4.7 (limit), 1e-11, 1e-10.6 (limit) | -3.1%, -4.5%, -5.4% | 0.55 | fail: as the control (levels 0 and 2 not converged; stagnation beyond 3% and growing) |
+| S5 | 1e-11, 1e-11, 1e-11 (38, 1,333 and 1,813 iterations) | +7.2%, +5.7%, +4.7% | 0.35 | fail: stagnation beyond 3% on level 2 (falling, by about a fifth a level); its wider shock also fails R3's boundary checks on levels 1 and 2 (it reaches the outer boundary: \|Cp\| 1.1e-3 and 2.4e-5 there) |
+| S6 | SU2 diverged (NaN) in level 0's second stage | | | fail |
 
 The control fails the screen, as V5 at Mach 2 failed: T shows the same
 fault.
