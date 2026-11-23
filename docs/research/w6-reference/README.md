@@ -1129,6 +1129,34 @@ hemisphere at Mach 2 and 3 on levels 0 to 2).
      1.98e-4 (ratio 0.74), U_cap 1.19e-4 (level 2's E; level 3's 6.7e-5),
      no iterative error; V2's measures +0.58% (the axis's first cell) and
      +1.44% (the worst cap face). The case is on no list.
+   - The ogive at Mach 3's level 3 (from level 2's stop at 45,000): its
+     residual fell about 0.3 decades per 1,000 iterations (1e-5.26 at
+     9,640, 1e-8.33 at 20,000) to a floor near 1e-9.24 by 24,000 (between
+     1e-9.19 and 1e-9.28 after), its drag fixed to 1e-12 of itself. The
+     stall rule, run by the runner under the trial's level 3 limit of
+     40,000, stopped it at the 35,000 save (it ran to 35,010):
+     `ofjudge.stall_held` accepts the stop from the committed history,
+     and `level_checks` takes the level by R3's iterative rule, its range
+     5.4e-14 (1e-12 of the drag). Drag 0.0554199320. On levels 1 to 3 the
+     estimate gives D = 0.0554199 and U = 1.26e-4, 0.23% of D: the
+     regional change 9.17e-5 then 4.64e-5 (ratio 0.51), the face-level
+     change 2.37e-4 then 1.12e-4 (ratio 0.47); the drag's own change grew
+     (+7.3e-7 then +3.4e-6, so U_total = 3 times the larger, 1.0e-5,
+     below U_dist 4.7e-5); U_cap 7.9e-5 (level 2's E; level 3's 5.4e-5),
+     the iterative error 3e-13; V2's measures +0.47% (the axis's first
+     cell) and +1.76% (the worst cap face; level 2's +2.76%). The case is
+     on no list.
+   - The residual's floor rises about 0.3 decades a level on that case
+     (1e-9.85, 1e-9.56 and 1e-9.24 on levels 1 to 3, the drag fixed on
+     each), as round-off in d(rho)/dt does when the local time step
+     halves with the cells; the ogive at Mach 1.3's level 3 sits at
+     1e-10.0. So level 4 at Mach 3 may sit above 1e-9, where neither the
+     stall rule nor Amendment 1's residual condition can hold (O3 below).
+     On the trials' histories once the drag had stopped moving, R3's
+     drift came to 0.005 to 0.29 of the range.
+   - A level 4 trial on the ogive at Mach 1.3 (524,288 cells, four
+     processes, from level 3, under the registered limit of 100,000) is
+     running, for level 4's iteration limit.
    - The runner's two-process levels now start `mpirun --bind-to none`:
      by default each `mpirun` binds its ranks to cores 0 and 1, so two
      level 3s at once shared two cores at half speed each and left two
