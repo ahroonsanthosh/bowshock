@@ -778,7 +778,9 @@ def _solve(case, np_, target, deadline, stall=None):
     base = os.path.join(case, "processor0") if os.path.isdir(os.path.join(case, "processor0")) else case
     after = max(float(t) for t in os.listdir(base) if re.fullmatch(r"\d+", t))  # the save this run starts from
     _set_control(case, "stopAt", "endTime")
-    cmd = f"mpirun --allow-run-as-root -np {np_} foamRun -parallel" if np_ > 1 else "foamRun"
+    # No binding: by default each mpirun binds its ranks to cores 0, 1, ..., so two
+    # cases run at once would share those cores and leave the rest idle.
+    cmd = f"mpirun --allow-run-as-root --bind-to none -np {np_} foamRun -parallel" if np_ > 1 else "foamRun"
     stalled = None
     tested = int(after)  # stall tests at saves past this iteration
     with open(os.path.join(case, f"log.run{k}"), "w") as f:

@@ -1100,7 +1100,14 @@ at Mach 2.5, which is no check case.
      is then before half of it).
    - The ogive at Mach 1.3's level 3 (512 x 256, two processes, from
      level 2): its residual falls about a quarter of a decade per 1,000
-     iterations, 1e-5.47 at 12,340 (going on).
+     iterations, 1e-5.47 at 12,340, 1e-8.34 at 23,760 (going on); its
+     drag 0.0622265100 from about 20,000 on, moving by less than 1e-9
+     of itself since.
+   - The runner's two-process levels now start `mpirun --bind-to none`:
+     by default each `mpirun` binds its ranks to cores 0 and 1, so two
+     level 3s at once shared two cores at half speed each and left two
+     idle (the trials' level 3s ran so from 06:30 to 09:55). Where a
+     process runs does not change what it computes.
 
 ## State (2026-11-21)
 
