@@ -17,11 +17,13 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import time
 
 import numpy as np
 
-import w6ref
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import w6ref  # noqa: E402
 
 HALF = 2.5  # degrees each side of the x-y plane
 WEDGE_TO_BODY = math.pi / math.tan(math.radians(HALF))  # a wall face's area along x is tan(a) (r2^2 - r1^2)
@@ -504,13 +506,14 @@ def read_monitor(case, mach):
     """Per iteration: the iteration, log10 of the RMS of d rho / dt (on rho_inf), and the drag on pi R^2."""
     res = _joined(case, "resid", "volFieldValue.dat")
     frc = _joined(case, "wallForce", "surfaceFieldValue.dat")
-    n = min(len(res), len(frc))
-    it = res[:n, 0]
-    rms = 0.5 * np.log10(np.maximum(res[:n, 1], 1e-300)) - math.log10(1.4)
+    # The rows both tables hold, paired by iteration (one may be a row ahead while written).
+    it, ir, jf = np.intersect1d(res[:, 0], frc[:, 0], return_indices=True)
+    res, frc = res[ir], frc[jf]
+    rms = 0.5 * np.log10(np.maximum(res[:, 1], 1e-300)) - math.log10(1.4)
     # surfaceFieldValue.dat: time, the force along x on the wedge. A wall face's
     # area along x is tan(a) (r2^2 - r1^2) where the body's ring is
     # pi (r2^2 - r1^2), so the body's force is the wedge's times pi / tan(a).
-    cd = frc[:n, 1] * WEDGE_TO_BODY / (0.7 * mach * mach * math.pi * w6ref.R**2)
+    cd = frc[:, 1] * WEDGE_TO_BODY / (0.7 * mach * mach * math.pi * w6ref.R**2)
     return np.stack([it, rms, cd], 1)
 
 
@@ -550,6 +553,7 @@ def stagnation(time_dir, ni, nj, mach):
     return {
         "cpWallFirstCell": (p[0, 0] - 1) / (0.7 * mach**2),
         "pitotCp": w6ref.pitot_cp(mach),
+        "wallCellTotalPressure": float(p0[0, 0] / pitot),  # O5's V2: the axis's first cell, against the wall
         "axisTotalPressure": (p0[0][sub] / pitot).tolist(),
     }
 
@@ -604,12 +608,16 @@ def faces_drag(faces, x_end=None):
 
 def faces_changes(coarse, fine, L, x0, x_end=None):
     """
-    The change of the drag's distribution between two levels, as
-    `w6ref.changes` takes it, on faces: the coarser level's Cp, at its faces'
-    centres, taken linearly in r^2 at the finer faces' centres; per finer
-    face its change times its d(r^2) / R^2. "vertex": the sum of |those|;
-    "regions": the sum over `w6ref.regions` (a face in the region holding its
-    centre in x) of |the region's sum|; "signed": the plain sum.
+    The change of the drag's distribution between two levels, on faces.
+    "vertex" (the face-level change, point by point, as R4's vertex measure):
+    the coarser level's Cp, at its faces' centres, taken linearly in r^2 at
+    the finer faces' centres; the sum over the finer faces of |the change|
+    times d(r^2) / R^2. "regions" (R4's regional change: the change of the
+    drag integral in each region, exactly): the finer faces nest two to one
+    in the coarser (checked), so each coarser face's change is its two finer
+    faces' Cp d(r^2) less its own; the sum over `w6ref.regions` (a coarser
+    face in the region holding its centre in x) of |the region's sum|.
+    "signed": the plain sum of the coarser faces' changes, the drag's change.
     """
     end = L if x_end is None else x_end
     # To x_end (a vertex of both levels) if given; else the whole wall, as
@@ -624,13 +632,21 @@ def faces_changes(coarse, fine, L, x0, x_end=None):
     qc, first = np.unique(qc, return_index=True)
     d = f[:, 4] - np.interp(qf, qc, c[first, 4])
     dq = (f[:, 3] ** 2 - f[:, 1] ** 2) / w6ref.R**2
-    seg = d * dq
-    mid = 0.5 * (f[:, 0] + f[:, 2])
+    vertex = float(np.sum(np.abs(d * dq)))
+    c, f = cut(coarse), cut(fine)
+    if len(f) != 2 * len(c) or not (np.allclose(f[0::2, 0:2], c[:, 0:2], rtol=0, atol=1e-12)
+                                    and np.allclose(f[1::2, 2:4], c[:, 2:4], rtol=0, atol=1e-12)
+                                    and np.allclose(f[0::2, 2:4], f[1::2, 0:2], rtol=0, atol=1e-12)):
+        raise ValueError("the finer level's wall faces do not nest two to one in the coarser level's")
+    dqf = (f[:, 3] ** 2 - f[:, 1] ** 2) / w6ref.R**2
+    dqc = (c[:, 3] ** 2 - c[:, 1] ** 2) / w6ref.R**2
+    per = f[0::2, 4] * dqf[0::2] + f[1::2, 4] * dqf[1::2] - c[:, 4] * dqc
+    mid = 0.5 * (c[:, 0] + c[:, 2])
     edges = w6ref.regions(end, x0)
     idx = np.clip(np.searchsorted(edges, mid, side="right") - 1, 0, len(edges) - 2)
     by = np.zeros(len(edges) - 1)
-    np.add.at(by, idx, seg)
-    return {"vertex": float(np.sum(np.abs(seg))), "regions": float(np.sum(np.abs(by))), "signed": float(np.sum(seg)),
+    np.add.at(by, idx, per)
+    return {"vertex": vertex, "regions": float(np.sum(np.abs(by))), "signed": float(np.sum(per)),
             "count": len(edges) - 1}
 
 
@@ -702,6 +718,52 @@ class Deadline(Exception):
     pass
 
 
+class Interrupted(Exception):
+    """The solver was stopped by a signal from outside (killed, terminated, hung up, interrupted)."""
+
+
+# A solver stopped by one of these signals (as Python or mpirun report it) was
+# stopped from outside: its level keeps no record and goes on from its last
+# save next time. Any other failure is the solver's own and is recorded.
+OUTSIDE_SIGNALS = {-1, -2, -9, -15, 129, 130, 137, 143}
+
+# The build every registered run is made with: OpenFOAM's package build and the
+# SHA-256 of the two libraries built here (openfoam/README.md) as installed.
+# A rebuild from the committed sources is added here by a dated note.
+REGISTERED_BUILD = {
+    "openfoam": ["13-18870c24d21c"],
+    "libshockFluidHeun.so": ["c7d25784f0ef44035269d5b6687abfbfae9755a070d0a0491021789b9a79eb04"],
+    "libcellVenkatakrishnanGrad.so": ["f47cfc5f2e511cd8b49ac67e91766031533cd84aaee3b22fc712be40c924a8f3"],
+}
+_LOCK = None  # the case's lock (run_case), passed to the solver so it holds the lock while it runs
+
+
+def libraries():
+    """The SHA-256 of the libraries built here, as installed in OpenFOAM's user library folder."""
+    out = subprocess.run(["bash", "-c", "source /opt/openfoam13/etc/bashrc; echo $FOAM_USER_LIBBIN"],
+                         capture_output=True, text=True, check=True).stdout.strip()
+    h = {}
+    for name in ("libshockFluidHeun.so", "libcellVenkatakrishnanGrad.so"):
+        with open(os.path.join(out, name), "rb") as f:
+            h[name] = hashlib.sha256(f.read()).hexdigest()
+    return h
+
+
+def _build_of_log(path):
+    """OpenFOAM's build string from a solver log's header."""
+    with open(path) as f:
+        for line in f:
+            m = re.match(r"Build\s*:\s*(\S+)", line)
+            if m:
+                return m.group(1)
+    return None
+
+
+def file_hash(path):
+    with open(path, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+
 def _foam(cmd, cwd, log):
     with open(os.path.join(cwd, log), "w") as f:
         return subprocess.call(["bash", "-c", "source /opt/openfoam13/etc/bashrc; " + cmd], cwd=cwd,
@@ -717,7 +779,7 @@ def _set_control(case, key, value):
 
 
 def _monitor_tail(case, n, after=None):
-    """The monitor's last n rows (iteration, log10 residual) from the latest start's file, past iteration `after` if given."""
+    """The monitor's last n rows (every row if n is None; iteration, log10 residual) from the latest start's file, past iteration `after` if given."""
     d = os.path.join(case, "postProcessing", "resid")
     if not os.path.isdir(d) or not os.listdir(d):
         return []
@@ -727,7 +789,8 @@ def _monitor_tail(case, n, after=None):
             return []  # this run's file is not written yet
         rows = [l.split() for l in open(os.path.join(d, last, "volFieldValue.dat")) if l.strip() and not l.startswith("#")]
         rows = [r for r in rows if after is None or float(r[0]) > after]
-        return [(float(r[0]), 0.5 * math.log10(max(float(r[1]), 1e-300)) - math.log10(1.4)) for r in rows[-n:]]
+        rows = rows if n is None else rows[-n:]
+        return [(float(r[0]), 0.5 * math.log10(max(float(r[1]), 1e-300)) - math.log10(1.4)) for r in rows]
     except (OSError, ValueError, IndexError):
         return []
 
@@ -773,13 +836,18 @@ def stall_test(m, limit):
 def _solve(case, np_, target, deadline, stall=None):
     """
     foamRun on the case from its latest save. It is told to save and stop
-    (writeNow) once the monitor's last 5 rows (50 iterations) are at or
-    below 10^target, and 5 minutes before the deadline (then Deadline is
-    raised: the level goes on from that save next time). With stall =
+    (writeNow) once five rows in a row of this run's monitor (50
+    iterations) are at or below 10^target (every row is read, not only the
+    last five at a poll), and 5 minutes before the deadline (then Deadline
+    is raised: the level goes on from that save next time). With stall =
     (limit, mach, checkpoint, stage2From), it is also told to save and stop
     when the stall rule (stall_test) holds on the level's monitor up to a
-    save (a multiple of checkpoint) this run passes. Returns the exit code
-    and the save the stall rule held at (None if it did not).
+    save (a multiple of checkpoint) this run passes. A solver stopped by a
+    signal from outside raises Interrupted. Each run's build (OpenFOAM's
+    and the libraries') is added to the level's start.json. Returns the exit
+    code, the save the stall rule held at (None if it did not), and the
+    iteration of the fifth row of the first five in a row at or below the
+    target (None if none).
     """
     k = len([f for f in os.listdir(case) if f.startswith("log.run")])
     base = os.path.join(case, "processor0") if os.path.isdir(os.path.join(case, "processor0")) else case
@@ -788,17 +856,49 @@ def _solve(case, np_, target, deadline, stall=None):
     # No binding: by default each mpirun binds its ranks to cores 0, 1, ..., so two
     # cases run at once would share those cores and leave the rest idle.
     cmd = f"mpirun --allow-run-as-root --bind-to none -np {np_} foamRun -parallel" if np_ > 1 else "foamRun"
+    build = libraries()
+    log = os.path.join(case, f"log.run{k}")
+    try:
+        return _run_solver(case, cmd, log, target, deadline, stall, after, build)
+    finally:
+        build["openfoam"] = _build_of_log(log)
+        _note_build(case, build)
+
+
+def _note_build(case, build):
+    """Adds a run's build to the level's start.json (each distinct build once)."""
+    start = os.path.join(case, "start.json")
+    if not os.path.exists(start):
+        return
+    st = json.load(open(start))
+    st.setdefault("builds", [])
+    if build not in st["builds"]:
+        st["builds"].append(build)
+        json.dump(st, open(start + ".tmp", "w"))
+        os.replace(start + ".tmp", start)
+
+
+def _run_solver(case, cmd, log, target, deadline, stall, after, build):
     stalled = None
+    converged_at = None
+    streak, scanned = 0, after  # rows of this run read so far for the target, and the five-in-a-row count
     tested = int(after)  # stall tests at saves past this iteration
-    with open(os.path.join(case, f"log.run{k}"), "w") as f:
+    with open(log, "w") as f:
         proc = subprocess.Popen(["bash", "-c", "source /opt/openfoam13/etc/bashrc; " + cmd], cwd=case,
-                                stdout=f, stderr=subprocess.STDOUT)
+                                stdout=f, stderr=subprocess.STDOUT,
+                                pass_fds=(_LOCK,) if _LOCK is not None else ())
         told = False
         while proc.poll() is None:
             tail = _monitor_tail(case, 5, after)
-            if not told and len(tail) == 5 and max(v for _, v in tail) <= target:
-                _set_control(case, "stopAt", "writeNow")
-                told = True
+            if not told:
+                for it, v in _monitor_tail(case, None, scanned):
+                    streak = streak + 1 if v <= target else 0
+                    scanned = it
+                    if streak == 5:
+                        converged_at = int(it)
+                        _set_control(case, "stopAt", "writeNow")
+                        told = True
+                        break
             if not told and stall is not None and tail:
                 limit, mach, every, since = stall
                 save = (int(tail[-1][0]) // every) * every  # the last save the monitor has reached
@@ -814,7 +914,7 @@ def _solve(case, np_, target, deadline, stall=None):
                             _set_control(case, "stopAt", "writeNow")
                             told = True
                             stalled = save
-            if deadline is not None and time.time() > deadline - 300:
+            if deadline is not None and time.time() > deadline - 300 and not told:
                 _set_control(case, "stopAt", "writeNow")
                 try:
                     proc.wait(timeout=240)
@@ -825,7 +925,16 @@ def _solve(case, np_, target, deadline, stall=None):
                 raise Deadline(f"{case} saved and stopped before the deadline")
             time.sleep(10)
     _set_control(case, "stopAt", "endTime")
-    return proc.returncode, stalled
+    if proc.returncode in OUTSIDE_SIGNALS:
+        raise Interrupted(f"{case}: the solver was stopped from outside ({proc.returncode})")
+    if not told and converged_at is None and proc.returncode == 0:
+        # Rows the last poll did not reach (the solver ended between polls).
+        for it, v in _monitor_tail(case, None, scanned):
+            streak = streak + 1 if v <= target else 0
+            if streak == 5:
+                converged_at = int(it)
+                break
+    return proc.returncode, stalled, converged_at
 
 
 def run_case(spec, run_dir, settings, np_, deadline=None):
@@ -850,10 +959,13 @@ def run_case(spec, run_dir, settings, np_, deadline=None):
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
-        raise SystemExit(f"{run_dir} is being run by another process")
+        raise SystemExit(f"{run_dir} is being run (or its solver still runs) under another process")
+    global _LOCK
+    _LOCK = lock  # passed to each solver, so the lock lasts while the solver does even if this process ends
     try:
         return _run_levels(spec, run_dir, settings, np_, deadline)
     finally:
+        _LOCK = None
         os.close(lock)
 
 
@@ -919,7 +1031,7 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
             raise SystemExit(f"{start} was made with another spec, settings or iteration limit")
         t0 = time.time()
         if st["stage"] == 1:
-            code, _ = _solve(d, np_[level], settings["startTarget"], deadline)
+            code, _, _ = _solve(d, np_[level], settings["startTarget"], deadline)
             if code != 0:
                 raise SystemExit(f"{d}: the first stage failed ({code})")
             tail = _monitor_tail(d, 1)
@@ -927,21 +1039,24 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
             old = f"    default         {settings['startGrad']};\n"
             assert fs.count(old) == 1
             open(os.path.join(d, "system", "fvSchemes"), "w").write(fs.replace(old, f"    default         {settings['grad']};\n"))
+            st = json.load(open(start))  # with the stage's build (_note_build)
             st.update(stage=2, stage2From=int(tail[0][0]) if tail else 0)
             json.dump(st, open(start + ".tmp", "w"))
             os.replace(start + ".tmp", start)
-        code, stalled = _solve(d, np_[level], settings["target"], deadline,
-                               stall=(st["limit"], M, settings["checkpoint"], st["stage2From"] or 0))
+        code, stalled, converged_at = _solve(d, np_[level], settings["target"], deadline,
+                                             stall=(st["limit"], M, settings["checkpoint"], st["stage2From"] or 0))
+        st = json.load(open(start))  # with every run's build (_note_build)
         if code == 0 and np_[level] > 1:
             code = _foam("reconstructPar -latestTime", d, "log.reconstruct")
         seconds = time.time() - t0
         rec = {"level": level, "ni": ni, "nj": nj, "exit": code, "seconds": seconds, "limit": st["limit"], "seeded": st["seeded"],
-               "meshOK": st["meshOK"], "seedSha256": st["seedSha256"]}
+               "meshOK": st["meshOK"], "seedSha256": st["seedSha256"], "processes": np_[level], "builds": st.get("builds", [])}
         if code == 0:
             last = max(int(t) for t in os.listdir(d) if re.fullmatch(r"\d+", t))
             tdir = os.path.join(d, str(last))
             m = read_monitor(d, M)
             np.savetxt(os.path.join(d, "monitor.csv"), m, delimiter=",", header="iteration,log10_residual,drag", comments="")
+            rec["monitorSha256"] = file_hash(os.path.join(d, "monitor.csv"))
             rec["stage2From"] = st["stage2From"]
             m = m[m[:, 0] >= st["stage2From"]]  # the iterative measures on the final scheme only
             faces = wall_faces(tdir, x, r, marks, M)
@@ -950,11 +1065,12 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
                 f.write('"x0","r0","x1","r1","Pressure_Coefficient","p0_over_pitot"\n')
                 for row, q in zip(faces, p0):
                     f.write(",".join(f"{v:.17e}" for v in (*row, q)) + "\n")
+            rec["wallSha256"] = file_hash(os.path.join(d, "wall.csv"))
             n = max(2, len(m) // 4)
             q = m[-n:, 2]
             h = max(1, n // 2)
             rec.update({"time": last, "iterations": int(m[-1, 0]), "logRes": float(m[-1, 1]),
-                        "converged": bool(len(_monitor_tail(d, 5)) == 5 and max(v for _, v in _monitor_tail(d, 5)) <= settings["target"]),
+                        "converged": converged_at is not None, "convergedAt": converged_at,
                         "atLimit": last >= st["limit"], "stalledAt": stalled,
                         "drag": faces_drag(faces), "forceDrag": float(m[-1, 2]),
                         "dragRangeLastQuarter": float(q.max() - q.min()),
@@ -963,10 +1079,14 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
             rec.update(boundary_check(tdir, x, r, marks, M))
             if spec["rn"] > 0:
                 s = stagnation(tdir, ni, nj, M)
-                rec.update({"pitotCp": s["pitotCp"], "axisTotalPressure": s["axisTotalPressure"]})
+                rec.update({"pitotCp": s["pitotCp"], "wallCellTotalPressure": s["wallCellTotalPressure"],
+                            "axisTotalPressure": s["axisTotalPressure"]})
             coarser = os.path.join(run_dir, f"L{level - 1}", "wall.csv")
             if level > 0 and os.path.exists(coarser):
-                rec["change"] = faces_changes(read_wall(coarser), faces, spec["L"], w6ref.region_start(spec))
+                try:
+                    rec["change"] = faces_changes(read_wall(coarser), faces, spec["L"], w6ref.region_start(spec))
+                except ValueError as e:  # informational here; the judge computes it again from the wall files
+                    rec["change"] = str(e)
         rec["settingsHash"] = sh
         with open(done + ".tmp", "w") as f:
             json.dump(rec, f)
@@ -1069,6 +1189,9 @@ if __name__ == "__main__":
     except Deadline as e:
         print("window closing:", e, flush=True)
         sys.exit(3)
+    except Interrupted as e:
+        print("stopped from outside (no record; run again to go on):", e, flush=True)
+        sys.exit(4)
     for rec in recs:
         print(f"L{rec['level']}: exit {rec['exit']} converged {rec.get('converged')} it {rec.get('iterations')} "
               f"drag {rec.get('drag')}", flush=True)

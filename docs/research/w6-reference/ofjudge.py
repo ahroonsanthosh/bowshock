@@ -31,6 +31,7 @@ from judge import (CEILING, CHECK_RUNS, CONE_POINTWISE, DRIFT, FITTED_DRAG_FLOOR
 R = w6ref.R
 FORCE = 1e-9  # O3: the faces' drag and OpenFOAM's force within 1e-9 of the drag
 SETTLED_RESIDUAL = -9  # Amendment 1 on OpenFOAM: the residual within a decade of its target, 1e-10
+REPRODUCE = 1e-12  # O5: V5's levels against the trials', of the drag
 # V5's levels in the set-up trials (README, trials items 16 and 17), with these
 # settings, by (Mach number, widening), as their records hold them: the
 # registered runs' drags on the same levels and domain are reported against them.
@@ -129,19 +130,60 @@ def stall_held(rec, monitor):
     return bool(len(m)) and m[-1, 0] == s and rec.get("iterations", -1) >= s and ofref.stall_test(m, rec["limit"])
 
 
+def converged_held(rec, m):
+    """
+    O3's convergence, from the monitor (m: its rows from the record's
+    stage2From): five rows in a row at or below the target ending at the
+    record's convergedAt, which the level ran to.
+    """
+    c = rec.get("convergedAt")
+    if c is None:
+        return False
+    i = np.nonzero(m[:, 0] == c)[0]
+    return (len(i) == 1 and i[0] >= 4 and bool(np.all(m[i[0] - 4:i[0] + 1, 1] <= ofref.REGISTERED["target"]))
+            and rec.get("iterations", -1) >= c)
+
+
 def level_checks(k, rec, monitor, charge=True):
     """O3's checks on level k, used: the failures and the level's iterative error."""
     if rec.get("exit") != 0 or "drag" not in rec:
         return ["OpenFOAM failed"], 0.0
+    wall = os.path.join(os.path.dirname(monitor), "wall.csv")
+    if not os.path.exists(monitor) or ofref.file_hash(monitor) != rec.get("monitorSha256"):
+        return ["monitor.csv is not the one its record was made with"], 0.0
+    if not os.path.exists(wall) or ofref.file_hash(wall) != rec.get("wallSha256"):
+        return ["wall.csv is not the one its record was made with"], 0.0
     bad = []
+    builds = rec.get("builds") or []
+    if not builds or any(b.get(key) not in ok for b in builds for key, ok in ofref.REGISTERED_BUILD.items()):
+        bad.append(f"not made with the registered build: {builds}")
+    if rec.get("processes") != ofref.PROCESSES[k]:
+        bad.append(f"run on {rec.get('processes')} processes, not {ofref.PROCESSES[k]}")
+    # The iterative measures from the monitor (as the runner takes them), checked against the record's.
+    m = np.loadtxt(monitor, delimiter=",", skiprows=1, ndmin=2)
+    m = m[m[:, 0] >= (rec.get("stage2From") or 0)]
+    D = abs(rec["drag"])
+    n = max(2, len(m) // 4)
+    q = m[-n:, 2]
+    h = max(1, n // 2)
+    swing, last, before = float(q.max() - q.min()), float(q[-h:].mean()), float(q[-2 * h:-h].mean())
+    drift = abs(last - before)
+    if (int(m[-1, 0]) != rec.get("iterations") or not abs(swing - rec.get("dragRangeLastQuarter", math.inf)) <= 1e-14 * D
+            or not abs(last - rec.get("dragMeanLastEighth", math.inf)) <= 1e-14 * D
+            or not abs(before - rec.get("dragMeanEighthBefore", math.inf)) <= 1e-14 * D):
+        bad.append("the record's iterative measures are not its monitor's")
     u_it = 0.0
-    if not rec.get("converged"):
-        swing = rec.get("dragRangeLastQuarter", math.inf)
-        drift = abs(rec.get("dragMeanLastEighth", math.inf) - rec.get("dragMeanEighthBefore", -math.inf))
-        stopped = rec.get("atLimit") or stall_held(rec, monitor)  # at its limit, or by the stall rule
-        if stopped and swing <= ITERATIVE * abs(rec["drag"]) and drift <= DRIFT * swing:
+    if not converged_held(rec, m):
+        at_limit = bool(rec.get("atLimit")) and m[-1, 0] >= rec["limit"]
+        stalled = stall_held(rec, monitor)
+        stopped = at_limit or stalled  # at its limit, or by the stall rule
+        if stopped and swing <= ITERATIVE * D and drift <= DRIFT * swing:
             u_it = swing
         elif stopped and settled(rec, monitor, swing, drift):
+            u_it = swing + (SETTLED_EIGHTHS * drift if charge else 0.0)
+        elif stalled and swing <= SETTLED * D and drift <= SETTLED * D:
+            # O3: a level the stall rule stopped that fails R3's drift test takes
+            # Amendment 1's charge without its test that the drift is not growing.
             u_it = swing + (SETTLED_EIGHTHS * drift if charge else 0.0)
         else:
             bad.append(f"not converged (residual 1e{rec.get('logRes')}, {rec.get('iterations')} iterations, "
@@ -172,7 +214,19 @@ def cap_terms(faces, p0, spec):
     f, e = faces[cap], p0[cap] - 1
     E = float(np.sum(np.abs(e) * (f[:, 4] + qinv) * (f[:, 3] ** 2 - f[:, 1] ** 2)) / R**2)
     drag = float(np.sum(f[:, 4] * (f[:, 3] ** 2 - f[:, 1] ** 2)) / R**2)
-    return {"E": E, "capDrag": drag, "worstFace": float(e[np.argmax(np.abs(e))]), "faces": int(cap.sum())}
+    worst = float(e[np.argmax(np.abs(e))])
+    return {"E": E, "capDrag": drag, "worstFace": worst, "worstFaceCp": worst * cp_factor(spec["mach"]),
+            "faces": int(cap.sum())}
+
+
+def cp_factor(mach):
+    """
+    O5's V2 in R5's units: a total pressure's error over pitot's total
+    pressure, times this, is the same error over pitot's Cp (p0_pitot over
+    p0_pitot - p_inf: 1.58 at Mach 1.3, 1.21 at Mach 2, 1.09 at Mach 3).
+    """
+    cp = w6ref.pitot_cp(mach)
+    return (cp + 1 / (0.7 * mach**2)) / cp
 
 
 def read_wall_p0(path):
@@ -193,13 +247,16 @@ def of_case(run, levels, build, x_end=None, charge=True):
     problem = spec_problem(run, recs, build)
     if problem:
         hard["spec"] = [problem]
-    spec = build(widen_of(recs, build) or 0)
+    out["widen"] = widen_of(recs, build)
+    spec = build(out["widen"] or 0)
     swings, u_iter = [], 0.0
     for k in levels:
         if k not in recs:
             hard[k] = ["not run"]
             continue
         bad, u_it = level_checks(k, recs[k], os.path.join(run, f"L{k}", "monitor.csv"), charge)
+        if k >= 1 and recs[k].get("seedSha256") != recs.get(k - 1, {}).get("solutionSha256"):
+            bad = bad + ["not started from the level below's recorded solution"]
         u_iter += u_it
         swings.append(u_it)
         if bad:
@@ -216,21 +273,26 @@ def of_case(run, levels, build, x_end=None, charge=True):
                 return dict(out, failures={k: [f"no vertex at x = {x_end}"]}, reference=False, needsLevel4=False)
     x0 = w6ref.region_start(spec) if x_end is None else L / 128
     D = [ofref.faces_drag(f, x_end) for f in faces]
-    ch = [ofref.faces_changes(faces[i], faces[i + 1], L, x0, x_end) for i in (0, 1)]
+    try:
+        ch = [ofref.faces_changes(faces[i], faces[i + 1], L, x0, x_end) for i in (0, 1)]
+    except ValueError as e:  # the wall faces do not nest (O4)
+        return dict(out, failures={"-": [str(e)]}, reference=False, needsLevel4=False)
     est = judge.su2_estimate(D, [c["regions"] for c in ch], [c["vertex"] for c in ch], swings)
     out.update(est)
     u_cap = 0.0
     if spec["rn"] > 0:
         top, before = cap_terms(faces[2], data[2][1], spec), cap_terms(faces[1], data[1][1], spec)
         u_cap = max(top["E"], before["E"])
-        axis = recs[levels[-1]]["axisTotalPressure"][0] - 1
-        out["cap"] = {"finest": top, "levelBefore": before, "axisFirstCell": axis}
-        # V2, on the finest level used (a hard check of every capped run, R4).
+        axis = recs[levels[-1]].get("wallCellTotalPressure", math.nan) - 1
+        axis_cp = axis * cp_factor(spec["mach"])
+        out["cap"] = {"finest": top, "levelBefore": before, "axisFirstCell": axis, "axisFirstCellCp": axis_cp}
+        # V2, on the finest level used (a hard check of every capped run, R4), in Cp
+        # over pitot's Cp as R5 states it.
         v2 = []
-        if not abs(axis) <= STAGNATION:
-            v2.append(f"V2: the axis's first cell's total pressure {axis:+.2%} from pitot")
-        if not abs(top["worstFace"]) <= STAGNATION:
-            v2.append(f"V2: a cap face's total pressure {top['worstFace']:+.2%} from pitot")
+        if not abs(axis_cp) <= STAGNATION:
+            v2.append(f"V2: the axis's first cell's total pressure {axis_cp:+.2%} of pitot's Cp from pitot")
+        if not abs(top["worstFaceCp"]) <= STAGNATION:
+            v2.append(f"V2: a cap face's total pressure {top['worstFaceCp']:+.2%} of pitot's Cp from pitot")
         if v2:
             hard[levels[-1]] = v2
     out["uCap"] = u_cap
@@ -369,10 +431,14 @@ def _check_v5(run, build, charge):
             out["againstTrials"][f"widen {t}"] = [r[k]["drag"] - v if k in r and "drag" in r[k] else None
                                                   for k, v in enumerate(TRIAL_V5[(spec["mach"], t)])]
     hard = {k: v for k, v in est["failures"].items() if k != "R4"}
+    # O5: every level a trial ran on the same domain gives the trial's drag (same code, same inputs).
+    out["reproduced"] = all(abs(x) <= REPRODUCE * abs(v) for key, xs in out["againstTrials"].items()
+                            for x, v in zip(xs, TRIAL_V5[(spec["mach"], int(key.split()[1]))]) if x is not None)
     if "value" in est and "u" in est and not hard:
         d = est["value"] - value
         out.update(difference=d, againstGridPart=abs(d) / (est["uGrid"] + band * value))
-        out["pass"] = est["rho"] < 1 and est["rhoVertex"] < 1 and math.isfinite(est["u"]) and abs(d) <= est["u"] + band * value
+        out["pass"] = (est["rho"] < 1 and est["rhoVertex"] < 1 and math.isfinite(est["u"]) and abs(d) <= est["u"] + band * value
+                       and out["reproduced"])
     else:
         out["pass"] = False
     return out

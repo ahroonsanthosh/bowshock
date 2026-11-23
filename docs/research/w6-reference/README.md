@@ -1181,10 +1181,22 @@ at Mach 2 (no check case: V1's cones are at Mach 1.3 and 3), the capped
 tangent ogive of 4 calibers at r_n/R 0.10 (off every list) at Mach 1.3 and
 3, and the hemisphere of V5 at Mach 2 and 3 on levels 0 to 2 (at Mach 3
 also on the domain widened once, levels 0 and 1: item 17). V5's fitted
-values were looked at there, and the limiter was chosen with those runs
-in view (item 16), so **V5 is blind only in its level 3**; nothing at or
-above level 3 has run on a check case, and no W6 case has run on
-OpenFOAM. OpenFOAM replaces SU2 as the independent solver (the owner's
+values were looked at there, the limiter was chosen with those runs in
+view (item 16), and O4's cap term and V2's test of every cap face were
+written after the hemisphere's wall total pressures and its drags'
+differences from the fitted values had been seen. On its levels 1 and 2,
+E (O4) came to 0.96% and 0.52% of the drag at Mach 2 and 0.50% and 0.24%
+at Mach 3, against level 2's differences from the fitted values of
+-0.096% and -0.177%; its worst cap face (the last one) was -3.57% and
+-2.07% (Mach 2) and -2.43% and -1.39% (Mach 3) of pitot's Cp on levels 1
+and 2. So V5 passing through U_cap was foreseeable, and V5's verdict
+also reports its difference against its grid part alone
+(`againstGridPart`). V5 widens at both Mach numbers (R3's outer check
+fails on level 1 at Mach 2 too: |Cp| 1.28e-6 on H2K10's), so its judged
+runs are on domains the trials ran only at Mach 3, levels 0 and 1
+(H3K10w1): **at Mach 2 every level of V5's judged run is blind, at Mach 3
+levels 2 and 3**. Nothing at or above level 3 has run on a check case,
+and no W6 case has run on OpenFOAM. OpenFOAM replaces SU2 as the independent solver (the owner's
 choice after SU2's revision 2 failed). Every rule of the registration above
 (R1 to R9, with Amendment 1) holds unless this section changes it; where it
 names SU2, read OpenFOAM. The SU2 runs are kept as they are and are used for
@@ -1226,8 +1238,14 @@ of the trials: 1e-16).
   the local time step, over rho_inf, recorded every tenth iteration (the
   row a run, or a resumed run, writes at the iteration it starts from,
   before any step, is no residual and is left out: `ofref._joined`). A
-  level converges when five records in a row (50 iterations) are at or
-  below 1e-10; it is then saved and stopped. Iteration limits: 30,000,
+  level converges when five records in a row (50 iterations) of one run
+  are at or below 1e-10, every record read (not only the last five at a
+  poll); it is then saved and stopped, and its record keeps the fifth
+  record's iteration (`convergedAt`). `ofjudge.py` takes a level as
+  converged only if its committed `monitor.csv` holds those five records
+  in a row ending at `convergedAt` (`converged_held`); a level whose
+  record says so but whose monitor does not is judged as one that did not
+  converge. Iteration limits: 30,000,
   40,000, 60,000, 60,000 and 100,000 on levels 0 to 4. In the trials
   (items 16 and 17) levels 0 to 2 converged within 7,500 to 20,400
   iterations or stalled (the rule stops the slowest, the ogive at Mach 3's
@@ -1237,7 +1255,11 @@ of the trials: 1e-16).
   doubled (15,650 to 38,540 at Mach 1.3). A level 4 trial on the ogive at
   Mach 1.3 (off every list) runs under it before any level 4 runs on a
   check case; if that trial has neither converged nor stalled by 100,000,
-  no level 4 runs and the limit goes back to review.
+  no level 4 runs and the limit goes back to review. That trial is a
+  near neighbour of V4's own case (r_n/R 0.10 against 0.08) and finishes
+  before V4 runs: its result changes nothing in this section but this
+  limit, and V4's two tests applied to it (levels 1 to 3 against 2 to 4)
+  are recorded whatever they give.
 - The stall rule: from half its limit on, at each save (every 5,000
   iterations), a level is also saved and stopped if, on its monitor up to
   that save, every residual record of its last quarter is at most 1e-9
@@ -1250,25 +1272,50 @@ of the trials: 1e-16).
   stopped at, a few past the save). The rule only saves time: a level
   whose drag has held to 1e-9 for a quarter of its run, with its residual
   within a decade of the target throughout, is charged by the rules below
-  as it would be at its limit.
+  as it would be at its limit. One addition for such a level: if it fails
+  both R3's drift test and Amendment 1's test that the drift is not
+  growing (on a drag fixed to round-off, each a matter of chance), it
+  still counts, with Amendment 1's charge (its range plus 8,000 times its
+  drift; at most 8e-6 of its drag by the stall rule's bounds), provided
+  its range and drift are within Amendment 1's 1e-8 of its drag.
 - The residual's floor: once a level's drag has stopped moving, its
   residual stays at a floor that rises about 0.3 decades a level (the
   ogive at Mach 3: 1e-9.85, 1e-9.56 and 1e-9.24 on levels 1 to 3; at Mach
-  1.3, 1e-10.0 on level 3), as round-off in d(rho)/dt does under a local
-  time step that halves with the cells. A level whose floor is above 1e-9
-  (level 4 at Mach 3 may be) meets neither the stall rule nor Amendment
-  1's residual condition: it runs to its limit and counts only by R3's
-  iterative rule. On the trials' histories once their drag had stopped
-  moving, that rule's drift came to 0.005 to 0.29 of the range, so such a
-  level can be refused with its drag fixed to 1e-11 of itself. No rule is
-  loosened for it.
+  1.3, 1e-10.0 on level 3), as it would if it were round-off in d(rho)/dt
+  under a local time step that halves with the cells (not established:
+  the review estimates round-off two decades lower, so it may be the
+  limiter's chatter; either way the drag does not move). It was measured
+  at r_n/R 0.10 only; W6's smaller caps (0.03) have smaller cells there and
+  may sit higher. A level whose floor is above 1e-9 (level 4 at Mach 3 may
+  be) meets neither the stall rule nor Amendment 1's residual condition:
+  it runs to its limit and counts only by R3's iterative rule. On the
+  trials' histories once their drag had stopped moving, that rule's drift
+  came to 0.005 to 0.29 of the range, so such a level can be refused with
+  its drag fixed to 1e-11 of itself. No rule is loosened for it.
 - A level stopped at its limit counts by R3's iterative rule (the drag's
   range over its last quarter at most 0.1% of it, the means of its last
   two eighths within a quarter of that range; the range is its iterative
   error) or by Amendment 1 (with the residual within a decade of
   OpenFOAM's target: at most 1e-9; the history is the level's
   `monitor.csv`). The record's iterative measures are over the level's
-  own iterations from its start.
+  own iterations from its start; `ofjudge.py` computes them again from
+  `monitor.csv` (refusing a record that differs from it), and takes a
+  level as stopped at its limit only if `monitor.csv` reaches the limit.
+  Amendment 1's factor of 8,000 eighths is kept as a number, though an
+  eighth here is 4,000 to 7,500 iterations (more than SU2's: the charge
+  errs large).
+- The build and the records: each level's record keeps every run's build
+  (OpenFOAM's build string, `13-18870c24d21c`, and the SHA-256 of the two
+  libraries built here as installed: `ofref.REGISTERED_BUILD`), its
+  number of processes, and the SHA-256 of its `monitor.csv` and
+  `wall.csv`. `ofjudge.py` refuses a level made with another build or
+  another number of processes, whose files are not the record's, or
+  whose seed is not the level below's recorded solution. If this machine
+  is lost, the libraries rebuilt from the committed sources are added to
+  `REGISTERED_BUILD` by a dated note before they run anything. A solver
+  stopped by a signal from outside leaves no record (the level goes on
+  from its last save); the case's lock is passed to the solver, so a
+  second runner cannot start on a case whose solver still runs.
 - On each level used, R3's checks, measured on the cells: |Cp| at most
   1e-6 in every cell against the outer boundary; the bow shock's reach at
   most 0.9 (per grid line from the wall, the outermost cell with |Cp|
@@ -1280,11 +1327,20 @@ of the trials: 1e-16).
   the outer line's rise) times 1.25, at most twice, the earlier attempt
   kept beside it, as R3 says.
 
-**O4 (R4). The value and uncertainty.** As R4, on faces: the changes of
-the drag's distribution (`ofref.faces_changes`) take the coarser level's
-face Cp linearly in r^2 at the finer level's face centres, per finer face
-its change times its d(r^2) / R^2, each face in the region holding its
-centre in x, to the nose's end closed at r = R as the drag is. The cap's
+**O4 (R4). The value and uncertainty.** As R4, on faces
+(`ofref.faces_changes`), to the nose's end closed at r = R as the drag
+is. The regional change is the change of the drag integral in each
+region exactly: the finer level's faces nest two to one in the coarser's
+(checked; a run whose faces do not nest fails), so each coarser face's
+change is its two finer faces' Cp d(r^2) / R^2 less its own, each
+coarser face in the region holding its centre in x; summed over the
+regions, the changes give the drag's change exactly, as R4's vertex form
+does on nested grids. The face-level change (R4's vertex measure) stays
+point by point: the coarser level's face Cp taken linearly in r^2 at the
+finer level's face centres, the sum over the finer faces of |the change|
+times d(r^2) / R^2 (taken against the coarser face's own value, it would
+mostly measure the slope across a face, and its ratio would sit near
+one half however the grid converged). The cap's
 term is measured on the wall instead of at one point, since a
 cell-centred code has no value at the stagnation point (trials item 16:
 the stagnation cell's centre is off the axis): in the exact flow the
@@ -1297,7 +1353,11 @@ wall's total pressure is the pitot value all along the cap; on level k,
 
 with p0 the face's cell's total pressure and p its pressure: the drag the
 cap would gain or lose if each face's pressure were off by its total
-pressure's error. U_cap = the larger of E on the two finest levels used.
+pressure's error. E is taken at cell centres, which lie off the wall's
+streamline, where the exact total pressure is above pitot's by about
+0.1% to 0.2% at the cap's end on levels 2 and 3 (the review's estimate):
+that part of E errs large. U_cap = the larger of E on the two finest
+levels used.
 U = max(U_total, U_dist) + U_cap + the iterative errors, as R4; R4's
 limits (0.5% and 1% of D) and level 4's fallback unchanged.
 
@@ -1306,19 +1366,32 @@ limits (0.5% and 1% of D) and level 4's fallback unchanged.
   L/3 to 0.8 L within 0.1% of the Taylor-Maccoll value. V1(b): the drag
   to the last face end of level 1 at or ahead of 0.8 L (a vertex of every
   level), with O4 applied to it.
-- V2: on the finest level used of every capped run, the axis's first
-  cell's total pressure within 3% of the pitot value, and every cap face's
-  wall total pressure within 3% too.
-- V3, V4: as R5 (V4's level 4 on four processes).
+- V2: on the finest level used of every capped run, in R5's terms (the
+  error over pitot's Cp, 3%): the total pressure of the wall's cell on
+  the axis, and of every cap face's cell, each within 3% of pitot's Cp
+  of the pitot value, that is |p0 - p0_pitot| at most 0.03 (p0_pitot -
+  p_inf) (`ofjudge.cp_factor`: a total pressure's relative error times
+  1.58 at Mach 1.3, 1.21 at Mach 2, 1.09 at Mach 3).
+- V3, V4: as R5 (V4's level 4 on four processes). As in `judge.py`, V4
+  takes each estimate whatever its ratios, so it can pass with a ratio at
+  or above 1 (R4's own gate still refuses such a case).
 - V5: as R5 (and Amendment 1). Its levels run again in the registered
   folder (the trials' records are not used); each level the trials ran
   on the same domain is reported against the trial's drag (`ofjudge`'s
   `TRIAL_V5`: H2K10's levels 0 to 2 at Mach 2; at Mach 3 H3K10b's levels
   0 to 2 for the first attempt and H3K10w1's levels 0 and 1 for the
-  widened one), where the same code on the same inputs should give the
-  same drag to round-off; V5 is judged on the new runs either way. If
-  R3's boundary check sends V5 to a wider domain (as it would at Mach 3,
-  trials items 16 and 17), it is rerun so, as for any case.
+  widened one), where the same build on the same inputs gives the same
+  drag. A difference above 1e-12 of the drag on any of them fails V5 (the
+  code or its inputs are not the trials'). R3's boundary check sends V5
+  to a wider domain at both Mach numbers (level 1's outer |Cp| is above
+  1e-6 at Mach 2 and 3), and it is rerun so, as for any case: the first
+  attempt keeps levels 0 and 1, and V5 is judged on the widened run.
+
+**The gas's constants.** The molar mass 11640.3 (`ofref.write_case`, with OpenFOAM's
+gas constant) gives gamma 1.399997 and a free-stream density of 1.400006
+against 1.4, which moves Cp by about 4e-6 of itself: about 500 times
+below the smallest U the trials give, so it is left as it is and stated
+here.
 
 **O6 to O8 (R6 to R8)**: unchanged (the fitted solver's side, the
 comparison, the allowance, the hold-out, the served region, the label).
@@ -1331,6 +1404,85 @@ if any fails, no W6 case runs and the route goes back to the owner;
 (3) the 24 cases and the hold-out's Von Karman runs on OpenFOAM; (4)
 `ofjudge.py`'s verdict, recorded with every case and the hold-out, then
 reviewed; (5) only if it serves: R9's (5), unchanged.
+
+## The review of OpenFOAM's registration (2026-11-23)
+
+An independent review of the section above, `ofref.py`, `ofjudge.py` and
+the OpenFOAM modules as committed at b7bee1d0, before any check ran. It
+read the trials' records and tested the judge on them; it ran no
+OpenFOAM. Verdict: **pass with changes**, nothing to run until they are
+made and confirmed. Each change below is made in the section above and
+the code, and goes back to the reviewer for confirmation.
+
+Required:
+1. Convergence was read from the monitor's last five rows at each poll,
+   and the record's flag again from the last five rows when the solver
+   stopped: the ogive at Mach 1.3's level 3 first had five rows in a row
+   at or below 1e-10 at 34,170 and ran on, and a converged level could
+   have been recorded as not converged (and refused). Now every row is
+   read, the record keeps `convergedAt`, and the judge takes convergence
+   only from five rows in a row in `monitor.csv` ending there; it also
+   recomputes the iterative measures from `monitor.csv` for R3's rule
+   (before, only Amendment 1's branch checked them) and checks a stop at
+   the limit against it.
+2. The regional change on faces took the coarser level's face values at
+   the finer faces' centres, whose sum is not the drag's change, and it
+   came out smaller than the exact change in places (the hemisphere at
+   Mach 2, levels 1 to 2: 6.1e-5 against 1.16e-4). It is now the change
+   of each region's drag integral, from the nested faces (O4). On the
+   trial ogives the estimate becomes U = 1.72e-4 (0.277% of D; ratio
+   0.35) at Mach 1.3 and 1.38e-4 (0.248%; ratio 0.54) at Mach 3, against
+   item 17's 0.282% and 0.228%. The face-level change stays point by
+   point (O4 says why). This moves V5's ratio gate on levels the trials
+   have seen; V5's judged runs are now on widened domains (below).
+3. V2 measured total pressure against pitot's total pressure, which is
+   looser than R5's Cp against pitot's Cp by 1.58 at Mach 1.3, 1.21 at
+   Mach 2 and 1.09 at Mach 3. It is now in R5's terms (O5). On the trial
+   ogives' level 3: 0.91% and 2.29% (Mach 1.3), 0.51% and 1.92% (Mach 3)
+   for the axis's wall cell and the worst cap face.
+4. Blindness: the section now says that O4's cap term and V2's test of
+   every cap face were written after the hemisphere's wall total
+   pressures and its differences from the fitted values were seen (with
+   the numbers), and that the level 4 trial changes nothing but level 4's
+   limit, with V4's two tests on it recorded whatever they give.
+5. `python3 -I ofref.py` did not find `w6ref` (the script's folder is off
+   the path under -I); it now puts its own folder on the path.
+6. Nothing tied a run to the libraries built: each record now keeps every
+   run's build (OpenFOAM's build string and the two libraries' SHA-256)
+   and its number of processes, and the judge requires the registered
+   ones (O3). The installed libraries were checked against the committed
+   sources by the review.
+
+Optional, taken: a level the stall rule stopped counts with Amendment 1's
+charge if both drift tests fail on its round-off (O3); the seed's hash
+against the level below's solution, and the SHA-256 of `monitor.csv` and
+`wall.csv`, checked by the judge; a solver stopped by a signal from
+outside leaves no record; the case's lock held by the solver; the
+monitor's two tables paired by iteration; the wall's cell on the axis
+recorded outright for V2; V5 widens at Mach 2 too (level 1's outer |Cp|
+1.28e-6), so its judged run there is blind on every level; a V5 level
+that does not give its trial's drag (to 1e-12) fails V5; the widening in
+each verdict row; the notes on E at cell centres, Amendment 1's 8,000
+eighths, the floor's cause (not established), the gas's constants (4e-6
+in Cp), and V4 taking estimates whatever their ratios, as `judge.py`
+does.
+
+Optional, not taken: a trial of the residual's floor on a small cap
+(0.03). A cap whose level 3 sits above 1e-9 runs to its limit and counts
+only by R3's rule, which can refuse it but never accept a wrong value;
+the section says so.
+
+The review also found sound: the settings item by item against O3; Heun's
+step and the limiter in the modules; O1 (the faces' drag and OpenFOAM's
+force agree to 1.4e-12 or better on every trial level); item 17's
+numbers, reproduced from the records; U_cap at 1.5 to 2 times R4's
+form applied to the axis cell; the stall rule and its check; R3's rule
+on OpenFOAM's histories (of 134 truncations it accepts, one charged a
+range the later drag left, at iteration 2,000, none near the limits);
+the widening and its kept attempts; `TRIAL_V5`; resumption after a
+deadline; V1, V3 to V5, both ways, the hold-out and the verdict as
+`judge.py` has them; and the blindness as disclosed (the trials' cases,
+an empty `runs-of/`, SU2's records only for V1, V3 and V5).
 
 ## State (2026-11-23)
 
@@ -1351,10 +1503,11 @@ reviewed; (5) only if it serves: R9's (5), unchanged.
   the drag).
 - The owner then chose a second independent solver in SU2's place,
   OpenFOAM 13. Its set-up trials (items 1 to 17 above) are done, and its
-  registration (above) is written; it goes to an independent review
-  before any check runs on it. A level 4 trial on the off-list ogive at
-  Mach 1.3 runs meanwhile (level 4's iteration limit, O3).
-- Next: the review and its changes; V1 to V5 on OpenFOAM (with V4's
+  registration (above) is written. Its independent review passed it with
+  changes; the changes are made and go back to the reviewer for
+  confirmation before any check runs. A level 4 trial on the off-list
+  ogive at Mach 1.3 runs meanwhile (level 4's iteration limit, O3).
+- Next: the review's confirmation; V1 to V5 on OpenFOAM (with V4's
   level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
   `ofjudge.py`'s verdict, reviewed. Nothing is served before that verdict
   serves it: every capped nose stays refused.
