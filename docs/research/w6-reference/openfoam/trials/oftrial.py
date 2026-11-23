@@ -4,7 +4,8 @@ sys.path.insert(0, "/home/user/bowshock/docs/research/w6-reference")
 import w6ref, ofref
 root, K, shape, cal, ratio, mach = sys.argv[1], float(sys.argv[2]), sys.argv[3], float(sys.argv[4]), float(sys.argv[5]), float(sys.argv[6])
 levels = int(sys.argv[7]); np_ = [int(v) for v in sys.argv[8].split(",")]; iters = [int(v) for v in sys.argv[9].split(",")]
-spec = dict(w6ref.capped_spec(shape, cal, ratio, mach) if ratio > 0 else w6ref.sharp_spec(shape, cal, mach), levels=levels)
+widen = int(os.environ.get("OF_WIDEN", "0"))
+spec = dict(w6ref.capped_spec(shape, cal, ratio, mach, widen) if ratio > 0 else w6ref.sharp_spec(shape, cal, mach, widen), levels=levels)
 grad = os.environ.get("OF_GRAD", f"cellVenkatakrishnan Gauss linear {K:g}")
 st = {"solver": "shockFluidHeun", "libs": ["libcellVenkatakrishnanGrad.so"], "flux": "Kurganov", "recon": "linearUpwind",
       "reconstruct": {"rho": "linearUpwind grad(rho)", "U": "linearUpwind grad(U)", "T": "linearUpwind grad(T)"},

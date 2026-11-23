@@ -1047,6 +1047,18 @@ at Mach 2.5, which is no check case.
      0.0554738, 0.0554158 (K = 10) and 0.0554287, 0.0553667 (OpenFOAM's);
      the axis's total pressure at the wall +8.6%, +3.8% and +8.5%, +3.7%.
      The outer boundary's |Cp| at most 6.4e-7 with either.
+   - Mach 3, level 2: OpenFOAM's limiter stalls, its residual about
+     1e-3.2 from iteration 8,000 to 16,640 (stopped there; its drag over
+     that stretch 0.0553863, ranging over 2.6e-7 of it, so the motion is
+     away from the wall); K = 10 converges steadily (1e-5.5 at 14,000,
+     about 0.35 decades per 1,000 iterations; going on).
+   **The limiter chosen: `cellVenkatakrishnan` at K = 10.** It converges
+   where OpenFOAM's limiter cycles or stalls (the hemisphere at Mach 2 and
+   this ogive at Mach 3, both on level 2); the two give the same drags
+   (within 2.8e-4 of the drag on every level 2 above) and the same wall
+   total pressure. Its cost: the shock's wiggles on the hemisphere's
+   coarse levels fail R3's outer-boundary check, which R3 answers with a
+   wider domain; that remedy is being tried on the hemisphere at Mach 3.
    The runner (`ofref.run_case`) now leaves the iteration limits out of
    its hash: each level keeps its own limit in its `start.json` and
    record and is checked against it when resumed, so a case can be given
