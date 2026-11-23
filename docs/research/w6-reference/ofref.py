@@ -988,7 +988,7 @@ REGISTERED = {"solver": "shockFluidHeun", "libs": ["libcellVenkatakrishnanGrad.s
               "recon": "linearUpwind",
               "reconstruct": {"rho": "linearUpwind grad(rho)", "U": "linearUpwind grad(U)", "T": "linearUpwind grad(T)"},
               "grad": "cellVenkatakrishnan Gauss linear 10", "outer": 2, "maxCo": 0.5, "smoothing": 0.02,
-              "target": -10, "iters": [30000, 40000, 60000, 40000, 40000], "checkpoint": 5000}
+              "target": -10, "iters": [30000, 40000, 60000, 60000, 100000], "checkpoint": 5000}
 PROCESSES = [1, 1, 1, 2, 4]
 
 
