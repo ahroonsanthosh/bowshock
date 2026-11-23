@@ -1070,7 +1070,11 @@ at Mach 2.5, which is no check case.
      far), its drag fixed to 1.2e-12 of itself over the last 10,000
      iterations; level 1 had stopped at its limit the same way (1e-9.88,
      drag range 3.6e-12 of it). A stall half a decade above the target,
-     not a cycle: the drag does not move.
+     not a cycle: the drag does not move. Resumed under the stall rule
+     (below), it stopped at the 45,000 save (the first save the resumed
+     run passed), residual 1e-9.56, drag 0.0554166 ranging over 1.3e-12
+     of itself in its last quarter; `ofjudge.level_checks` accepts it by
+     R3's iterative rule. Level 3 started from it.
    - The hemisphere at Mach 3 on the domain widened once (a and k times
      1.25, as R3's remedy): level 1's outer |Cp| 4.3e-9 (1.0e-4 before),
      the shock's reach 0.72; level 0's 9.1e-6 (still above 1e-6; level 0
