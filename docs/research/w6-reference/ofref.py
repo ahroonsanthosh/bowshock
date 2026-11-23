@@ -605,11 +605,17 @@ def faces_changes(coarse, fine, L, x0, x_end=None):
     centre in x) of |the region's sum|; "signed": the plain sum.
     """
     end = L if x_end is None else x_end
-    cut = lambda f: f[f[:, 2] <= end + 1e-12]
+    # To x_end (a vertex of both levels) if given; else the whole wall, as
+    # faces_drag: the face across x = L closes the integral at r = R, and the
+    # cylinder's faces add nothing (r constant).
+    cut = (lambda f: f) if x_end is None else (lambda f: f[f[:, 2] <= x_end + 1e-12])
     c, f = cut(coarse), cut(fine)
     qc = 0.5 * (c[:, 1] ** 2 + c[:, 3] ** 2)
     qf = 0.5 * (f[:, 1] ** 2 + f[:, 3] ** 2)
-    d = f[:, 4] - np.interp(qf, qc, c[:, 4])
+    # r rises along the nose, so qc does; on the cylinder it repeats R^2, and
+    # the first face there (next to the nose's end) gives Cp at r = R.
+    qc, first = np.unique(qc, return_index=True)
+    d = f[:, 4] - np.interp(qf, qc, c[first, 4])
     dq = (f[:, 3] ** 2 - f[:, 1] ** 2) / w6ref.R**2
     seg = d * dq
     mid = 0.5 * (f[:, 0] + f[:, 2])
