@@ -31,9 +31,12 @@ from judge import (CEILING, CHECK_RUNS, CONE_POINTWISE, DRIFT, FITTED_DRAG_FLOOR
 R = w6ref.R
 FORCE = 1e-9  # O3: the faces' drag and OpenFOAM's force within 1e-9 of the drag
 SETTLED_RESIDUAL = -9  # Amendment 1 on OpenFOAM: the residual within a decade of its target, 1e-10
-# V5's levels 0 to 2 in the set-up trials (README, trials item 16), with these
-# settings: the registered runs' drags are reported against them.
-TRIAL_V5 = {2.0: (0.7900539, 0.7882961, 0.7881798), 3.0: (0.8472382, 0.8467179, 0.8478176)}
+# V5's levels in the set-up trials (README, trials items 16 and 17), with these
+# settings, by (Mach number, widening), as their records hold them: the
+# registered runs' drags on the same levels and domain are reported against them.
+TRIAL_V5 = {(2.0, 0): (0.7900539375719124, 0.788296134974655, 0.7881798049493066),
+            (3.0, 0): (0.8472381671453886, 0.8467179435487362, 0.8478176313521926),
+            (3.0, 1): (0.8477513697406405, 0.8467341970061649)}
 
 
 # ------------------------------------------------------------- a run's records
@@ -357,9 +360,14 @@ def _check_v5(run, build, charge):
     value, band = HEMISPHERE[spec["mach"]]
     est = of_case(run, [1, 2, 3], build, charge=charge)
     out = {"name": "V5", "fitted": value, "fittedBand": band * value, "estimate": est}
-    if spec["widen"] == 0:
-        out["againstTrials"] = [recs[k]["drag"] - t if k in recs and "drag" in recs[k] else None
-                                for k, t in enumerate(TRIAL_V5[spec["mach"]])]
+    # O5: each attempt's levels against the trials' on the same domain (the
+    # attempt with widening t < the run's is kept as <run>.try<t+1>).
+    out["againstTrials"] = {}
+    for t in range(spec["widen"] + 1):
+        if (spec["mach"], t) in TRIAL_V5:
+            r = recs if t == spec["widen"] else levels_of(f"{run}.try{t + 1}")
+            out["againstTrials"][f"widen {t}"] = [r[k]["drag"] - v if k in r and "drag" in r[k] else None
+                                                  for k, v in enumerate(TRIAL_V5[(spec["mach"], t)])]
     hard = {k: v for k, v in est["failures"].items() if k != "R4"}
     if "value" in est and "u" in est and not hard:
         d = est["value"] - value
