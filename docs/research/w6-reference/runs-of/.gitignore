@@ -1,0 +1,10 @@
+# OpenFOAM's working files (meshes, saved fields, the processors' folders,
+# logs) stay out of the repository; the records are kept: per level
+# record.json, start.json, monitor.csv and wall.csv.
+*/L*/*
+!*/L*/record.json
+!*/L*/start.json
+!*/L*/monitor.csv
+!*/L*/wall.csv
+.lock
+*/.lock

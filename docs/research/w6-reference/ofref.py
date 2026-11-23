@@ -391,6 +391,7 @@ endTime         {iters};
 deltaT          1;
 writeControl    timeStep;
 writeInterval   {iters};
+purgeWrite      0;
 writeFormat     ascii;
 writePrecision  17;
 timeFormat      general;
@@ -899,6 +900,7 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
             write_case(d, spec, dict(settings, grad=settings["startGrad"]) if staged else settings,
                        settings["iters"][level], start_from_latest=True)
             _set_control(d, "writeInterval", str(settings["checkpoint"]))
+            _set_control(d, "purgeWrite", "2")  # each run keeps its last two saves (disk); only the latest is ever read
             _set_control(d, "runTimeModifiable", "true")
             assert _foam("checkMesh", d, "log.checkMesh") == 0, "checkMesh failed to run"
             mesh_ok = "Mesh OK." in open(os.path.join(d, "log.checkMesh")).read()
