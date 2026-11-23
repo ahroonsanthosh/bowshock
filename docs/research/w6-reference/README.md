@@ -933,9 +933,45 @@ at Mach 2.5, which is no check case.
    largest gradient, for rho, U and T). With K = 5 they differ in 85% of
    the cells (by up to 0.8%, 1.4% and 2.0% of the largest gradient):
    OpenFOAM's limiter is active almost everywhere, not only at the shock.
-   Diagnostic restarts of level 3 from its oscillating save (iteration
-   5,000) are running: unlimited gradients, and OpenFOAM's limiter with
-   its coefficient 0.5 (bounds widened by the neighbours' range).
+   Restarts of level 3 from its oscillating save (iteration 5,000), one
+   core each:
+   - unlimited gradients: the residual falls steadily (1e-0.58 at 6,000,
+     1e-1.53 at 8,000, 1e-2.03 at 9,500, about 0.4 decades per 1,000
+     iterations). OpenFOAM's limiter with its coefficient 0.5 (bounds
+     widened by the neighbours' whole range) is the same run to 10
+     digits: at 0.5 the limiter almost never acts.
+   - `cellVenkatakrishnan` at K = 3 and K = 10: still cycling between
+     1e-0.9 and 1e-1.3 after 1,750 iterations (K = 10 resumed for longer;
+     K = 30 running).
+   Where OpenFOAM's limiter acts at the two saves 134 iterations apart
+   (its gradients against unlimited ones, the same states): limited
+   (psi < 0.999) in 90 to 100% of the cells from 25 to 40 degrees, but
+   switching (psi changing by more than 0.05) in at most 1 of them below
+   the shock, against 266 to 336 per field in the shock's band (j 120 to
+   144) there; the many switches ahead of the shock are round-off in the
+   uniform stream. The cycle is the shock and the limiter's switching
+   together, which eps cannot reach (a shock's jump is far above eps).
+   Unlimited gradients cannot start from the free stream: T and the
+   hemisphere at Mach 3 both stop at iteration 7 on a negative
+   temperature in the flux. But at level 3 the unlimited flow (residual
+   1e-1.9, iteration 9,000) is much nearer the exact stagnation flow than
+   the limited one (cycling, iteration 5,000): the axis's total pressure
+   at the wall -0.15% from pitot against +0.31%, a third of the way out
+   -0.14% against +0.39%; the wall's total pressure at 5, 10, 20, 30
+   degrees -0.01%, +0.08%, +0.11%, +0.06% against +0.54%, +0.49%, +0.29%,
+   +0.13%. The bare limiter clips the smooth extremum at the stagnation
+   point (first order there), and that is most of item 15's excess on
+   the axis; eps is meant to stop exactly that. The unlimited shock has
+   wiggles (the axis's pressure 4.5% under the free stream just ahead of
+   it, 2 to 3% over and under behind it).
+   `cellVenkatakrishnan` at K = 10 starts from the free stream at Mach 3
+   (the hemisphere, level 0, through the registered runner `run_case`):
+   converged to 1e-10.8 in 7,830 iterations, drag 0.8472382, the axis's
+   total pressure at the wall -0.06% from pitot. Its wall cell's Cp is
+   1.13% under pitot: the cell's centre is off the stagnation point, a
+   geometric offset of a cell-centred code, so the first cell's total
+   pressure on the axis, not its Cp, is the measure of the stagnation
+   error here.
 
 ## State (2026-11-21)
 

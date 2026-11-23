@@ -17,3 +17,7 @@ for a set number of iterations; `resh.py` prints a run's residual history;
 `where.py` and `wheretxt.py` locate where a run's flow moves between two
 saves; `gradcmp.py` compares gradient fields written by `foamPostProcess`
 (`cellVenkatakrishnanGrad` at K = 0 against OpenFOAM's limiter).
+`limmap.py` maps where OpenFOAM's limiter acts and switches (limited
+against unlimited gradients from `foamPostProcess`); `oftrial.py` runs a
+case's levels through the registered runner (`ofref.run_case`) with
+`cellVenkatakrishnan` at a given K.
