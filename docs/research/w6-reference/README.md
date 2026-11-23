@@ -1380,9 +1380,15 @@ limits (0.5% and 1% of D) and level 4's fallback unchanged.
   on the same domain is reported against the trial's drag (`ofjudge`'s
   `TRIAL_V5`: H2K10's levels 0 to 2 at Mach 2; at Mach 3 H3K10b's levels
   0 to 2 for the first attempt and H3K10w1's levels 0 and 1 for the
-  widened one), where the same build on the same inputs gives the same
-  drag. A difference above 1e-12 of the drag on any of them fails V5 (the
-  code or its inputs are not the trials'). R3's boundary check sends V5
+  widened one). The same build on the same inputs gives the same drag
+  only to within the level's iterative range: where a converged level
+  stops depends on when the runner's poll sees its five records, and a
+  resumed run's path on the save it resumed from (the runner's own test,
+  the ogive at Mach 3's level 0 resumed from its 5,000 save, ended 4.1e-12
+  of the drag from its trial, within the two runs' ranges of 7.7e-12). A
+  difference above the larger of the two levels' drag ranges over their
+  last quarters and 1e-12 of the drag fails V5 (the code or its inputs
+  are not the trials'). R3's boundary check sends V5
   to a wider domain at both Mach numbers (level 1's outer |Cp| is above
   1e-6 at Mach 2 and 3), and it is rerun so, as for any case: the first
   attempt keeps levels 0 and 1, and V5 is judged on the widened run.
@@ -1453,6 +1459,16 @@ Required:
    ones (O3). The installed libraries were checked against the committed
    sources by the review.
 
+The runner's changes were tried on a live run before going back to the
+reviewer (the ogive at Mach 3's level 0, off every list, in the
+scratchpad): its solver killed by a signal left no record, and the level
+resumed from its last save; the first try caught a fault in the new
+convergence scan (it stopped reading after its first poll, and the level
+ran on to a stall stop at 20,000 past a five-row run ending at 13,680),
+fixed in 5b815d82; on the second, killed after its 5,000 save and
+resumed, it converged with `convergedAt` 13,670, the record carrying its
+build, processes and files' hashes, and `converged_held` accepting it.
+
 Optional, taken: a level the stall rule stopped counts with Amendment 1's
 charge if both drift tests fail on its round-off (O3); the seed's hash
 against the level below's solution, and the SHA-256 of `monitor.csv` and
@@ -1461,7 +1477,8 @@ outside leaves no record; the case's lock held by the solver; the
 monitor's two tables paired by iteration; the wall's cell on the axis
 recorded outright for V2; V5 widens at Mach 2 too (level 1's outer |Cp|
 1.28e-6), so its judged run there is blind on every level; a V5 level
-that does not give its trial's drag (to 1e-12) fails V5; the widening in
+that does not give its trial's drag (to within the two runs' iterative
+ranges, or 1e-12 of the drag) fails V5; the widening in
 each verdict row; the notes on E at cell centres, Amendment 1's 8,000
 eighths, the floor's cause (not established), the gas's constants (4e-6
 in Cp), and V4 taking estimates whatever their ratios, as `judge.py`
