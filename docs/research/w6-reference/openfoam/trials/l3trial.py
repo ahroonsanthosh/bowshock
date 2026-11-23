@@ -15,6 +15,12 @@ if not os.path.exists(f"{dst}/system/controlDict"):
         cd = open(f"{dst}/system/controlDict").read()
         assert "libcellVenkatakrishnanGrad" not in cd and "\nsolver " in cd
         open(f"{dst}/system/controlDict", "w").write(cd.replace("\nsolver ", '\nlibs            ("libcellVenkatakrishnanGrad.so");\nsolver ', 1))
+    if os.environ.get("L3_MAXCO"):
+        fv = open(f"{dst}/system/fvSolution").read()
+        import re
+        fv, k = re.subn(r"maxCo\s+[^;]*;", f"maxCo           {os.environ['L3_MAXCO']};", fv)
+        assert k == 1
+        open(f"{dst}/system/fvSolution", "w").write(fv)
     ladder.set_control(dst, "endTime", str(int(t0) + n))
     ladder.set_control(dst, "writeInterval", "1000")
     if np_ > 1:
