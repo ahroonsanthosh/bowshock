@@ -1,9 +1,9 @@
 # OpenFOAM's working files (meshes, saved fields, the processors' folders,
-# logs) stay out of the repository; the records are kept: per level
-# record.json, start.json, monitor.csv and wall.csv.
+# logs, start.json while a level runs) stay out of the repository; the
+# records are kept, each written once when its level finishes: per level
+# record.json (which carries start.json's contents), monitor.csv and wall.csv.
 */L*/*
 !*/L*/record.json
-!*/L*/start.json
 !*/L*/monitor.csv
 !*/L*/wall.csv
 .lock
