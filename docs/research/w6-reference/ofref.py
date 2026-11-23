@@ -739,18 +739,48 @@ def settings_hash(spec, settings):
     return hashlib.sha256(json.dumps([keep, rest], sort_keys=True).encode()).hexdigest()
 
 
-def _solve(case, np_, target, deadline):
+STALL_FROM = 0.5  # O3's stall rule: from half a level's iteration limit on,
+STALL_RESIDUAL = -9.0  # every residual record of its last quarter within a decade of the target,
+STALL_BOUND = 1e-9  # and its drag's range and drift each at most 1e-9 of its drag (a tenth of Amendment 1's)
+
+
+def stall_test(m, limit):
+    """
+    O3's stall rule on a level's monitor rows m (iteration, log10 residual,
+    drag), from its start (its stage2From) up to a save: may the level stop
+    there? From half its limit on, if every residual of its last quarter is
+    at most 1e-9 and its drag's range over that quarter and the difference
+    of the means of its last two eighths are each at most 1e-9 of its drag
+    (the quarter and the eighths taken as the record takes them).
+    """
+    if len(m) < 8 or m[-1, 0] < STALL_FROM * limit:
+        return False
+    n = max(2, len(m) // 4)
+    q = m[-n:, 2]
+    h = max(1, n // 2)
+    D = abs(q[-1])
+    return bool(m[-n:, 1].max() <= STALL_RESIDUAL and q.max() - q.min() <= STALL_BOUND * D
+                and abs(q[-h:].mean() - q[-2 * h:-h].mean()) <= STALL_BOUND * D)
+
+
+def _solve(case, np_, target, deadline, stall=None):
     """
     foamRun on the case from its latest save. It is told to save and stop
     (writeNow) once the monitor's last 5 rows (50 iterations) are at or
     below 10^target, and 5 minutes before the deadline (then Deadline is
-    raised: the level goes on from that save next time).
+    raised: the level goes on from that save next time). With stall =
+    (limit, mach, checkpoint, stage2From), it is also told to save and stop
+    when the stall rule (stall_test) holds on the level's monitor up to a
+    save (a multiple of checkpoint) this run passes. Returns the exit code
+    and the save the stall rule held at (None if it did not).
     """
     k = len([f for f in os.listdir(case) if f.startswith("log.run")])
     base = os.path.join(case, "processor0") if os.path.isdir(os.path.join(case, "processor0")) else case
     after = max(float(t) for t in os.listdir(base) if re.fullmatch(r"\d+", t))  # the save this run starts from
     _set_control(case, "stopAt", "endTime")
     cmd = f"mpirun --allow-run-as-root -np {np_} foamRun -parallel" if np_ > 1 else "foamRun"
+    stalled = None
+    tested = int(after)  # stall tests at saves past this iteration
     with open(os.path.join(case, f"log.run{k}"), "w") as f:
         proc = subprocess.Popen(["bash", "-c", "source /opt/openfoam13/etc/bashrc; " + cmd], cwd=case,
                                 stdout=f, stderr=subprocess.STDOUT)
@@ -760,6 +790,21 @@ def _solve(case, np_, target, deadline):
             if not told and len(tail) == 5 and max(v for _, v in tail) <= target:
                 _set_control(case, "stopAt", "writeNow")
                 told = True
+            if not told and stall is not None and tail:
+                limit, mach, every, since = stall
+                save = (int(tail[-1][0]) // every) * every  # the last save the monitor has reached
+                if save > tested:
+                    try:
+                        m = read_monitor(case, mach)
+                    except (OSError, ValueError, IndexError):
+                        m = None  # a file being written: the next poll reads it again
+                    if m is not None and np.any(m[:, 0] == save):  # both tables have reached the save
+                        tested = save
+                        m = m[(m[:, 0] >= since) & (m[:, 0] <= save)]
+                        if stall_test(m, limit):
+                            _set_control(case, "stopAt", "writeNow")
+                            told = True
+                            stalled = save
             if deadline is not None and time.time() > deadline - 300:
                 _set_control(case, "stopAt", "writeNow")
                 try:
@@ -771,7 +816,7 @@ def _solve(case, np_, target, deadline):
                 raise Deadline(f"{case} saved and stopped before the deadline")
             time.sleep(10)
     _set_control(case, "stopAt", "endTime")
-    return proc.returncode
+    return proc.returncode, stalled
 
 
 def run_case(spec, run_dir, settings, np_, deadline=None):
@@ -864,7 +909,7 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
             raise SystemExit(f"{start} was made with another spec, settings or iteration limit")
         t0 = time.time()
         if st["stage"] == 1:
-            code = _solve(d, np_[level], settings["startTarget"], deadline)
+            code, _ = _solve(d, np_[level], settings["startTarget"], deadline)
             if code != 0:
                 raise SystemExit(f"{d}: the first stage failed ({code})")
             tail = _monitor_tail(d, 1)
@@ -875,7 +920,8 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
             st.update(stage=2, stage2From=int(tail[0][0]) if tail else 0)
             json.dump(st, open(start + ".tmp", "w"))
             os.replace(start + ".tmp", start)
-        code = _solve(d, np_[level], settings["target"], deadline)
+        code, stalled = _solve(d, np_[level], settings["target"], deadline,
+                               stall=(st["limit"], M, settings["checkpoint"], st["stage2From"] or 0))
         if code == 0 and np_[level] > 1:
             code = _foam("reconstructPar -latestTime", d, "log.reconstruct")
         seconds = time.time() - t0
@@ -899,7 +945,7 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
             h = max(1, n // 2)
             rec.update({"time": last, "iterations": int(m[-1, 0]), "logRes": float(m[-1, 1]),
                         "converged": bool(len(_monitor_tail(d, 5)) == 5 and max(v for _, v in _monitor_tail(d, 5)) <= settings["target"]),
-                        "atLimit": last >= st["limit"],
+                        "atLimit": last >= st["limit"], "stalledAt": stalled,
                         "drag": faces_drag(faces), "forceDrag": float(m[-1, 2]),
                         "dragRangeLastQuarter": float(q.max() - q.min()),
                         "dragMeanLastEighth": float(q[-h:].mean()), "dragMeanEighthBefore": float(q[-2 * h:-h].mean()),

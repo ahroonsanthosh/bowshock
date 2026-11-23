@@ -1051,7 +1051,7 @@ at Mach 2.5, which is no check case.
      1e-3.2 from iteration 8,000 to 16,640 (stopped there; its drag over
      that stretch 0.0553863, ranging over 2.6e-7 of it, so the motion is
      away from the wall); K = 10 converges steadily (1e-5.5 at 14,000,
-     about 0.35 decades per 1,000 iterations; going on).
+     about 0.35 decades per 1,000 iterations), then stalls (item 17).
    **The limiter chosen: `cellVenkatakrishnan` at K = 10.** It converges
    where OpenFOAM's limiter cycles or stalls (the hemisphere at Mach 2 and
    this ogive at Mach 3, both on level 2); the two give the same drags
@@ -1064,6 +1064,39 @@ at Mach 2.5, which is no check case.
    record and is checked against it when resumed, so a case can be given
    more levels (`openfoam/trials/rehash.py` moved the trial cases made
    before this to the new hash, after checking each against the old one).
+17. Level 3, the wider domain and a stall rule (2026-11-23, K = 10).
+   - The ogive at Mach 3: level 2's residual fell to 1e-9.5 by iteration
+     29,000 and then stayed between 1e-9.45 and 1e-9.6 (to 39,100 so
+     far), its drag fixed to 1.2e-12 of itself over the last 10,000
+     iterations; level 1 had stopped at its limit the same way (1e-9.88,
+     drag range 3.6e-12 of it). A stall half a decade above the target,
+     not a cycle: the drag does not move.
+   - The hemisphere at Mach 3 on the domain widened once (a and k times
+     1.25, as R3's remedy): level 1's outer |Cp| 4.3e-9 (1.0e-4 before),
+     the shock's reach 0.72; level 0's 9.1e-6 (still above 1e-6; level 0
+     is not a level used, and the runner widens only for levels 1 on).
+     Widened, level 1 did not converge: its residual sits about 1e-6.8 to
+     its 40,000-iteration limit while its drag ranges over 1.7e-10 of
+     itself (R3's iterative rule takes it); unwidened it converged in
+     11,970. Its drag 0.8467342 against 0.8467179 unwidened (1.9e-5 of
+     it).
+   - A stall rule, so that a stalled level stops before its limit
+     (`ofref.stall_test`; `ofjudge.stall_held` checks it again from the
+     committed history): from half its limit on, at each save, if every
+     residual record of its last quarter is at most 1e-9 and its drag's
+     range over that quarter and the difference of its last two eighths'
+     means are each at most 1e-9 of its drag. On the histories above it
+     would have stopped the ogive at Mach 3's level 2 at 35,000 of 60,000
+     and level 1 at 20,000 of 40,000, and not the ogive at Mach 1.3's
+     level 0 (its drag still moving by 2e-7 of itself at its limit). The
+     judge's check, tried on level 2's history to 35,030, accepts the
+     stop at 35,000 and refuses it recorded at 30,000 (where the rule
+     does not hold yet: residuals above 1e-9 in its last quarter), at
+     35,010 (not a save), with no save, or under a limit of 80,000 (35,000
+     is then before half of it).
+   - The ogive at Mach 1.3's level 3 (512 x 256, two processes, from
+     level 2): its residual falls about a quarter of a decade per 1,000
+     iterations, 1e-5.47 at 12,340 (going on).
 
 ## State (2026-11-21)
 

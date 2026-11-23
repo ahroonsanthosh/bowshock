@@ -112,6 +112,20 @@ def settled(rec, monitor, swing, drift):
     return abs(m[2] - m[1]) <= abs(m[1] - m[0])
 
 
+def stall_held(rec, monitor):
+    """
+    O3's stall rule, checked again: the record's stalledAt is a save (a
+    multiple of the registered checkpoint) and the rule holds on the
+    level's committed monitor.csv (from its stage2From) up to it.
+    """
+    s = rec.get("stalledAt")
+    if s is None or s % ofref.REGISTERED["checkpoint"] != 0 or not os.path.exists(monitor):
+        return False
+    m = np.loadtxt(monitor, delimiter=",", skiprows=1, ndmin=2)
+    m = m[(m[:, 0] >= (rec.get("stage2From") or 0)) & (m[:, 0] <= s)]
+    return bool(len(m)) and m[-1, 0] == s and rec.get("iterations", -1) >= s and ofref.stall_test(m, rec["limit"])
+
+
 def level_checks(k, rec, monitor, charge=True):
     """O3's checks on level k, used: the failures and the level's iterative error."""
     if rec.get("exit") != 0 or "drag" not in rec:
@@ -121,9 +135,10 @@ def level_checks(k, rec, monitor, charge=True):
     if not rec.get("converged"):
         swing = rec.get("dragRangeLastQuarter", math.inf)
         drift = abs(rec.get("dragMeanLastEighth", math.inf) - rec.get("dragMeanEighthBefore", -math.inf))
-        if rec.get("atLimit") and swing <= ITERATIVE * abs(rec["drag"]) and drift <= DRIFT * swing:
+        stopped = rec.get("atLimit") or stall_held(rec, monitor)  # at its limit, or by the stall rule
+        if stopped and swing <= ITERATIVE * abs(rec["drag"]) and drift <= DRIFT * swing:
             u_it = swing
-        elif rec.get("atLimit") and settled(rec, monitor, swing, drift):
+        elif stopped and settled(rec, monitor, swing, drift):
             u_it = swing + (SETTLED_EIGHTHS * drift if charge else 0.0)
         else:
             bad.append(f"not converged (residual 1e{rec.get('logRes')}, {rec.get('iterations')} iterations, "
