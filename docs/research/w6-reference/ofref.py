@@ -920,3 +920,99 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
         if code != 0:
             break  # no finer level starts from a failed one
     return out
+
+
+# ------------------------------------------------------------ the registration
+#
+# README, "OpenFOAM's registration": every check and W6 case runs with these
+# settings, levels 0 to 3 (4 where R4's fallback or V4 asks), on these
+# numbers of processes.
+
+REGISTERED = {"solver": "shockFluidHeun", "libs": ["libcellVenkatakrishnanGrad.so"], "flux": "Kurganov",
+              "recon": "linearUpwind",
+              "reconstruct": {"rho": "linearUpwind grad(rho)", "U": "linearUpwind grad(U)", "T": "linearUpwind grad(T)"},
+              "grad": "cellVenkatakrishnan Gauss linear 10", "outer": 2, "maxCo": 0.5, "smoothing": 0.02,
+              "target": -10, "iters": [30000, 40000, 60000, 40000, 40000], "checkpoint": 5000}
+PROCESSES = [1, 1, 1, 2, 4]
+
+
+def registered_build(name):
+    """The registered spec builder (a function of widen) for a check run's or a W6 case's name."""
+    import judge
+    for shape, cal, ratio, M, _ in judge.cases():
+        if judge.tag(shape, cal, ratio, M) == name:
+            return judge.registered(name, shape, cal, ratio, M)
+    return judge.registered(name)
+
+
+def boundary_failures(rec):
+    """R3's shock and boundary checks on a level's record: the ones a wider domain answers."""
+    import judge
+    bad = []
+    if not rec.get("outerMaxAbsCp", math.inf) <= judge.OUTER_CP:
+        bad.append(f"|Cp| {rec.get('outerMaxAbsCp')} on the outer boundary")
+    if not rec.get("shockReach", math.inf) <= judge.SHOCK_REACH:
+        bad.append(f"the shock reaches {rec.get('shockReach')} of a line")
+    if not rec.get("outletMinMach", 0.0) > 1:
+        bad.append(f"outlet Mach {rec.get('outletMinMach')}")
+    return bad
+
+
+def attempts(base):
+    """The run's widening so far: the number of earlier attempts kept beside it (<run>.try1, .try2)."""
+    w = 0
+    while os.path.isdir(f"{base}.try{w + 1}"):
+        w += 1
+    return w
+
+
+def run_registered(ref_dir, name, deadline=None):
+    """
+    A registered run's levels 0 to 3 in <ref_dir>/runs-of/<name>, as R3 says:
+    a level that fails R3's shock or boundary checks (levels 1 to 3, the
+    levels used) sends the whole case to a domain 1.25 times wider, at most
+    twice, the earlier attempt kept as <name>.try1, .try2; a level that fails
+    otherwise ends the run (the case gives no reference, no rerun).
+    """
+    build = registered_build(name)
+    base = os.path.join(ref_dir, "runs-of", name)
+    w = attempts(base)
+    while True:
+        spec = build(w)
+        widen = False
+        for top in (1, 2, 3, 4):
+            recs = run_case(dict(spec, levels=top), base, REGISTERED, PROCESSES, deadline)
+            last = recs[-1]
+            if last.get("exit") != 0:
+                return recs
+            if last["level"] >= 1 and boundary_failures(last):
+                widen = True
+                break
+        if not widen or w == 2:
+            return recs
+        os.rename(base, f"{base}.try{w + 1}")
+        w += 1
+
+
+def run_level4(ref_dir, name, deadline=None):
+    """Level 4 of a registered run, from its level 3 (R4's fallback, V4)."""
+    base = os.path.join(ref_dir, "runs-of", name)
+    spec = registered_build(name)(attempts(base))
+    return run_case(dict(spec, first_level=4, levels=5), base, REGISTERED, PROCESSES, deadline)
+
+
+if __name__ == "__main__":
+    import sys
+    # case <ref dir> <name>: levels 0 to 3; level4 <ref dir> <name>: level 4.
+    # LADDER_DEADLINE (seconds since the epoch): save and stop 5 minutes before
+    # it, exit 3; run again to go on.
+    cmd, ref, name = sys.argv[1:4]
+    dl = float(os.environ["LADDER_DEADLINE"]) if "LADDER_DEADLINE" in os.environ else None
+    try:
+        recs = (run_registered if cmd == "case" else run_level4)(ref, name, dl)
+    except Deadline as e:
+        print("window closing:", e, flush=True)
+        sys.exit(3)
+    for rec in recs:
+        print(f"L{rec['level']}: exit {rec['exit']} converged {rec.get('converged')} it {rec.get('iterations')} "
+              f"drag {rec.get('drag')}", flush=True)
