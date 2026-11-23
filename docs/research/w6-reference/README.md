@@ -1173,7 +1173,7 @@ hemisphere at Mach 2 and 3 on levels 0 to 2).
      resumed at 12,341, 15,225, 42,815 and the like), and the stall
      rule's results above are the same without those rows.
 
-## OpenFOAM's registration (2026-11-23, before any check runs on OpenFOAM; in force once its independent review's changes are made and confirmed)
+## OpenFOAM's registration (2026-11-23, before any check ran on OpenFOAM; reviewed independently, its changes made and confirmed the same day)
 
 Made after OpenFOAM's set-up trials (the section above, items 1 to 17),
 which ran on T (the hemisphere at Mach 2.5, no check case), the sharp cone
@@ -1276,8 +1276,9 @@ of the trials: 1e-16).
   both R3's drift test and Amendment 1's test that the drift is not
   growing (on a drag fixed to round-off, each a matter of chance), it
   still counts, with Amendment 1's charge (its range plus 8,000 times its
-  drift; at most 8e-6 of its drag by the stall rule's bounds), provided
-  its range and drift are within Amendment 1's 1e-8 of its drag.
+  drift), provided its range and drift are within Amendment 1's 1e-8 of
+  its drag: the charge is then at most about 8e-5 of its drag (about 8e-6
+  where they hold to the stall rule's own 1e-9, as at the save).
 - The residual's floor: once a level's drag has stopped moving, its
   residual stays at a floor that rises about 0.3 decades a level (the
   ogive at Mach 3: 1e-9.85, 1e-9.56 and 1e-9.24 on levels 1 to 3; at Mach
@@ -1386,9 +1387,10 @@ limits (0.5% and 1% of D) and level 4's fallback unchanged.
   resumed run's path on the save it resumed from (the runner's own test,
   the ogive at Mach 3's level 0 resumed from its 5,000 save, ended 4.1e-12
   of the drag from its trial, within the two runs' ranges of 7.7e-12). A
-  difference above the larger of the two levels' drag ranges over their
-  last quarters and 1e-12 of the drag fails V5 (the code or its inputs
-  are not the trials'). R3's boundary check sends V5
+  difference above the sum of the two levels' drag ranges over their last
+  quarters (each run may stop anywhere in its own range), or 1e-12 of the
+  drag if that is larger, fails V5 (the code or its inputs are not the
+  trials'). R3's boundary check sends V5
   to a wider domain at both Mach numbers (level 1's outer |Cp| is above
   1e-6 at Mach 2 and 3), and it is rerun so, as for any case: the first
   attempt keeps levels 0 and 1, and V5 is judged on the widened run.
@@ -1477,8 +1479,8 @@ outside leaves no record; the case's lock held by the solver; the
 monitor's two tables paired by iteration; the wall's cell on the axis
 recorded outright for V2; V5 widens at Mach 2 too (level 1's outer |Cp|
 1.28e-6), so its judged run there is blind on every level; a V5 level
-that does not give its trial's drag (to within the two runs' iterative
-ranges, or 1e-12 of the drag) fails V5; the widening in
+that does not give its trial's drag (to within the sum of the two runs'
+iterative ranges, or 1e-12 of the drag) fails V5; the widening in
 each verdict row; the notes on E at cell centres, Amendment 1's 8,000
 eighths, the floor's cause (not established), the gas's constants (4e-6
 in Cp), and V4 taking estimates whatever their ratios, as `judge.py`
@@ -1501,6 +1503,19 @@ deadline; V1, V3 to V5, both ways, the hold-out and the verdict as
 `judge.py` has them; and the blindness as disclosed (the trials' cases,
 an empty `runs-of/`, SU2's records only for V1, V3 and V5).
 
+The confirmation (the same reviewer, at cb710884, from the code and the
+text): all six required changes confirmed; the two changes that loosen
+something taken as acceptable (a stall-stopped level's charge: the test
+it waives is chance on round-off and the charge stays, both ways; V5's
+tolerance: a pass condition the reviewed section did not have, sound for
+its cause). One wording fix (O3's bound on that charge is about 8e-5 of
+the drag under the code's 1e-8 condition, not 8e-6) and one suggestion
+(V5's tolerance on the sum of the two ranges, not the larger), both made.
+Also noted, harmless: `converged_held` accepts any five-row window ending
+at `convergedAt`, not only the first; a fast level runs some rows past
+its `convergedAt` before OpenFOAM rereads its control file. With that,
+the registration is in force and the checks may run (O9's (2)).
+
 ## State (2026-11-23)
 
 - SU2: the tool, the geometry check, the set-up trials 1 to 13, the
@@ -1520,11 +1535,11 @@ an empty `runs-of/`, SU2's records only for V1, V3 and V5).
   the drag).
 - The owner then chose a second independent solver in SU2's place,
   OpenFOAM 13. Its set-up trials (items 1 to 17 above) are done, and its
-  registration (above) is written. Its independent review passed it with
-  changes; the changes are made and go back to the reviewer for
-  confirmation before any check runs. A level 4 trial on the off-list
-  ogive at Mach 1.3 runs meanwhile (level 4's iteration limit, O3).
-- Next: the review's confirmation; V1 to V5 on OpenFOAM (with V4's
+  registration (above) is in force: its independent review passed it
+  with changes, made and confirmed. A level 4 trial on the off-list ogive
+  at Mach 1.3 is under way (level 4's iteration limit, O3); it must
+  converge or stall by 100,000 before V4's level 4 runs.
+- Next: V1 to V5 on OpenFOAM (with V4's
   level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
   `ofjudge.py`'s verdict, reviewed. Nothing is served before that verdict
   serves it: every capped nose stays refused.

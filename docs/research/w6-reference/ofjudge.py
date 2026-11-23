@@ -31,7 +31,7 @@ from judge import (CEILING, CHECK_RUNS, CONE_POINTWISE, DRIFT, FITTED_DRAG_FLOOR
 R = w6ref.R
 FORCE = 1e-9  # O3: the faces' drag and OpenFOAM's force within 1e-9 of the drag
 SETTLED_RESIDUAL = -9  # Amendment 1 on OpenFOAM: the residual within a decade of its target, 1e-10
-REPRODUCE = 1e-12  # O5: V5's levels against the trials', of the drag at least (else the levels' iterative ranges)
+REPRODUCE = 1e-12  # O5: V5's levels against the trials', of the drag at least (else the sum of the levels' iterative ranges)
 # V5's levels in the set-up trials (README, trials items 16 and 17), with these
 # settings, by (Mach number, widening): (drag, its range over the last quarter)
 # as their records hold them. The registered runs' drags on the same levels and
@@ -431,10 +431,10 @@ def _check_v5(run, build, charge):
     for t in range(spec["widen"] + 1):
         if (spec["mach"], t) in TRIAL_V5:
             r = recs if t == spec["widen"] else levels_of(f"{run}.try{t + 1}")
-            # per level: (the difference, what it may be: the larger of the two
-            # levels' drag ranges over their last quarters, and 1e-12 of the drag)
+            # per level: (the difference, what it may be: the sum of the two
+            # levels' drag ranges over their last quarters, or 1e-12 of the drag if larger)
             out["againstTrials"][f"widen {t}"] = [
-                (r[k]["drag"] - v, max(REPRODUCE * abs(v), w, r[k].get("dragRangeLastQuarter", 0.0)))
+                (r[k]["drag"] - v, max(REPRODUCE * abs(v), w + r[k].get("dragRangeLastQuarter", 0.0)))
                 if k in r and "drag" in r[k] else None for k, (v, w) in enumerate(TRIAL_V5[(spec["mach"], t)])]
     hard = {k: v for k, v in est["failures"].items() if k != "R4"}
     # O5: every level a trial ran on the same domain gives the trial's drag (same code, same inputs).
