@@ -703,14 +703,17 @@ def _set_control(case, key, value):
     open(path, "w").write(cd)
 
 
-def _monitor_tail(case, n):
-    """The monitor's last n rows (iteration, log10 residual), from the latest start's file."""
+def _monitor_tail(case, n, after=None):
+    """The monitor's last n rows (iteration, log10 residual) from the latest start's file, past iteration `after` if given."""
     d = os.path.join(case, "postProcessing", "resid")
     if not os.path.isdir(d) or not os.listdir(d):
         return []
     last = max(os.listdir(d), key=float)
     try:
+        if after is not None and float(last) < after:
+            return []  # this run's file is not written yet
         rows = [l.split() for l in open(os.path.join(d, last, "volFieldValue.dat")) if l.strip() and not l.startswith("#")]
+        rows = [r for r in rows if after is None or float(r[0]) > after]
         return [(float(r[0]), 0.5 * math.log10(max(float(r[1]), 1e-300)) - math.log10(1.4)) for r in rows[-n:]]
     except (OSError, ValueError, IndexError):
         return []
@@ -736,6 +739,8 @@ def _solve(case, np_, target, deadline):
     raised: the level goes on from that save next time).
     """
     k = len([f for f in os.listdir(case) if f.startswith("log.run")])
+    base = os.path.join(case, "processor0") if os.path.isdir(os.path.join(case, "processor0")) else case
+    after = max(float(t) for t in os.listdir(base) if re.fullmatch(r"\d+", t))  # the save this run starts from
     _set_control(case, "stopAt", "endTime")
     cmd = f"mpirun --allow-run-as-root -np {np_} foamRun -parallel" if np_ > 1 else "foamRun"
     with open(os.path.join(case, f"log.run{k}"), "w") as f:
@@ -743,7 +748,7 @@ def _solve(case, np_, target, deadline):
                                 stdout=f, stderr=subprocess.STDOUT)
         told = False
         while proc.poll() is None:
-            tail = _monitor_tail(case, 5)
+            tail = _monitor_tail(case, 5, after)
             if not told and len(tail) == 5 and max(v for _, v in tail) <= target:
                 _set_control(case, "stopAt", "writeNow")
                 told = True
@@ -767,7 +772,10 @@ def run_case(spec, run_dir, settings, np_, deadline=None):
     OpenFOAM settings (solver, libs, flux, reconstruct, grad, outer, maxCo,
     smoothing), with "target" (log10 of the residual a level stops at),
     "iters" (each level's iteration limit) and "checkpoint" (iterations
-    between saves). np_: processes per level. A level that finished keeps
+    between saves), and optionally "startGrad" and "startTarget": a level
+    started from the free stream then runs with startGrad to 10^startTarget
+    first and goes on with grad (the record's iterative measures are on
+    grad's iterations only). np_: processes per level. A level that finished keeps
     its record (record.json, with the spec's and settings' hash and its
     solution's) and is not run again; a level stopped by the deadline goes
     on from its last save. A finer level starts from the level below
@@ -822,7 +830,12 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
                 if solution_hash(os.path.join(below, str(brec["time"]))) != brec.get("solutionSha256"):
                     raise SystemExit(f"level {level - 1}'s solution on disk is not the one its record finished with")
             write_polymesh(d, x, r, marks)
-            write_case(d, spec, settings, settings["iters"][level], start_from_latest=True)
+            # Two stages (settings "startGrad", "startTarget"): a level started
+            # from the free stream first runs with startGrad to 10^startTarget,
+            # then goes on with grad; a seeded level runs with grad only.
+            staged = not seeded and "startGrad" in settings
+            write_case(d, spec, dict(settings, grad=settings["startGrad"]) if staged else settings,
+                       settings["iters"][level], start_from_latest=True)
             _set_control(d, "writeInterval", str(settings["checkpoint"]))
             _set_control(d, "runTimeModifiable", "true")
             assert _foam("checkMesh", d, "log.checkMesh") == 0, "checkMesh failed to run"
@@ -835,9 +848,22 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
                             + f"numberOfSubdomains {np_[level]};\ndecomposer scotch;\n")
                 assert _foam("decomposePar -force", d, "log.decompose") == 0, "decomposePar failed"
             json.dump({"seeded": seeded, "meshOK": mesh_ok, "settingsHash": sh,
-                       "seedSha256": brec.get("solutionSha256") if seeded else None}, open(start, "w"))
+                       "seedSha256": brec.get("solutionSha256") if seeded else None,
+                       "stage": 1 if staged else 2, "stage2From": None if staged else 0}, open(start, "w"))
         st = json.load(open(start))
         t0 = time.time()
+        if st["stage"] == 1:
+            code = _solve(d, np_[level], settings["startTarget"], deadline)
+            if code != 0:
+                raise SystemExit(f"{d}: the first stage failed ({code})")
+            tail = _monitor_tail(d, 1)
+            fs = open(os.path.join(d, "system", "fvSchemes")).read()
+            old = f"    default         {settings['startGrad']};\n"
+            assert fs.count(old) == 1
+            open(os.path.join(d, "system", "fvSchemes"), "w").write(fs.replace(old, f"    default         {settings['grad']};\n"))
+            st.update(stage=2, stage2From=int(tail[0][0]) if tail else 0)
+            json.dump(st, open(start + ".tmp", "w"))
+            os.replace(start + ".tmp", start)
         code = _solve(d, np_[level], settings["target"], deadline)
         if code == 0 and np_[level] > 1:
             code = _foam("reconstructPar -latestTime", d, "log.reconstruct")
@@ -849,6 +875,8 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
             tdir = os.path.join(d, str(last))
             m = read_monitor(d, M)
             np.savetxt(os.path.join(d, "monitor.csv"), m, delimiter=",", header="iteration,log10_residual,drag", comments="")
+            rec["stage2From"] = st["stage2From"]
+            m = m[m[:, 0] >= st["stage2From"]]  # the iterative measures on the final scheme only
             faces = wall_faces(tdir, x, r, marks, M)
             p0 = wall_total_pressure(tdir, x, r, marks, M)
             with open(os.path.join(d, "wall.csv"), "w") as f:
@@ -878,4 +906,6 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
         os.replace(done + ".tmp", done)
         out.append(rec)
         print(json.dumps(rec), flush=True)
+        if code != 0:
+            break  # no finer level starts from a failed one
     return out

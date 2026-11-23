@@ -972,6 +972,30 @@ at Mach 2.5, which is no check case.
    geometric offset of a cell-centred code, so the first cell's total
    pressure on the axis, not its Cp, is the measure of the stagnation
    error here.
+   Longer restarts of level 3 (the drag's range over the last 1,000
+   iterations, of the drag; the mean): OpenFOAM's limiter 4.8e-4,
+   0.82922; K = 10, 3.7e-4 to 4.6e-4, 0.82924 (still cycling at 8,260);
+   K = 10 at Courant 0.25, 3.7e-4 to 4.9e-4 (a smaller step does not
+   damp it); K = 30, 1.3e-4 to 2.0e-4, 0.82931 (residual wandering from
+   1e-1.2 to 1e-2.1); unlimited, converging (1e-2.53 at its 11,000-
+   iteration limit, drift 3e-5), 0.83003. eps shrinks the cycle but does
+   not remove it.
+   Two stages (the limiter to form the shock, then unlimited gradients to
+   convergence; `startGrad` in `run_case`): T's level 0 converges (K = 10
+   to 1e-10, then unlimited from iteration 6,670 to 1e-10.38 at 24,370,
+   drag 0.8280155, the axis's total pressure at the wall -0.18%), but the
+   hemisphere at Mach 3 blows up (negative temperature) in the unlimited
+   stage even from its converged limited level 0, and a finer level
+   seeded from the one below blows up within 27 iterations unlimited at
+   both Mach numbers. Unlimited gradients are not robust to Mach 3, and K
+   large enough to switch the limiter off at a coarse level's shock
+   (eps grows with h) would fail the same way. So the limiter stays; a
+   level that cycles is taken by R3's iterative rule, its range added to
+   the uncertainty. Which limiter is the more accurate is being measured
+   on the hemisphere at Mach 3 and 2 (V5's fitted values), levels 0 to 2,
+   OpenFOAM's (K = 0) and K = 10. T at K = 10 so far: levels 0 and 1
+   converged, drags 0.8294371 and 0.8277655, the axis's total pressure at
+   the wall +0.89% and +0.42% (OpenFOAM's limiter: +0.66%, +0.24%).
 
 ## State (2026-11-21)
 
