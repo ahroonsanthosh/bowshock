@@ -21,3 +21,7 @@ saves; `gradcmp.py` compares gradient fields written by `foamPostProcess`
 against unlimited gradients from `foamPostProcess`); `oftrial.py` runs a
 case's levels through the registered runner (`ofref.run_case`) with
 `cellVenkatakrishnan` at a given K.
+`wallp0.py` tabulates the wall's total pressure over pitot's by bands of
+angle on a hemisphere (from a level's `wall.csv`); `outerwhere.py` finds
+where on the outer boundary |Cp| is largest and prints that column of
+cells inward.

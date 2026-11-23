@@ -996,6 +996,38 @@ at Mach 2.5, which is no check case.
    OpenFOAM's (K = 0) and K = 10. T at K = 10 so far: levels 0 and 1
    converged, drags 0.8294371 and 0.8277655, the axis's total pressure at
    the wall +0.89% and +0.42% (OpenFOAM's limiter: +0.66%, +0.24%).
+   The hemisphere, levels 0 to 2 (one core each; V5's fitted values were
+   looked at here, so V5's levels 0 to 2 are no longer blind; its level
+   3 has not run under OpenFOAM and does not before the registration):
+
+   | | Mach 3, OpenFOAM's | Mach 3, K = 10 | Mach 2, OpenFOAM's | Mach 2, K = 10 |
+   | --- | --- | --- | --- | --- |
+   | level 0 | 0.8463366 | 0.8472382 | 0.7883133 | 0.7900539 |
+   | level 1 | 0.8465908 | 0.8467179 | 0.7871743 | 0.7882961 |
+   | level 2 | 0.8477898 | 0.8478176 | 0.7879624 (cycling) | 0.7881798 |
+   | level 2 against the fitted value | -0.180% | -0.177% | -0.124% | -0.096% |
+
+   Every level converged to 1e-10 but OpenFOAM's limiter's level 2 at
+   Mach 2: its residual fell to 1e-3.8 by iteration 4,500 and from 5,500
+   on cycles about 1e-2.2 (to 21,600 so far); its drag over the cycle
+   ranges over 1.8e-5 (2.3e-5 of it), the mean above. That is T's level 3
+   cycle, a level earlier. With K = 10 the shock is not monotone on the
+   coarse levels: ahead of it, in the last column of cells (the outlet's
+   corner, where the bow shock comes nearest the outer boundary), Cp is
+   1e-4 to 6e-4 for a few cells on levels 1 and 2 (OpenFOAM's limiter:
+   1e-14 one cell ahead of the shock), so R3's outer-boundary check
+   (|Cp| at most 1e-6) fails at Mach 3 on levels 0 and 1 (3.9e-3, 1.0e-4;
+   level 0's shock reach 0.96 against 0.9) and at Mach 2 on levels 0 and
+   1 (2.0e-4, 1.3e-6); OpenFOAM's limiter gives about 1e-13 on every
+   level. eps = (K h)^1.5 grows with the cell, and the outer cells are
+   the largest. The wall's total pressure (pitot's value all along the
+   wall in the exact flow), means over bands of angle from the axis (0-5,
+   5-15, 15-30, 30-45, 45-60, 60-75, 75-90 degrees), level 2 at Mach 3:
+   OpenFOAM's +0.41%, +0.27%, +0.05%, -0.24%, -0.19%, -0.32%, -0.90%;
+   K = 10 +0.44%, +0.30%, +0.07%, -0.22%, -0.19%, -0.33%, -0.90%; at
+   Mach 2, K = 10: +0.79%, +0.63%, +0.32%, -0.14%, -0.42%, -0.54%,
+   -1.29%. In every band the error about halves from level 1 to 2 (first
+   order), with either limiter.
 
 ## State (2026-11-21)
 
