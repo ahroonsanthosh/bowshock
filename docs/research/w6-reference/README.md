@@ -1113,10 +1113,21 @@ hemisphere at Mach 2 and 3 on levels 0 to 2).
      35,010 (not a save), with no save, or under a limit of 80,000 (35,000
      is then before half of it).
    - The ogive at Mach 1.3's level 3 (512 x 256, two processes, from
-     level 2): its residual falls about a quarter of a decade per 1,000
-     iterations, 1e-5.47 at 12,340, 1e-8.34 at 23,760 (going on); its
-     drag 0.0622265100 from about 20,000 on, moving by less than 1e-9
-     of itself since.
+     level 2): its residual fell about a quarter of a decade per 1,000
+     iterations (1e-5.47 at 12,340, 1e-8.34 at 23,760) to about 1e-10 by
+     31,000, and then stayed between 1e-9.97 and 1e-10.02, at the target
+     itself, its drag fixed to 1e-12 of itself. It met the target's five
+     records in a row at 38,540 (converged): drag 0.0622265099. The stall
+     rule would not have stopped it at the 35,000 save (its last quarter
+     there still held residuals up to 1e-8.97); on its whole history to
+     38,540 the rule holds (residuals at most 1e-9.60 over the last
+     quarter, the drag's range 7.8e-12 of it).
+     On levels 1 to 3 the estimate (O4, below) gives D = 0.0622265 and U =
+     1.75e-4, 0.28% of D: the regional change 1.49e-4 then 5.6e-5 (ratio
+     0.38, order 2.04, monotone), the face-level change 2.68e-4 then
+     1.98e-4 (ratio 0.74), U_cap 1.19e-4 (level 2's E; level 3's 6.7e-5),
+     no iterative error; V2's measures +0.58% (the axis's first cell) and
+     +1.44% (the worst cap face). The case is on no list.
    - The runner's two-process levels now start `mpirun --bind-to none`:
      by default each `mpirun` binds its ranks to cores 0 and 1, so two
      level 3s at once shared two cores at half speed each and left two
