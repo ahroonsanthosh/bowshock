@@ -5,8 +5,8 @@ Euler solver for the forward region of capped noses, where W6's fitted
 solver captures an embedded recompression shock behind the cap and its
 earlier reference (a march of characteristics, which has no internal
 shock) lay 2.6% to 3.6% of the drag below it (W6 README section 7, on
-`claude/wip/w6-build`). Nothing here is registered yet, nothing has run
-on a W6 case, and nothing is served: every capped nose stays refused.
+`claude/wip/w6-build`). Nothing has run on a W6 case, and nothing is
+served: every capped nose stays refused.
 
 The chosen code is SU2 v8.1.0, an external open-source CFD code (official
 release `SU2-v8.1.0-linux64.zip` from github.com/su2code/SU2, SHA-256
@@ -14,12 +14,23 @@ release `SU2-v8.1.0-linux64.zip` from github.com/su2code/SU2, SHA-256
 shock capturing through the bow shock and any embedded shock, on grids
 made here. It shares no code, grid or geometry with bowshock's solver.
 
+SU2's route ended at its checks (V5 at Mach 2 failed R5, below). The
+owner then chose a second independent solver in SU2's place: OpenFOAM 13
+(the OpenFOAM Foundation's package `openfoam13`, version 20260624), its
+density-based solver `shockFluid` on wedge meshes of the same grids,
+with a two-stage time step and a gradient limiter built here
+(`openfoam/`). It shares no code with bowshock's solver either. Its
+set-up trials and its registration are below.
+
 ## Files
 
 | File | What it is |
 | --- | --- |
 | `w6ref.py` | The tool: the capped-nose geometry written here from its definition (W6 README section 1); H grids for sharp noses and C grids for capped ones, nested (each level halves every spacing by sampling the same mappings); SU2's mesh and configuration; the registered settings (`SETTINGS`, `capped_spec`, `sharp_spec`); each level after the first started from the level below (`seed_restart`); the nose's pressure drag integrated here from SU2's surface pressures (trapezoid rule in r^2, on the base area); the change of the drag's distribution between levels (`dist_change`); the boundary checks |
 | `judge.py` | The verdict, as registered below, from the committed records only |
+| `ofref.py` | The OpenFOAM runner: the tool's grids as wedge meshes (`write_polymesh`), the case files (`write_case`), the level loop (`run_case`: each level from the one below by `mapFields` after a hash check, resumed from its last save after a deadline, the stall rule), the drag from the wall's faces and its changes between levels (`faces_drag`, `faces_changes`), the boundary checks, and the registered settings and runs (`REGISTERED`, `run_registered`, `run_level4`) |
+| `ofjudge.py` | OpenFOAM's verdict, as its registration below says, from the committed records only (it reuses `judge.py`'s estimate and checks) |
+| `openfoam/` | The solver module `shockFluidHeun` (`shockFluid` with Heun's two-stage step) and the gradient scheme `cellVenkatakrishnanGrad` (Venkatakrishnan's limiter with its smoothing term), with their build steps; `trials/` holds the set-up trials' scripts |
 | `queue.sh` | SU2's cases in order inside one two-hour background window; a case goes on from its first unfinished level (each finished level keeps its record, `L*/record.json`, with the hashes of the case's spec and of the level's solution file, both checked before the next level starts from it; a level whose SU2 was killed keeps none), one process per case (a lock the tool and SU2 hold), and no level starts that the window could not see finish (a start condition only) |
 | `trials-r2/` | Revision 2's trials (below): `trial.py` runs each candidate setting on the trial case and applies the trial rules; `runs/` holds the records, as `runs/` does for the registered cases. `w6ref.py` takes two optional settings for them (`grad`, `limiterIter`); without them it writes SU2's file byte for byte as before |
 | `fitted/lane.sh` | The fitted solver's families that W6 left without nj = 80, run with W6's own runners on the lanes' frozen source (ae794e4) |
@@ -1108,6 +1119,16 @@ at Mach 2.5, which is no check case.
      level 3s at once shared two cores at half speed each and left two
      idle (the trials' level 3s ran so from 06:30 to 09:55). Where a
      process runs does not change what it computes.
+   - The monitor's start rows: a level, and each resumed run of it,
+     writes a row at the iteration it starts from, before any step, where
+     d(rho)/dt is 0 (1e-150 in the history). The runner kept those rows,
+     and where a run resumed from a save at a multiple of 10 iterations
+     its row replaced the one the run before had written there, so the
+     stall rule's "every residual at most 1e-9" could have passed on a
+     row whose residual was above it. `ofref._joined` now leaves each
+     start's own row out. No trial resumed at a multiple of 10 (they
+     resumed at 12,341, 15,225, 42,815 and the like), and the stall
+     rule's results above are the same without those rows.
 
 ## State (2026-11-21)
 

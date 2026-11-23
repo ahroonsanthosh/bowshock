@@ -483,13 +483,19 @@ def _table(path):
 
 
 def _joined(case, fo, name):
-    """A function object's per-iteration table over every start (a resumed run writes a new folder)."""
+    """
+    A function object's per-iteration table over every start (a resumed run
+    writes a new folder). Each start's own row (the iteration it starts
+    from, before any step: d(rho)/dt there is 0, not a residual) is left
+    out, so it never stands in for the row the run before it wrote there.
+    """
     d = os.path.join(case, "postProcessing", fo)
     parts = sorted(os.listdir(d), key=float)
     rows = {}
     for t in parts:
         for row in _table(os.path.join(d, t, name)):
-            rows[row[0]] = row  # a later start's row for the same iteration replaces the earlier
+            if row[0] != float(t):
+                rows[row[0]] = row  # a later start's row for the same iteration replaces the earlier
     return np.array([rows[k] for k in sorted(rows)])
 
 
