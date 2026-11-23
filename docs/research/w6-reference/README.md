@@ -1517,6 +1517,33 @@ at `convergedAt`, not only the first; a fast level runs some rows past
 its `convergedAt` before OpenFOAM rereads its control file. With that,
 the registration is in force and the checks may run (O9's (2)).
 
+## OpenFOAM's checks (O5), as they finish
+
+Run by `ofqueue.sh` in two lanes (V5 at Mach 2, then V2 at Mach 1.3, V1
+at Mach 1.3 and V3; V5 at Mach 3, then V2 at Mach 2 and 3 and V1 at Mach
+3), each level's record, `monitor.csv` and `wall.csv` committed in
+`runs-of/` as it finishes. Judged by `ofjudge.py --checks-only`, exactly as
+registered; the verdict file is not kept.
+
+| Check | Value | Fitted | Difference | U | Difference / U (grid part) | Verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| V5, hemisphere-cylinder, Mach 2 | 0.7883893 | 0.788934 | -5.4e-4 (-0.069%) | 6.05e-3 (0.77%) | 0.087 (0.44) | pass |
+
+- V5 at Mach 2 (2026-11-23). R3's boundary check sent it to the domain
+  widened once: the first attempt's level 1 had |Cp| 1.3e-6 against the
+  outer boundary (kept as `runs-of/V5-hemisphereM2.try1`). Its levels 0
+  and 1 give H2K10's drags to 7.7e-13 and 1.2e-12. Widened, levels 1 to
+  3 have |Cp| 5.4e-10, 1.6e-13 and 1.8e-13 against the outer boundary and
+  converged (to 1e-10) at 11,060, 18,560 and 26,420 iterations, so no
+  iterative error is charged. The drags on levels 1 to 3, 0.7885211,
+  0.7881666 and 0.7883893, are not monotone, so U_total is 3 times the
+  larger change of the drag's distribution (3.5e-4): U_grid 1.06e-3
+  (0.13%); the ratios are 0.63 (regions) and 0.47 (faces). U_cap is
+  4.99e-3 (E on level 2; 2.76e-3 on level 3): the cap's wall total
+  pressure is off by at most 2.1% on level 2 and 1.2% on level 3. The
+  difference is within U plus the fitted band, and within the grid part
+  alone; the same both ways. **Pass.**
+
 ## State (2026-11-23)
 
 - SU2: the tool, the geometry check, the set-up trials 1 to 13, the
@@ -1540,7 +1567,12 @@ the registration is in force and the checks may run (O9's (2)).
   with changes, made and confirmed. A level 4 trial on the off-list ogive
   at Mach 1.3 is under way (level 4's iteration limit, O3); it must
   converge or stall by 100,000 before V4's level 4 runs.
-- Next: V1 to V5 on OpenFOAM (with V4's
+- OpenFOAM's checks are running (the section above): V5 at Mach 2
+  passed; V5 at Mach 3 is on its level 3 (its residual stays near
+  1e-3.2 while its drag has held to about 1e-10, so it runs to its
+  60,000-iteration limit and counts by R3's iterative rule); V2 at Mach
+  1.3 is on its level 2.
+- Next: the rest of V1 to V5 on OpenFOAM (with V4's
   level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
   `ofjudge.py`'s verdict, reviewed. Nothing is served before that verdict
   serves it: every capped nose stays refused.
