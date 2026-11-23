@@ -778,8 +778,13 @@ def _set_control(case, key, value):
     open(path, "w").write(cd)
 
 
-def _monitor_tail(case, n, after=None):
-    """The monitor's last n rows (every row if n is None; iteration, log10 residual) from the latest start's file, past iteration `after` if given."""
+def _monitor_tail(case, n, after=None, since=None):
+    """
+    The monitor's last n rows (every row if n is None; iteration, log10
+    residual) from the latest start's file: the file of the run that
+    started at iteration `after` if given (none until that run has
+    written it), its rows past iteration `since` (else past `after`).
+    """
     d = os.path.join(case, "postProcessing", "resid")
     if not os.path.isdir(d) or not os.listdir(d):
         return []
@@ -788,7 +793,8 @@ def _monitor_tail(case, n, after=None):
         if after is not None and float(last) < after:
             return []  # this run's file is not written yet
         rows = [l.split() for l in open(os.path.join(d, last, "volFieldValue.dat")) if l.strip() and not l.startswith("#")]
-        rows = [r for r in rows if after is None or float(r[0]) > after]
+        past = since if since is not None else after
+        rows = [r for r in rows if past is None or float(r[0]) > past]
         rows = rows if n is None else rows[-n:]
         return [(float(r[0]), 0.5 * math.log10(max(float(r[1]), 1e-300)) - math.log10(1.4)) for r in rows]
     except (OSError, ValueError, IndexError):
@@ -891,7 +897,7 @@ def _run_solver(case, cmd, log, target, deadline, stall, after, build):
         while proc.poll() is None:
             tail = _monitor_tail(case, 5, after)
             if not told:
-                for it, v in _monitor_tail(case, None, scanned):
+                for it, v in _monitor_tail(case, None, after, since=scanned):
                     streak = streak + 1 if v <= target else 0
                     scanned = it
                     if streak == 5:
@@ -929,7 +935,7 @@ def _run_solver(case, cmd, log, target, deadline, stall, after, build):
         raise Interrupted(f"{case}: the solver was stopped from outside ({proc.returncode})")
     if not told and converged_at is None and proc.returncode == 0:
         # Rows the last poll did not reach (the solver ended between polls).
-        for it, v in _monitor_tail(case, None, scanned):
+        for it, v in _monitor_tail(case, None, after, since=scanned):
             streak = streak + 1 if v <= target else 0
             if streak == 5:
                 converged_at = int(it)
