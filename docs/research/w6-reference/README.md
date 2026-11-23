@@ -1028,6 +1028,30 @@ at Mach 2.5, which is no check case.
    Mach 2, K = 10: +0.79%, +0.63%, +0.32%, -0.14%, -0.42%, -0.54%,
    -1.29%. In every band the error about halves from level 1 to 2 (first
    order), with either limiter.
+   OpenFOAM's limiter's cycling level 2 at Mach 2, stopped at iteration
+   47,610 (still cycling about 1e-2.2): over its last quarter the drag
+   ranges over 1.8e-5 (2.3e-5 of it) and the means of its last two
+   eighths differ by 7.7e-9 (4e-4 of the range): R3's iterative rule
+   takes it, with an iterative error of 2.3e-5 of the drag.
+   The capped ogive (4 calibers, r_n/R 0.10, off W6's list), K = 10:
+   - Mach 1.3, levels 0 to 2: 0.0626688 (level 0 at its 30,000-iteration
+     limit, residual 1e-9.03), 0.0623104, 0.0622429 (converged in 20,380
+     and 15,650 iterations); OpenFOAM's limiter (item 15) 0.0626185,
+     0.0623083, 0.0622263: they differ by 2.7e-4 of the drag on level
+     2. The axis's total pressure at the wall +6.8%, +1.9%, +0.63% from
+     pitot (OpenFOAM's limiter +6.4%, +1.9%, +0.6%). The outer boundary's
+     |Cp| 6.4e-7, 2.2e-7, 6.8e-12 (within R3's 1e-6).
+   - Mach 3, levels 0 and 1, both limiters: level 0 converged (14,200
+     and 14,370 iterations), level 1 stopped at its 40,000-iteration
+     limit at 1e-9.88 and 1e-9.91 (falling slowly, not cycling); drags
+     0.0554738, 0.0554158 (K = 10) and 0.0554287, 0.0553667 (OpenFOAM's);
+     the axis's total pressure at the wall +8.6%, +3.8% and +8.5%, +3.7%.
+     The outer boundary's |Cp| at most 6.4e-7 with either.
+   The runner (`ofref.run_case`) now leaves the iteration limits out of
+   its hash: each level keeps its own limit in its `start.json` and
+   record and is checked against it when resumed, so a case can be given
+   more levels (`openfoam/trials/rehash.py` moved the trial cases made
+   before this to the new hash, after checking each against the old one).
 
 ## State (2026-11-21)
 

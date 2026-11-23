@@ -25,3 +25,6 @@ case's levels through the registered runner (`ofref.run_case`) with
 angle on a hemisphere (from a level's `wall.csv`); `outerwhere.py` finds
 where on the outer boundary |Cp| is largest and prints that column of
 cells inward.
+`rehash.py` moves a trial case made before the runner's hash left out the
+iteration limits to the new hash, after checking each level against the
+old one.

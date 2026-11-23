@@ -727,8 +727,10 @@ def solution_hash(time_dir):
 
 
 def settings_hash(spec, settings):
+    """The spec's and settings' hash, without the levels run and the iteration limits (each level keeps its own)."""
     keep = {k: v for k, v in spec.items() if k not in ("first_level", "levels")}
-    return hashlib.sha256(json.dumps([keep, settings], sort_keys=True).encode()).hexdigest()
+    rest = {k: v for k, v in settings.items() if k != "iters"}
+    return hashlib.sha256(json.dumps([keep, rest], sort_keys=True).encode()).hexdigest()
 
 
 def _solve(case, np_, target, deadline):
@@ -771,8 +773,9 @@ def run_case(spec, run_dir, settings, np_, deadline=None):
     Every level of a case, coarsest first. settings: the registered
     OpenFOAM settings (solver, libs, flux, reconstruct, grad, outer, maxCo,
     smoothing), with "target" (log10 of the residual a level stops at),
-    "iters" (each level's iteration limit) and "checkpoint" (iterations
-    between saves), and optionally "startGrad" and "startTarget": a level
+    "iters" (each level's iteration limit, kept in the level's start.json
+    and record, not in the hash, so a case can be given more levels) and
+    "checkpoint" (iterations between saves), and optionally "startGrad" and "startTarget": a level
     started from the free stream then runs with startGrad to 10^startTarget
     first and goes on with grad (the record's iterative measures are on
     grad's iterations only). np_: processes per level. A level that finished keeps
@@ -847,10 +850,12 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
                     f.write(HEADER.format(cls="dictionary", loc="system", obj="decomposeParDict")
                             + f"numberOfSubdomains {np_[level]};\ndecomposer scotch;\n")
                 assert _foam("decomposePar -force", d, "log.decompose") == 0, "decomposePar failed"
-            json.dump({"seeded": seeded, "meshOK": mesh_ok, "settingsHash": sh,
+            json.dump({"seeded": seeded, "meshOK": mesh_ok, "settingsHash": sh, "limit": settings["iters"][level],
                        "seedSha256": brec.get("solutionSha256") if seeded else None,
                        "stage": 1 if staged else 2, "stage2From": None if staged else 0}, open(start, "w"))
         st = json.load(open(start))
+        if st["settingsHash"] != sh or st.get("limit") != settings["iters"][level]:
+            raise SystemExit(f"{start} was made with another spec, settings or iteration limit")
         t0 = time.time()
         if st["stage"] == 1:
             code = _solve(d, np_[level], settings["startTarget"], deadline)
@@ -868,7 +873,7 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
         if code == 0 and np_[level] > 1:
             code = _foam("reconstructPar -latestTime", d, "log.reconstruct")
         seconds = time.time() - t0
-        rec = {"level": level, "ni": ni, "nj": nj, "exit": code, "seconds": seconds, "seeded": st["seeded"],
+        rec = {"level": level, "ni": ni, "nj": nj, "exit": code, "seconds": seconds, "limit": st["limit"], "seeded": st["seeded"],
                "meshOK": st["meshOK"], "seedSha256": st["seedSha256"]}
         if code == 0:
             last = max(int(t) for t in os.listdir(d) if re.fullmatch(r"\d+", t))
@@ -888,7 +893,7 @@ def _run_levels(spec, run_dir, settings, np_, deadline):
             h = max(1, n // 2)
             rec.update({"time": last, "iterations": int(m[-1, 0]), "logRes": float(m[-1, 1]),
                         "converged": bool(len(_monitor_tail(d, 5)) == 5 and max(v for _, v in _monitor_tail(d, 5)) <= settings["target"]),
-                        "atLimit": last >= settings["iters"][level],
+                        "atLimit": last >= st["limit"],
                         "drag": faces_drag(faces), "forceDrag": float(m[-1, 2]),
                         "dragRangeLastQuarter": float(q.max() - q.min()),
                         "dragMeanLastEighth": float(q[-h:].mean()), "dragMeanEighthBefore": float(q[-2 * h:-h].mean()),
