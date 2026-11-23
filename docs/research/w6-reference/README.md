@@ -672,7 +672,7 @@ limit.
 The control fails the screen, as V5 at Mach 2 failed: T shows the same
 fault.
 
-## The second solver: OpenFOAM's set-up trials (2026-11-22, on the trial case T only, before any registration)
+## The second solver: OpenFOAM's set-up trials (2026-11-22 and 23, before any registration)
 
 OpenFOAM 13 (`openfoam13` 20260624), its density-based solver
 `shockFluid` (the Kurganov-Tadmor central-upwind flux, local time
@@ -684,8 +684,11 @@ Non-dimensional as OpenFOAM's tutorials (p = 1, T = 1, speed of sound 1).
 Per iteration, from OpenFOAM's own function objects (it refuses compiled
 code when run as root): the RMS over cells of d(rho)/dt under the local
 time step, and the drag (the wall's pressure force along x, from
-(p - 1) x-hat against the wall's area vectors). All on T, the hemisphere
-at Mach 2.5, which is no check case.
+(p - 1) x-hat against the wall's area vectors). Items 1 to 9 are on T,
+the hemisphere at Mach 2.5, which is no check case; the later items name
+their cases (the sharp cone at Mach 2, the capped ogive of 4 calibers at
+r_n/R 0.10 at Mach 1.3 and 3, both on no list, and from item 16 V5's
+hemisphere at Mach 2 and 3 on levels 0 to 2).
 
 1. OpenFOAM's usual settings (van Leer reconstruction, Courant number
    0.5): level 0's drag settles within 1.9e-4 but its residual stops at
