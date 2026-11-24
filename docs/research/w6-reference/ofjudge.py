@@ -41,8 +41,8 @@ FS_MONOTONE_REGISTERED = 1.25  # `judge.su2_estimate`'s factor on a monotone tot
 # Amendment 3's blind checks: the forebody pressure drag of each sharp tangent
 # ogive by the method of characteristics (0006; `moc-references.test.ts`): the
 # second-order extrapolation from 640 and 1280 intervals, to 1e-9 (the change
-# from 640 to 1280 intervals is at most 1.1e-7).
-BLIND_MOC = {"B-ogive3M1.5": 0.105293668, "B-ogive3M3": 0.089916561, "B-ogive5M1.3": 0.042818100,
+# from 640 to 1280 intervals is at most 8.6e-8).
+BLIND_MOC = {"B-ogive3M1.35": 0.107660028, "B-ogive3M3": 0.089916561, "B-ogive5M1.3": 0.042818100,
              "B-ogive5M2": 0.039655554, "B-ogive5M3": 0.036659195}
 # V5's levels in the set-up trials (README, trials items 16 and 17), with these
 # settings, by (Mach number, widening): (drag, its range over the last quarter)
