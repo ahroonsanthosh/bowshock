@@ -2,7 +2,8 @@
  * Amendment 3's blind checks (README, "OpenFOAM's registration"): the
  * forebody pressure drag of sharp tangent ogives by the method of
  * characteristics (0006), on 320, 640 and 1280 intervals, with the
- * second-order extrapolation from the last two. Not part of the test suite
+ * second-order extrapolation from the last two, and the effect of moving the
+ * start line from 1e-3 L to 2.5e-4 L (on 640 intervals). Not part of the test suite
  * (vite includes tests/ only); run with
  *   MOC_OUT=<file.json> npx vitest run --root <repo> --config <a config including this file>
  * The TN 3716 ogive at Mach 1.98 (V3's 0.0988034) is computed as a control.
@@ -38,7 +39,7 @@ const noseDrag = (body: Body, mach: number, wall: readonly { x: number; p: numbe
 
 const CASES = [
   { name: 'V3-ogive3M1.98 (control)', calibers: 3, mach: 1.98 },
-  { name: 'B-ogive3M1.5', calibers: 3, mach: 1.5 },
+  { name: 'B-ogive3M1.35', calibers: 3, mach: 1.35 },
   { name: 'B-ogive3M3', calibers: 3, mach: 3 },
   { name: 'B-ogive5M1.3', calibers: 5, mach: 1.3 },
   { name: 'B-ogive5M2', calibers: 5, mach: 2 },
@@ -58,7 +59,9 @@ it('computes the blind checks\' references', () => {
     const [d1, d2, d3] = drags as [number, number, number];
     const ratio = (d2 - d1) / (d3 - d2);
     const extrapolated = d3 + (d3 - d2) / 3;
-    const row = { ...c, drags, ratio, extrapolated };
+    // The start line moved from 1e-3 L to 2.5e-4 L, on 640 intervals: its effect.
+    const nearerStart = noseDrag(body, c.mach, characteristics(body, { mach: c.mach, gamma, intervals: 640, start: 2.5e-4 }).wall);
+    const row = { ...c, drags, ratio, extrapolated, nearerStart, startEffect: nearerStart - d2 };
     out.push(row);
     console.log(JSON.stringify(row));
   }

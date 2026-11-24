@@ -32,10 +32,12 @@ R = w6ref.R
 FORCE = 1e-9  # O3: the faces' drag and OpenFOAM's force within 1e-9 of the drag
 SETTLED_RESIDUAL = -9  # Amendment 1 on OpenFOAM: the residual within a decade of its target, 1e-10
 REPRODUCE = 1e-12  # O5: V5's levels against the trials', of the drag at least (else the sum of the levels' iterative ranges)
-# Amendment 3 (README, "OpenFOAM's registration"): the distribution's term of the
-# grid part, R4's U_dist, times a factor of safety of 3 in every OpenFOAM estimate
-# (the checks, the W6 cases and the hold-out).
-FS_DIST = 3.0
+# Amendment 3 (README, "OpenFOAM's registration"): a factor of safety of 3 on both
+# terms of R4's grid part in every OpenFOAM estimate (the checks, the W6 cases and
+# the hold-out): U_dist (registered with none) times 3, and U_total's monotone
+# branch with 3 in place of 1.25 (its other branch is already 3 times the change).
+FS = 3.0
+FS_MONOTONE_REGISTERED = 1.25  # `judge.su2_estimate`'s factor on a monotone total
 # Amendment 3's blind checks: the forebody pressure drag of each sharp tangent
 # ogive by the method of characteristics (0006; `moc-references.test.ts`): the
 # second-order extrapolation from 640 and 1280 intervals, to 1e-9 (the change
@@ -291,10 +293,14 @@ def of_case(run, levels, build, x_end=None, charge=True):
     except ValueError as e:  # the wall faces do not nest (O4)
         return dict(out, failures={"-": [str(e)]}, reference=False, needsLevel4=False)
     est = judge.su2_estimate(D, [c["regions"] for c in ch], [c["vertex"] for c in ch], swings)
-    # Amendment 3: U_dist times FS_DIST (U_dist is infinite where the regional change does not fall).
+    # Amendment 3: U_dist times FS (U_dist is infinite where the regional change does not
+    # fall, and stays so); a monotone total's U_total with FS in place of 1.25.
     est["uDistRegistered"] = est["uDist"]
+    est["uTotalRegistered"] = est["uTotal"]
     est["uGridRegistered"] = est["uGrid"]
-    est["uDist"] = FS_DIST * est["uDist"]
+    est["uDist"] = FS * est["uDist"]
+    if est["order"] is not None:
+        est["uTotal"] = FS / FS_MONOTONE_REGISTERED * est["uTotal"]
     est["uGrid"] = max(est["uTotal"], est["uDist"])
     out.update(est)
     u_cap = 0.0
@@ -440,12 +446,17 @@ def _check_v4(run, build, charge):
         return out
     D3, D4 = a["value"], b["value"]
     step = abs(D4 - D3)
-    # Amendment 3: V4 tests how the estimate behaves at level 4, so it keeps the
-    # registered terms (without the factor of safety): it is never looser than registered.
+    # Amendment 3: the step keeps the registered grid part (the factor would only
+    # loosen it); the containment must hold with the registered U and with the
+    # amended U, so V4 is never looser than registered and also tests the amended
+    # intervals that a level-4 fallback is served with.
     allowed = (1 - a["r"]) * a["uGridRegistered"]
-    ua, ub = a["uRegistered"], b["uRegistered"]
     out.update(D3=D3, D4=D4, step=step, allowedStep=allowed)
-    out["inside"] = D3 - ua <= D4 - ub and D4 + ub <= D3 + ua
+    def inside(ua, ub):
+        return D3 - ua <= D4 - ub and D4 + ub <= D3 + ua
+    out["insideRegistered"] = inside(a["uRegistered"], b["uRegistered"])
+    out["insideAmended"] = inside(a["u"], b["u"])
+    out["inside"] = out["insideRegistered"] and out["insideAmended"]
     out["pass"] = step <= allowed and out["inside"]
     return out
 

@@ -1992,8 +1992,9 @@ back to the owner; by Amendment 2 the rerun is final.
   OpenFOAM 13. Its set-up trials (items 1 to 17 above) are done, and its
   registration (above) is in force: its independent review passed it
   with changes, made and confirmed. A level 4 trial on the off-list ogive
-  at Mach 1.3 is under way (level 4's iteration limit, O3); it must
-  converge or stall by 100,000 before V4's level 4 runs.
+  at Mach 1.3 (level 4's iteration limit, O3) is paused at 1,163
+  iterations, waiting for four free cores; it must converge or stall by
+  100,000 before V4's level 4 runs.
 - OpenFOAM's checks (the section above): V5 passed at Mach 2 and Mach
   3, and V2 at Mach 1.3. V1 at Mach 1.3 failed: its grid does not pass
   `checkMesh` (skewness on free-stream boundary faces), so by the
@@ -2007,14 +2008,14 @@ back to the owner; by Amendment 2 the rerun is final.
   case runs and the route goes back to the owner. V2 at Mach 3 and V1
   at Mach 3 are still running, for the record.
 - The owner chose Amendment 3 after V3's failure: a factor of safety
-  of 3 on U's distribution term in every OpenFOAM estimate, tested on
-  five blind checks (sharp tangent ogives against the method of
-  characteristics) whose results nobody has seen, reviewed independently
-  before use. It is being drafted: its code (`ofjudge.FS_DIST`,
-  `ofref.BLIND`, `moc-references.test.ts`) is committed but **not in
-  force** until its text is written here and its review confirmed; no
-  blind check has run.
-- Next: Amendment 3's text, its review, the blind checks; then the rest
+  of 3 on U's grid part in every OpenFOAM estimate, tested on five blind
+  checks (sharp tangent ogives against the method of characteristics)
+  whose results nobody has seen, reviewed independently before use. Its
+  review passed it with changes; they are made and go back to the
+  reviewer for confirmation. Until then it is **not in force**: its code
+  is committed, so `ofjudge.py` as committed prints V3 as passing, but
+  the verdict in force is V3's failure. No blind check has run.
+- Next: Amendment 3's confirmation, the blind checks; then the rest
   of V1 to V5 (with V4's level 4), the W6 cases and the hold-out. No W6
   case runs and nothing is served before then: every capped nose stays
   refused.

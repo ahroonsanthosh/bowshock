@@ -1125,7 +1125,7 @@ FLAT_TO = 0.125
 
 # Amendment 3 (README, "OpenFOAM's registration"): the blind checks, sharp
 # tangent ogives on V3's H grid, by name: (calibers, Mach number).
-BLIND = {"B-ogive3M1.5": (3, 1.5), "B-ogive3M3": (3, 3.0), "B-ogive5M1.3": (5, 1.3), "B-ogive5M2": (5, 2.0),
+BLIND = {"B-ogive3M1.35": (3, 1.35), "B-ogive3M3": (3, 3.0), "B-ogive5M1.3": (5, 1.3), "B-ogive5M2": (5, 2.0),
          "B-ogive5M3": (5, 3.0)}
 
 
