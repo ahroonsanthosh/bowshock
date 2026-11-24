@@ -1595,8 +1595,8 @@ registered; the verdict file is not kept.
   at Mach 1.3 is under way (level 4's iteration limit, O3); it must
   converge or stall by 100,000 before V4's level 4 runs.
 - OpenFOAM's checks are running (the section above): V5 passed at
-  Mach 2 and Mach 3; V2 at Mach 1.3 is on its level 3 and V2 at Mach 2
-  has started.
+  Mach 2 and Mach 3; V2 at Mach 1.3 and at Mach 2 are each on their
+  level 3.
 - Next: the rest of V1 to V5 on OpenFOAM (with V4's
   level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
   `ofjudge.py`'s verdict, reviewed. Nothing is served before that verdict
