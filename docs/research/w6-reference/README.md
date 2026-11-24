@@ -2119,10 +2119,11 @@ information.
 | Check | Drag | Exact (MOC) | Difference | U | Difference / U | Difference / registered U | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | B-ogive5M1.3, 5-caliber tangent ogive, Mach 1.3 | 0.0428258 | 0.0428181 | +7.66e-6 (+0.018%) | 5.88e-5 (0.137%) | 0.13 | 0.39 | pass |
+| B-ogive3M1.35, 3-caliber tangent ogive, Mach 1.35 | 0.1076642 | 0.1076600 | +4.15e-6 (+0.0039%) | 1.69e-4 (0.157%) | 0.025 | 0.074 | pass |
 
 - B-ogive5M1.3 (2026-11-24). Every level's `checkMesh` reports "Mesh
   OK.": the largest skewness is 1.39, 1.51, 1.64 and 1.75 on levels 0 to
-  3. Levels 0 to 3 converged at 24,550, 17,740, 9,050 and 8,470
+  3. Levels 0 to 3 converged at 23,980, 17,710, 9,050 and 8,470
   iterations, with |Cp| against the outer boundary 3.3e-8, 1.7e-12,
   1.1e-12 and 3.2e-12. The drags on levels 1 to 3, 0.0428952, 0.0428419
   and 0.0428258, are monotone (changes 5.3e-5, then 1.6e-5; order 1.73),
@@ -2133,8 +2134,21 @@ information.
   limits pass. The difference from the method of characteristics'
   0.0428181 is +7.66e-6 (+0.018%), 0.13 of U and 0.39 of the registered
   U; the same both ways. **Pass.**
-- B-ogive3M1.35 is on its level 3, with B-ogive3M3 behind it; B-ogive5M3
-  and B-ogive5M2 are queued in the other lane, behind V1 at Mach 3.
+- B-ogive3M1.35 (2026-11-24). Every level's `checkMesh` reports "Mesh
+  OK.": the largest skewness is 2.28, 1.87, 2.47 and 1.94 on levels 0 to
+  3. Levels 0 to 3 converged at 19,120, 15,570, 9,880 and 9,480
+  iterations, with |Cp| against the outer boundary 4.7e-9, 1.2e-12,
+  1.3e-12 and 2.1e-12. The drags on levels 1 to 3, 0.1078301, 0.1077120
+  and 0.1076642, are monotone (changes 1.18e-4, then 4.8e-5; order 1.30),
+  so U_total is 9.77e-5 (4.07e-5 registered). The larger change of the
+  drag's distribution by regions is 5.63e-5 (ratio 0.32, taken as 0.5),
+  so U_dist is 1.69e-4 (5.63e-5 registered), and U is U_dist, 1.69e-4
+  (0.157%). There is no cap and no iterative error is charged; R4's
+  limits pass. The difference from the method of characteristics'
+  0.1076600 is +4.15e-6 (+0.0039%), 0.025 of U and 0.074 of the
+  registered U; the same both ways. **Pass.**
+- B-ogive3M3 is on its level 3; B-ogive5M3 and B-ogive5M2 are queued in
+  the other lane, behind V1 at Mach 3.
 
 ## State (2026-11-24)
 
@@ -2178,9 +2192,10 @@ information.
   whose results nobody has seen, reviewed independently before use. Its
   review passed it with changes, all made and confirmed, and it is **in
   force**: V3 is judged under it, but its pass is not evidence for the
-  amendment; the five blind checks are. The first, the 5-caliber ogive at
-  Mach 1.3, passed (0.13 of U); the other four are running or queued.
-- Next: the other four blind checks; then the rest
+  amendment; the five blind checks are. Two have passed: the 5-caliber
+  ogive at Mach 1.3 (0.13 of U) and the 3-caliber at Mach 1.35 (0.025 of
+  U); the other three are running or queued.
+- Next: the other three blind checks; then the rest
   of V1 to V5 (with V4's level 4), the W6 cases and the hold-out. No W6
   case runs and nothing is served before then: every capped nose stays
   refused.
