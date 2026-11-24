@@ -1739,6 +1739,7 @@ pitot's, each within 3% of pitot's Cp.
 | Check | Axis's first cell (of pitot's Cp) | Worst cap face (of pitot's Cp) | Verdict |
 | --- | --- | --- | --- |
 | V2, capped ogive, Mach 1.3 | +0.57% (+0.91%) | +1.44% (+2.28%) | pass |
+| V2, capped ogive, Mach 2 | +0.90% (+1.10%) | +2.08% (+2.53%) | pass |
 
 - V2 at Mach 1.3 (2026-11-24). Level 0 ran to its limit (30,000
   iterations, residual 1e-6.45); it is not a level used. Levels 1 and 2
@@ -1754,6 +1755,20 @@ pitot's, each within 3% of pitot's Cp.
   judged on the finest level used). The axis's first cell is 6.7%, 1.9%,
   0.62% and 0.57% off on levels 0 to 3. The drags on levels 1 to 3,
   0.0624216, 0.0623564 and 0.0623407, are V4's, judged once its level 4
+  has run. **Pass.**
+- V2 at Mach 2 (2026-11-24). Levels 0 and 1 converged at 19,570 and
+  15,220 iterations. Levels 2 and 3 stopped by the stall rule at 30,000
+  (half their limit, the first save it is tested at), with residuals
+  flat at about 1e-9.75 and 1e-9.42: every residual of their last
+  quarter at or below 1e-9, their drags' ranges 1.6e-13 and 2.0e-13 and
+  drifts 2.9e-15 and 4.2e-14, against a bound of 5.9e-11. |Cp| against
+  the outer boundary is 6.1e-11, 1.0e-13 and 1.3e-13 on levels 1 to 3.
+  On level 3 the axis's first cell's total pressure is 0.90% above
+  pitot's, and the 38 cap faces are within 2.08%. On level 2 the worst
+  cap face was 3.13% (3.81% of pitot's Cp, which would fail; V2 is
+  judged on the finest level used). The axis's first cell is 9.5%, 3.9%,
+  1.12% and 0.90% off on levels 0 to 3. The drags on levels 1 to 3,
+  0.0586348, 0.0586151 and 0.0586148, are V4's, judged once its level 4
   has run. **Pass.**
 
 V1 at Mach 1.3 fails, on the mesh, not on the flow.
@@ -1817,9 +1832,11 @@ V1 at Mach 1.3 fails, on the mesh, not on the flow.
   grids' outer boundary flat to x = L/8) passed its independent review
   with changes, all made and confirmed, and is in force. V3's first-grid
   run was stopped and set aside under it (`runs-of/*.grid1`). V2 at Mach
-  2 is on its level 3.
-- Next: V1 at Mach 1.3 and V3 from level 0 on the new grids, and V1 at
-  Mach 3; the rest of V1 to V5 on OpenFOAM
+  2 then passed. On the new grid, V1 at Mach 1.3's levels 0 to 2
+  converged and pass `checkMesh`; its level 3 is running. V2 at Mach 3
+  is running.
+- Next: V1 at Mach 1.3's level 3, V3 from level 0 on the new grid, V2 at
+  Mach 3, and V1 at Mach 3; the rest of V1 to V5 on OpenFOAM
   (with V4's level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
   `ofjudge.py`'s verdict, reviewed. Nothing is served before that verdict
   serves it: every capped nose stays refused.
