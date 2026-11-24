@@ -32,6 +32,13 @@ R = w6ref.R
 FORCE = 1e-9  # O3: the faces' drag and OpenFOAM's force within 1e-9 of the drag
 SETTLED_RESIDUAL = -9  # Amendment 1 on OpenFOAM: the residual within a decade of its target, 1e-10
 REPRODUCE = 1e-12  # O5: V5's levels against the trials', of the drag at least (else the sum of the levels' iterative ranges)
+# Amendment 3 (README, "OpenFOAM's registration"): the distribution's term of the
+# grid part, R4's U_dist, times a factor of safety of 3 in every OpenFOAM estimate
+# (the checks, the W6 cases and the hold-out).
+FS_DIST = 3.0
+# Amendment 3's blind checks: the forebody pressure drag of each sharp tangent
+# ogive by the method of characteristics (0006; `moc-references.test.ts`).
+BLIND_MOC = {}
 # V5's levels in the set-up trials (README, trials items 16 and 17), with these
 # settings, by (Mach number, widening): (drag, its range over the last quarter)
 # as their records hold them. The registered runs' drags on the same levels and
@@ -281,6 +288,11 @@ def of_case(run, levels, build, x_end=None, charge=True):
     except ValueError as e:  # the wall faces do not nest (O4)
         return dict(out, failures={"-": [str(e)]}, reference=False, needsLevel4=False)
     est = judge.su2_estimate(D, [c["regions"] for c in ch], [c["vertex"] for c in ch], swings)
+    # Amendment 3: U_dist times FS_DIST (U_dist is infinite where the regional change does not fall).
+    est["uDistRegistered"] = est["uDist"]
+    est["uGridRegistered"] = est["uGrid"]
+    est["uDist"] = FS_DIST * est["uDist"]
+    est["uGrid"] = max(est["uTotal"], est["uDist"])
     out.update(est)
     u_cap = 0.0
     if spec["rn"] > 0:
@@ -301,6 +313,7 @@ def of_case(run, levels, build, x_end=None, charge=True):
     out["uCap"] = u_cap
     out["uIter"] = u_iter
     out["u"] = est["uGrid"] + u_cap + u_iter
+    out["uRegistered"] = est["uGridRegistered"] + u_cap + u_iter  # before Amendment 3 (V4 keeps it)
     D3 = abs(est["value"])
     soft = []
     if not est["rhoVertex"] < 1:
@@ -399,6 +412,22 @@ def check_v3(run, build):
     return both_ways(_check_v3, run, build)
 
 
+def _check_blind(run, build, charge, exact):
+    est = of_case(run, [1, 2, 3], build, charge=charge)
+    out = {"name": "B", "exact": exact, "estimate": est}
+    out["error"] = est["value"] - exact if "value" in est else None
+    out["pass"] = bool(est["reference"]) and abs(out["error"]) <= est["u"]
+    return out
+
+
+def check_blind(name):
+    """Amendment 3's blind checks: as V3, against the method of characteristics' drag."""
+    @guarded
+    def check(run, build):
+        return both_ways(lambda r, b, c: _check_blind(r, b, c, BLIND_MOC[name]), run, build)
+    return check
+
+
 def _check_v4(run, build, charge):
     a = of_case(run, [1, 2, 3], build, charge=charge)
     b = of_case(run, [2, 3, 4], build, charge=charge)
@@ -408,9 +437,13 @@ def _check_v4(run, build, charge):
         return out
     D3, D4 = a["value"], b["value"]
     step = abs(D4 - D3)
-    out.update(D3=D3, D4=D4, step=step, allowedStep=(1 - a["r"]) * a["uGrid"])
-    out["inside"] = D3 - a["u"] <= D4 - b["u"] and D4 + b["u"] <= D3 + a["u"]
-    out["pass"] = step <= (1 - a["r"]) * a["uGrid"] and out["inside"]
+    # Amendment 3: V4 tests how the estimate behaves at level 4, so it keeps the
+    # registered terms (without the factor of safety): it is never looser than registered.
+    allowed = (1 - a["r"]) * a["uGridRegistered"]
+    ua, ub = a["uRegistered"], b["uRegistered"]
+    out.update(D3=D3, D4=D4, step=step, allowedStep=allowed)
+    out["inside"] = D3 - ua <= D4 - ub and D4 + ub <= D3 + ua
+    out["pass"] = step <= allowed and out["inside"]
     return out
 
 
@@ -472,6 +505,9 @@ def main():
             continue
         fn = {"V1": check_v1, "V2": check_v2, "V3": check_v3, "V5": check_v5}[name.split("-")[0]]
         verdict["checks"][name] = fn(run_of(name), ofref.registered_build(name))
+    for name in ofref.BLIND:
+        verdict["checks"][name] = (check_blind(name)(run_of(name), ofref.registered_build(name)) if have(run_of(name))
+                                   else {"pass": False, "why": "not run"})
     for name in LEVEL4_TEST:
         key = "V4-" + name[3:]
         verdict["checks"][key] = (check_v4(run_of(name), ofref.registered_build(name)) if have(run_of(name))

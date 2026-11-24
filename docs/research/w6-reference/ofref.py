@@ -1123,6 +1123,11 @@ PROCESSES = [1, 1, 1, 2, 4]
 # x = L/8 (`w6ref.h_grid`), so that every level passes checkMesh.
 FLAT_TO = 0.125
 
+# Amendment 3 (README, "OpenFOAM's registration"): the blind checks, sharp
+# tangent ogives on V3's H grid, by name: (calibers, Mach number).
+BLIND = {"B-ogive3M1.5": (3, 1.5), "B-ogive3M3": (3, 3.0), "B-ogive5M1.3": (5, 1.3), "B-ogive5M2": (5, 2.0),
+         "B-ogive5M3": (5, 3.0)}
+
 
 def registered_build(name):
     """The registered spec builder (a function of widen) for a check run's or a W6 case's name."""
@@ -1130,6 +1135,9 @@ def registered_build(name):
     for shape, cal, ratio, M, _ in judge.cases():
         if judge.tag(shape, cal, ratio, M) == name:
             return judge.registered(name, shape, cal, ratio, M)
+    if name in BLIND:
+        cal, M = BLIND[name]
+        return lambda w: dict(w6ref.sharp_spec("ogive", cal, M, w), flatTo=FLAT_TO)
     build = judge.registered(name)
     if name.startswith(("V1-", "V3-")):
         return lambda w: dict(build(w), flatTo=FLAT_TO)
