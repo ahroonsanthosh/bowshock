@@ -1584,41 +1584,89 @@ the front half of the ogive, where the wall cells' total pressure is low
 by an error that halves with each level (first order). The rates
 measured on levels 1 to 3 said otherwise: the total drag's changes fell
 from 3.4e-5 to 1.2e-7 (order 8.2), the distribution's by regions by a
-ratio of 0.15 and by faces by 0.27. U's grid part is the larger of
-U_total and U_dist, and U_dist took the distribution's last change at
-its first-order value (r at least 0.5) with no factor of safety; it
-covered about half the error. The owner chose to amend U, with its
-reason stated before any new run, to test the amended U on checks whose
-results nobody has seen, and to have it reviewed independently before
-use, rather than stop the route or first run V3's level 4. When it was
-made, V5 (Mach 2 and 3), V2 at Mach 1.3 and 2 and V1 at Mach 1.3 had
-passed and V3 had failed; V2 at Mach 3 was on its level 3; V1 at Mach 3,
-V4's level 4 and every W6 case had not run.
+ratio of 0.15 and by faces by 0.27. U's grid part, the larger of U_total
+and U_dist, covered about half the error. The owner chose to amend U,
+with its reason stated before any new run, to test the amended U on
+checks whose results nobody has seen, and to have it reviewed
+independently before use, rather than stop the route or first run V3's
+level 4. When it was made, V5 (Mach 2 and 3), V2 at Mach 1.3 and 2 and
+V1 at Mach 1.3 had passed and V3 had failed; V2 at Mach 3 was on its
+level 3; V1 at Mach 3, V4's level 4 and every W6 case had not run.
 
 **Change 1, the factor of safety.** In every OpenFOAM estimate (the
-checks, the W6 cases and the hold-out), R4's distribution term is
-multiplied by 3: U_dist = 3 V23 r / (1 - r), r = max(rho, 0.5) as
-before, and U_grid = max(U_total, U_dist) (`ofjudge.FS_DIST`). The
-reason: Roache's grid convergence index takes a factor of safety of 3
-where the grids do not confirm the order of convergence, and 1.25 only
-where they do; V3 shows that levels 1 to 3 can measure rates far from
-the error's own, and nothing in a W6 case's three levels says whether
-they have. The factor is the convention's, not fitted to V3. Under it
-V3's U would be 4.76e-5 and its difference 0.65 of that, but V3 is not
-evidence for the factor, because V3 was seen before the factor was
-chosen; the blind checks (change 2) are.
-- U_total is unchanged (its factor is already 3 where the total is not
-  monotone, 1.25 where it is), and so are U_cap, U_iter and R4's
-  limits. The limits now apply to the larger U_grid and so refuse more:
-  a W6 case whose U_grid passes 0.5% of its drag goes to R4's fallback
-  (level 4) or gives no reference.
-- V4 keeps the registered terms, without the factor, in both its tests
-  (the step and the containment): it tests how the estimate behaves at
-  level 4, and the factor could only make it looser.
-- The checks judged before the amendment, judged again under it: V1 at
-  Mach 1.3 passes with U 3.0e-5 (was 1.0e-5); V5 at Mach 2 and 3 pass
-  with grid parts of 1.13e-3 and 3.39e-3 (were 1.06e-3 and 1.41e-3); V2
-  is not judged on U; V3 passes, as above, and is not evidence.
+checks, the W6 cases and the hold-out), both terms of R4's grid part
+take a factor of safety of 3 (`ofjudge.FS`):
+- U_dist = 3 (V23 + s2 + s3) r / (1 - r), with r = max(rho, 0.5) and the
+  iterative ranges s2, s3 as before; registered with no factor.
+- U_total, where the total drag is monotone: 3 (|e23| + s2 + s3) /
+  (2^min(p, 2) - 1), registered with 1.25; where it is not monotone, 3
+  times the larger change, as registered.
+- U_grid = max(U_total, U_dist), as before.
+
+The reason. R4's U_dist at r = 0.5 is in effect a first-order grid
+convergence index on the distribution's change with a factor of safety
+of 1, and its monotone U_total one with a factor of 1.25. Roache's grid
+convergence index (P. J. Roache, J. Fluids Eng. 116 (1994) 405-413;
+Verification and Validation in Computational Science and Engineering,
+1998) takes 1.25 only where three or more grids confirm the order of
+convergence, and 3 where they do not. V3 shows that levels 1 to 3 can
+measure rates far from the error's own, and nothing in a run's three
+levels says whether they have, so neither term's order is confirmed
+here, and both take 3.
+
+What was decided after V3's failure, with its result in view: that a
+factor is needed at all; that it goes on the grid part, where V3 failed
+(V3's U_total was 4.9e-8, so a factor there alone could not have
+helped); and that it is 3 and not 1.25, knowing that 3 covers V3's
+difference (which needs more than 1.94) and 1.25 does not. The value 3
+is the convention's, not tuned to V3; but because these choices were
+made in view of V3, V3's pass under the amendment (its difference is
+0.65 of its amended U, 4.76e-5) is not evidence for it. The blind checks
+(change 2) are.
+- U_cap, U_iter and R4's limits are unchanged. U_cap is measured
+  directly on levels 2 and 3 (the cap's total pressure against pitot's),
+  not from a rate. The limits now apply to the larger U_grid and so
+  refuse more: a W6 case whose U_grid passes 0.5% of its drag goes to
+  R4's fallback (level 4) or gives no reference.
+- V4. Its step test keeps the registered grid part ((1 - r) times R4's
+  own max(U_total, U_dist)): the factor could only loosen it. Its
+  containment (D4 +- U(2 to 4) inside D3 +- U(1 to 3)) must hold with the
+  registered U and with the amended U. The factor can make the
+  containment looser or stricter (stricter where levels 2 to 4 give the
+  larger U_dist, the slowing V4 exists to catch), so taking both keeps
+  V4 never looser than registered and also tests the amended intervals a
+  level-4 fallback is served with.
+- The checks judged before the amendment, judged again under it, both
+  ways (V2 is not judged on U):
+
+  | Check | U registered | U amended | Difference / U, registered and amended | Verdict |
+  | --- | --- | --- | --- | --- |
+  | V1 at Mach 1.3 | 1.01e-5 | 3.02e-5 | 0.48 and 0.16 | pass |
+  | V3 (not evidence) | 1.59e-5 | 4.76e-5 | 1.94 and 0.65 | fail, then pass |
+  | V5 at Mach 2 (grid part) | 1.06e-3 | 1.13e-3 | 0.44 and 0.42 (of the grid part plus the band) | pass |
+  | V5 at Mach 3 (grid part) | 1.41e-3 | 3.39e-3 | 0.57 and 0.24 (of the grid part plus the band) | pass |
+
+What it costs.
+- U's grid part is 3 times wider where U_dist sets it, and 2.4 times
+  where a monotone U_total does. On runs already seen: U on the V2 runs
+  (which are hold-out cases) goes from 0.21% to 0.39% of the drag at Mach
+  1.3 and from 0.19% to 0.34% at Mach 2; on the set-up trials' capped
+  ogive (r_n/R 0.10) from 0.277% to 0.447% at Mach 1.3 and from 0.248% to
+  0.460% at Mach 3, its grid part from 0.085% to 0.256% and from 0.106%
+  to 0.318%. All of these are within R4's limits (0.5% and 1%). More W6
+  cases may need level 4 or give no reference.
+- R7's tests between the fitted solver and OpenFOAM carry OpenFOAM's U,
+  so they loosen with it. R7's agreement test, |delta| at most U_proc +
+  U_of, is easier to pass. The allowance A, twice the largest miss
+  (|delta| + U_of + oscillation) / D, grows with U_of, so the served
+  bands widen. The hold-out's test, |D_proc - D_of| + U_of at most U_proc
+  + A D_proc, tolerates a larger |delta| wherever U_of sets the worst
+  miss: with every U_of three times larger and U dominating the misses,
+  about three times larger. These tests can then only detect larger
+  errors in the fitted solver. That is the price of a reference whose
+  error is larger than first measured: the registered tests leaned on
+  values of U_of that V3 shows can understate OpenFOAM's error by about
+  2 times, so they claimed more than the evidence supports.
 
 **Change 2, the blind checks.** Five new checks, run on OpenFOAM after
 this amendment is confirmed, so that nobody has seen their results when
@@ -1628,10 +1676,12 @@ settings, levels, processes and boundary rules (R3, widened at most
 twice). Each is judged as V3 is (`ofjudge.check_blind`): the drag on
 levels 1 to 3 within its U, as amended, of the method of
 characteristics' forebody pressure drag, within R4's limits, both ways.
+Each one's difference is also reported over the registered U, for
+information.
 
 | Check | Calibers | Mach | Tip half-angle; its shock; Mach on the tip cone | MOC drag on 320, 640, 1280 intervals | Reference (extrapolated) |
 | --- | --- | --- | --- | --- | --- |
-| B-ogive3M1.5 | 3 | 1.5 | 18.92 deg; 48.04 deg; 1.18 | 0.105293116, 0.105293526, 0.105293632 | 0.105293668 |
+| B-ogive3M1.35 | 3 | 1.35 | 18.92 deg; 54.57 deg; 1.04 | 0.107659652, 0.107659938, 0.107660006 | 0.107660028 |
 | B-ogive3M3 | 3 | 3 | 18.92 deg; 28.63 deg; 2.34 | 0.089916377, 0.089916521, 0.089916551 | 0.089916561 |
 | B-ogive5M1.3 | 5 | 1.3 | 11.42 deg; 51.69 deg; 1.16 | 0.042818246, 0.042818119, 0.042818105 | 0.042818100 |
 | B-ogive5M2 | 5 | 2 | 11.42 deg; 31.83 deg; 1.80 | 0.039655123, 0.039655440, 0.039655526 | 0.039655554 |
@@ -1642,22 +1692,39 @@ characteristics' forebody pressure drag, within R4's limits, both ways.
   calibers at Mach 1.3, 2 and 3. W6's Von Karman noses come to an
   infinite slope at a sharp tip, so their shock stands off and the method
   cannot start. The 3-caliber ogive at Mach 1.3 has subsonic flow behind
-  its tip's shock (Mach 0.99 on the tip cone), so the nearest Mach number
-  the method can march, 1.5, takes its place. The 3-caliber ogive at Mach
-  2 is V3 itself. W6's caps have no exact drag at all; the blind checks
-  test the amended U on sharp noses only, where V3 failed, and V2, V4
-  and V5 remain the checks on capped and blunt noses.
+  its tip's shock (Mach 0.99 on the tip cone); the project's method
+  refuses Mach 1.32 and marches Mach 1.35, which takes its place as the
+  closest to W6's Mach 1.3. (The first draft took Mach 1.5, saying it was
+  the nearest the method could march; the review found that false, and
+  the check was moved to Mach 1.35 before anything ran.) The 3-caliber
+  ogive at Mach 2 is V3 itself, and two of the five are V3's body at
+  other Mach numbers.
+- What they do not test. Nothing in this amendment tests whether the
+  amended U covers the error on a capped or blunt nose: V5 passed under
+  the registered U, so it cannot fail on a larger one; V4's step keeps
+  the registered terms, and its containment under the amended U tests
+  how U behaves at level 4, not whether it covers the error; and V2 does
+  not use U. The blind checks do not test U_cap, the largest term
+  on W6-like caps (1.19e-4 against a registered grid part of 5.3e-5 on
+  the trials' capped ogive at Mach 1.3). They run on H grids with
+  Amendment 2's bend, not on W6's C grids; their shocks are attached at a
+  sharp tip, not detached ahead of a subsonic cap; and none is a Von
+  Karman nose. They test the amended grid part on the flow where V3 found
+  it too small.
 - The references are the project's method of characteristics (0006,
   `src/validation/characteristics.ts`, the code the page's fitted solver
   is held to), run by `moc-references.test.ts` on 320, 640 and 1280
   intervals from a start line at 1e-3 L. The changes fall by 3.7 to 4.9
   per halving (second order, as in 0006), and by 8.6 on the 5-caliber
-  ogive at Mach 1.3, whose changes are 1.3e-7 and 1.5e-8; the reference is the
-  second-order extrapolation from 640 and 1280 intervals, which differs
-  from the 1280 value by at most 3.6e-8. The same run gives V3's
-  reference as a control: 0.098803408, against the registered 0.0988034.
-  The reference's own error is not added to U (that would only loosen
-  the check).
+  ogive at Mach 1.3, whose changes are 1.3e-7 and 1.5e-8. The reference
+  is the second-order extrapolation from 640 and 1280 intervals, which
+  differs from the 1280 value by at most 2.9e-8. Moving the start line to
+  2.5e-4 L changes the 640-interval drags by 5.6e-9 to 1.8e-8, and
+  extrapolating at the observed order instead of second order moves the
+  references by at most 4e-9: the references are good to about 5e-8. The
+  same run gives V3's reference as a control: 0.098803408, against the
+  registered 0.0988034. The reference's own error is not added to U
+  (that would only loosen the check).
 - The grids pass `checkMesh` ("Mesh OK.") on every level 0 to 3, on the
   first domain and widened once and twice (`checkMesh` on each grid as
   `ofref.write_polymesh` writes it). The largest skewness (the lowest to
@@ -1666,28 +1733,71 @@ characteristics' forebody pressure drag, within R4's limits, both ways.
 
   | Check | Widened 0 times | Once | Twice |
   | --- | --- | --- | --- |
-  | B-ogive3M1.5 | 1.77 to 2.08; 58.9 | 1.86 to 2.45; 64.3 | 1.92 to 2.77; 68.9 |
+  | B-ogive3M1.35 | 1.87 to 2.47; 64.5 | 1.92 to 2.79; 69.1 | 2.02 to 3.04; 73.0 |
   | B-ogive3M3 | 1.12 to 1.26; 39.2 | 1.32 to 1.48; 45.6 | 1.61 to 1.67; 51.9 |
   | B-ogive5M1.3 | 1.39 to 1.75; 62.1 | 1.47 to 2.10; 67.1 | 1.52 to 2.40; 71.3 |
   | B-ogive5M2 | 0.94 to 1.02; 42.8 | 1.11 to 1.18; 49.2 | 1.26 to 1.40; 55.4 |
   | B-ogive5M3 | 0.84 to 0.90; 31.9 | 0.84 to 0.91; 37.9 | 0.98 to 1.05; 44.2 |
+
+  Amendment 2's bend (the change of slope where the grid's lines cross
+  the tip's shock at x = L/8, measured as Amendment 2 measured 17.9, 2.6
+  and 6.6 degrees for V1 at Mach 1.3, V1 at Mach 3 and V3) is 17.8 degrees
+  on B-ogive3M1.35, 3.0 on B-ogive3M3, 24.3 on B-ogive5M1.3, 8.9 on
+  B-ogive5M2 and 4.1 on B-ogive5M3; B-ogive5M1.3's is sharper than any
+  grid Amendment 2 looked at. Widened twice, B-ogive3M1.35 and
+  B-ogive5M1.3 have faces above 70 degrees of non-orthogonality (1,958
+  and 8,027 on levels 2 and 3 of the first, 745 and 3,103 of the second),
+  which `checkMesh` counts but passes. Every one is at least 2.25 times
+  as far from the axis as the tip cone's shock line (the ogive's own
+  shock lies inside that line), in the free stream.
 - Five checks can show the amended U failing; their passing is evidence
   for it, not proof.
 
-**Change 3, what decides.** Before any W6 case runs, every check (V1 to
-V5, with V4's level 4, and the five blind checks) must pass, judged with
-the amended U. If a blind check fails, the route goes back to the owner,
-and U is not amended again on the blind checks' results. The blind checks
-run in the lane V3 used, and in the other lane once V2 and V1 at Mach 3
-have finished; the level 4 trial and V4's level 4 follow.
+**Change 3, what decides.**
+- Before any W6 case runs, every check must pass, judged with the
+  amended U (V4 as change 1 says): V1 to V5, with V4's level 4, and the
+  five blind checks.
+- A blind check that gives no reference fails, with no rerun, no level 4
+  and no other grid: that covers an R3 failure after widening twice, a
+  ratio at or above 1, R4's limits under the amended U, and any other
+  failure (as V3's rerun was final under Amendment 2).
+- All five blind checks run and are reported, whatever the first ones
+  give.
+- If any blind check fails, the route goes back to the owner. No rule,
+  of U or of anything else, changed in view of the blind checks' results
+  may be judged on them; any later rule needs new checks whose results
+  are unseen when it is made.
+- V1 at Mach 3 may finish while this amendment is under review. Nothing
+  in it changes in view of V1 at Mach 3's result, which is judged under
+  the amendment as confirmed.
+- The blind checks run in the lane V3 used, and in the other lane once
+  V2 and V1 at Mach 3 have finished; the level 4 trial and V4's level 4
+  follow, then the W6 cases and the hold-out.
 
-What it costs: U's distribution term, where it sets U, is three times
-wider, so where OpenFOAM is the reference the W6 bands it gives are
-wider, and more cases may need level 4 or give no reference.
+The code: `ofjudge.py` (`FS`, the factor in `of_case`, `BLIND_MOC`,
+`check_blind`, V4's two containments), `ofref.py` (`BLIND`,
+`registered_build`) and `moc-references.test.ts`.
 
-The code: `ofjudge.py` (`FS_DIST`, `BLIND_MOC`, `check_blind`, V4's
-registered terms), `ofref.py` (`BLIND`, `registered_build`) and
-`moc-references.test.ts`.
+Its review. An independent review of the first draft (README and code at
+3f0f5bba) reran the references, seven of the grids through `checkMesh`
+and the judge on a copy of the committed runs, and found no B- run
+anywhere. It passed the draft with changes. Required, all made above:
+V4's containment under the amended U as well as the registered (the
+draft said the factor could only loosen V4, which is false for the
+containment, and contradicted change 3); the reason for the factor
+stated with what was decided in view of V3, and the factor applied to
+U_total's monotone branch too, as the convention it cites requires; the
+draft's false statement that Mach 1.5 was the nearest the method could
+march (moved to Mach 1.35, which it marches); what the blind checks do
+not test, said plainly; the amendment's effects on R7's tests, the
+allowance and the hold-out; and the failure path made complete (no
+reference is a failure; all five run and are reported; no rule changed
+in view of their results is judged on them). Suggested, all taken: the
+grids' bends and severely non-orthogonal faces; the references'
+remaining error; the cost in numbers already seen; U_dist written
+exactly; the State section; V5's two grid-part ratios; V1 at Mach 3
+during the review; both ratios for the blind checks; the source for the
+convention. Its confirmation of these changes is pending.
 
 ## The review of OpenFOAM's registration (2026-11-23)
 
