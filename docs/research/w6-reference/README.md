@@ -1528,6 +1528,7 @@ registered; the verdict file is not kept.
 | Check | Value | Fitted | Difference | U | Difference / U (grid part) | Verdict |
 | --- | --- | --- | --- | --- | --- | --- |
 | V5, hemisphere-cylinder, Mach 2 | 0.7883893 | 0.788934 | -5.4e-4 (-0.069%) | 6.05e-3 (0.77%) | 0.087 (0.44) | pass |
+| V5, hemisphere-cylinder, Mach 3 | 0.8484715 | 0.849320 | -8.5e-4 (-0.100%) | 3.68e-3 (0.43%) | 0.23 (0.57) | pass |
 
 - V5 at Mach 2 (2026-11-23). R3's boundary check sent it to the domain
   widened once: the first attempt's level 1 had |Cp| 1.3e-6 against the
@@ -1543,6 +1544,32 @@ registered; the verdict file is not kept.
   pressure is off by at most 2.1% on level 2 and 1.2% on level 3. The
   difference is within U plus the fitted band, and within the grid part
   alone; the same both ways. **Pass.**
+- V5 at Mach 3 (2026-11-24). Widened once too: the first attempt's
+  level 1 had |Cp| 1.0e-4 against the outer boundary (kept as
+  `runs-of/V5-hemisphereM3.try1`). That attempt's levels 0 and 1 give
+  H3K10b's drags to 1.8e-13 and 3.4e-14, and the widened run's give
+  H3K10w1's to 1.3e-13 and 3.7e-14. Widened, levels 1 to 3 have |Cp|
+  4.3e-9, 7.2e-14 and 7.7e-14 against the outer boundary. Level 2
+  converged at 16,110 iterations. Levels 1 and 3 ran to their limits
+  (40,000 and 60,000) and count by R3's iterative rule: level 1 as in its
+  trial (residual about 1e-6.8, drag range 1.4e-10); level 3 with its
+  residual flat at about 1e-3.25 from about 7,000 iterations on, while its
+  drag ranged over 5.9e-13 in its last quarter (drift 4.8e-15). U_iter is
+  1.4e-10. Level 3's residual (looked at after the run, in its last
+  save's d(rho)/dt) is chatter on the bow shock at about x = 0.23, r =
+  0.72, where the flow behind the shock is at Mach 1.6: every cell whose
+  density moves by more than 1e-8 per unit pseudo-time is in supersonic
+  flow (x at least 0.14), and on the wall the motion reaches 1e-8 only
+  from x = 0.54 on, on the cylinder, which carries no drag (at most
+  3.7e-9 on the hemisphere's faces). The drags on levels 1 to 3,
+  0.8467342, 0.8478016 and 0.8484715, are monotone (order 0.67): U_grid
+  1.41e-3 (0.17%); the ratios are 0.63 (regions) and 0.40 (faces). U_cap
+  is 2.27e-3 (E on level 2; 8.7e-4 on level 3): the cap's wall total
+  pressure is off by at most 1.5% on level 2 and 0.87% on level 3. The
+  difference is within U plus the fitted band, and within the grid part
+  alone; the same both ways. **Pass.**
+- Both V5 drags are below the fitted values, by 0.069% at Mach 2 and
+  0.100% at Mach 3, each within its grid part.
 
 ## State (2026-11-23)
 
@@ -1567,11 +1594,9 @@ registered; the verdict file is not kept.
   with changes, made and confirmed. A level 4 trial on the off-list ogive
   at Mach 1.3 is under way (level 4's iteration limit, O3); it must
   converge or stall by 100,000 before V4's level 4 runs.
-- OpenFOAM's checks are running (the section above): V5 at Mach 2
-  passed; V5 at Mach 3 is on its level 3 (its residual stays near
-  1e-3.2 while its drag has held to about 1e-10, so it runs to its
-  60,000-iteration limit and counts by R3's iterative rule); V2 at Mach
-  1.3 is on its level 2.
+- OpenFOAM's checks are running (the section above): V5 passed at
+  Mach 2 and Mach 3; V2 at Mach 1.3 is on its level 3 and V2 at Mach 2
+  has started.
 - Next: the rest of V1 to V5 on OpenFOAM (with V4's
   level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
   `ofjudge.py`'s verdict, reviewed. Nothing is served before that verdict
