@@ -1668,7 +1668,7 @@ characteristics' forebody pressure drag, within R4's limits, both ways.
   | --- | --- | --- | --- |
   | B-ogive3M1.5 | 1.77 to 2.08; 58.9 | 1.86 to 2.45; 64.3 | 1.92 to 2.77; 68.9 |
   | B-ogive3M3 | 1.12 to 1.26; 39.2 | 1.32 to 1.48; 45.6 | 1.61 to 1.67; 51.9 |
-  | B-ogive5M1.3 | 1.39 to 1.75; 62.1 | 1.47 to 2.10; 67.1 | 1.52 to 1.91 on levels 0 to 2; 71.2 (level 3 being checked) |
+  | B-ogive5M1.3 | 1.39 to 1.75; 62.1 | 1.47 to 2.10; 67.1 | 1.52 to 2.40; 71.3 |
   | B-ogive5M2 | 0.94 to 1.02; 42.8 | 1.11 to 1.18; 49.2 | 1.26 to 1.40; 55.4 |
   | B-ogive5M3 | 0.84 to 0.90; 31.9 | 0.84 to 0.91; 37.9 | 0.98 to 1.05; 44.2 |
 - Five checks can show the amended U failing; their passing is evidence
