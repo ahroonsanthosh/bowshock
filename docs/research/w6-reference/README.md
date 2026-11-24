@@ -1206,7 +1206,8 @@ nothing below. This section is reviewed independently before any check
 runs; anything changed after that is a dated note saying what changed and
 whether any result had been seen. `ofjudge.py` computes the verdict exactly
 as written here, from the records `ofref.run_case` writes; the code is
-`ofref.py`, `w6ref.py` (the grids, unchanged), `openfoam/shockFluidHeun`
+`ofref.py`, `w6ref.py` (the grids, unchanged; the H grids as Amendment
+2 changes them, code committed at 3ede549f), `openfoam/shockFluidHeun`
 and `openfoam/cellVenkatakrishnanGrad`, all as committed with this
 section.
 
@@ -1317,9 +1318,15 @@ of the trials: 1e-16).
   whose seed is not the level below's recorded solution. If this machine
   is lost, the libraries rebuilt from the committed sources are added to
   `REGISTERED_BUILD` by a dated note before they run anything. A solver
-  stopped by a signal from outside leaves no record (the level goes on
-  from its last save); the case's lock is passed to the solver, so a
-  second runner cannot start on a case whose solver still runs.
+  on one process stopped by a signal from outside leaves no record (the
+  level goes on from its last save). On two or four processes (levels 3
+  and 4) it does not: signalled, `mpirun` returns 1, as it does when the
+  solver fails (OpenFOAM's `MPI_Abort` with 1), and the runner records an
+  ordinary failure. Such a level is stopped by stopping the runner
+  (`ofref.py`) first and then `mpirun`, so that no runner is left to
+  write a record (corrected under Amendment 2's review; the code is
+  unchanged). The case's lock is passed to the solver, so a second runner
+  cannot start on a case whose solver still runs.
 - On each level used, R3's checks, measured on the cells: |Cp| at most
   1e-6 in every cell against the outer boundary; the bow shock's reach at
   most 0.9 (per grid line from the wall, the outermost cell with |Cp|
@@ -1425,10 +1432,16 @@ every level (OpenFOAM's checks, below). The cause is the grid's shape.
 The outer line rises at 61.6 degrees at Mach 1.3 (it is set at 1.5
 times the reach of the cone's shock), so the grid's lines of constant x
 meet it at 28.4 degrees; near the tip, where those lines are packed
-toward the tip, the cells against it are thin. OpenFOAM's skewness of
-such a boundary face is its cell centre's offset along the face over 0.4
-times the centre's distance from the face: 2.5 cot 28.4 degrees = 4.63,
-the same on every level. The inflow boundary's corner with the outer
+toward the tip, the cells against it are thin. OpenFOAM 13's skewness
+of a boundary face is its cell centre's offset along the face over the
+larger of 0.4 times the centre's distance from the face and the distance
+from the face's centre to its farthest corner in that direction. So 2.5
+cot of the angle is a ceiling, reached where the cells against the
+boundary are more than about 11 times as tall as wide, as they are only
+near the tip, and the same on every level: here 2.5 cot 28.4 degrees =
+4.63. On the first grids the ceiling is 3.75 tan(beta) times
+1.25^widen: 4.63 (V1 at Mach 1.3), 2.84 (V3), 1.47 (V1 at Mach 3), and
+7.23 for V1 at Mach 1.3 widened twice. The inflow boundary's corner with the outer
 line (151.6 degrees inside the domain) gives the same on three faces.
 The owner chose to keep the rule and change the grid, reviewed before
 use, rather than relax the rule or stop the route. When it was made, V5
@@ -1443,20 +1456,32 @@ inflow to x = L/8, at the outer line's height there, and the registered
 line from there on.
 - Behind x = L/8 every grid point is where it was.
 - Ahead of it the lines of constant x are taller, at the tip by 1.46 (V1
-  at Mach 1.3), 1.25 (V1 at Mach 3) and 1.36 (V3) times, tapering to 1 at
-  L/8; so the cells against the nose's first eighth are that much taller.
-- Ahead of the tip, in the free stream, the inflow boundary is 2.22, 1.12
-  and 1.60 high instead of 0.6.
+  at Mach 1.3), 1.25 (V1 at Mach 3) and 1.36 (V3) times (widened twice,
+  1.53, 1.33 and 1.45), tapering to 1 at L/8; so the cells against the
+  nose's first eighth are that much taller.
+- Ahead of the tip, in the free stream, the inflow boundary is 2.22, 1.11
+  and 1.60 high instead of 0.6 (widened twice, up to 3.13).
 - The attached shock stays well below the horizontal part: at x = L/8 it
   is at r = 0.46 (V1 at Mach 1.3), 0.15 (Mach 3) and 0.28 (V3, its tip's
-  cone), against 2.22, 1.12 and 1.60.
+  cone), against 2.22, 1.11 and 1.60.
+- It changes the flow region too, not only the free stream. Every grid
+  line along the body bends at x = L/8, by an angle in proportion to its
+  height in its column; where the lines cross the shock the bend is 17.9
+  degrees (V1 at Mach 1.3), 2.6 (Mach 3) and 6.6 (V3). On the first grid
+  the cone's lines were straight from the tip to L. The changed region is
+  27 of level 0's 56 columns (8 ahead of the tip, 19 on the nose; the
+  same columns on every level). It carries 2.6% of the drag V1(b)
+  measures and 14.5% of V3's, and on the first grids it held 9% to 12%
+  (V1, levels 1 to 3) and 32% to 37% (V3, levels 0 to 2) of the regional
+  changes that make up U. O4 measures its effect as for any grid.
 - SU2's H grids (`judge.registered`, which has no `flatTo`) and every C
   grid (every capped run: V2, V4, V5, every W6 case and the hold-out) are
   unchanged, point for point.
 
 L/8 is the shortest of L/32, L/16 and L/8 for which every level of the
 three H grids, widened 0, 1 or 2 times, passes `checkMesh` (L/16 fails
-on V1 at Mach 1.3 widened twice, level 1, at 4.05). From the registered
+on V1 at Mach 1.3 widened twice, level 1, at 4.04). It was chosen
+from `checkMesh` alone: no flow has run on any new grid. From the registered
 code (`ofref.registered_build`, `w6ref.grid` and `ofref.write_polymesh`,
 as the runner calls them), every level 0 to 3 of each, widened 0 to 2
 times, reports "Mesh OK.", with these largest skewnesses (OpenFOAM's
@@ -1470,8 +1495,10 @@ limit 4) and non-orthogonalities (degrees):
 
 (Skewness over levels 0 to 3; the largest non-orthogonality on any
 level.) On the first grid V1 at Mach 1.3's skewness was 4.63 on every
-level. The non-orthogonality is the first grid's: it is largest far from
-the nose, behind L/8, where nothing changed. Widened twice, V1 at Mach
+level. On V1 the non-orthogonality is the first grid's: it is largest
+far from the nose, behind L/8, where nothing changed. On V3 it is now
+largest at the bend (x about 0.44, r about 1.6), and slightly below the
+first grid's (47.80 against 47.86 on level 0). Widened twice, V1 at Mach
 1.3 has faces above 70 degrees (27 on level 0), which `checkMesh` counts
 but passes ("Non-orthogonality check OK."); they are in the free stream,
 2.6 to 5.8 times as far from the axis as the shock at their x.
@@ -1483,12 +1510,50 @@ as `runs-of/V3-ogive3M1.98.grid1`: its levels 0 to 2 converged, and its
 level 3 was stopped from outside at 1,571 iterations once this change
 was decided (its solver was signalled; `mpirun` then returns 1, which the
 runner records as an ordinary failure, so that level's record says exit
-1; it is not a failure of the solver, and the run is not judged). Both run again from level 0 on the new
-grids and are judged on those runs; V1 at Mach 3 runs on it for the
-first time. The checks that passed (V5 at Mach 2 and 3, V2 at Mach 1.3)
-and every capped run are untouched.
+1; it is not a failure of the solver, and the run is not judged). Both
+run again from level 0 on the new grids and are judged on those runs; V1 at Mach 3 runs on it for the
+first time. The reruns are final: if V1 or V3 fails on the new grids, it
+fails, and there is no further grid. The checks that passed (V5 at Mach
+2 and 3, V2 at Mach 1.3) and every capped run are untouched.
 
-**Its review**: pending.
+Why V3 and V1 at Mach 3 too. Their first grids pass `checkMesh` as they
+were run: V3 at 2.84 (3.55 widened once), V1 at Mach 3 at 1.47 (2.30
+widened twice). They are included so that every H grid
+follows one rule, and V3 also because its first grid fails if R3 widens
+it twice (4.44 on level 1). So V3's first run was set aside by this
+choice, after its levels 0 to 2 had been committed (7b204333). Their
+drags were seen when committed, but not set against TN 3716's value
+until the review: 0.0989250, 0.0988056 and 0.0987729, that is +0.123%,
++0.002% and -0.031% of 0.0988034 (for information, not a verdict: V3 is
+judged on levels 1 to 3, with U from them, and its level 3 had not run).
+Setting the run aside gives V3 no easier test: it must pass on the new
+grid, with no grid after it.
+
+**Its review** (2026-11-24, independent, given the code, the data and
+the registration): PASS WITH CHANGES. The code change was found correct:
+every cell positive on all 45 new grids (levels 0 to 4, widened 0 to 2);
+x unchanged everywhere and r bit-identical wherever x is at least L/8;
+the flat top marked farfield; SU2's H grids and all 248 C grids (31
+names) bit-identical; `settings_hash` changed for V1 and V3 at every
+widening, so no first-grid record matches; `.grid1` folders ignored by
+the runner and the judge. Its `checkMesh` runs on nine grids matched the
+table digit for digit, and its own copy of OpenFOAM 13's formulas
+matched `checkMesh` to 1e-7. Required, all made: the facts about V3 and
+V1 at Mach 3 and the reason they are included (above); O3's sentence on
+a solver stopped from outside, which was false on two or four processes
+(O3, corrected, with the safe way to stop a level); what changes in the
+flow region (above); four figures and statements corrected (the inflow
+height at Mach 3, L/16's 4.04, the widened figures, the non-orthogonality
+on V3) and the code's commit named in the registration's list of code.
+Optional, taken: the reruns stated final; the skewness explanation
+completed; V3's first-grid levels reported for information; the State
+section updated. Declined: a smooth bend instead of the sharp one (it
+would change more columns and need new evidence, and is not clearly
+better); fixing the runner's handling of a signalled `mpirun` now (a
+real failure in parallel also makes `mpirun` return 1, so the code
+cannot tell them apart by the exit code; the gap can only make a level
+fail wrongly, never pass, and the corrected O3 says how to stop a level
+without it).
 
 ## The review of OpenFOAM's registration (2026-11-23)
 
@@ -1552,7 +1617,8 @@ Optional, taken: a level the stall rule stopped counts with Amendment 1's
 charge if both drift tests fail on its round-off (O3); the seed's hash
 against the level below's solution, and the SHA-256 of `monitor.csv` and
 `wall.csv`, checked by the judge; a solver stopped by a signal from
-outside leaves no record; the case's lock held by the solver; the
+outside leaves no record (true on one process only: O3, corrected under
+Amendment 2); the case's lock held by the solver; the
 monitor's two tables paired by iteration; the wall's cell on the axis
 recorded outright for V2; V5 widens at Mach 2 too (level 1's outer |Cp|
 1.28e-6), so its judged run there is blind on every level; a V5 level
@@ -1701,7 +1767,7 @@ V1 at Mach 1.3 fails, on the mesh, not on the flow.
   4.7e-6 (0.0063%), within U = 9.6e-6 (0.013%; monotone, order 1.64); the
   same both ways.
 
-## State (2026-11-23)
+## State (2026-11-24)
 
 - SU2: the tool, the geometry check, the set-up trials 1 to 13, the
   registration, its review and the revision. V5 at Mach 2 failed R3 on
@@ -1727,10 +1793,14 @@ V1 at Mach 1.3 fails, on the mesh, not on the flow.
 - OpenFOAM's checks (the section above): V5 passed at Mach 2 and Mach
   3, and V2 at Mach 1.3. V1 at Mach 1.3 failed: its grid does not pass
   `checkMesh` (skewness on free-stream boundary faces), so by the
-  registration no W6 case runs and the route is back with the owner. The
-  other checks go on running, for information: V2 at Mach 2 is on its
-  level 3 and V3 on its level 3.
-- Next: the rest of V1 to V5 on OpenFOAM (with V4's
-  level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
+  registration no W6 case ran and the route went back to the owner. The
+  owner chose to keep the rule and change the grid: Amendment 2 (the H
+  grids' outer boundary flat to x = L/8) passed its independent review
+  with changes, all made, and goes back to the reviewer for confirmation;
+  it is not in force until then. V3's first-grid run was stopped and
+  set aside under it. V2 at Mach 2 is on its level 3.
+- Next: once Amendment 2 is confirmed, V1 at Mach 1.3 and V3 from level
+  0 on the new grids, and V1 at Mach 3; the rest of V1 to V5 on OpenFOAM
+  (with V4's level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
   `ofjudge.py`'s verdict, reviewed. Nothing is served before that verdict
   serves it: every capped nose stays refused.
