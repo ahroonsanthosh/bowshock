@@ -2093,6 +2093,33 @@ back to the owner; by Amendment 2 the rerun is final.
   passes as judged; by the amendment's own terms that pass is not
   evidence for it, and the five blind checks decide.
 
+### The blind checks (Amendment 3), as they finish
+
+Each is judged as V3 is, under Amendment 3, on levels 1 to 3, against
+the method of characteristics' forebody pressure drag (Amendment 3's
+table). The difference is also given over the registered U, for
+information.
+
+| Check | Drag | Exact (MOC) | Difference | U | Difference / U | Difference / registered U | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| B-ogive5M1.3, 5-caliber tangent ogive, Mach 1.3 | 0.0428258 | 0.0428181 | +7.66e-6 (+0.018%) | 5.88e-5 (0.137%) | 0.13 | 0.39 | pass |
+
+- B-ogive5M1.3 (2026-11-24). Every level's `checkMesh` reports "Mesh
+  OK.": the largest skewness is 1.39, 1.51, 1.64 and 1.75 on levels 0 to
+  3. Levels 0 to 3 converged at 24,550, 17,740, 9,050 and 8,470
+  iterations, with |Cp| against the outer boundary 3.3e-8, 1.7e-12,
+  1.1e-12 and 3.2e-12. The drags on levels 1 to 3, 0.0428952, 0.0428419
+  and 0.0428258, are monotone (changes 5.3e-5, then 1.6e-5; order 1.73),
+  so U_total is 2.10e-5 (8.7e-6 registered). The larger change of the
+  drag's distribution by regions is 1.96e-5 (ratio 0.27, taken as 0.5),
+  so U_dist is 5.88e-5 (1.96e-5 registered), and U is U_dist, 5.88e-5
+  (0.137%). There is no cap and no iterative error is charged; R4's
+  limits pass. The difference from the method of characteristics'
+  0.0428181 is +7.66e-6 (+0.018%), 0.13 of U and 0.39 of the registered
+  U; the same both ways. **Pass.**
+- B-ogive3M1.35 is on its level 2; B-ogive3M3, B-ogive5M2 and B-ogive5M3
+  are queued.
+
 ## State (2026-11-24)
 
 - SU2: the tool, the geometry check, the set-up trials 1 to 13, the
@@ -2135,8 +2162,9 @@ back to the owner; by Amendment 2 the rerun is final.
   whose results nobody has seen, reviewed independently before use. Its
   review passed it with changes, all made and confirmed, and it is **in
   force**: V3 is judged under it, but its pass is not evidence for the
-  amendment; the five blind checks are, and none has run.
-- Next: the five blind checks; then the rest
+  amendment; the five blind checks are. The first, the 5-caliber ogive at
+  Mach 1.3, passed (0.13 of U); the other four are running or queued.
+- Next: the other four blind checks; then the rest
   of V1 to V5 (with V4's level 4), the W6 cases and the hold-out. No W6
   case runs and nothing is served before then: every capped nose stays
   refused.
