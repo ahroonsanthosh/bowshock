@@ -1595,6 +1595,36 @@ pitot's, each within 3% of pitot's Cp.
   0.0624216, 0.0623564 and 0.0623407, are V4's, judged once its level 4
   has run. **Pass.**
 
+V1 at Mach 1.3 fails, on the mesh, not on the flow.
+
+| Check | V1(a): worst face's Cp off Taylor-Maccoll (limit 0.1%) | V1(b): drag to x = 2.3126 | Verdict |
+| --- | --- | --- | --- |
+| V1, cone, Mach 1.3 | 0.0062% (79 faces) | not judged: no level's `checkMesh` reports "Mesh OK." | fail |
+
+- V1 at Mach 1.3 (2026-11-24). Level 0 ran to its limit (30,000
+  iterations, residual 1e-6.04); levels 1 to 3 converged at 27,680, 9,810
+  and 8,490 iterations, with |Cp| 1.2e-12 or less against the outer
+  boundary. O5 requires every level's `checkMesh` to report "Mesh OK.";
+  on this grid it reports "Failed 1 mesh checks" on every level: the
+  largest skewness is 4.63 against OpenFOAM's limit of 4, on 11, 22, 45
+  and 92 faces of levels 0 to 3. So V1(b) is not judged and V1 at Mach
+  1.3 fails. **Fail.** The registration's statement that `checkMesh`
+  passes the H grids was not true of this one.
+- What the skewed faces are (looked at after the verdict, on level 1).
+  All 22 are boundary faces where the free stream is fixed: 19 on the
+  outer line, from x = -0.01 to 0.08 (r 1.50 to 1.67), where the grid's
+  lines across the flow meet that line, which is steep at Mach 1.3 (62
+  degrees to the axis); and 3 on the inflow boundary just below its
+  corner with the outer line (x = -0.5, r 0.54 to 0.59). They are ahead of
+  the cone's shock: the flow in the four cells nearest each is the free
+  stream to 1e-9 in pressure and temperature. The same `checkMesh` passes
+  every level of the cone at Mach 3 (largest skewness 1.47) and of V3's
+  ogive (2.84).
+- For information only, not a verdict: with the mesh test set aside,
+  V1(b) gives 0.0754730 against the exact 0.0754683, a difference of
+  4.7e-6 (0.0063%), within U = 9.6e-6 (0.013%; monotone, order 1.64); the
+  same both ways.
+
 ## State (2026-11-23)
 
 - SU2: the tool, the geometry check, the set-up trials 1 to 13, the
@@ -1618,9 +1648,12 @@ pitot's, each within 3% of pitot's Cp.
   with changes, made and confirmed. A level 4 trial on the off-list ogive
   at Mach 1.3 is under way (level 4's iteration limit, O3); it must
   converge or stall by 100,000 before V4's level 4 runs.
-- OpenFOAM's checks are running (the section above): V5 passed at
-  Mach 2 and Mach 3, and V2 at Mach 1.3; V2 at Mach 2 and V1 at Mach
-  1.3 are each on their level 3.
+- OpenFOAM's checks (the section above): V5 passed at Mach 2 and Mach
+  3, and V2 at Mach 1.3. V1 at Mach 1.3 failed: its grid does not pass
+  `checkMesh` (skewness on free-stream boundary faces), so by the
+  registration no W6 case runs and the route is back with the owner. The
+  other checks go on running, for information: V2 at Mach 2 is on its
+  level 3 and V3 on its level 3.
 - Next: the rest of V1 to V5 on OpenFOAM (with V4's
   level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
   `ofjudge.py`'s verdict, reviewed. Nothing is served before that verdict
