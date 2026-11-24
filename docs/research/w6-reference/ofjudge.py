@@ -426,6 +426,10 @@ def _check_blind(run, build, charge, exact):
     out = {"name": "B", "exact": exact, "estimate": est}
     out["error"] = est["value"] - exact if "value" in est else None
     out["pass"] = bool(est["reference"]) and abs(out["error"]) <= est["u"]
+    if out["error"] is not None and "u" in est:
+        # Amendment 3: reported over the amended U and, for information, over the registered U.
+        out["errorOverU"] = abs(out["error"]) / est["u"]
+        out["errorOverURegistered"] = abs(out["error"]) / est["uRegistered"]
     return out
 
 

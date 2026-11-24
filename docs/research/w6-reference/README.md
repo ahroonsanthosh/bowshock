@@ -1574,7 +1574,7 @@ with one count of its own corrected (thirteen entries, not ten) and two
 optional wordings taken ("never finished"). Amendment 2 is in force from
 then.
 
-### Amendment 3 (2026-11-24, after V3 failed on Amendment 2's grid; the owner's decision; DRAFT, not in force until its independent review is confirmed)
+### Amendment 3 (2026-11-24, after V3 failed on Amendment 2's grid; the owner's decision; reviewed independently, its changes made and confirmed the same day)
 
 Made after a result, and said so. V3 failed O5 on Amendment 2's grid:
 level 3's drag, 0.0987726, is 3.08e-5 (0.031%) below the method of
@@ -1647,8 +1647,9 @@ made in view of V3, V3's pass under the amendment (its difference is
   | V5 at Mach 3 (grid part) | 1.41e-3 | 3.39e-3 | 0.57 and 0.24 (of the grid part plus the band) | pass |
 
 What it costs.
-- U's grid part is 3 times wider where U_dist sets it, and 2.4 times
-  where a monotone U_total does. On runs already seen: U on the V2 runs
+- U's grid part is 3 times wider where U_dist sets it, 2.4 to 3 times
+  where a monotone U_total does, and 1 to 3 times where a non-monotone
+  U_total does (V5 at Mach 2's, 1.06 times). On runs already seen: U on the V2 runs
   (which are hold-out cases) goes from 0.21% to 0.39% of the drag at Mach
   1.3 and from 0.19% to 0.34% at Mach 2; on the set-up trials' capped
   ogive (r_n/R 0.10) from 0.277% to 0.447% at Mach 1.3 and from 0.248% to
@@ -1677,7 +1678,7 @@ twice). Each is judged as V3 is (`ofjudge.check_blind`): the drag on
 levels 1 to 3 within its U, as amended, of the method of
 characteristics' forebody pressure drag, within R4's limits, both ways.
 Each one's difference is also reported over the registered U, for
-information.
+information (`errorOverU`, `errorOverURegistered`).
 
 | Check | Calibers | Mach | Tip half-angle; its shock; Mach on the tip cone | MOC drag on 320, 640, 1280 intervals | Reference (extrapolated) |
 | --- | --- | --- | --- | --- | --- |
@@ -1745,9 +1746,10 @@ information.
   on B-ogive3M1.35, 3.0 on B-ogive3M3, 24.3 on B-ogive5M1.3, 8.9 on
   B-ogive5M2 and 4.1 on B-ogive5M3; B-ogive5M1.3's is sharper than any
   grid Amendment 2 looked at. Widened twice, B-ogive3M1.35 and
-  B-ogive5M1.3 have faces above 70 degrees of non-orthogonality (1,958
-  and 8,027 on levels 2 and 3 of the first, 745 and 3,103 of the second),
-  which `checkMesh` counts but passes. Every one is at least 2.25 times
+  B-ogive5M1.3 have faces above 70 degrees of non-orthogonality (110,
+  479, 1,958 and 8,027 on levels 0 to 3 of the first; 26, 157, 745 and
+  3,103 of the second), which `checkMesh` counts but passes. Every one is
+  at least 2.25 times
   as far from the axis as the tip cone's shock line (the ogive's own
   shock lies inside that line), in the free stream.
 - Five checks can show the amended U failing; their passing is evidence
@@ -1785,8 +1787,9 @@ anywhere. It passed the draft with changes. Required, all made above:
 V4's containment under the amended U as well as the registered (the
 draft said the factor could only loosen V4, which is false for the
 containment, and contradicted change 3); the reason for the factor
-stated with what was decided in view of V3, and the factor applied to
-U_total's monotone branch too, as the convention it cites requires; the
+stated with what was decided in view of V3, and the reason for leaving
+U_total's monotone branch at 1.25 corrected or the factor applied to it
+too (the second taken, as the convention cited requires); the
 draft's false statement that Mach 1.5 was the nearest the method could
 march (moved to Mach 1.35, which it marches); what the blind checks do
 not test, said plainly; the amendment's effects on R7's tests, the
@@ -1797,7 +1800,12 @@ grids' bends and severely non-orthogonal faces; the references'
 remaining error; the cost in numbers already seen; U_dist written
 exactly; the State section; V5's two grid-part ratios; V1 at Mach 3
 during the review; both ratios for the blind checks; the source for the
-convention. Its confirmation of these changes is pending.
+convention. Its confirmation (of the text and code at c3faf041) found
+every change made and every number it reran matching, and confirmed
+the amendment. Its five optional fixes are taken too: this paragraph's
+account of the U_total change; the cost of the factor where U_total sets
+the grid part; the severely non-orthogonal faces of levels 0 and 1; the
+blind checks' two ratios in the judge's output; and the State section.
 
 ## The review of OpenFOAM's registration (2026-11-23)
 
@@ -2080,6 +2088,10 @@ back to the owner; by Amendment 2 the rerun is final.
   but their running totals differ by up to 7.6e-6 along the nose, so the
   errors cancel in the sum. U from levels 1 to 3 covers about half of
   the difference. SU2's V3 (above) was +0.076% with a U of 0.25%.
+- Under Amendment 3 (the owner's decision after this failure, in force
+  since): V3's U is 4.76e-5 and its difference 0.65 of it, so V3 now
+  passes as judged; by the amendment's own terms that pass is not
+  evidence for it, and the five blind checks decide.
 
 ## State (2026-11-24)
 
@@ -2115,17 +2127,16 @@ back to the owner; by Amendment 2 the rerun is final.
   run was stopped and set aside under it (`runs-of/*.grid1`). V2 at Mach
   2 then passed, and V1 at Mach 1.3 passed on the new grid. **V3
   failed on the new grid** (-0.031% against U = 0.016%): by O5 no W6
-  case runs and the route goes back to the owner. V2 at Mach 3 and V1
-  at Mach 3 are still running, for the record.
+  case runs and the route goes back to the owner. V2 at Mach 3 is on its
+  level 3, and V1 at Mach 3 is queued behind it.
 - The owner chose Amendment 3 after V3's failure: a factor of safety
   of 3 on U's grid part in every OpenFOAM estimate, tested on five blind
   checks (sharp tangent ogives against the method of characteristics)
   whose results nobody has seen, reviewed independently before use. Its
-  review passed it with changes; they are made and go back to the
-  reviewer for confirmation. Until then it is **not in force**: its code
-  is committed, so `ofjudge.py` as committed prints V3 as passing, but
-  the verdict in force is V3's failure. No blind check has run.
-- Next: Amendment 3's confirmation, the blind checks; then the rest
+  review passed it with changes, all made and confirmed, and it is **in
+  force**: V3 is judged under it, but its pass is not evidence for the
+  amendment; the five blind checks are, and none has run.
+- Next: the five blind checks; then the rest
   of V1 to V5 (with V4's level 4), the W6 cases and the hold-out. No W6
   case runs and nothing is served before then: every capped nose stays
   refused.
