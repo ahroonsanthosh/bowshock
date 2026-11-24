@@ -1462,7 +1462,19 @@ as the runner calls them), every level 0 to 3 of each, widened 0 to 2
 times, reports "Mesh OK.", with these largest skewnesses (OpenFOAM's
 limit 4) and non-orthogonalities (degrees):
 
-(The table is added when the check of every level has finished.)
+| H grid | Widened 0 times | Once | Twice |
+| --- | --- | --- | --- |
+| V1, cone, Mach 1.3 | 1.87 to 2.32; 61.5 | 1.94 to 2.67; 66.5 | 2.04 to 2.96; 70.9 |
+| V1, cone, Mach 3 | 0.88 to 0.99; 30.4 | 1.08 to 1.21; 36.2 | 1.28 to 1.44; 42.5 |
+| V3, ogive, Mach 1.98 | 1.45 to 1.58; 48.6 | 1.68 to 1.81; 54.8 | 1.80 to 2.19; 60.5 |
+
+(Skewness over levels 0 to 3; the largest non-orthogonality on any
+level.) On the first grid V1 at Mach 1.3's skewness was 4.63 on every
+level. The non-orthogonality is the first grid's: it is largest far from
+the nose, behind L/8, where nothing changed. Widened twice, V1 at Mach
+1.3 has faces above 70 degrees (27 on level 0), which `checkMesh` counts
+but passes ("Non-orthogonality check OK."); they are in the free stream,
+2.6 to 5.8 times as far from the axis as the shock at their x.
 
 What it does to the runs. A record's hash includes `flatTo`, so no
 level made on the first grid can count on the new one. V1 at Mach 1.3's
