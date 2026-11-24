@@ -1819,6 +1819,43 @@ is its verdict.
   4.7e-6 (0.0063%), within U = 9.6e-6 (0.013%; monotone, order 1.64); the
   same both ways.
 
+V3 fails, on Amendment 2's grid. By O5 no W6 case runs and the route goes
+back to the owner; by Amendment 2 the rerun is final.
+
+| Check | Drag | Exact (MOC, 0006) | Difference | U | Difference / U | Verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| V3, TN 3716 ogive, Mach 1.98, Amendment 2's grid | 0.0987726 | 0.0988034 | -3.08e-5 (-0.031%) | 1.59e-5 (0.016%) | 1.94 | **fail** |
+
+- V3 on Amendment 2's grid (2026-11-24). Every level's `checkMesh`
+  reports "Mesh OK.": the largest skewness is 1.45, 1.51, 1.55 and 1.58
+  on levels 0 to 3. Levels 0 to 3 converged at 10,180, 7,900, 4,500 and
+  5,100 iterations, with |Cp| against the outer boundary 3.0e-9,
+  2.7e-13, 6.7e-13 and 8.1e-13. The drags on levels 1 to 3, 0.0988067,
+  0.0987728 and 0.0987726, are monotone, but their changes (3.4e-5, then
+  1.2e-7) give an order of 8.2, so U_total is only 4.9e-8, and U is the
+  larger change of the drag's distribution by regions, 1.59e-5 (0.016%;
+  ratio 0.15). No iterative error is charged and R4's limits pass. The
+  difference from the method of characteristics' 0.0988034 is -3.08e-5
+  (-0.031%), 1.94 times U; the same both ways. **Fail.**
+- The grid change is not the cause: on the first grid, levels 0 to 2
+  gave +0.123%, +0.002% and -0.031% of 0.0988034 (Amendment 2, for
+  information); on the new grid, +0.125%, +0.003% and -0.031%.
+- Where the difference is (looked at after the verdict, for information
+  only). The MOC's own wall pressures (its march on 1,280 intervals,
+  integrated over the ogive's radius) give 0.0988034 to every digit.
+  Against their running total, level 3's drag falls short from x = 0.05
+  L on: by 1.6e-6 at 0.05 L, 1.3e-5 at 0.2 L and 3.0e-5 at 0.5 L, and
+  about the same from there to the base. Over the same stretch (0.2 L
+  to 0.5 L) the wall cells' total pressure is below its exact value
+  (behind the shock of the 18.9 degree tip cone) by 0.37% to 0.41%,
+  0.21% to 0.22% and 0.11% to 0.12% on levels 1 to 3. It halves with
+  each level, first order, which is consistent with an entropy error
+  from the shock captured at the sharp tip (not established).
+  The total drag hides it: levels 2 and 3 differ by 1.2e-7 in total,
+  but their running totals differ by up to 7.6e-6 along the nose, so the
+  errors cancel in the sum. U from levels 1 to 3 covers about half of
+  the difference. SU2's V3 (above) was +0.076% with a U of 0.25%.
+
 ## State (2026-11-24)
 
 - SU2: the tool, the geometry check, the set-up trials 1 to 13, the
@@ -1850,9 +1887,10 @@ is its verdict.
   grids' outer boundary flat to x = L/8) passed its independent review
   with changes, all made and confirmed, and is in force. V3's first-grid
   run was stopped and set aside under it (`runs-of/*.grid1`). V2 at Mach
-  2 then passed, and V1 at Mach 1.3 passed on the new grid. V3 (new
-  grid) and V2 at Mach 3 are running.
-- Next: V3 on the new grid, V2 at Mach 3, and V1 at Mach 3; the rest of V1 to V5 on OpenFOAM
-  (with V4's level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
-  `ofjudge.py`'s verdict, reviewed. Nothing is served before that verdict
-  serves it: every capped nose stays refused.
+  2 then passed, and V1 at Mach 1.3 passed on the new grid. **V3
+  failed on the new grid** (-0.031% against U = 0.016%): by O5 no W6
+  case runs and the route goes back to the owner. V2 at Mach 3 and V1
+  at Mach 3 are still running, for the record.
+- Next: the owner's decision on V3's failure. No W6 case runs on
+  OpenFOAM under the registration as it stands, and nothing is served:
+  every capped nose stays refused.
