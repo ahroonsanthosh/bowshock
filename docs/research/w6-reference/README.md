@@ -1571,6 +1571,30 @@ registered; the verdict file is not kept.
 - Both V5 drags are below the fitted values, by 0.069% at Mach 2 and
   0.100% at Mach 3, each within its grid part.
 
+V2 is judged on the finest level used (level 3): the total pressure of
+the wall's cell on the axis, and of every cap face's cell, against
+pitot's, each within 3% of pitot's Cp.
+
+| Check | Axis's first cell (of pitot's Cp) | Worst cap face (of pitot's Cp) | Verdict |
+| --- | --- | --- | --- |
+| V2, capped ogive, Mach 1.3 | +0.57% (+0.91%) | +1.44% (+2.28%) | pass |
+
+- V2 at Mach 1.3 (2026-11-24). Level 0 ran to its limit (30,000
+  iterations, residual 1e-6.45); it is not a level used. Levels 1 and 2
+  converged at 23,430 and 19,630 iterations. Level 3's residual fell to
+  about 1e-9.87 by 33,000 iterations and stayed there; the stall rule
+  stopped it at 40,000 (every residual of its last quarter at or below
+  1e-9, its drag's range 4.6e-13 and drift 8.4e-14, against a bound of
+  6.2e-11). |Cp| against the outer boundary is 9.2e-8, 4.3e-11 and
+  7.6e-13 on levels 1 to 3. On level 3 the axis's first cell's total
+  pressure is 0.57% above pitot's, and the 38 cap faces are within 1.44%;
+  the worst is the second face from the axis. That face was also the
+  worst on level 2, at 2.14% (3.39% of pitot's Cp, which would fail; V2 is
+  judged on the finest level used). The axis's first cell is 6.7%, 1.9%,
+  0.62% and 0.57% off on levels 0 to 3. The drags on levels 1 to 3,
+  0.0624216, 0.0623564 and 0.0623407, are V4's, judged once its level 4
+  has run. **Pass.**
+
 ## State (2026-11-23)
 
 - SU2: the tool, the geometry check, the set-up trials 1 to 13, the
@@ -1595,8 +1619,8 @@ registered; the verdict file is not kept.
   at Mach 1.3 is under way (level 4's iteration limit, O3); it must
   converge or stall by 100,000 before V4's level 4 runs.
 - OpenFOAM's checks are running (the section above): V5 passed at
-  Mach 2 and Mach 3; V2 at Mach 1.3 and at Mach 2 are each on their
-  level 3.
+  Mach 2 and Mach 3, and V2 at Mach 1.3; V2 at Mach 2 is on its level
+  3 and V1 at Mach 1.3 has started.
 - Next: the rest of V1 to V5 on OpenFOAM (with V4's
   level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
   `ofjudge.py`'s verdict, reviewed. Nothing is served before that verdict
