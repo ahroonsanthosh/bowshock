@@ -1426,7 +1426,7 @@ if any fails, no W6 case runs and the route goes back to the owner;
 `ofjudge.py`'s verdict, recorded with every case and the hold-out, then
 reviewed; (5) only if it serves: R9's (5), unchanged.
 
-### Amendment 2 (2026-11-24, after V1 at Mach 1.3 failed `checkMesh`; the owner's decision; proposed, not in force until its review is confirmed)
+### Amendment 2 (2026-11-24, after V1 at Mach 1.3 failed `checkMesh`; the owner's decision; reviewed independently, its changes made and confirmed the same day)
 
 Made after a result, and said so. V1 at Mach 1.3 failed O5's rule that
 every level's `checkMesh` report "Mesh OK.": the cone's H grid at Mach
@@ -1480,7 +1480,7 @@ line from there on.
   held 9% and 12% of the regional changes between levels 1 and 2 and
   levels 2 and 3 of V1, and 37% and 32% of those between levels 0 and 1
   and levels 1 and 2 of V3 (U uses the changes between levels 1 and 2
-  and between 2 and 3; V3's level 3 never ran on the first grid). O4
+  and between 2 and 3; V3's level 3 never finished on the first grid). O4
   measures its effect as for any grid.
 - SU2's H grids (`judge.registered`, which has no `flatTo`) and every C
   grid (every capped run: V2, V4, V5, every W6 case and the hold-out) are
@@ -1533,7 +1533,8 @@ choice, after its levels 0 to 2 had been committed (7b204333). Their
 drags were seen when committed, but not set against TN 3716's value
 until the review: 0.0989250, 0.0988056 and 0.0987729, that is +0.123%,
 +0.002% and -0.031% of 0.0988034 (for information, not a verdict: V3 is
-judged on levels 1 to 3, with U from them, and its level 3 had not run).
+judged on levels 1 to 3, with U from them, and its level 3 had not
+finished).
 V3 is judged by the same rules, in one attempt on the new grid with no
 grid after it; but the new grid changes V3's error and its U, and
 whether it is easier or harder to pass cannot be known before it runs.
@@ -1546,8 +1547,8 @@ the flat top marked farfield; SU2's H grids and all 248 C grids (31
 names) bit-identical; `settings_hash` changed for V1 and V3 at every
 widening, so no first-grid record matches; `.grid1` folders ignored by
 the runner and the judge. Its `checkMesh` runs on eight of the table's grids matched it digit for
-digit (and reproduced the first grid's 4.6306 and L/16's 4.0446); ten
-more of the table's entries (levels 0 and 2) it reproduced with its own
+digit (and reproduced the first grid's 4.6306 and L/16's 4.0446);
+thirteen more of the table's entries (levels 0 to 2) it reproduced with its own
 copy of OpenFOAM 13's formulas, which matched `checkMesh` to 1e-7. Required, all made: the facts about V3 and
 V1 at Mach 3 and the reason they are included (above); O3's sentence on
 a solver stopped from outside, which was false on two or four processes
@@ -1563,7 +1564,15 @@ better); fixing the runner's handling of a signalled `mpirun` now (a
 real failure in parallel also makes `mpirun` return 1, so the code
 cannot tell them apart by the exit code; the gap can only make a level
 fail wrongly, never pass, and the corrected O3 says how to stop a level
-without it).
+without it). The changes went back to the same reviewer twice: the
+first time NOT CONFIRMED, with three claims stronger than the evidence
+and five wordings (all corrected: V3's new test neither known easier nor
+harder; the SIGTERM named; which entries it had reproduced how; which
+level pairs U uses; both amended files named; "as registered"; the
+bend's slope; the columns); the second time **confirmed** (2026-11-24),
+with one count of its own corrected (thirteen entries, not ten) and two
+optional wordings taken ("never finished"). Amendment 2 is in force from
+then.
 
 ## The review of OpenFOAM's registration (2026-11-23)
 
@@ -1806,11 +1815,11 @@ V1 at Mach 1.3 fails, on the mesh, not on the flow.
   registration no W6 case ran and the route went back to the owner. The
   owner chose to keep the rule and change the grid: Amendment 2 (the H
   grids' outer boundary flat to x = L/8) passed its independent review
-  with changes, all made, and goes back to the reviewer for confirmation;
-  it is not in force until then. V3's first-grid run was stopped and
-  set aside under it. V2 at Mach 2 is on its level 3.
-- Next: once Amendment 2 is confirmed, V1 at Mach 1.3 and V3 from level
-  0 on the new grids, and V1 at Mach 3; the rest of V1 to V5 on OpenFOAM
+  with changes, all made and confirmed, and is in force. V3's first-grid
+  run was stopped and set aside under it (`runs-of/*.grid1`). V2 at Mach
+  2 is on its level 3.
+- Next: V1 at Mach 1.3 and V3 from level 0 on the new grids, and V1 at
+  Mach 3; the rest of V1 to V5 on OpenFOAM
   (with V4's level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
   `ofjudge.py`'s verdict, reviewed. Nothing is served before that verdict
   serves it: every capped nose stays refused.
