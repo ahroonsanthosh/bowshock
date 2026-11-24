@@ -1771,13 +1771,31 @@ pitot's, each within 3% of pitot's Cp.
   0.0586348, 0.0586151 and 0.0586148, are V4's, judged once its level 4
   has run. **Pass.**
 
-V1 at Mach 1.3 fails, on the mesh, not on the flow.
+V1 at Mach 1.3 failed on its first grid, on the mesh, not on the flow.
+Under Amendment 2 it was rerun on the changed grid, and passes; that run
+is its verdict.
 
 | Check | V1(a): worst face's Cp off Taylor-Maccoll (limit 0.1%) | V1(b): drag to x = 2.3126 | Verdict |
 | --- | --- | --- | --- |
-| V1, cone, Mach 1.3 | 0.0062% (79 faces) | not judged: no level's `checkMesh` reports "Mesh OK." | fail |
+| V1, cone, Mach 1.3, first grid | 0.0062% (79 faces) | not judged: no level's `checkMesh` reports "Mesh OK." | fail (set aside by Amendment 2) |
+| V1, cone, Mach 1.3, Amendment 2's grid | 0.0059% (79 faces) | 0.0754731 against the exact 0.0754683: 4.8e-6 (0.0064%), U 1.0e-5 (0.013%) | pass |
 
-- V1 at Mach 1.3 (2026-11-24). Level 0 ran to its limit (30,000
+- V1 at Mach 1.3 on Amendment 2's grid (2026-11-24). Every level's
+  `checkMesh` reports "Mesh OK.": the largest skewness is 2.18, 1.87,
+  2.32 and 1.94 on levels 0 to 3, and the largest non-orthogonality 60.7
+  to 61.5 degrees. Levels 0 to 3 converged at 21,930, 16,050, 7,560 and
+  8,140 iterations, with |Cp| against the outer boundary 2.8e-8,
+  8.3e-13, 1.2e-12 and 1.7e-12. V1(a): on level 3 the 79 faces from L/3
+  to 0.8L are within 0.0059% of the cone's Taylor-Maccoll Cp (0.1270).
+  V1(b): the drags to x = 2.3126 on levels 1 to 3, 0.0755102, 0.0754823
+  and 0.0754731, are monotone (order 1.61); U is the larger change of
+  the drag's distribution, 1.0e-5 (0.013%), and no iterative error is
+  charged. The difference from the exact 0.0754683 is 4.8e-6 (0.0064%),
+  0.48 of U; the same both ways. **Pass.** The first grid's figures
+  (below) were 0.0062% and 0.0754730: the grid change, ahead of the
+  cone's shock, moved level 3's drag to x = 2.3126 by 6.8e-8 (9e-7 of
+  itself), against U of 1.0e-5.
+- V1 at Mach 1.3 on the first grid (2026-11-24). Level 0 ran to its limit (30,000
   iterations, residual 1e-6.04); levels 1 to 3 converged at 27,680, 9,810
   and 8,490 iterations, with |Cp| 1.2e-12 or less against the outer
   boundary. O5 requires every level's `checkMesh` to report "Mesh OK.";
@@ -1832,11 +1850,9 @@ V1 at Mach 1.3 fails, on the mesh, not on the flow.
   grids' outer boundary flat to x = L/8) passed its independent review
   with changes, all made and confirmed, and is in force. V3's first-grid
   run was stopped and set aside under it (`runs-of/*.grid1`). V2 at Mach
-  2 then passed. On the new grid, V1 at Mach 1.3's levels 0 to 2
-  converged and pass `checkMesh`; its level 3 is running. V2 at Mach 3
-  is running.
-- Next: V1 at Mach 1.3's level 3, V3 from level 0 on the new grid, V2 at
-  Mach 3, and V1 at Mach 3; the rest of V1 to V5 on OpenFOAM
+  2 then passed, and V1 at Mach 1.3 passed on the new grid. V3 (new
+  grid) and V2 at Mach 3 are running.
+- Next: V3 on the new grid, V2 at Mach 3, and V1 at Mach 3; the rest of V1 to V5 on OpenFOAM
   (with V4's level 4); then the 24 W6 cases and the hold-out's Von Karman runs; then
   `ofjudge.py`'s verdict, reviewed. Nothing is served before that verdict
   serves it: every capped nose stays refused.
