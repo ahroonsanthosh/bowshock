@@ -1973,6 +1973,7 @@ pitot's, each within 3% of pitot's Cp.
 | --- | --- | --- | --- |
 | V2, capped ogive, Mach 1.3 | +0.57% (+0.91%) | +1.44% (+2.28%) | pass |
 | V2, capped ogive, Mach 2 | +0.90% (+1.10%) | +2.08% (+2.53%) | pass |
+| V2, capped ogive, Mach 3 | +0.47% (+0.51%) | +1.77% (+1.93%) | pass |
 
 - V2 at Mach 1.3 (2026-11-24). Level 0 ran to its limit (30,000
   iterations, residual 1e-6.45); it is not a level used. Levels 1 and 2
@@ -2003,6 +2004,21 @@ pitot's, each within 3% of pitot's Cp.
   1.12% and 0.90% off on levels 0 to 3. The drags on levels 1 to 3,
   0.0586348, 0.0586151 and 0.0586148, are V4's, judged once its level 4
   has run. **Pass.**
+- V2 at Mach 3 (2026-11-24). Every level's `checkMesh` reports "Mesh
+  OK." (largest skewness 0.62 to 0.66). Level 0 converged at 17,230
+  iterations. Levels 1 to 3 stopped by the stall rule at half their
+  limits (20,000, 30,000 and 30,000 iterations), with residuals flat at
+  about 1e-9.74, 1e-9.46 and 1e-9.13: every residual of their last
+  quarter at or below 1e-9, their drags' ranges 2.2e-13, 7.0e-14 and
+  6.4e-14 and drifts 1.1e-14, 6e-16 and 2.0e-15, against a bound of
+  5.4e-11. |Cp| against the outer boundary is 3.2e-11, 4.2e-14 and
+  5.5e-14 on levels 1 to 3. On level 3 the axis's first cell's total
+  pressure is 0.47% above pitot's, and the 38 cap faces are within 1.77%.
+  On level 2 the worst cap face was 2.77% (3.02% of pitot's Cp, which
+  would fail; V2 is judged on the finest level used). The axis's first
+  cell is 8.6%, 3.8%, 0.58% and 0.47% off on levels 0 to 3. The drags on
+  levels 1 to 3 are 0.0542385, 0.0542265 and 0.0542224 (V4 is not run at
+  Mach 3). **Pass.**
 
 V1 at Mach 1.3 failed on its first grid, on the mesh, not on the flow.
 Under Amendment 2 it was rerun on the changed grid, and passes; that run
@@ -2117,8 +2133,8 @@ information.
   limits pass. The difference from the method of characteristics'
   0.0428181 is +7.66e-6 (+0.018%), 0.13 of U and 0.39 of the registered
   U; the same both ways. **Pass.**
-- B-ogive3M1.35 is on its level 2; B-ogive3M3, B-ogive5M2 and B-ogive5M3
-  are queued.
+- B-ogive3M1.35 is on its level 3, with B-ogive3M3 behind it; B-ogive5M3
+  and B-ogive5M2 are queued in the other lane, behind V1 at Mach 3.
 
 ## State (2026-11-24)
 
@@ -2154,8 +2170,8 @@ information.
   run was stopped and set aside under it (`runs-of/*.grid1`). V2 at Mach
   2 then passed, and V1 at Mach 1.3 passed on the new grid. **V3
   failed on the new grid** (-0.031% against U = 0.016%): by O5 no W6
-  case runs and the route goes back to the owner. V2 at Mach 3 is on its
-  level 3, and V1 at Mach 3 is queued behind it.
+  case runs and the route goes back to the owner. V2 at Mach 3 has since
+  passed, and V1 at Mach 3 is on its level 3.
 - The owner chose Amendment 3 after V3's failure: a factor of safety
   of 3 on U's grid part in every OpenFOAM estimate, tested on five blind
   checks (sharp tangent ogives against the method of characteristics)
