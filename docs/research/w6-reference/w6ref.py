@@ -228,7 +228,10 @@ def h_grid(spec, nose, level):
     the cylinder, each from the axis (ahead of the tip) or the wall to a
     straight outer line from (-a, Rin) to (X, Rout); the tip is a grid
     point. ni_up cells ahead of the tip and ni_body along the body, each
-    clustered toward the tip by its own mapping.
+    clustered toward the tip by its own mapping. With "flatTo" in the spec
+    (OpenFOAM's Amendment 2; a fraction of L), the outer boundary is
+    horizontal from the inflow to x = flatTo L, at the line's height there,
+    and the line from there on; without it (SU2's runs), the line throughout.
     """
     a, X = spec["a"], spec["L"] + spec["Lcyl"]
     up = spec["ni0_up"] * 2**level
@@ -242,7 +245,8 @@ def h_grid(spec, nose, level):
     xs = np.concatenate([x_up, x_b[1:]])
     low = np.array([0.0 if xv <= 0 else (radius(nose, xv) if xv <= nose["L"] else R) for xv in xs])
     rin, rout = spec["Rin"], spec["Rout"]
-    high = rin + (rout - rin) * (xs + a) / (X + a)
+    xo = xs if spec.get("flatTo") is None else np.maximum(xs, spec["flatTo"] * spec["L"])
+    high = rin + (rout - rin) * (xo + a) / (X + a)
     uj = mapping(spec["bj"])(np.linspace(0, 1, nj + 1))
     x = np.repeat(xs[:, None], nj + 1, axis=1)
     r = low[:, None] + (high - low)[:, None] * uj[None, :]

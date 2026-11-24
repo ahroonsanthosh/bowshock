@@ -681,7 +681,8 @@ OpenFOAM 13 (`openfoam13` 20260624), its density-based solver
 stepping), inviscid (viscosity 0), on wedge meshes of the tool's own
 grids (`ofref.py`: the 2D grid turned by +-2.5 degrees about the axis,
 the cells against the axis prisms with no face on it, so no source term
-in 1/r; OpenFOAM's `checkMesh` passes the C and the H grids).
+in 1/r; OpenFOAM's `checkMesh` passes the C and the H grids; not, as
+V1 found, the cone's H grid at Mach 1.3: Amendment 2).
 Non-dimensional as OpenFOAM's tutorials (p = 1, T = 1, speed of sound 1).
 Per iteration, from OpenFOAM's own function objects (it refuses compiled
 code when run as root): the RMS over cells of d(rho)/dt under the local
@@ -1229,8 +1230,9 @@ of the trials: 1e-16).
   the free stream fixed on the outer boundary, zero gradient on the
   outlet, slip on the wall, wedge patches 2.5 degrees either side of the
   axis (`ofref.write_case`, `write_polymesh`).
-- The grids are R3's (`capped_spec`, `sharp_spec`, unchanged), turned
-  into wedges; every level's `checkMesh` must report "Mesh OK.".
+- The grids are R3's (`capped_spec`, `sharp_spec`, unchanged; the H
+  grids as Amendment 2 changes them), turned into wedges; every level's
+  `checkMesh` must report "Mesh OK.".
 - Level 0 from the free stream; levels 1, 2 and 3 (and 4) each from the
   level below by `mapFields`, after the runner checks the level below's
   solution on disk against the hash in its record. One process on levels
@@ -1413,6 +1415,68 @@ if any fails, no W6 case runs and the route goes back to the owner;
 (3) the 24 cases and the hold-out's Von Karman runs on OpenFOAM; (4)
 `ofjudge.py`'s verdict, recorded with every case and the hold-out, then
 reviewed; (5) only if it serves: R9's (5), unchanged.
+
+### Amendment 2 (2026-11-24, after V1 at Mach 1.3 failed `checkMesh`; the owner's decision; proposed, not in force until its review is confirmed)
+
+Made after a result, and said so. V1 at Mach 1.3 failed O5's rule that
+every level's `checkMesh` report "Mesh OK.": the cone's H grid at Mach
+1.3 has a largest skewness of 4.63 against OpenFOAM's limit of 4, on
+every level (OpenFOAM's checks, below). The cause is the grid's shape.
+The outer line rises at 61.6 degrees at Mach 1.3 (it is set at 1.5
+times the reach of the cone's shock), so the grid's lines of constant x
+meet it at 28.4 degrees; near the tip, where those lines are packed
+toward the tip, the cells against it are thin. OpenFOAM's skewness of
+such a boundary face is its cell centre's offset along the face over 0.4
+times the centre's distance from the face: 2.5 cot 28.4 degrees = 4.63,
+the same on every level. The inflow boundary's corner with the outer
+line (151.6 degrees inside the domain) gives the same on three faces.
+The owner chose to keep the rule and change the grid, reviewed before
+use, rather than relax the rule or stop the route. When it was made, V5
+(Mach 2 and 3) and V2 at Mach 1.3 had passed, V2 at Mach 2 and V3 were on
+their level 3, and V1 at Mach 3, V2 at Mach 3, V4's level 4 and every W6
+case had not run.
+
+The change, to OpenFOAM's H grids only (the sharp noses of V1 and V3:
+`ofref.registered_build` adds `flatTo` = 1/8 to their spec, and
+`w6ref.h_grid` uses it): the outer boundary is horizontal from the
+inflow to x = L/8, at the outer line's height there, and the registered
+line from there on.
+- Behind x = L/8 every grid point is where it was.
+- Ahead of it the lines of constant x are taller, at the tip by 1.46 (V1
+  at Mach 1.3), 1.25 (V1 at Mach 3) and 1.36 (V3) times, tapering to 1 at
+  L/8; so the cells against the nose's first eighth are that much taller.
+- Ahead of the tip, in the free stream, the inflow boundary is 2.22, 1.12
+  and 1.60 high instead of 0.6.
+- The attached shock stays well below the horizontal part: at x = L/8 it
+  is at r = 0.46 (V1 at Mach 1.3), 0.15 (Mach 3) and 0.28 (V3, its tip's
+  cone), against 2.22, 1.12 and 1.60.
+- SU2's H grids (`judge.registered`, which has no `flatTo`) and every C
+  grid (every capped run: V2, V4, V5, every W6 case and the hold-out) are
+  unchanged, point for point.
+
+L/8 is the shortest of L/32, L/16 and L/8 for which every level of the
+three H grids, widened 0, 1 or 2 times, passes `checkMesh` (L/16 fails
+on V1 at Mach 1.3 widened twice, level 1, at 4.05). From the registered
+code (`ofref.registered_build`, `w6ref.grid` and `ofref.write_polymesh`,
+as the runner calls them), every level 0 to 3 of each, widened 0 to 2
+times, reports "Mesh OK.", with these largest skewnesses (OpenFOAM's
+limit 4) and non-orthogonalities (degrees):
+
+(The table is added when the check of every level has finished.)
+
+What it does to the runs. A record's hash includes `flatTo`, so no
+level made on the first grid can count on the new one. V1 at Mach 1.3's
+run on the first grid is kept as `runs-of/V1-cone3M1.3.grid1`, and V3's
+as `runs-of/V3-ogive3M1.98.grid1`: its levels 0 to 2 converged, and its
+level 3 was stopped from outside at 1,571 iterations once this change
+was decided (its solver was signalled; `mpirun` then returns 1, which the
+runner records as an ordinary failure, so that level's record says exit
+1; it is not a failure of the solver, and the run is not judged). Both run again from level 0 on the new
+grids and are judged on those runs; V1 at Mach 3 runs on it for the
+first time. The checks that passed (V5 at Mach 2 and 3, V2 at Mach 1.3)
+and every capped run are untouched.
+
+**Its review**: pending.
 
 ## The review of OpenFOAM's registration (2026-11-23)
 

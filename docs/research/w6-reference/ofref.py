@@ -1118,13 +1118,22 @@ REGISTERED = {"solver": "shockFluidHeun", "libs": ["libcellVenkatakrishnanGrad.s
 PROCESSES = [1, 1, 1, 2, 4]
 
 
+# Amendment 2 (README, "OpenFOAM's registration"): the H grids of the sharp
+# noses (V1, V3) have their outer boundary horizontal from the inflow to
+# x = L/8 (`w6ref.h_grid`), so that every level passes checkMesh.
+FLAT_TO = 0.125
+
+
 def registered_build(name):
     """The registered spec builder (a function of widen) for a check run's or a W6 case's name."""
     import judge
     for shape, cal, ratio, M, _ in judge.cases():
         if judge.tag(shape, cal, ratio, M) == name:
             return judge.registered(name, shape, cal, ratio, M)
-    return judge.registered(name)
+    build = judge.registered(name)
+    if name.startswith(("V1-", "V3-")):
+        return lambda w: dict(build(w), flatTo=FLAT_TO)
+    return build
 
 
 def boundary_failures(rec):
