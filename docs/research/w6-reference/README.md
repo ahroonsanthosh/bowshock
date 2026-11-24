@@ -1206,8 +1206,9 @@ nothing below. This section is reviewed independently before any check
 runs; anything changed after that is a dated note saying what changed and
 whether any result had been seen. `ofjudge.py` computes the verdict exactly
 as written here, from the records `ofref.run_case` writes; the code is
-`ofref.py`, `w6ref.py` (the grids, unchanged; the H grids as Amendment
-2 changes them, code committed at 3ede549f), `openfoam/shockFluidHeun`
+`ofref.py`, `w6ref.py` (the grids, unchanged; `ofref.py`'s
+`registered_build` and `FLAT_TO` and `w6ref.py`'s H grid as Amendment 2
+changes them, both committed at 3ede549f), `openfoam/shockFluidHeun`
 and `openfoam/cellVenkatakrishnanGrad`, all as committed with this
 section.
 
@@ -1320,9 +1321,11 @@ of the trials: 1e-16).
   `REGISTERED_BUILD` by a dated note before they run anything. A solver
   on one process stopped by a signal from outside leaves no record (the
   level goes on from its last save). On two or four processes (levels 3
-  and 4) it does not: signalled, `mpirun` returns 1, as it does when the
-  solver fails (OpenFOAM's `MPI_Abort` with 1), and the runner records an
-  ordinary failure. Such a level is stopped by stopping the runner
+  and 4) it may not: a SIGTERM sent to `mpirun` (V3's first-grid level 3)
+  made it return 1, as it does when the solver fails (OpenFOAM's
+  `MPI_Abort` with 1), and the runner recorded an ordinary failure; a
+  SIGKILL, which cannot be caught, ends `mpirun` by the signal itself,
+  which the runner treats as a stop from outside. Such a level is stopped by stopping the runner
   (`ofref.py`) first and then `mpirun`, so that no runner is left to
   write a record (corrected under Amendment 2's review; the code is
   unchanged). The case's lock is passed to the solver, so a second runner
@@ -1465,15 +1468,20 @@ line from there on.
   is at r = 0.46 (V1 at Mach 1.3), 0.15 (Mach 3) and 0.28 (V3, its tip's
   cone), against 2.22, 1.11 and 1.60.
 - It changes the flow region too, not only the free stream. Every grid
-  line along the body bends at x = L/8, by an angle in proportion to its
-  height in its column; where the lines cross the shock the bend is 17.9
-  degrees (V1 at Mach 1.3), 2.6 (Mach 3) and 6.6 (V3). On the first grid
-  the cone's lines were straight from the tip to L. The changed region is
-  27 of level 0's 56 columns (8 ahead of the tip, 19 on the nose; the
-  same columns on every level). It carries 2.6% of the drag V1(b)
-  measures and 14.5% of V3's, and on the first grids it held 9% to 12%
-  (V1, levels 1 to 3) and 32% to 37% (V3, levels 0 to 2) of the regional
-  changes that make up U. O4 measures its effect as for any grid.
+  line along the body bends at x = L/8: its slope changes by the outer
+  line's slope times the line's fraction of the column's height (so 61.6
+  degrees at the top on V1 at Mach 1.3); where the lines cross the shock
+  the bend is 17.9 degrees (V1 at Mach 1.3), 2.6 (Mach 3) and 6.6 (V3).
+  On the first grid the cone's lines were straight from the tip to L. The
+  changed region is 27 of level 0's 56 columns, which lie wholly ahead of
+  L/8 (8 ahead of the tip, 19 on the nose), and the one the bend crosses
+  (its left side moved); it is the same region on every level. It carries
+  2.6% of the drag V1(b) measures and 14.5% of V3's. On the first grids it
+  held 9% and 12% of the regional changes between levels 1 and 2 and
+  levels 2 and 3 of V1, and 37% and 32% of those between levels 0 and 1
+  and levels 1 and 2 of V3 (U uses the changes between levels 1 and 2
+  and between 2 and 3; V3's level 3 never ran on the first grid). O4
+  measures its effect as for any grid.
 - SU2's H grids (`judge.registered`, which has no `flatTo`) and every C
   grid (every capped run: V2, V4, V5, every W6 case and the hold-out) are
   unchanged, point for point.
@@ -1508,16 +1516,16 @@ level made on the first grid can count on the new one. V1 at Mach 1.3's
 run on the first grid is kept as `runs-of/V1-cone3M1.3.grid1`, and V3's
 as `runs-of/V3-ogive3M1.98.grid1`: its levels 0 to 2 converged, and its
 level 3 was stopped from outside at 1,571 iterations once this change
-was decided (its solver was signalled; `mpirun` then returns 1, which the
-runner records as an ordinary failure, so that level's record says exit
+was decided (a SIGTERM to its `mpirun`, which then returned 1; the runner
+recorded that as an ordinary failure, so that level's record says exit
 1; it is not a failure of the solver, and the run is not judged). Both
 run again from level 0 on the new grids and are judged on those runs; V1 at Mach 3 runs on it for the
 first time. The reruns are final: if V1 or V3 fails on the new grids, it
 fails, and there is no further grid. The checks that passed (V5 at Mach
 2 and 3, V2 at Mach 1.3) and every capped run are untouched.
 
-Why V3 and V1 at Mach 3 too. Their first grids pass `checkMesh` as they
-were run: V3 at 2.84 (3.55 widened once), V1 at Mach 3 at 1.47 (2.30
+Why V3 and V1 at Mach 3 too. Their first grids pass `checkMesh` as
+registered (unwidened): V3 at 2.84 (3.55 widened once), V1 at Mach 3 at 1.47 (2.30
 widened twice). They are included so that every H grid
 follows one rule, and V3 also because its first grid fails if R3 widens
 it twice (4.44 on level 1). So V3's first run was set aside by this
@@ -1526,8 +1534,9 @@ drags were seen when committed, but not set against TN 3716's value
 until the review: 0.0989250, 0.0988056 and 0.0987729, that is +0.123%,
 +0.002% and -0.031% of 0.0988034 (for information, not a verdict: V3 is
 judged on levels 1 to 3, with U from them, and its level 3 had not run).
-Setting the run aside gives V3 no easier test: it must pass on the new
-grid, with no grid after it.
+V3 is judged by the same rules, in one attempt on the new grid with no
+grid after it; but the new grid changes V3's error and its U, and
+whether it is easier or harder to pass cannot be known before it runs.
 
 **Its review** (2026-11-24, independent, given the code, the data and
 the registration): PASS WITH CHANGES. The code change was found correct:
@@ -1536,9 +1545,10 @@ x unchanged everywhere and r bit-identical wherever x is at least L/8;
 the flat top marked farfield; SU2's H grids and all 248 C grids (31
 names) bit-identical; `settings_hash` changed for V1 and V3 at every
 widening, so no first-grid record matches; `.grid1` folders ignored by
-the runner and the judge. Its `checkMesh` runs on nine grids matched the
-table digit for digit, and its own copy of OpenFOAM 13's formulas
-matched `checkMesh` to 1e-7. Required, all made: the facts about V3 and
+the runner and the judge. Its `checkMesh` runs on eight of the table's grids matched it digit for
+digit (and reproduced the first grid's 4.6306 and L/16's 4.0446); ten
+more of the table's entries (levels 0 and 2) it reproduced with its own
+copy of OpenFOAM 13's formulas, which matched `checkMesh` to 1e-7. Required, all made: the facts about V3 and
 V1 at Mach 3 and the reason they are included (above); O3's sentence on
 a solver stopped from outside, which was false on two or four processes
 (O3, corrected, with the safe way to stop a level); what changes in the
