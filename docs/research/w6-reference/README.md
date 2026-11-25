@@ -2280,7 +2280,14 @@ Amendment 3).
   at Mach 1.3 (level 4's iteration limit, O3) waited at 1,163
   iterations for four free cores and resumed on them once the blind
   checks finished (2026-11-25); it must converge or stall by 100,000
-  before V4's level 4 runs.
+  before V4's level 4 runs. At 8,766 iterations (13:40 UTC) its
+  residual has stayed at about 1e-1.4 since 4,500, where level 3's fell
+  steadily (1e-3.3 at 5,000) to the target at 38,540. The bow shock ahead
+  of the cap sits where level 3's does (x = -0.0463 on the axis, against
+  -0.0461); what still changes is in the shock's own cells near the axis,
+  alternating in sign from cell to cell between the 5,000 and 5,090
+  saves. Its drag, 0.0622224, still moves by about 2e-7 per 1,000
+  iterations. It runs on, as registered.
 - OpenFOAM's checks (the section above): V5 passed at Mach 2 and Mach
   3, and V2 at Mach 1.3. V1 at Mach 1.3 failed: its grid does not pass
   `checkMesh` (skewness on free-stream boundary faces), so by the
