@@ -2022,12 +2022,14 @@ pitot's, each within 3% of pitot's Cp.
 
 V1 at Mach 1.3 failed on its first grid, on the mesh, not on the flow.
 Under Amendment 2 it was rerun on the changed grid, and passes; that run
-is its verdict.
+is its verdict. V1 at Mach 3 ran on Amendment 2's grid after Amendment 3
+was in force, and is judged under it.
 
 | Check | V1(a): worst face's Cp off Taylor-Maccoll (limit 0.1%) | V1(b): drag to x = 2.3126 | Verdict |
 | --- | --- | --- | --- |
 | V1, cone, Mach 1.3, first grid | 0.0062% (79 faces) | not judged: no level's `checkMesh` reports "Mesh OK." | fail (set aside by Amendment 2) |
 | V1, cone, Mach 1.3, Amendment 2's grid | 0.0059% (79 faces) | 0.0754731 against the exact 0.0754683: 4.8e-6 (0.0064%), U 1.0e-5 (0.013%) | pass |
+| V1, cone, Mach 3, Amendment 2's grid | 0.019% (79 faces) | 0.0474360 against the exact 0.0474416: -5.6e-6 (-0.0118%), U 7.2e-6 (0.0151%; registered 2.4e-6) | pass (0.78 of U; 2.35 of the registered U) |
 
 - V1 at Mach 1.3 on Amendment 2's grid (2026-11-24). Every level's
   `checkMesh` reports "Mesh OK.": the largest skewness is 2.18, 1.87,
@@ -2067,6 +2069,38 @@ is its verdict.
   V1(b) gives 0.0754730 against the exact 0.0754683, a difference of
   4.7e-6 (0.0063%), within U = 9.6e-6 (0.013%; monotone, order 1.64); the
   same both ways.
+- V1 at Mach 3 on Amendment 2's grid (2026-11-25). Every level's
+  `checkMesh` reports "Mesh OK.": the largest skewness is 0.88, 0.95, 0.97
+  and 0.99 on levels 0 to 3. Levels 0 to 2 converged at 7,140, 5,420 and
+  3,220 iterations. Level 3's residual reached about 1e-9.83 by 4,000
+  iterations and stayed there; the stall rule stopped it at 30,000 (half
+  its limit; every residual of its last quarter at or below 1e-9, its
+  drag's range 1.9e-13 and drift 5.8e-16, against a bound of 8.0e-11).
+  |Cp| against the outer boundary is 1.2e-13, 2.5e-13 and 5.1e-13 on
+  levels 1 to 3. V1(a): on level 3 the 79 faces from L/3 to 0.8L are
+  within 0.019% of the cone's Taylor-Maccoll Cp (0.0798). V1(b): the
+  drags to x = 2.3126 on levels 1 to 3, 0.0474407, 0.0474370 and
+  0.0474360, are monotone (order 2.03), so U_total is 9.3e-7 (3.9e-7
+  registered). The larger change of the drag's distribution by regions
+  is 2.39e-6 (ratio 0.33, taken as 0.5), so U_dist is 7.16e-6 (2.39e-6
+  registered); level 3's iterative error, 1.9e-13 (its drag's range), is
+  charged, and U is 7.16e-6 (0.0151%). The difference from the exact
+  0.0474416 is -5.6e-6 (-0.0118%), 0.78 of U; the same both ways.
+  **Pass.** Under the registered U (2.39e-6) the difference would be 2.35
+  of it, a fail: this check is a second case, after V3, where the
+  registered U is too narrow and Amendment 3's covers the difference. It
+  ran only after Amendment 3 was in force, so its result played no part
+  in choosing it, but it is not one of the amendment's five blind
+  checks.
+- V1 at Mach 3's level 3 was killed twice by restarts of the machine
+  (2026-11-25, about 00:36 and 01:39 UTC), each time without a save. Each
+  time it went on from its last regular save (20,000, then 25,000
+  iterations), as after a window's end, and redid the iterations past
+  it: about 4,500, then 2,500. Over the redone iterations the resumed
+  run's drag matches the killed run's to 1.9e-12 and 1.7e-12 of itself,
+  and its residual to 0.024 and 0.016 decades. The level's monitor holds
+  the resumed runs' rows (a later start's row replaces an earlier one at
+  the same iteration), ending at 30,000, the record's iterations.
 
 V3 fails, on Amendment 2's grid. By O5 no W6 case runs and the route goes
 back to the owner; by Amendment 2 the rerun is final.
@@ -2147,8 +2181,10 @@ information.
   limits pass. The difference from the method of characteristics'
   0.1076600 is +4.15e-6 (+0.0039%), 0.025 of U and 0.074 of the
   registered U; the same both ways. **Pass.**
-- B-ogive3M3 is on its level 3; B-ogive5M3 and B-ogive5M2 are queued in
-  the other lane, behind V1 at Mach 3.
+- B-ogive3M3 is on its level 3. Its residual has stayed near 1e-8.6,
+  above both the target and the stall rule's 1e-9, so it runs to its
+  limit of 60,000 iterations. B-ogive5M3 is on its level 3 in the other
+  lane, with B-ogive5M2 behind it.
 
 ## State (2026-11-24)
 
@@ -2185,7 +2221,8 @@ information.
   2 then passed, and V1 at Mach 1.3 passed on the new grid. **V3
   failed on the new grid** (-0.031% against U = 0.016%): by O5 no W6
   case runs and the route goes back to the owner. V2 at Mach 3 has since
-  passed, and V1 at Mach 3 is on its level 3.
+  passed, and V1 at Mach 3 passed under Amendment 3 (0.78 of U; under
+  the registered U, 2.35, it would fail).
 - The owner chose Amendment 3 after V3's failure: a factor of safety
   of 3 on U's grid part in every OpenFOAM estimate, tested on five blind
   checks (sharp tangent ogives against the method of characteristics)
