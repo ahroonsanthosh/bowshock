@@ -2287,7 +2287,12 @@ Amendment 3).
   -0.0461); what still changes is in the shock's own cells near the axis,
   alternating in sign from cell to cell between the 5,000 and 5,090
   saves. Its drag, 0.0622224, still moves by about 2e-7 per 1,000
-  iterations. It runs on, as registered.
+  iterations. At 15,860 iterations (17:27 UTC) the residual is still
+  between 1e-1.42 and 1e-1.34. The drag has almost stopped drifting
+  (about 2e-8 per 1,000 iterations since 12,230) but cycles with a
+  period of about 100 iterations, by up to 5e-7 either way (8e-6 of
+  itself); its mean, 0.0622218, is 4.7e-6 below level 3's. It runs on,
+  as registered.
 - OpenFOAM's checks (the section above): V5 passed at Mach 2 and Mach
   3, and V2 at Mach 1.3. V1 at Mach 1.3 failed: its grid does not pass
   `checkMesh` (skewness on free-stream boundary faces), so by the
