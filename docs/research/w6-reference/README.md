@@ -1932,7 +1932,7 @@ registered; the verdict file is not kept.
   converged (to 1e-10) at 11,060, 18,560 and 26,420 iterations, so no
   iterative error is charged. The drags on levels 1 to 3, 0.7885211,
   0.7881666 and 0.7883893, are not monotone, so U_total is 3 times the
-  larger change of the drag's distribution (3.5e-4): U_grid 1.06e-3
+  larger change of the drag (3.5e-4, from level 1 to 2): U_grid 1.06e-3
   (0.13%); the ratios are 0.63 (regions) and 0.47 (faces). U_cap is
   4.99e-3 (E on level 2; 2.76e-3 on level 3): the cap's wall total
   pressure is off by at most 2.1% on level 2 and 1.2% on level 3. The
@@ -2039,8 +2039,9 @@ was in force, and is judged under it.
   8.3e-13, 1.2e-12 and 1.7e-12. V1(a): on level 3 the 79 faces from L/3
   to 0.8L are within 0.0059% of the cone's Taylor-Maccoll Cp (0.1270).
   V1(b): the drags to x = 2.3126 on levels 1 to 3, 0.0755102, 0.0754823
-  and 0.0754731, are monotone (order 1.61); U is the larger change of
-  the drag's distribution, 1.0e-5 (0.013%), and no iterative error is
+  and 0.0754731, are monotone (order 1.61); U is the change of the
+  drag's distribution by regions from level 2 to 3, 1.0e-5 (0.013%; ratio
+  0.32, taken as 0.5), and no iterative error is
   charged. The difference from the exact 0.0754683 is 4.8e-6 (0.0064%),
   0.48 of U; the same both ways. **Pass.** The first grid's figures
   (below) were 0.0062% and 0.0754730: the grid change, ahead of the
@@ -2081,8 +2082,8 @@ was in force, and is judged under it.
   within 0.019% of the cone's Taylor-Maccoll Cp (0.0798). V1(b): the
   drags to x = 2.3126 on levels 1 to 3, 0.0474407, 0.0474370 and
   0.0474360, are monotone (order 2.03), so U_total is 9.3e-7 (3.9e-7
-  registered). The larger change of the drag's distribution by regions
-  is 2.39e-6 (ratio 0.33, taken as 0.5), so U_dist is 7.16e-6 (2.39e-6
+  registered). The change of the drag's distribution by regions from
+  level 2 to 3 is 2.39e-6 (ratio 0.33, taken as 0.5), so U_dist is 7.16e-6 (2.39e-6
   registered); level 3's iterative error, 1.9e-13 (its drag's range), is
   charged, and U is 7.16e-6 (0.0151%). The difference from the exact
   0.0474416 is -5.6e-6 (-0.0118%), 0.78 of U; the same both ways.
@@ -2116,8 +2117,8 @@ back to the owner; by Amendment 2 the rerun is final.
   2.7e-13, 6.7e-13 and 8.1e-13. The drags on levels 1 to 3, 0.0988067,
   0.0987728 and 0.0987726, are monotone, but their changes (3.4e-5, then
   1.2e-7) give an order of 8.2, so U_total is only 4.9e-8, and U is the
-  larger change of the drag's distribution by regions, 1.59e-5 (0.016%;
-  ratio 0.15). No iterative error is charged and R4's limits pass. The
+  change of the drag's distribution by regions from level 2 to 3, 1.59e-5
+  (0.016%; ratio 0.15, taken as 0.5). No iterative error is charged and R4's limits pass. The
   difference from the method of characteristics' 0.0988034 is -3.08e-5
   (-0.031%), 1.94 times U; the same both ways. **Fail.**
 - The grid change is not the cause: on the first grid, levels 0 to 2
@@ -2154,6 +2155,8 @@ information.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | B-ogive5M1.3, 5-caliber tangent ogive, Mach 1.3 | 0.0428258 | 0.0428181 | +7.66e-6 (+0.018%) | 5.88e-5 (0.137%) | 0.13 | 0.39 | pass |
 | B-ogive3M1.35, 3-caliber tangent ogive, Mach 1.35 | 0.1076642 | 0.1076600 | +4.15e-6 (+0.0039%) | 1.69e-4 (0.157%) | 0.025 | 0.074 | pass |
+| B-ogive3M3, 3-caliber tangent ogive, Mach 3 | 0.0898434 | 0.0899166 | -7.32e-5 (-0.081%) | 1.43e-4 (0.159%) | 0.51 | 0.91 | pass |
+| B-ogive5M3, 5-caliber tangent ogive, Mach 3 | 0.0366504 | 0.0366592 | -8.82e-6 (-0.024%) | 2.27e-5 (0.062%) | 0.39 | 0.93 | pass |
 
 - B-ogive5M1.3 (2026-11-24). Every level's `checkMesh` reports "Mesh
   OK.": the largest skewness is 1.39, 1.51, 1.64 and 1.75 on levels 0 to
@@ -2161,8 +2164,8 @@ information.
   iterations, with |Cp| against the outer boundary 3.3e-8, 1.7e-12,
   1.1e-12 and 3.2e-12. The drags on levels 1 to 3, 0.0428952, 0.0428419
   and 0.0428258, are monotone (changes 5.3e-5, then 1.6e-5; order 1.73),
-  so U_total is 2.10e-5 (8.7e-6 registered). The larger change of the
-  drag's distribution by regions is 1.96e-5 (ratio 0.27, taken as 0.5),
+  so U_total is 2.10e-5 (8.7e-6 registered). The change of the drag's
+  distribution by regions from level 2 to 3 is 1.96e-5 (ratio 0.27, taken as 0.5),
   so U_dist is 5.88e-5 (1.96e-5 registered), and U is U_dist, 5.88e-5
   (0.137%). There is no cap and no iterative error is charged; R4's
   limits pass. The difference from the method of characteristics'
@@ -2174,19 +2177,66 @@ information.
   iterations, with |Cp| against the outer boundary 4.7e-9, 1.2e-12,
   1.3e-12 and 2.1e-12. The drags on levels 1 to 3, 0.1078301, 0.1077120
   and 0.1076642, are monotone (changes 1.18e-4, then 4.8e-5; order 1.30),
-  so U_total is 9.77e-5 (4.07e-5 registered). The larger change of the
-  drag's distribution by regions is 5.63e-5 (ratio 0.32, taken as 0.5),
+  so U_total is 9.77e-5 (4.07e-5 registered). The change of the drag's
+  distribution by regions from level 2 to 3 is 5.63e-5 (ratio 0.32, taken as 0.5),
   so U_dist is 1.69e-4 (5.63e-5 registered), and U is U_dist, 1.69e-4
   (0.157%). There is no cap and no iterative error is charged; R4's
   limits pass. The difference from the method of characteristics'
   0.1076600 is +4.15e-6 (+0.0039%), 0.025 of U and 0.074 of the
   registered U; the same both ways. **Pass.**
-- B-ogive3M3 is on its level 3. Its residual has stayed near 1e-8.6,
-  above both the target and the stall rule's 1e-9, so it runs to its
-  limit of 60,000 iterations. B-ogive5M3 is on its level 3 in the other
-  lane, with B-ogive5M2 behind it.
+- B-ogive3M3 (2026-11-25). Every level's `checkMesh` reports "Mesh
+  OK.": the largest skewness is 1.12, 1.21, 1.24 and 1.26 on levels 0 to
+  3. Levels 0 to 2 converged at 6,730, 5,240 and 3,280 iterations. Level
+  3's residual fell to about 1e-8.4 by 3,300 iterations and from 5,000 on
+  stayed between 1e-9.2 and 1e-8.2, above the target and the stall
+  rule's 1e-9, so it ran to its limit (60,000 iterations); from 5,000 on
+  its drag's range is 7.0e-13. Over its last quarter the drag's range is
+  7.0e-13 and its drift 2.1e-16, within R3's tests (the range at most
+  0.1% of the drag, the drift at most a quarter of the range), so the
+  range is charged as its iterative error. |Cp| against the outer
+  boundary is 2.5e-9, 1.8e-13, 5.3e-13 and 4.2e-13 on levels 0 to 3. The
+  drags on levels 1 to 3, 0.0898171, 0.0898165 and 0.0898434, are not
+  monotone (changes -5.7e-7, then +2.69e-5), so U_total is 3 times the
+  larger change, 8.06e-5 (the same registered). The change of the drag's
+  distribution by regions from level 2 to 3 is 4.76e-5 (ratio 0.44, taken
+  as 0.5), so U_dist is 1.43e-4 (4.76e-5 registered), and U is U_dist,
+  1.43e-4 (0.159%); under the registered rules U would be U_total,
+  8.06e-5. There is no cap; R4's limits pass. The difference from the
+  method of characteristics' 0.0899166 is -7.32e-5 (-0.081%), 0.51 of U
+  and 0.91 of the registered U; the same both ways. **Pass.**
+- B-ogive3M3's level 3 was killed twice by the same restarts of the
+  machine as V1 at Mach 3's (2026-11-25, about 00:36 and 01:39 UTC), each
+  time without a save. Each time it went on from its last regular save
+  (15,000, then 20,000 iterations), as after a window's end, and redid the
+  iterations past it: about 1,400, then 2,450. Over the redone iterations
+  the resumed run's drag matches the killed run's to 3.3e-12 and 5.0e-12
+  of itself, and its residual to 0.23 and 0.52 decades (the residual
+  there cycles between about 1e-9.2 and 1e-8.2). The level's monitor
+  holds the resumed runs' rows (a later start's row replaces an earlier
+  one at the same iteration), ending at 60,000, the record's iterations.
+- B-ogive5M3 (2026-11-25). Every level's `checkMesh` reports "Mesh
+  OK.": the largest skewness is 0.84, 0.87, 0.89 and 0.90 on levels 0 to
+  3. Levels 0 to 2 converged at 8,670, 6,570 and 3,940 iterations. Level
+  3's residual reached about 1e-9.9 by 3,750 iterations and stayed
+  between 1e-9.91 and 1e-9.87; the stall rule stopped it at 30,000 (half
+  its limit; the monitor's last row is 30,010; every residual of its last
+  quarter at or below 1e-9, its drag's range 1.5e-13 and drift 2.8e-15,
+  against a bound of 3.7e-11). |Cp| against the outer boundary is
+  1.7e-9, 2.3e-13, 3.4e-13 and 4.8e-13 on levels 0 to 3. The drags on
+  levels 1 to 3, 0.0366546, 0.0366523 and 0.0366504, are monotone
+  (changes 2.35e-6, then 1.88e-6; order 0.32), so U_total is 2.27e-5
+  (9.4e-6 registered). The change of the drag's distribution by regions
+  from level 2 to 3 is 7.53e-6 (ratio 0.25, taken as 0.5), so U_dist is
+  2.26e-5 (7.53e-6 registered), and U is U_total, 2.27e-5 (0.062%);
+  level 3's iterative error, 1.5e-13 (its drag's range), is charged.
+  Under the registered rules U would be 9.4e-6, U_total. There is no
+  cap; R4's limits pass. The difference from the method of
+  characteristics' 0.0366592 is -8.82e-6 (-0.024%), 0.39 of U and 0.93
+  of the registered U; the same both ways. **Pass.**
+- B-ogive5M2, the last, is running: levels 0 and 1 converged at 12,380
+  and 9,370 iterations, and level 2 is on.
 
-## State (2026-11-24)
+## State (2026-11-25)
 
 - SU2: the tool, the geometry check, the set-up trials 1 to 13, the
   registration, its review and the revision. V5 at Mach 2 failed R3 on
@@ -2229,10 +2279,12 @@ information.
   whose results nobody has seen, reviewed independently before use. Its
   review passed it with changes, all made and confirmed, and it is **in
   force**: V3 is judged under it, but its pass is not evidence for the
-  amendment; the five blind checks are. Two have passed: the 5-caliber
-  ogive at Mach 1.3 (0.13 of U) and the 3-caliber at Mach 1.35 (0.025 of
-  U); the other three are running or queued.
-- Next: the other three blind checks; then the rest
+  amendment; the five blind checks are. Four have passed: the 5-caliber
+  ogive at Mach 1.3 (0.13 of U), the 3-caliber at Mach 1.35 (0.025), the
+  3-caliber at Mach 3 (0.51) and the 5-caliber at Mach 3 (0.39); the
+  fifth, the 5-caliber at Mach 2, is running. Under the registered U the
+  four would also pass (0.39, 0.074, 0.91 and 0.93).
+- Next: the last blind check; then the rest
   of V1 to V5 (with V4's level 4), the W6 cases and the hold-out. No W6
   case runs and nothing is served before then: every capped nose stays
   refused.
