@@ -2157,6 +2157,13 @@ information.
 | B-ogive3M1.35, 3-caliber tangent ogive, Mach 1.35 | 0.1076642 | 0.1076600 | +4.15e-6 (+0.0039%) | 1.69e-4 (0.157%) | 0.025 | 0.074 | pass |
 | B-ogive3M3, 3-caliber tangent ogive, Mach 3 | 0.0898434 | 0.0899166 | -7.32e-5 (-0.081%) | 1.43e-4 (0.159%) | 0.51 | 0.91 | pass |
 | B-ogive5M3, 5-caliber tangent ogive, Mach 3 | 0.0366504 | 0.0366592 | -8.82e-6 (-0.024%) | 2.27e-5 (0.062%) | 0.39 | 0.93 | pass |
+| B-ogive5M2, 5-caliber tangent ogive, Mach 2 | 0.0396556 | 0.0396556 | +1.2e-10 (+0.0000003%) | 2.42e-5 (0.061%) | 0.000005 | 0.000015 | pass |
+
+All five pass, under the amended U and also under the registered one
+(the largest differences are 0.51 and 0.93 of them). The amended U has
+been in force since Amendment 3 was confirmed and stays so; five checks
+are evidence for it, not proof, and they do not test U_cap (see
+Amendment 3).
 
 - B-ogive5M1.3 (2026-11-24). Every level's `checkMesh` reports "Mesh
   OK.": the largest skewness is 1.39, 1.51, 1.64 and 1.75 on levels 0 to
@@ -2233,8 +2240,21 @@ information.
   cap; R4's limits pass. The difference from the method of
   characteristics' 0.0366592 is -8.82e-6 (-0.024%), 0.39 of U and 0.93
   of the registered U; the same both ways. **Pass.**
-- B-ogive5M2, the last, is running: levels 0 and 1 converged at 12,380
-  and 9,370 iterations, and level 2 is on.
+- B-ogive5M2 (2026-11-25). Every level's `checkMesh` reports "Mesh
+  OK.": the largest skewness is 0.94, 0.97, 1.00 and 1.02 on levels 0 to
+  3. Levels 0 to 3 converged at 12,380, 9,370, 5,110 and 4,890
+  iterations, with |Cp| against the outer boundary 4.0e-9, 6.3e-13,
+  8.7e-13 and 9.1e-13. The drags on levels 1 to 3, 0.0396753, 0.0396602
+  and 0.0396556, are monotone (changes 1.51e-5, then 4.67e-6; order
+  1.69), so U_total is 6.3e-6 (2.6e-6 registered). The change of the
+  drag's distribution by regions from level 2 to 3 is 8.06e-6 (ratio
+  0.22, taken as 0.5), so U_dist is 2.42e-5 (8.06e-6 registered), and U
+  is U_dist, 2.42e-5 (0.061%). There is no cap and no iterative error is
+  charged; R4's limits pass. The difference from the method of
+  characteristics' 0.039655554 is +1.2e-10, 5e-6 of U and 1.5e-5 of the
+  registered U; the same both ways. **Pass.** The agreement past about
+  5e-8 is chance: the reference itself is good to about 5e-8 (Amendment
+  3), and level 3's drag was still moving by 4.7e-6 from level 2's.
 
 ## State (2026-11-25)
 
@@ -2257,9 +2277,10 @@ information.
   OpenFOAM 13. Its set-up trials (items 1 to 17 above) are done, and its
   registration (above) is in force: its independent review passed it
   with changes, made and confirmed. A level 4 trial on the off-list ogive
-  at Mach 1.3 (level 4's iteration limit, O3) is paused at 1,163
-  iterations, waiting for four free cores; it must converge or stall by
-  100,000 before V4's level 4 runs.
+  at Mach 1.3 (level 4's iteration limit, O3) waited at 1,163
+  iterations for four free cores and resumed on them once the blind
+  checks finished (2026-11-25); it must converge or stall by 100,000
+  before V4's level 4 runs.
 - OpenFOAM's checks (the section above): V5 passed at Mach 2 and Mach
   3, and V2 at Mach 1.3. V1 at Mach 1.3 failed: its grid does not pass
   `checkMesh` (skewness on free-stream boundary faces), so by the
@@ -2279,12 +2300,13 @@ information.
   whose results nobody has seen, reviewed independently before use. Its
   review passed it with changes, all made and confirmed, and it is **in
   force**: V3 is judged under it, but its pass is not evidence for the
-  amendment; the five blind checks are. Four have passed: the 5-caliber
-  ogive at Mach 1.3 (0.13 of U), the 3-caliber at Mach 1.35 (0.025), the
-  3-caliber at Mach 3 (0.51) and the 5-caliber at Mach 3 (0.39); the
-  fifth, the 5-caliber at Mach 2, is running. Under the registered U the
-  four would also pass (0.39, 0.074, 0.91 and 0.93).
-- Next: the last blind check; then the rest
-  of V1 to V5 (with V4's level 4), the W6 cases and the hold-out. No W6
-  case runs and nothing is served before then: every capped nose stays
-  refused.
+  amendment; the five blind checks are. **All five have passed**
+  (2026-11-25): the 5-caliber ogive at Mach 1.3 (0.13 of U), the
+  3-caliber at Mach 1.35 (0.025), the 3-caliber at Mach 3 (0.51), the
+  5-caliber at Mach 3 (0.39) and the 5-caliber at Mach 2 (5e-6, a
+  chance agreement below the reference's own accuracy). Under the
+  registered U they would also pass (0.39, 0.074, 0.91, 0.93 and
+  1.5e-5).
+- Next: the level 4 trial, then V4's level 4 and V4's verdict, the
+  last of V1 to V5; then the W6 cases and the hold-out. No W6 case runs
+  and nothing is served before then: every capped nose stays refused.
