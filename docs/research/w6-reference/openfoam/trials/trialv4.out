@@ -1,0 +1,26 @@
+L0: monitorSha256 from its monitor.csv; wallSha256 from its wall.csv; processes 1 (the trial's, as registered); builds (not recorded; the trial ran on this machine's one build); convergedAt None from its monitor (five rows in a row at or below 1e-10); wallCellTotalPressure 1.067920 from its save 30000
+L1: monitorSha256 from its monitor.csv; wallSha256 from its wall.csv; processes 1 (the trial's, as registered); builds (not recorded; the trial ran on this machine's one build); convergedAt 20370 from its monitor (five rows in a row at or below 1e-10); wallCellTotalPressure 1.018878 from its save 20381
+L2: monitorSha256 from its monitor.csv; wallSha256 from its wall.csv; processes 1 (the trial's, as registered); builds (not recorded; the trial ran on this machine's one build); convergedAt 15640 from its monitor (five rows in a row at or below 1e-10); wallCellTotalPressure 1.006290 from its save 15654
+L3: monitorSha256 from its monitor.csv; wallSha256 from its wall.csv; processes 2 (the trial's, as registered); builds (not recorded; the trial ran on this machine's one build); convergedAt 34170 from its monitor (five rows in a row at or below 1e-10); wallCellTotalPressure 1.005757 from its save 38547
+spec: waived: level 3's iteration limit 40000 (registered 60000); level 3 converged at 38540
+--- charged: pass True
+  levels1to3: {"value": 0.06222650993580934, "u": 0.00027838381017312953, "uRegistered": 0.00017210091116414897, "uGrid": 0.00015942434851347082, "uGridRegistered": 5.314144950449027e-05, "uTotal": 1.642228026698528e-05, "uDist": 0.00015942434851347082, "uCap": 0.00011895946165965869, "uIter": 0.0, "r": 0.5, "rho": 0.35102780033631714, "rhoVertex": 0.7399487087017301, "order": 2.0389968779839514, "failures": {}}
+  levels2to4: {"value": 0.06222188978749553, "u": 0.00018587407620939816, "uRegistered": 0.00010730530564238037, "uGrid": 0.0001178531558505267, "uGridRegistered": 3.92843852835089e-05, "uTotal": 8.806256954449478e-06, "uDist": 0.0001178531558505267, "uCap": 6.701226885249112e-05, "uIter": 1.0086515063803536e-06, "r": 0.5662537958986772, "rho": 0.5662537958986772, "rhoVertex": 0.6481018202110573, "order": 1.5447552152137727, "failures": {}}
+  D3: 0.06222650993580934
+  D4: 0.06222188978749553
+  step: 4.620148313809469e-06
+  allowedStep: 2.6570724752245134e-05
+  insideRegistered: True
+  insideAmended: True
+  inside: True
+--- without the charge: pass True
+  levels1to3: {"value": 0.06222650993580934, "u": 0.00027838381017312953, "uRegistered": 0.00017210091116414897, "uGrid": 0.00015942434851347082, "uGridRegistered": 5.314144950449027e-05, "uTotal": 1.642228026698528e-05, "uDist": 0.00015942434851347082, "uCap": 0.00011895946165965869, "uIter": 0.0, "r": 0.5, "rho": 0.35102780033631714, "rhoVertex": 0.7399487087017301, "order": 2.0389968779839514, "failures": {}}
+  levels2to4: {"value": 0.06222188978749553, "u": 0.00018587407620939816, "uRegistered": 0.00010730530564238037, "uGrid": 0.0001178531558505267, "uGridRegistered": 3.92843852835089e-05, "uTotal": 8.806256954449478e-06, "uDist": 0.0001178531558505267, "uCap": 6.701226885249112e-05, "uIter": 1.0086515063803536e-06, "r": 0.5662537958986772, "rho": 0.5662537958986772, "rhoVertex": 0.6481018202110573, "order": 1.5447552152137727, "failures": {}}
+  D3: 0.06222650993580934
+  D4: 0.06222188978749553
+  step: 4.620148313809469e-06
+  allowedStep: 2.6570724752245134e-05
+  insideRegistered: True
+  insideAmended: True
+  inside: True
+V4 on the trial: PASS

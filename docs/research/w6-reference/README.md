@@ -2291,8 +2291,39 @@ Amendment 3).
   between 1e-1.42 and 1e-1.34. The drag has almost stopped drifting
   (about 2e-8 per 1,000 iterations since 12,230) but cycles with a
   period of about 100 iterations, by up to 5e-7 either way (8e-6 of
-  itself); its mean, 0.0622218, is 4.7e-6 below level 3's. It runs on,
-  as registered.
+  itself); its mean, 0.0622218, is 4.7e-6 below level 3's. It ran on,
+  as registered, and **reached 100,000 iterations (2026-11-27 08:52
+  UTC) neither converged nor stalled**: its residual stayed between
+  1e-1.46 and 1e-1.34 from 4,500 iterations to the end. Its drag at
+  100,000 is 0.0622219. The means of each 1,000 iterations from 20,000
+  on lie within 3e-8 of each other. Over its last quarter (75,010 to
+  100,000) the drag's range is 1.0e-6 (1.6e-5 of itself), and the means
+  of its last two eighths differ by 1.9e-9. **By the registration no
+  level 4 runs, and level 4's iteration limit goes back to review. V4
+  cannot be judged, so no W6 case runs.**
+- V4's two tests applied to the trial (levels 1 to 3 against 2 to 4),
+  recorded as registered whatever they give: **both pass**, with and
+  without Amendment 1's charge (the same here). Level 4, stopped at its
+  limit, is charged its last quarter's range, 1.0e-6, as O3 charges any
+  level at its limit. The step from level 3 (0.0622265) to level 4
+  (0.0622219) is 4.6e-6, within the 2.66e-5 allowed. Level 4 plus or
+  minus U from levels 2 to 4 (1.86e-4 amended, 1.07e-4 registered) lies
+  inside level 3 plus or minus U from levels 1 to 3 (2.78e-4 amended,
+  1.72e-4 registered), under both U. The trial's levels 0 to 3 were made
+  before the review's change 6, so their records lack what it added:
+  `openfoam/trials/trialv4.py` filled each item from the level's own
+  files and printed it (`trialv4.out`). It took the monitor's and wall
+  file's hashes from the files, the axis's first cell's total pressure
+  from the level's final save, and the convergence iteration from the
+  monitor by O3's five-row rule (20,370, 15,640 and 34,170 for levels 1
+  to 3; level 3's run went on to 38,540 under the older runner). It took
+  the processes and the build as registered, since the build was not
+  recorded and this machine has only one. It waived level 3's limit,
+  40,000 against the registered 60,000, which did not bind. Nothing else
+  in `ofjudge.py`'s V4 was changed. The trial's records are in
+  `openfoam/trials/O13K10/`. These passes do not make level 4
+  admissible: the registration's condition is the trial's convergence or
+  stall, and it met neither.
 - OpenFOAM's checks (the section above): V5 passed at Mach 2 and Mach
   3, and V2 at Mach 1.3. V1 at Mach 1.3 failed: its grid does not pass
   `checkMesh` (skewness on free-stream boundary faces), so by the
@@ -2319,6 +2350,8 @@ Amendment 3).
   chance agreement below the reference's own accuracy). Under the
   registered U they would also pass (0.39, 0.074, 0.91, 0.93 and
   1.5e-5).
-- Next: the level 4 trial, then V4's level 4 and V4's verdict, the
-  last of V1 to V5; then the W6 cases and the hold-out. No W6 case runs
-  and nothing is served before then: every capped nose stays refused.
+- Next: level 4's iteration limit is with the owner for review (the
+  level 4 trial met neither convergence nor the stall rule by 100,000).
+  V4's level 4 and V4's verdict, the last of V1 to V5, wait on it; then
+  the W6 cases and the hold-out. No W6 case runs and nothing is served
+  before then: every capped nose stays refused.

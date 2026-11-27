@@ -28,3 +28,14 @@ cells inward.
 `rehash.py` moves a trial case made before the runner's hash left out the
 iteration limits to the new hash, after checking each level against the
 old one.
+
+The level 4 trial (the off-list ogive, 4 calibers, r_n/R 0.10, Mach 1.3;
+`oftrial.py ... 10 ogive 4 0.10 1.3 5 1,1,1,2,4
+30000,40000,60000,40000,100000`): `O13K10/` keeps each level's
+`record.json`, `monitor.csv` and `wall.csv` as the runner wrote them (its
+saved fields stay in the scratch folder). `trialv4.py` applies V4's two
+tests (`ofjudge.check_v4`) to it and prints each item it filled or waived
+for levels made before the review's change 6; `trialv4.out` is its output
+(2026-11-27). Its fill of a level's wall-cell total pressure reads that
+level's final save, so it reruns only where the saves are; the values it
+used are in `trialv4.out`.
