@@ -2391,25 +2391,85 @@ Amendment 3).
     3.5% on average; at K = 30 on level 4, in 85 to 98% of them, by 0.4
     to 1.3%. A single save does not separate the cycling level from the
     converged one.
-  - The hypothesis under test: Venkatakrishnan's eps^2 = (K h)^3
-    against a smooth flow's cell-to-cell differences (about h times the
-    gradient) goes as K^3 h, so each level halves eps's reach in smooth
-    flow. By that measure level 4 at K = 10 is level 3 at K = 7.94, and
-    K = 30 on level 4 reaches further than K = 10 does on level 0. If
-    level 3 cycles at K = 7.94, refinement past a threshold of eps's
-    reach is the cause, and a K well below 30 may settle level 4.
-    Separately, K = 30 must start from the free stream on the coarse
-    levels at Mach 3. On the hemisphere's level 0 there (K = 10's
-    converged flow, the solver's units: free-stream temperature, pressure
-    and speed of sound 1) its eps in the bow shock's cells is 0.55 to
-    0.69 on the axis and 1.7 to 2.5 a quarter to half way round the 64
-    rays, five times K = 10's (0.11 to 0.13, 0.34 to 0.49). The jumps
-    across the normal shock on the axis are 1.7 (temperature) to 4
-    (density), and less where the shock is oblique. So K = 30 all but
-    switches the limiter off in much of level 0's shock, and the set-up
-    trials found that unlimited gradients do not survive Mach 3 (item
-    16).
-- Next: the trials for level 4's cycle. V4's level 4 and V4's verdict,
-  the last of V1 to V5, wait on them; then the W6 cases and the
-  hold-out. No W6 case runs and nothing is served before then: every
-  capped nose stays refused.
+  - A hypothesis, tested and not borne out: Venkatakrishnan's eps^2 =
+    (K h)^3 against a smooth flow's cell-to-cell differences (about h
+    times the gradient) goes as K^3 h, so each level halves eps's reach
+    in smooth flow, and by that measure level 4 at K = 10 is level 3 at
+    K = 7.94. Level 3 restarted from its converged save (38,547) at
+    K = 7.94, to 47,600 on two processes: after the change (the drag's
+    range 9.9e-5 over the first 450 iterations) its residual fell to
+    1e-4.9 by 44,500, held between 1e-4.72 and 1e-4.9 to 46,000 and then
+    fell again, to 1e-5.16 at 47,600, its drag settled at 0.0622259
+    (range 2.9e-10 over the last 100 iterations). It does not cycle, so
+    level 3 given level 4's reach of eps still converges: the scaling
+    is not the whole cause.
+  - Where the limiter switches over the cycle (`limmap4.py` on two saves
+    25 iterations apart, a quarter of the cycle's period, of a K = 10
+    restart from 100,000): psi changes by more than 0.05 in 33 to 73 of
+    the 704 cells within 5 of the shock on the cap's rays (by field:
+    rho, T, U), in 0 to 35 of the 16,770 cells between the wall and the
+    shock, and in none ahead of it. Over 200 iterations of K = 30's run
+    (110,000 to 110,200) it changes by more than 0.05 nowhere. The
+    switching sits in the shock's cells, and the subsonic layer behind
+    carries the flow's response back to the wall. Why a larger eps stops
+    it is not established: eps at level 4's shock is about 0.003 at
+    K = 30, against jumps across it of 0.19 (temperature) to 0.72
+    (density) at Mach 1.3.
+  - K = 30 from the free stream on the coarse levels. It had to be
+    tried because eps grows with the cell: on the hemisphere's level 0
+    at Mach 3 (K = 10's converged flow; the solver's units, free-stream
+    temperature, pressure and speed of sound 1), K = 30's eps in the bow
+    shock's cells is 0.55 to 0.69 on the axis and 1.7 to 2.5 a quarter
+    to half way round the 64 rays, five times K = 10's, against jumps of
+    1.7 to 4 across the normal shock, and the set-up trials found that
+    unlimited gradients do not survive Mach 3 (item 16). Five cases,
+    levels 0 to 2, one core each (`oftrial.py`; records in
+    `openfoam/trials/K30/`). The K = 10 columns are the registered runs
+    of V5 (the hemisphere, widened once as there, and so here) and V1
+    (the cone), and the set-up trials' off-list ogive (`O3K10`, Mach 3;
+    `O13K10`, Mach 1.3). Iterations are to convergence unless marked;
+    the last column is the axis's first cell's total pressure over
+    pitot, K = 10 / K = 30.
+
+    | case | level | K = 10 | K = 30 | drag, K = 10 | drag, K = 30 | K = 30 against K = 10 | outer \|Cp\|, K = 30 | p0 at the wall |
+    | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+    | hemisphere, Mach 3 | 0 | 10,500 | 8,330 | 0.8477514 | 0.8480725 | +3.8e-4 | 1e-5 | +0.00% / +0.70% |
+    |  | 1 | limit 40,000 (1e-6.82) | 9,690 | 0.8467342 | 0.8474013 | +7.9e-4 | 2e-8 | -0.04% / +0.20% |
+    |  | 2 | 16,120 | 15,900 | 0.8478016 | 0.8480346 | +2.7e-4 | 7e-14 | +0.07% / +0.15% |
+    | hemisphere, Mach 2 | 0 | 9,540 | 10,250 | 0.7910462 | 0.7913321 | +3.6e-4 | 2e-6 | +1.08% / +0.77% |
+    |  | 1 | 11,070 | 12,010 | 0.7885211 | 0.7893066 | +1.0e-3 | 6e-10 | +0.79% / +0.65% |
+    |  | 2 | 18,590 | 17,060 | 0.7881666 | 0.7887362 | +7.2e-4 | 2e-13 | +0.61% / +0.72% |
+    | cone (3 calibers), Mach 3 | 0 | 7,310 | 7,790 | 0.0798117 | 0.0800802 | +3.4e-3 | 8e-10 | |
+    |  | 1 | 5,550 | 5,500 | 0.0797020 | 0.0797374 | +4.4e-4 | 1e-13 | |
+    |  | 2 | 3,240 | 3,240 | 0.0795833 | 0.0795985 | +1.9e-4 | 3e-13 | |
+    | ogive (off-list), Mach 3 | 0 | 14,200 | 13,820 | 0.0554738 | 0.0554796 | +1.1e-4 | 4e-6 | |
+    |  | 1 | limit 40,000 (1e-9.88) | stalled, 20,000 | 0.0554158 | 0.0553900 | -4.7e-4 | 2e-10 | |
+    |  | 2 | stalled, 45,000 | stalled, 35,000 | 0.0554166 | 0.0553945 | -4.0e-4 | 6e-14 | |
+    | ogive (off-list), Mach 1.3 | 0 | limit 30,000 (1e-9.03) | limit 30,000 (1e-8.99) | 0.0626688 | 0.0626633 | -8.7e-5 | 2e-6 | |
+    |  | 1 | 20,380 | 20,180 | 0.0623104 | 0.0623174 | +1.1e-4 | 3e-7 | |
+    |  | 2 | 15,650 | 18,400 | 0.0622429 | 0.0622370 | -9.5e-5 | 6e-12 | |
+
+    K = 30 starts from the free stream in every case, Mach 3 included.
+    Every level 1 and 2 converged or met the stall rule, none cycled,
+    and the hemisphere's level 1 at Mach 3 and the ogive's at Mach 3
+    finished where K = 10's ran to their limits. R3's outer-boundary
+    check passes on every level 1 and 2 (|Cp| at most 3e-7; level 0 is
+    not a level used). Its cost is on the coarse levels: their drags
+    move by -4.7e-4 to +1.0e-3 of the drag on levels 1 and 2 (3.4e-3 on
+    the cone's level 0). On the cone the change shrinks with the level
+    (3.4e-3, 4.4e-4, 1.9e-4); on the others it does not yet. On the
+    hemisphere at Mach 3 the axis's total pressure at the wall
+    overshoots pitot more (+0.15% against +0.07% on level 2). These runs
+    compare K = 30 with K = 10 only: whether it is more or less accurate
+    on the levels used is for the checks to measure.
+  - Level 4 at K = 30, run on: its residual reached 1e-4.75 at 110,200
+    (from 1e-3.53 at 106,400; about 0.6 decades per 1,000 iterations
+    from 108,000 to 109,500, 0.3 after), its drag's mean 0.0622235 to
+    0.0622236 per 500 iterations, ranging over at most 3.7e-8 in each.
+- Next: level 4 at K = 30 runs on to the target or a stall. Then the
+  cause as far as found and K = 30 as a candidate fix go back to the
+  owner: adopting it would change the registered scheme, so every check
+  would run again and the five blind checks would need new cases. V4's
+  level 4 and V4's verdict, the last of V1 to V5, wait on that; then
+  the W6 cases and the hold-out. No W6 case runs and nothing is served
+  before then: every capped nose stays refused.

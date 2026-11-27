@@ -1,0 +1,3 @@
+L0: exit 0 it 10250 logRes -10.58 converged True stage2 from 0 drag 0.7913321 range 1.4e-09 stag cell +0.087% axis p0 at wall +0.774%
+L1: exit 0 it 12010 logRes -10.06 converged True stage2 from 0 drag 0.7893066 range 5.8e-10 stag cell +0.574% axis p0 at wall +0.647% | regions 2.026e-03 vertex 2.572e-03 signed -2.026e-03
+L2: exit 0 it 17060 logRes -10.01 converged True stage2 from 0 drag 0.7887362 range 2.9e-10 stag cell +0.804% axis p0 at wall +0.717% | regions 5.704e-04 vertex 1.260e-03 signed -5.704e-04

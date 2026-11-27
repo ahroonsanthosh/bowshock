@@ -1,0 +1,7 @@
+SWK10: level 4 (1024x512), time 100175, K 10; shock j on rays 0, 32, 63: 264, 259, 315
+  grad(rho), cap (i < 64): layer (wall+2 to shock-6): acts in 93.9%, mean 1-psi 7.97e-03; shock (shock-5 to shock+5): acts in 86.9%, mean 1-psi 3.44e-01; ahead (shock+6 on): acts in 0.4%, mean 1-psi 4.55e-04
+    changes by > 0.05 from 100175 to 100200: layer (wall+2 to shock-6) 28 of 16770, shock (shock-5 to shock+5) 35 of 704, ahead (shock+6 on) 0 of 15166
+  grad(T), cap (i < 64): layer (wall+2 to shock-6): acts in 96.6%, mean 1-psi 8.02e-03; shock (shock-5 to shock+5): acts in 81.1%, mean 1-psi 3.10e-01; ahead (shock+6 on): acts in 0.1%, mean 1-psi 1.14e-04
+    changes by > 0.05 from 100175 to 100200: layer (wall+2 to shock-6) 35 of 16770, shock (shock-5 to shock+5) 73 of 704, ahead (shock+6 on) 0 of 15166
+  grad(U), cap (i < 64): layer (wall+2 to shock-6): acts in 99.3%, mean 1-psi 2.07e-02; shock (shock-5 to shock+5): acts in 89.6%, mean 1-psi 3.60e-01; ahead (shock+6 on): acts in 0.3%, mean 1-psi 3.08e-04
+    changes by > 0.05 from 100175 to 100200: layer (wall+2 to shock-6) 0 of 16770, shock (shock-5 to shock+5) 33 of 704, ahead (shock+6 on) 0 of 15166

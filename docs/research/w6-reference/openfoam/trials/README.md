@@ -50,3 +50,9 @@ K) and runs it for a set number of iterations on the source's processes;
 residual, drag) and its output line. `limmap4.py` writes a save's
 gradients with the limiter at K and unlimited, and prints where the
 limiter acts between the wall and the shock on the cap's rays.
+`K30/` keeps the K = 30 screening runs from the free stream (levels 0 to
+2 of five cases, through `oftrial.py`: each level's `record.json`,
+`monitor.csv` and `wall.csv`, and `out.txt`, the runner's line per
+level); `oftrial.py` takes `OF_FLAT_TO` for a sharp nose's flat outer
+boundary (Amendment 2). `L4x/SWK10.out` and `L4x/SWK30.out` are
+`limmap4.py`'s maps of the limiter's switching between two saves.

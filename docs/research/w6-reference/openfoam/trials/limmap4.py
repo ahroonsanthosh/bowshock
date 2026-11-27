@@ -65,8 +65,16 @@ for v, scheme in (("lim", f"cellVenkatakrishnan Gauss linear {K};"), ("un", "Gau
     fs2, k = re.subn(r"(gradSchemes\s*\{\s*default\s+)[^;]*;", lambda m: m.group(1) + scheme, fs)
     assert k == 1
     open(f"{d}/system/fvSchemes", "w").write(fs2)
-    for fld in ("rho", "U", "T"):
-        sh(f"foamPostProcess -time {','.join(times)} -func 'grad({fld})'", d, f"pp.{fld}.log")
+    # one save at a time, the other moved aside: with the case starting from its
+    # latest save, foamPostProcess did not write the gradient at an earlier one
+    for t in times:
+        others = [u for u in times if u != t]
+        for u in others:
+            os.rename(f"{d}/{u}", f"{d}/hold.{u}")
+        for fld in ("rho", "U", "T"):
+            sh(f"foamPostProcess -time {t} -func 'grad({fld})'", d, f"pp.{fld}.{t}.log")
+        for u in others:
+            os.rename(f"{d}/hold.{u}", f"{d}/{u}")
 
 spec = w6ref.capped_spec("ogive", 4.0, 0.10, 1.3)
 nose, x, r, marks = w6ref.grid(spec, lv)
