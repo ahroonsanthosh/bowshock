@@ -2350,8 +2350,17 @@ Amendment 3).
   chance agreement below the reference's own accuracy). Under the
   registered U they would also pass (0.39, 0.074, 0.91, 0.93 and
   1.5e-5).
-- Next: level 4's iteration limit is with the owner for review (the
-  level 4 trial met neither convergence nor the stall rule by 100,000).
-  V4's level 4 and V4's verdict, the last of V1 to V5, wait on it; then
-  the W6 cases and the hold-out. No W6 case runs and nothing is served
-  before then: every capped nose stays refused.
+- The owner reviewed level 4's limit (2026-11-27) and chose to find why
+  level 4 cycles, by trials from the level 4 trial's 100,000 save. They
+  were offered three other choices: keep the limit for V4 only, keep it
+  for V4 and R4's fallback, or stop. Any fix to the scheme changes every
+  level, so every check would run again, and the five blind checks would
+  need new cases, since their answers have been seen. A fix to level 4
+  alone would solve it differently from levels 1 to 3. At 100,000, 99.7%
+  of the trial's mean square d(rho)/dt lies in the bow shock's cells
+  ahead of the cap (the first 64 of 1,024 cells along the wall, around
+  j = 250 to 261 of 512).
+- Next: the trials for level 4's cycle. V4's level 4 and V4's verdict,
+  the last of V1 to V5, wait on them; then the W6 cases and the
+  hold-out. No W6 case runs and nothing is served before then: every
+  capped nose stays refused.
