@@ -2357,9 +2357,58 @@ Amendment 3).
   level, so every check would run again, and the five blind checks would
   need new cases, since their answers have been seen. A fix to level 4
   alone would solve it differently from levels 1 to 3. At 100,000, 99.7%
-  of the trial's mean square d(rho)/dt lies in the bow shock's cells
-  ahead of the cap (the first 64 of 1,024 cells along the wall, around
-  j = 250 to 261 of 512).
+  of the trial's mean square d(rho)/dt lies on the first 64 of the 1,024
+  rays out from the wall, those ahead of the cap. It is not confined to
+  the bow shock (an earlier version of this line said it was: the
+  shock's cells hold the largest values, not most of the sum). Taking
+  the shock on each ray as the cell with the largest jump in pressure
+  (j = 255 to 295 of 512 on those rays), 3% lies in that cell, 34%
+  within 12 cells behind it, 16% from 12 to 40 cells behind it and 47%
+  further back toward the wall; 0.1% lies ahead of it. The cycle fills
+  the subsonic layer between the shock and the cap.
+- The trials on level 4's cycle so far, each restarted from the level 4
+  trial's saves with one setting changed (`openfoam/trials/l4x.py`; each
+  run's monitor in `openfoam/trials/L4x/`):
+  - A smaller step does not damp it. At Courant 0.25 (registered 0.5),
+    over 1,100 iterations, the residual stayed between 1e-1.35 and
+    1e-1.41 and the drag's range was 8.9e-7, against 9.1e-7 at 0.5.
+    The cycle's period doubled in iterations (from about 100 to 200),
+    so it is the same in pseudo-time. A cycle that keeps its period and
+    size in pseudo-time as the step shrinks is a property of the spatial
+    scheme, the equations being stepped, not of Heun's step, so no
+    smaller step or other time scheme would settle it.
+  - The limiter's coefficient K = 30 (registered 10) settles it so far.
+    After a transient (the drag's range 1.9e-4 from 100,000 to 100,500),
+    the residual has fallen steadily, from 1e-2.66 at 102,000 to 1e-3.5
+    at 106,400 (about 0.25 decades per 1,000 iterations lately, level
+    3's rate at K = 10). The drag's range per 500 iterations has fallen
+    from 4.7e-7 to 2.6e-8, and its mean has drifted to 0.0622236, 1.7e-6
+    above K = 10's cycle mean. It runs on, toward the target.
+  - Where the limiter acts (`openfoam/trials/limmap4.py`: limited over
+    unlimited gradients, psi < 0.999) between the wall and the shock on
+    the cap's rays: at K = 10, in 94 to 100% of the cells on both level
+    3 (converged) and level 4 (cycling), cutting the gradients by 0.8 to
+    3.5% on average; at K = 30 on level 4, in 85 to 98% of them, by 0.4
+    to 1.3%. A single save does not separate the cycling level from the
+    converged one.
+  - The hypothesis under test: Venkatakrishnan's eps^2 = (K h)^3
+    against a smooth flow's cell-to-cell differences (about h times the
+    gradient) goes as K^3 h, so each level halves eps's reach in smooth
+    flow. By that measure level 4 at K = 10 is level 3 at K = 7.94, and
+    K = 30 on level 4 reaches further than K = 10 does on level 0. If
+    level 3 cycles at K = 7.94, refinement past a threshold of eps's
+    reach is the cause, and a K well below 30 may settle level 4.
+    Separately, K = 30 must start from the free stream on the coarse
+    levels at Mach 3. On the hemisphere's level 0 there (K = 10's
+    converged flow, the solver's units: free-stream temperature, pressure
+    and speed of sound 1) its eps in the bow shock's cells is 0.55 to
+    0.69 on the axis and 1.7 to 2.5 a quarter to half way round the 64
+    rays, five times K = 10's (0.11 to 0.13, 0.34 to 0.49). The jumps
+    across the normal shock on the axis are 1.7 (temperature) to 4
+    (density), and less where the shock is oblique. So K = 30 all but
+    switches the limiter off in much of level 0's shock, and the set-up
+    trials found that unlimited gradients do not survive Mach 3 (item
+    16).
 - Next: the trials for level 4's cycle. V4's level 4 and V4's verdict,
   the last of V1 to V5, wait on them; then the W6 cases and the
   hold-out. No W6 case runs and nothing is served before then: every

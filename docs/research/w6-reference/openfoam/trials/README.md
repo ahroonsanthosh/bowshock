@@ -39,3 +39,14 @@ for levels made before the review's change 6; `trialv4.out` is its output
 (2026-11-27). Its fill of a level's wall-cell total pressure reads that
 level's final save, so it reruns only where the saves are; the values it
 used are in `trialv4.out`.
+
+The trials on level 4's cycle (`../../README.md`, after the owner's
+choice to find why level 4 cycles): `l4x.py` copies a case's latest
+save into a new case, changes only the named settings (the Courant
+number, the time step's smoothing, the outer correctors, the limiter's
+K) and runs it for a set number of iterations on the source's processes;
+`l4xshow.py` prints a run's residual and drag per block of iterations.
+`L4x/` keeps each run's monitor (`<run>.csv`: iteration, log10 of the
+residual, drag) and its output line. `limmap4.py` writes a save's
+gradients with the limiter at K and unlimited, and prints where the
+limiter acts between the wall and the shock on the cap's rays.
