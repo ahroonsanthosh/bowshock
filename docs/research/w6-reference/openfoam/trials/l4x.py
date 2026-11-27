@@ -6,7 +6,8 @@ processes, and print the residual and drag every 100 iterations.
     python3 -I l4x.py <name> <iterations> [key=value ...]
 
 keys: maxCo, smooth (rDeltaTSmoothingCoeff), outer (nOuterCorrectors), K
-(the limiter's), from (another trial's folder to start from, its latest save).
+(the limiter's), from (another trial's folder to start from, its latest save),
+every (the save interval, 200 by default).
 """
 import os, re, shutil, subprocess, sys
 
@@ -45,10 +46,12 @@ def sub(path, pat, rep):
 
 
 sub(f"{dst}/system/controlDict", r"endTime\s+\d+;", f"endTime         {int(t0) + n};")
-# OpenFOAM counts the save interval from iteration 0: save every 200 so the end is saved.
-if (int(t0) + n) % 200:
-    sys.exit("the end (start plus iterations) must be a multiple of 200")
-sub(f"{dst}/system/controlDict", r"writeInterval \d+;", "writeInterval 200;")
+# OpenFOAM counts the save interval from iteration 0: save every 200 (or every=)
+# iterations, so the end is saved if it is a multiple of that.
+every = int(opts.pop("every", "200"))
+if (int(t0) + n) % every:
+    sys.exit(f"the end (start plus iterations) must be a multiple of {every}")
+sub(f"{dst}/system/controlDict", r"writeInterval \d+;", f"writeInterval {every};")
 if "maxCo" in opts:
     sub(f"{dst}/system/fvSolution", r"maxCo\s+[\d.e-]+;", f"maxCo           {opts['maxCo']};")
 if "smooth" in opts:
