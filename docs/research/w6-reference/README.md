@@ -2488,7 +2488,10 @@ Amendment 3).
     rising by 1.6e-9 to 0.0622235028. Another restart stopped it at
     123,950; it went on from 123,800 and reached 1e-8.82 at 127,600,
     falling 0.20 to 0.21 decades per 1,000 iterations throughout, its
-    drag rising by 8.3e-10 to 0.0622235036.
+    drag rising by 8.3e-10 to 0.0622235036. Run on, it passed 1e-9 at
+    128,000 and reached 1e-9.49 at 131,400, the descent slowing: 0.19
+    decades from 129,000 to 130,000, 0.15 to 131,000. Its drag has held
+    at 0.06222350366 within 5.2e-12 (8e-11 of it) since 129,000.
 - Next: level 4 at K = 30 runs on to the target or a stall. Then the
   cause as far as found and K = 30 as a candidate fix go back to the
   owner: adopting it would change the registered scheme, so every check
