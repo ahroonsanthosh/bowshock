@@ -2469,7 +2469,14 @@ Amendment 3).
     Run on to 114,000, it reached 1e-5.61, the descent speeding up: 0.11
     decades from 111,000 to 112,000, 0.20 to 113,000 and 0.38 to
     114,000. Its drag fell steadily from 0.06222356 to 0.06222351 over
-    those 3,800 iterations, 4.6e-8 in all.
+    those 3,800 iterations, 4.6e-8 in all. Run on to 117,800, it reached
+    1e-6.76, the descent slowing again: 0.39 decades from 114,000 to
+    115,000, 0.31 to 116,000, 0.27 to 117,000 and 0.18 in the last 800.
+    Its drag settled at 0.0622235, ranging over 4.9e-10 from 117,000 to
+    117,800. The run with K = 10 had cycled about a mean of 0.06222188
+    from 75,000 to 100,000, so at level 4 the larger K moves the drag
+    by +2.6e-5 of it, against -4.7e-4 to +1.0e-3 on levels 0 to 2 of
+    the five screening cases.
 - Next: level 4 at K = 30 runs on to the target or a stall. Then the
   cause as far as found and K = 30 as a candidate fix go back to the
   owner: adopting it would change the registered scheme, so every check
