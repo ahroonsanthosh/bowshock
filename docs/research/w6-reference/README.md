@@ -2489,13 +2489,36 @@ Amendment 3).
     123,950; it went on from 123,800 and reached 1e-8.82 at 127,600,
     falling 0.20 to 0.21 decades per 1,000 iterations throughout, its
     drag rising by 8.3e-10 to 0.0622235036. Run on, it passed 1e-9 at
-    128,000 and reached 1e-9.49 at 131,400, the descent slowing: 0.19
+    128,480 and reached 1e-9.49 at 131,400, the descent slowing: 0.19
     decades from 129,000 to 130,000, 0.15 to 131,000. Its drag has held
     at 0.06222350366 within 5.2e-12 (8e-11 of it) since 129,000.
-- Next: level 4 at K = 30 runs on to the target or a stall. Then the
-  cause as far as found and K = 30 as a candidate fix go back to the
-  owner: adopting it would change the registered scheme, so every check
-  would run again and the five blind checks would need new cases. V4's
-  level 4 and V4's verdict, the last of V1 to V5, wait on that; then
-  the W6 cases and the hold-out. No W6 case runs and nothing is served
-  before then: every capped nose stays refused.
+    (An earlier version gave 128,000 for the crossing; the monitor's last
+    record above 1e-9 is at 128,470.)
+  - Level 4 at K = 30, the end: **its residual stopped at a floor, 1e-9.59
+    to 1e-9.67, from 132,500 to 135,200, and did not reach the target.**
+    That is where the floor noted in OpenFOAM's registration puts it
+    (rising about 0.3 decades a level from level 3's 1e-10.0 at Mach
+    1.3). Its drag over the last 3,800 iterations is 0.06222350366
+    within 3.4e-12 (5e-11 of it). Counted from the start of K = 30 at
+    100,000, the stall rule does not yet hold at 135,200: its last
+    quarter, from 126,410, has residuals up to 1e-8.58. Every residual
+    from 128,480 on is within 1e-9, so on this history it would hold from
+    about 138,000; on the stretches from 129,000 and from 130,000 the
+    drag's range is 1.4e-10 and 1.3e-10 of it and the means of the last
+    two eighths differ by 2.3e-12 and 2.5e-12 of it, against the rule's
+    1e-9. This run went on from K = 10's cycling state, not from level 3
+    at K = 30 as the scheme with K = 30 would run it.
+    (`openfoam/trials/L4x/B-K30` to `L-K30`: each run's monitor and its
+    output; C-K30's records past 102,600 were not used, D-K30 going on
+    from its save there.)
+  - A trial at K = 20 from the K = 10 run's 100,000 save, for 2,000
+    iterations, runs to see whether a smaller change also ends the
+    cycle: at K = 30 the residual left the cycle within 1,000 iterations
+    (1e-1.4 to 1e-2.0 by 101,000, 1e-2.8 by 102,000).
+- Next: the K = 20 trial's 2,000 iterations. Then the cause as far as
+  found and the candidate fixes go back to the owner: adopting one would
+  change the registered scheme, so every check would run again and the
+  five blind checks would need new cases. V4's level 4 and V4's verdict,
+  the last of V1 to V5, wait on that; then the W6 cases and the
+  hold-out. No W6 case runs and nothing is served before then: every
+  capped nose stays refused.
