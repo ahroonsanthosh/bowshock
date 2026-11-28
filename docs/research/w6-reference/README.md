@@ -2522,13 +2522,28 @@ Amendment 3).
     period about 60 iterations in the monitor's records every 10 (K =
     10's: 100). So the K that ends level 4's cycle lies above 20 on this
     case, and K = 30's margin is not known: on another case (V4's own,
-    or W6's smaller caps) level 4 might still cycle at K = 30. It runs
-    on to 105,800 to see whether it settles later.
-    (`openfoam/trials/L4x/M-K20`.)
-- Next: the K = 20 trial to 105,800. Then the cause as far as
-  found and the candidate fixes go back to the owner: adopting one would
-  change the registered scheme, so every check would run again and the
-  five blind checks would need new cases. V4's level 4 and V4's verdict,
-  the last of V1 to V5, wait on that; then the W6 cases and the
-  hold-out. No W6 case runs and nothing is served before then: every
-  capped nose stays refused.
+    or W6's smaller caps) level 4 might still cycle at K = 30. Run on
+    to 105,800, **it still cycles**: from 104,800 to 105,800 its residual
+    lies between 1e-1.91 and 1e-1.82, falling 0.04 decades per 1,000
+    iterations, and its drag (mean 0.06222330, drifting -7e-9 per 1,000)
+    cycles by 1.2e-7 either way with a period of 100 iterations, as K =
+    10's did. (`openfoam/trials/L4x/M-K20` and `N-K20`.)
+  - Where this leaves the cause: level 4's cycle on this case is a
+    steady oscillation of the discrete equations, not of the time step
+    (its period doubles in iterations when the Courant number halves).
+    It fills the subsonic layer ahead of the cap and is driven by the
+    limiter switching on and off in the bow shock's cells on the cap's
+    rays. A larger K stops the switching: at K = 30 the limiter acts
+    in those cells almost as much as at K = 10 (gradients cut by 0.30
+    against 0.34 on average) but no cell switches, and level 4 converges
+    to its residual floor. At K = 20 it still cycles, more weakly. Why
+    the switching is self-sustaining at level 4 and not at level 3, and
+    why K = 30 stops it, are not established: the reach of the
+    limiter's eps alone (level 3 at K = 7.94) does not explain it.
+- Next: the cause as far as found and the candidate fix (K = 30, its
+  margin unknown) go back to the owner: adopting it would change the
+  registered scheme, so every check would run again and the five blind
+  checks would need new cases. V4's level 4 and V4's verdict, the last
+  of V1 to V5, wait on that; then the W6 cases and the hold-out. No W6
+  case runs and nothing is served before then: every capped nose stays
+  refused.
