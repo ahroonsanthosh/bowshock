@@ -2476,7 +2476,11 @@ Amendment 3).
     117,800. The run with K = 10 had cycled about a mean of 0.06222188
     from 75,000 to 100,000, so at level 4 the larger K moves the drag
     by +2.6e-5 of it, against -4.7e-4 to +1.0e-3 on levels 0 to 2 of
-    the five screening cases.
+    the five screening cases. Run on, it reached 1e-7.44 at 121,000,
+    falling a steady 0.20 to 0.22 decades per 1,000 iterations, its drag
+    rising by 2.3e-9 (from 0.0622234988 at 118,000 to 0.0622235011).
+    A restart of the machine stopped that run at 121,120; it goes on
+    from its save at 121,000.
 - Next: level 4 at K = 30 runs on to the target or a stall. Then the
   cause as far as found and K = 30 as a candidate fix go back to the
   owner: adopting it would change the registered scheme, so every check
