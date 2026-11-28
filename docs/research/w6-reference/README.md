@@ -2479,8 +2479,14 @@ Amendment 3).
     the five screening cases. Run on, it reached 1e-7.44 at 121,000,
     falling a steady 0.20 to 0.22 decades per 1,000 iterations, its drag
     rising by 2.3e-9 (from 0.0622234988 at 118,000 to 0.0622235011).
-    A restart of the machine stopped that run at 121,120; it goes on
-    from its save at 121,000.
+    A restart of the machine stopped that run at 121,120; it went on
+    from its save at 121,000. Over the 120 iterations run twice, the
+    residuals differ by up to 0.005 decades and the drags by 2e-12, the
+    gap closing in about 100 iterations: a restart from a save is not
+    exact, but it is far below what is measured here. It reached 1e-8.03
+    at 123,800, still falling 0.21 decades per 1,000 iterations, its drag
+    rising by 1.6e-9 to 0.0622235028. Another restart stopped it at
+    123,950; it goes on from 123,800.
 - Next: level 4 at K = 30 runs on to the target or a stall. Then the
   cause as far as found and K = 30 as a candidate fix go back to the
   owner: adopting it would change the registered scheme, so every check
