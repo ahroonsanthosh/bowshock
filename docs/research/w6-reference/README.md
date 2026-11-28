@@ -2511,11 +2511,21 @@ Amendment 3).
     (`openfoam/trials/L4x/B-K30` to `L-K30`: each run's monitor and its
     output; C-K30's records past 102,600 were not used, D-K30 going on
     from its save there.)
-  - A trial at K = 20 from the K = 10 run's 100,000 save, for 2,000
-    iterations, runs to see whether a smaller change also ends the
-    cycle: at K = 30 the residual left the cycle within 1,000 iterations
-    (1e-1.4 to 1e-2.0 by 101,000, 1e-2.8 by 102,000).
-- Next: the K = 20 trial's 2,000 iterations. Then the cause as far as
+  - A trial at K = 20 from the K = 10 run's 100,000 save, to see whether
+    a smaller change also ends the cycle (at K = 30 the residual left the
+    cycle within 1,000 iterations: 1e-1.4 to 1e-2.0 by 101,000, 1e-2.8
+    by 102,000). **At K = 20 it had not by 102,000**: the residual went
+    from 1e-1.4 to 1e-1.6 by 101,200 and then stayed between 1e-1.55 and
+    1e-1.64, falling 0.05 decades per 1,000 iterations over the last
+    1,000; the drag, still moving towards K = 20's state, cycles about
+    that drift by 2.2e-7 either way (K = 10's: 4.6e-7), its strongest
+    period about 60 iterations in the monitor's records every 10 (K =
+    10's: 100). So the K that ends level 4's cycle lies above 20 on this
+    case, and K = 30's margin is not known: on another case (V4's own,
+    or W6's smaller caps) level 4 might still cycle at K = 30. It runs
+    on to 105,800 to see whether it settles later.
+    (`openfoam/trials/L4x/M-K20`.)
+- Next: the K = 20 trial to 105,800. Then the cause as far as
   found and the candidate fixes go back to the owner: adopting one would
   change the registered scheme, so every check would run again and the
   five blind checks would need new cases. V4's level 4 and V4's verdict,
