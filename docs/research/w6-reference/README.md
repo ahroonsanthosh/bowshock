@@ -2466,6 +2466,10 @@ Amendment 3).
     (from 1e-3.53 at 106,400; about 0.6 decades per 1,000 iterations
     from 108,000 to 109,500, 0.3 after), its drag's mean 0.0622235 to
     0.0622236 per 500 iterations, ranging over at most 3.7e-8 in each.
+    Run on to 114,000, it reached 1e-5.61, the descent speeding up: 0.11
+    decades from 111,000 to 112,000, 0.20 to 113,000 and 0.38 to
+    114,000. Its drag fell steadily from 0.06222356 to 0.06222351 over
+    those 3,800 iterations, 4.6e-8 in all.
 - Next: level 4 at K = 30 runs on to the target or a stall. Then the
   cause as far as found and K = 30 as a candidate fix go back to the
   owner: adopting it would change the registered scheme, so every check
